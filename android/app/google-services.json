@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "244829638667",
+    "project_id": "jewlease-dfd65",
+    "storage_bucket": "jewlease-dfd65.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:244829638667:android:66cdda4324211e7d5d770e",
+        "android_client_info": {
+          "package_name": "com.jewlease.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCboS8BXAlkdPfwNeB7iLLE7XFdS1plKvY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

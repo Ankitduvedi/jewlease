@@ -1,4 +1,4 @@
-package com.example.jewlease
+package com.jewlease.app
 
 import io.flutter.embedding.android.FlutterActivity
 
