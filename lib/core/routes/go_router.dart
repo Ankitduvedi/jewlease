@@ -16,6 +16,7 @@ final goRouter = GoRouter(
       path: '/splashScreen',
       builder: (context, state) => const SplashScreen(),
     ),
+
     // GoRoute(
     //   path: '/updateAppScreen',
     //   builder: (context, state) => const UpdateAppScreen(),
@@ -77,11 +78,11 @@ final goRouter = GoRouter(
             path: '/',
             builder: (context, state) => const HomeScreen(),
           ),
-          // GoRoute(
-          //     path: '/staff',
-          //     builder: (context, state) {
-          //       return const StaffHomeScreen();
-          //     }),
+          GoRoute(
+              path: '/staff',
+              builder: (context, state) {
+                return const HomeScreen();
+              }),
 
           // GoRoute(
           //   path: '/hotelDetailsScreen/:id',
