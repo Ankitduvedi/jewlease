@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class CustomListTile extends StatelessWidget {
+class ExpandedCustomListTile extends StatelessWidget {
   final bool isCollapsed;
   final IconData icon;
   final String title;
 
-  const CustomListTile({
+  const ExpandedCustomListTile({
     super.key,
     required this.isCollapsed,
     required this.icon,
@@ -39,20 +39,14 @@ class CustomListTile extends StatelessWidget {
             if (!isCollapsed)
               Expanded(
                 flex: 3,
-                child: Row(
-                  children: [
-                    Expanded(
-                      flex: 4,
-                      child: Text(
-                        title,
-                        style: const TextStyle(
-                          color: Colors.white,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.clip,
-                      ),
-                    ),
-                  ],
+                child: ExpansionTile(
+                  leading: Icon(icon, color: Colors.white),
+                  title: Text(title),
+                  // title: Text(
+                  //   !_isCollapsed ? title : '',
+                  //   style: const TextStyle(color: Colors.white),
+                  // ),
+                  children: [],
                 ),
               ),
             if (!isCollapsed) const Spacer(),
