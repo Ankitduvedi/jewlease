@@ -37,7 +37,7 @@ class CustomDrawer extends StatelessWidget {
                 bottomRight: Radius.circular(10),
                 topRight: Radius.circular(10),
               ),
-              color: Color.fromRGBO(20, 20, 20, 1),
+              color: Colors.white,
             ),
             child: const Column(
               children: [
@@ -63,7 +63,7 @@ class DrawerToggleButton extends ConsumerWidget {
     return IconButton(
       icon: Icon(
         isCollapsed ? Icons.arrow_forward_ios : Icons.arrow_back_ios,
-        color: Colors.white,
+        color: Colors.black,
       ),
       onPressed: () {
         ref.read(drawerStateProvider.notifier).toggleDrawer();
@@ -132,13 +132,13 @@ class DrawerItem extends ConsumerWidget {
     final isCollapsed = ref.watch(drawerStateProvider);
 
     return ListTile(
-      leading: Icon(icon, color: Colors.white),
+      leading: Icon(icon, color: Colors.black),
       title: AnimatedOpacity(
         opacity: isCollapsed ? 0.0 : 1.0,
         duration: const Duration(milliseconds: 150),
         child: Text(
           title,
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.black),
           overflow: TextOverflow.ellipsis,
         ),
       ),
@@ -171,13 +171,13 @@ class DrawerExpansionItem extends ConsumerWidget {
         dividerColor: Colors.grey,
       ),
       child: ExpansionTile(
-        leading: Icon(icon, color: Colors.white),
+        leading: Icon(icon, color: Colors.black),
         title: AnimatedOpacity(
           opacity: isCollapsed ? 0.0 : 1.0,
           duration: const Duration(milliseconds: 150),
           child: Text(
             title,
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.black),
             overflow: TextOverflow.ellipsis,
           ),
         ),
@@ -215,7 +215,7 @@ class DrawerSubItem extends ConsumerWidget {
     return Column(
       children: [
         ListTile(
-          leading: Icon(icon, color: Colors.white),
+          leading: Icon(icon, color: Colors.black),
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 16, // Adjust padding based on drawer state
           ),
@@ -224,7 +224,7 @@ class DrawerSubItem extends ConsumerWidget {
             duration: const Duration(milliseconds: 150),
             child: Text(
               title,
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.black),
               overflow: TextOverflow.ellipsis,
             ),
           ),
