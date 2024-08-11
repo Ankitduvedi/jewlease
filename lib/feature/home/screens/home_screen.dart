@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/feature/home/drawer/custom_drawer.dart';
@@ -8,6 +10,8 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    log('Home screen rebuild');
+
     return const Scaffold(
       appBar: Appbar(),
       backgroundColor: Color.fromARGB(255, 229, 229, 229),
