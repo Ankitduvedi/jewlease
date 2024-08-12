@@ -1,49 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/feature/home/drawer/custom_drawer.dart';
 
-class CustomDrawerHeader extends StatelessWidget {
-  final bool isColapsed;
-
+class CustomDrawerHeader extends ConsumerWidget {
   const CustomDrawerHeader({
-    Key? key,
-    required this.isColapsed,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isCollapsed = !ref.watch(drawerStateProvider);
     return AnimatedContainer(
       duration: const Duration(milliseconds: 500),
       height: 60,
       width: double.infinity,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Stack(
         children: [
-          const FlutterLogo(size: 30),
-          if (isColapsed) const SizedBox(width: 10),
-          if (isColapsed)
-            const Expanded(
-              flex: 3,
-              child: Text(
-                'FlyCompany',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-                maxLines: 1,
-              ),
+          Align(
+            alignment: Alignment.center,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const FlutterLogo(size: 30),
+                if (isCollapsed) const SizedBox(width: 10),
+                if (isCollapsed)
+                  const Flexible(
+                    child: Text(
+                      'Jewlease',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+              ],
             ),
-          if (isColapsed) const Spacer(),
-          if (isColapsed)
-            Expanded(
-              flex: 1,
-              child: IconButton(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.search,
-                  color: Colors.white,
-                ),
-              ),
-            ),
+          ),
         ],
       ),
     );

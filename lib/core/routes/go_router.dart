@@ -3,7 +3,7 @@ import 'package:jewlease/core/routes/navigation_const.dart';
 import 'package:jewlease/feature/auth/screens/login_screen_owner.dart';
 import 'package:jewlease/feature/auth/screens/login_screen_staff.dart';
 import 'package:jewlease/feature/home/screens/home_screen.dart';
-import 'package:jewlease/feature/home/screens/home_screen_navbar.dart';
+import 'package:jewlease/feature/home/widgets/home_screen_navbar.dart';
 import 'package:jewlease/feature/home/screens/welcome_screen.dart';
 import 'package:jewlease/feature/splas_screen/splash_view.dart';
 

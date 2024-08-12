@@ -48,6 +48,7 @@ dependencies:
   another_flushbar: ^1.12.30
   fluentui_system_icons: ^1.1.251
   firebase_auth: ^4.20.0
+  reorderable_grid_view: ^2.2.6
 
 dev_dependencies:
   flutter_test:

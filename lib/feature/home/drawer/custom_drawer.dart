@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/feature/home/drawer/header.dart';
 
 // StateNotifier for managing the drawer state
 final drawerStateProvider = StateNotifierProvider<DrawerStateNotifier, bool>(
@@ -41,9 +42,11 @@ class CustomDrawer extends StatelessWidget {
             ),
             child: const Column(
               children: [
-                DrawerToggleButton(),
+                CustomDrawerHeader(),
                 Divider(color: Colors.grey),
                 Expanded(child: DrawerList()),
+                Divider(color: Colors.grey),
+                DrawerToggleButton(),
               ],
             ),
           );
