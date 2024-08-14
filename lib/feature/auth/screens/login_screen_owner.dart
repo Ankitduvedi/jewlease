@@ -47,7 +47,7 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
                           height: screenSize.height * 0.43,
                         ), // Placeholder for the image
                         Text(
-                          'Welcome to Reso!',
+                          'Welcome to Jwelease!',
                           style: GoogleFonts.pacifico(
                             fontSize: 28,
                             color: Colors.brown[700],

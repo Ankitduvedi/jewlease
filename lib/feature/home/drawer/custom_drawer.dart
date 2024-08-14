@@ -1,3 +1,5 @@
+import 'package:fluentui_system_icons/fluentui_system_icons.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/feature/home/drawer/header.dart';
@@ -84,11 +86,45 @@ class DrawerList extends StatelessWidget {
     return ListView(
       padding: EdgeInsets.zero,
       children: const [
-        DrawerItem(icon: Icons.home, title: 'Home'),
-        DrawerItem(icon: Icons.calendar_today, title: 'Calendar'),
+        DrawerItem(icon: Icons.dashboard, title: 'Pending Document(Trans)'),
         DrawerExpansionItem(
-          icon: Icons.pin_drop,
-          title: 'Destinations',
+          icon: Icons.currency_rupee,
+          title: 'Rate Updation',
+          subTiles: [
+            DrawerSubItem(
+                icon: Icons.dashboard, title: 'Metal Rate Updation(Filter)'),
+            DrawerSubItem(icon: Icons.dashboard, title: 'Stone Buying Rate'),
+            DrawerSubItem(icon: Icons.dashboard, title: 'Stone Selling Rate'),
+            DrawerSubItem(icon: Icons.dashboard, title: 'Gst Percentage'),
+            DrawerSubItem(icon: Icons.dashboard, title: 'Labour Rate Updation'),
+            DrawerSubItem(
+                icon: Icons.dashboard, title: 'Discount Rate Updation'),
+            DrawerSubItem(
+                icon: Icons.dashboard, title: 'Style(SP) Rate Updation'),
+            DrawerSubItem(
+                icon: Icons.dashboard,
+                title: 'Formula Rate Updation(Style Wastage)'),
+            DrawerSubItem(icon: Icons.dashboard, title: 'OMP Fineness'),
+            DrawerSubItem(icon: Icons.dashboard, title: 'Allowable Discount'),
+          ],
+        ),
+        DrawerExpansionItem(
+          icon: Icons.rule_outlined,
+          title: 'Configurations & Rules',
+          subTiles: [
+            DrawerExpansionItem(
+              icon: Icons.place,
+              title: 'Right,Access & Roles',
+              subTiles: [
+                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
+                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+              ],
+            ),
+          ],
+        ),
+        DrawerExpansionItem(
+          icon: Icons.dashboard,
+          title: 'Mater-POS',
           subTiles: [
             DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
             DrawerSubItem(icon: Icons.park, title: 'Park'),
@@ -102,8 +138,287 @@ class DrawerList extends StatelessWidget {
             ),
           ],
         ),
-        DrawerItem(icon: Icons.message_rounded, title: 'Messages'),
-        DrawerItem(icon: Icons.cloud, title: 'Weather'),
+        DrawerExpansionItem(
+          icon: Icons.dashboard,
+          title: 'Master',
+          subTiles: [
+            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
+            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerExpansionItem(
+              icon: Icons.place,
+              title: 'Places',
+              subTiles: [
+                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
+                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+              ],
+            ),
+          ],
+        ),
+        DrawerExpansionItem(
+          icon: Icons.dashboard,
+          title: 'Procurement',
+          subTiles: [
+            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
+            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerExpansionItem(
+              icon: Icons.place,
+              title: 'Places',
+              subTiles: [
+                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
+                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+              ],
+            ),
+          ],
+        ),
+        DrawerExpansionItem(
+          icon: Icons.dashboard,
+          title: 'Order Management(React)',
+          subTiles: [
+            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
+            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerExpansionItem(
+              icon: Icons.place,
+              title: 'Places',
+              subTiles: [
+                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
+                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+              ],
+            ),
+          ],
+        ),
+        DrawerExpansionItem(
+          icon: Icons.dashboard,
+          title: 'Production',
+          subTiles: [
+            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
+            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerExpansionItem(
+              icon: Icons.place,
+              title: 'Places',
+              subTiles: [
+                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
+                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+              ],
+            ),
+          ],
+        ),
+        DrawerExpansionItem(
+          icon: Icons.dashboard,
+          title: 'Procurement(React)',
+          subTiles: [
+            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
+            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerExpansionItem(
+              icon: Icons.place,
+              title: 'Places',
+              subTiles: [
+                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
+                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+              ],
+            ),
+          ],
+        ),
+        DrawerExpansionItem(
+          icon: Icons.dashboard,
+          title: 'Report',
+          subTiles: [
+            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
+            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerExpansionItem(
+              icon: Icons.place,
+              title: 'Places',
+              subTiles: [
+                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
+                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+              ],
+            ),
+          ],
+        ),
+        DrawerExpansionItem(
+          icon: Icons.dashboard,
+          title: 'Inventory Management(React)',
+          subTiles: [
+            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
+            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerExpansionItem(
+              icon: Icons.place,
+              title: 'Places',
+              subTiles: [
+                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
+                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+              ],
+            ),
+          ],
+        ),
+        DrawerExpansionItem(
+          icon: Icons.request_page_outlined,
+          title: 'Financial Account',
+          subTiles: [
+            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
+            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerExpansionItem(
+              icon: Icons.place,
+              title: 'Places',
+              subTiles: [
+                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
+                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+              ],
+            ),
+          ],
+        ),
+        DrawerExpansionItem(
+          icon: Icons.dashboard,
+          title: 'Accept-Installment(POS)',
+          subTiles: [
+            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
+            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerExpansionItem(
+              icon: Icons.place,
+              title: 'Places',
+              subTiles: [
+                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
+                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+              ],
+            ),
+          ],
+        ),
+        DrawerExpansionItem(
+          icon: Icons.dashboard,
+          title: 'Sales (React)',
+          subTiles: [
+            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
+            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerExpansionItem(
+              icon: Icons.place,
+              title: 'Places',
+              subTiles: [
+                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
+                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+              ],
+            ),
+          ],
+        ),
+        DrawerExpansionItem(
+          icon: Icons.percent_outlined,
+          title: 'Scheme Management',
+          subTiles: [
+            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
+            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerExpansionItem(
+              icon: Icons.place,
+              title: 'Places',
+              subTiles: [
+                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
+                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+              ],
+            ),
+          ],
+        ),
+        DrawerExpansionItem(
+          icon: Icons.dashboard,
+          title: 'Misc Modules/Masters(React)',
+          subTiles: [
+            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
+            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerExpansionItem(
+              icon: Icons.place,
+              title: 'Places',
+              subTiles: [
+                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
+                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+              ],
+            ),
+          ],
+        ),
+        DrawerItem(icon: Icons.calendar_today, title: 'Calendar'),
+        DrawerExpansionItem(
+          icon: Icons.dashboard,
+          title: 'Production Management',
+          subTiles: [
+            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
+            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerExpansionItem(
+              icon: Icons.place,
+              title: 'Places',
+              subTiles: [
+                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
+                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+              ],
+            ),
+          ],
+        ),
+        DrawerExpansionItem(
+          icon: Icons.dashboard,
+          title: 'FG Inventory Management',
+          subTiles: [
+            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
+            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerExpansionItem(
+              icon: Icons.place,
+              title: 'Places',
+              subTiles: [
+                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
+                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+              ],
+            ),
+          ],
+        ),
+        DrawerExpansionItem(
+          icon: Icons.dashboard,
+          title: 'Order Management',
+          subTiles: [
+            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
+            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerExpansionItem(
+              icon: Icons.place,
+              title: 'Places',
+              subTiles: [
+                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
+                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+              ],
+            ),
+          ],
+        ),
+        DrawerExpansionItem(
+          icon: Icons.dashboard,
+          title: 'Point Of Sales',
+          subTiles: [
+            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
+            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerExpansionItem(
+              icon: Icons.place,
+              title: 'Places',
+              subTiles: [
+                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
+                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+              ],
+            ),
+          ],
+        ),
+        DrawerExpansionItem(
+          icon: Icons.dashboard,
+          title: 'Procurement Management',
+          subTiles: [
+            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
+            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerExpansionItem(
+              icon: Icons.place,
+              title: 'Places',
+              subTiles: [
+                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
+                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+              ],
+            ),
+          ],
+        ),
+        DrawerItem(icon: Icons.dashboard, title: 'Loyalty'),
+        DrawerItem(icon: Icons.remove_red_eye, title: 'View Transaction'),
+        DrawerItem(
+            icon: Icons.receipt_long_outlined, title: 'View FA Transaction'),
+        DrawerItem(icon: Icons.dashboard, title: 'Migrations'),
+        DrawerItem(icon: Icons.dashboard, title: 'Formula Procedures'),
+        DrawerItem(icon: Icons.dashboard, title: 'Generic Masters'),
+        DrawerItem(icon: Icons.cloud, title: 'Application Management'),
         DrawerExpansionItem(
           icon: Icons.airplane_ticket,
           title: 'Flights',
@@ -141,7 +456,7 @@ class DrawerItem extends ConsumerWidget {
         duration: const Duration(milliseconds: 150),
         child: Text(
           title,
-          style: const TextStyle(color: Colors.black),
+          style: const TextStyle(color: Colors.black, fontSize: 14),
           overflow: TextOverflow.ellipsis,
         ),
       ),
@@ -179,8 +494,9 @@ class DrawerExpansionItem extends ConsumerWidget {
           opacity: isCollapsed ? 0.0 : 1.0,
           duration: const Duration(milliseconds: 150),
           child: Text(
+            maxLines: 2,
             title,
-            style: const TextStyle(color: Colors.black),
+            style: const TextStyle(color: Colors.black, fontSize: 14),
             overflow: TextOverflow.ellipsis,
           ),
         ),
@@ -227,7 +543,7 @@ class DrawerSubItem extends ConsumerWidget {
             duration: const Duration(milliseconds: 150),
             child: Text(
               title,
-              style: const TextStyle(color: Colors.black),
+              style: const TextStyle(color: Colors.black, fontSize: 14),
               overflow: TextOverflow.ellipsis,
             ),
           ),
