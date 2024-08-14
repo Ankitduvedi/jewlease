@@ -4,72 +4,55 @@ class MasterScreen extends StatefulWidget {
   const MasterScreen({super.key});
 
   @override
-  MasterScreenState createState() => MasterScreenState();
+  _MasterScreenState createState() => _MasterScreenState();
 }
 
-class MasterScreenState extends State<MasterScreen> {
+class _MasterScreenState extends State<MasterScreen> {
   String selectedCategory = 'Style';
 
   // Define different content for each category
-  final Map<String, List<String>> categoryContent = {
-    'Style': ['Style', 'Style(Pcs)', 'Style(Wt)'],
-    'Metal': ['Gold', 'Platinum', 'Silver', 'Bronze'],
-    'Stone': [
-      'Diamond',
-      'Pearl',
-      'Precious Stone',
-      'Semi Precious Stone',
-      'Zircon',
-      'Polki',
-      'Diamond Solitaire'
+  final Map<String, List<Map<String, String>>> categoryContent = {
+    'Style': [
+      {'name': 'Style (Pcs)', 'type': 'Item'},
+      {'name': 'Style (Wt)', 'type': 'Variant'},
     ],
-    'Consumables': ['Consumables(Wt)', 'Consumables-Cts'],
-    'Set': ['Set'],
-    'Certificate': ['Style Certificate', 'Stone Certificate'],
-    'Packing Material': ['Packing Materials'],
+    'Metal': [
+      {'name': 'Gold', 'type': 'Item'},
+      {'name': 'Silver', 'type': 'Variant'},
+    ],
+    // Add other categories as needed...
   };
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Master'),
+        title: const Text('Variant Master (Item Group - Style)'),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
-            onPressed: () {
-              // Handle new action
-            },
+            onPressed: () {},
           ),
           IconButton(
             icon: const Icon(Icons.save),
-            onPressed: () {
-              // Handle save action
-            },
+            onPressed: () {},
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: () {
-              // Handle refresh action
-            },
+            onPressed: () {},
           ),
           IconButton(
             icon: const Icon(Icons.settings),
-            onPressed: () {
-              // Handle settings action
-            },
+            onPressed: () {},
           ),
           IconButton(
             icon: const Icon(Icons.close),
-            onPressed: () {
-              // Handle close action
-            },
+            onPressed: () {},
           ),
         ],
       ),
       body: Column(
         children: [
-          // Header buttons
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Wrap(
@@ -85,10 +68,7 @@ class MasterScreenState extends State<MasterScreen> {
                 // Left panel (Select Master)
                 Expanded(
                   flex: 2,
-                  child: _buildPanel(
-                    'Select Master',
-                    categoryContent[selectedCategory] ?? [],
-                  ),
+                  child: _buildSelectMasterPanel(),
                 ),
                 // Right panel (Select Item or Variant Master)
                 Expanded(
@@ -103,14 +83,29 @@ class MasterScreenState extends State<MasterScreen> {
     );
   }
 
-  // Method to create a panel with dynamic content
-  Widget _buildPanel(
-    String title,
-    List<String> items,
-  ) {
+  Widget _buildHeaderButton(String title) {
+    return ElevatedButton(
+      onPressed: () {
+        setState(() {
+          selectedCategory = title;
+        });
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor:
+            selectedCategory == title ? Colors.blue : Colors.grey[200],
+        foregroundColor:
+            selectedCategory == title ? Colors.white : Colors.black,
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+      child: Text(title),
+    );
+  }
+
+  Widget _buildSelectMasterPanel() {
     return Card(
-      color: Colors.white,
-      elevation: 4,
       margin: const EdgeInsets.all(8.0),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
@@ -118,57 +113,56 @@ class MasterScreenState extends State<MasterScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const Padding(
+            padding: EdgeInsets.all(12.0),
+            child: Text(
+              'Select Master',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
           Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Search',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  borderSide: BorderSide.none,
                 ),
-              ],
+                filled: true,
+                fillColor: Colors.grey[200],
+              ),
             ),
           ),
           const SizedBox(height: 10),
           Expanded(
             child: ListView.builder(
-              itemCount: items.length,
+              itemCount: categoryContent[selectedCategory]?.length ?? 0,
               itemBuilder: (context, index) {
+                final item = categoryContent[selectedCategory]![index];
                 return ListTile(
-                  title: Text(items[index]),
+                  title: Text(item['name']!),
                   trailing: Row(
-                    mainAxisSize: MainAxisSize
-                        .min, // Ensures the Row takes only as much space as needed
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Flexible(
-                        child: TextButton(
-                          onPressed: () {},
-                          child: const Text(
-                            'Item',
-                            style: TextStyle(
-                                color: Colors.green,
-                                fontWeight: FontWeight.w800),
-                          ),
-                        ),
+                      Text(
+                        item['type']!,
+                        style: const TextStyle(color: Colors.green),
                       ),
-                      const SizedBox(width: 8), // Adding space between buttons
-                      Flexible(
-                        child: TextButton(
-                          onPressed: () {},
-                          child: const Text(
-                            'Variant',
-                            style: TextStyle(
-                                color: Colors.green,
-                                fontWeight: FontWeight.w800),
-                          ),
-                        ),
+                      const SizedBox(width: 10),
+                      const Icon(
+                        Icons.arrow_forward_ios,
+                        size: 16,
                       ),
                     ],
                   ),
+                  onTap: () {
+                    // Handle item tap
+                  },
                 );
               },
             ),
@@ -286,27 +280,6 @@ class MasterScreenState extends State<MasterScreen> {
           borderRadius: BorderRadius.circular(8.0),
         ),
       ),
-    );
-  }
-
-  // Method to create header buttons
-  Widget _buildHeaderButton(String title) {
-    return ElevatedButton(
-      onPressed: () {
-        setState(() {
-          selectedCategory = title;
-        });
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: selectedCategory == title ? Colors.blue : Colors.white,
-        foregroundColor:
-            selectedCategory == title ? Colors.white : Colors.black,
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-      ),
-      child: Text(title),
     );
   }
 }
