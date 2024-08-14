@@ -5,6 +5,7 @@ import 'package:jewlease/feature/auth/screens/login_screen_staff.dart';
 import 'package:jewlease/feature/home/screens/home_screen.dart';
 import 'package:jewlease/feature/home/widgets/home_screen_navbar.dart';
 import 'package:jewlease/feature/home/screens/welcome_screen.dart';
+import 'package:jewlease/feature/item_specific/screens/master_screen.dart';
 import 'package:jewlease/feature/splas_screen/splash_view.dart';
 
 final goRouter = GoRouter(
@@ -79,9 +80,9 @@ final goRouter = GoRouter(
             builder: (context, state) => const HomeScreen(),
           ),
           GoRoute(
-              path: '/staff',
+              path: '/masterScreen',
               builder: (context, state) {
-                return const HomeScreen();
+                return const MasterScreen();
               }),
 
           // GoRoute(

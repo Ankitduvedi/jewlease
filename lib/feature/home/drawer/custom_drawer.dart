@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:jewlease/feature/home/drawer/header.dart';
 
 // StateNotifier for managing the drawer state
@@ -83,37 +86,63 @@ class DrawerList extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       padding: EdgeInsets.zero,
-      children: const [
-        DrawerItem(
+      children: [
+        const DrawerItem(
             icon: Icons.dashboard_outlined, title: 'Pending Document(Trans)'),
         DrawerExpansionItem(
           icon: Icons.currency_rupee,
           title: 'Rate Updation',
           subTiles: [
             DrawerSubItem(
-                icon: Icons.dashboard_outlined,
-                title: 'Metal Rate Updation(Filter)'),
+              icon: Icons.dashboard_outlined,
+              title: 'Metal Rate Updation(Filter)',
+              onTap: () {},
+            ),
             DrawerSubItem(
-                icon: Icons.dashboard_outlined, title: 'Stone Buying Rate'),
+              icon: Icons.dashboard_outlined,
+              title: 'Stone Buying Rate',
+              onTap: () {},
+            ),
             DrawerSubItem(
-                icon: Icons.dashboard_outlined, title: 'Stone Selling Rate'),
+              icon: Icons.dashboard_outlined,
+              title: 'Stone Selling Rate',
+              onTap: () {},
+            ),
             DrawerSubItem(
-                icon: Icons.dashboard_outlined, title: 'Gst Percentage'),
+              icon: Icons.dashboard_outlined,
+              title: 'Gst Percentage',
+              onTap: () {},
+            ),
             DrawerSubItem(
-                icon: Icons.dashboard_outlined, title: 'Labour Rate Updation'),
+              icon: Icons.dashboard_outlined,
+              title: 'Labour Rate Updation',
+              onTap: () {},
+            ),
             DrawerSubItem(
-                icon: Icons.dashboard_outlined,
-                title: 'Discount Rate Updation'),
+              icon: Icons.dashboard_outlined,
+              title: 'Discount Rate Updation',
+              onTap: () {},
+            ),
             DrawerSubItem(
-                icon: Icons.dashboard_outlined,
-                title: 'Style(SP) Rate Updation'),
+              icon: Icons.dashboard_outlined,
+              title: 'Style(SP) Rate Updation',
+              onTap: () {},
+            ),
             DrawerSubItem(
-                icon: Icons.dashboard_outlined,
-                title: 'Formula Rate Updation(Style Wastage)'),
+              icon: Icons.dashboard_outlined,
+              title: 'Formula Rate Updation(Style Wastage)',
+              onTap: () {},
+            ),
             DrawerSubItem(
-                icon: Icons.dashboard_outlined, title: 'OMP Fineness'),
+              icon: Icons.dashboard_outlined,
+              title: 'OMP Fineness',
+              onTap: () {},
+            ),
             DrawerSubItem(
-                icon: Icons.dashboard_outlined, title: 'Allowable Discount'),
+              icon: Icons.dashboard_outlined,
+              title: 'Allowable Discount',
+              onTap: () {},
+            ),
           ],
         ),
         DrawerExpansionItem(
@@ -124,8 +153,16 @@ class DrawerList extends StatelessWidget {
               icon: Icons.place,
               title: 'Right,Access & Roles',
               subTiles: [
-                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
-                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+                DrawerSubItem(
+                  icon: Icons.museum,
+                  title: 'Museum',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.local_florist,
+                  title: 'Garden',
+                  onTap: () {},
+                ),
               ],
             ),
           ],
@@ -134,14 +171,30 @@ class DrawerList extends StatelessWidget {
           icon: Icons.dashboard_outlined,
           title: 'Mater-POS',
           subTiles: [
-            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
-            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerSubItem(
+              icon: Icons.beach_access,
+              title: 'Beach',
+              onTap: () {},
+            ),
+            DrawerSubItem(
+              icon: Icons.park,
+              title: 'Park',
+              onTap: () {},
+            ),
             DrawerExpansionItem(
               icon: Icons.place,
               title: 'Places',
               subTiles: [
-                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
-                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+                DrawerSubItem(
+                  icon: Icons.museum,
+                  title: 'Museum',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.local_florist,
+                  title: 'Garden',
+                  onTap: () {},
+                ),
               ],
             ),
           ],
@@ -154,36 +207,78 @@ class DrawerList extends StatelessWidget {
               icon: Icons.dashboard_outlined,
               title: 'Company Specific',
               subTiles: [
-                DrawerSubItem(icon: Icons.museum_outlined, title: 'Company'),
                 DrawerSubItem(
-                    icon: Icons.location_on_outlined, title: 'Location'),
+                  icon: Icons.museum_outlined,
+                  title: 'Company',
+                  onTap: () {},
+                ),
                 DrawerSubItem(
-                    icon: Icons.dashboard_outlined, title: 'Financial Year'),
-                DrawerSubItem(icon: Icons.currency_rupee, title: 'Currency'),
+                  icon: Icons.location_on_outlined,
+                  title: 'Location',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.dashboard_outlined,
+                  title: 'Financial Year',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.currency_rupee,
+                  title: 'Currency',
+                  onTap: () {},
+                ),
               ],
             ),
             DrawerExpansionItem(
               icon: Icons.dashboard_outlined,
               title: 'Party Specific',
               subTiles: [
-                DrawerSubItem(icon: Icons.museum_outlined, title: 'Company'),
                 DrawerSubItem(
-                    icon: Icons.location_on_outlined, title: 'Location'),
+                  icon: Icons.museum_outlined,
+                  title: 'Company',
+                  onTap: () {},
+                ),
                 DrawerSubItem(
-                    icon: Icons.dashboard_outlined, title: 'Financial Year'),
-                DrawerSubItem(icon: Icons.currency_rupee, title: 'Currency'),
+                  icon: Icons.location_on_outlined,
+                  title: 'Location',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.dashboard_outlined,
+                  title: 'Financial Year',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.currency_rupee,
+                  title: 'Currency',
+                  onTap: () {},
+                ),
               ],
             ),
             DrawerExpansionItem(
               icon: Icons.dashboard_outlined,
               title: 'Attribute Specific',
               subTiles: [
-                DrawerSubItem(icon: Icons.museum_outlined, title: 'Company'),
                 DrawerSubItem(
-                    icon: Icons.location_on_outlined, title: 'Location'),
+                  icon: Icons.museum_outlined,
+                  title: 'Company',
+                  onTap: () {},
+                ),
                 DrawerSubItem(
-                    icon: Icons.dashboard_outlined, title: 'Financial Year'),
-                DrawerSubItem(icon: Icons.currency_rupee, title: 'Currency'),
+                  icon: Icons.location_on_outlined,
+                  title: 'Location',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.dashboard_outlined,
+                  title: 'Financial Year',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.currency_rupee,
+                  title: 'Currency',
+                  onTap: () {},
+                ),
               ],
             ),
             DrawerExpansionItem(
@@ -191,11 +286,18 @@ class DrawerList extends StatelessWidget {
               title: 'Item Specific',
               subTiles: [
                 DrawerSubItem(
-                    icon: Icons.museum_outlined,
-                    title: 'Jwellery Specific Master'),
+                  icon: Icons.museum_outlined,
+                  title: 'Jwellery Specific Master',
+                  onTap: () {},
+                ),
                 DrawerSubItem(
-                    icon: Icons.location_on_outlined,
-                    title: 'Item Master & Variant'),
+                  icon: Icons.location_on_outlined,
+                  title: 'Item Master & Variant',
+                  onTap: () {
+                    log('button tapped');
+                    context.push('/masterScreen');
+                  },
+                ),
               ],
             ),
           ],
@@ -204,14 +306,30 @@ class DrawerList extends StatelessWidget {
           icon: Icons.dashboard_outlined,
           title: 'Procurement',
           subTiles: [
-            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
-            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerSubItem(
+              icon: Icons.beach_access,
+              title: 'Beach',
+              onTap: () {},
+            ),
+            DrawerSubItem(
+              icon: Icons.park,
+              title: 'Park',
+              onTap: () {},
+            ),
             DrawerExpansionItem(
               icon: Icons.place,
               title: 'Places',
               subTiles: [
-                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
-                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+                DrawerSubItem(
+                  icon: Icons.museum,
+                  title: 'Museum',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.local_florist,
+                  title: 'Garden',
+                  onTap: () {},
+                ),
               ],
             ),
           ],
@@ -220,14 +338,30 @@ class DrawerList extends StatelessWidget {
           icon: Icons.dashboard_outlined,
           title: 'Order Management(React)',
           subTiles: [
-            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
-            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerSubItem(
+              icon: Icons.beach_access,
+              title: 'Beach',
+              onTap: () {},
+            ),
+            DrawerSubItem(
+              icon: Icons.park,
+              title: 'Park',
+              onTap: () {},
+            ),
             DrawerExpansionItem(
               icon: Icons.place,
               title: 'Places',
               subTiles: [
-                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
-                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+                DrawerSubItem(
+                  icon: Icons.museum,
+                  title: 'Museum',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.local_florist,
+                  title: 'Garden',
+                  onTap: () {},
+                ),
               ],
             ),
           ],
@@ -236,14 +370,30 @@ class DrawerList extends StatelessWidget {
           icon: Icons.dashboard_outlined,
           title: 'Production',
           subTiles: [
-            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
-            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerSubItem(
+              icon: Icons.beach_access,
+              title: 'Beach',
+              onTap: () {},
+            ),
+            DrawerSubItem(
+              icon: Icons.park,
+              title: 'Park',
+              onTap: () {},
+            ),
             DrawerExpansionItem(
               icon: Icons.place,
               title: 'Places',
               subTiles: [
-                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
-                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+                DrawerSubItem(
+                  icon: Icons.museum,
+                  title: 'Museum',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.local_florist,
+                  title: 'Garden',
+                  onTap: () {},
+                ),
               ],
             ),
           ],
@@ -252,14 +402,30 @@ class DrawerList extends StatelessWidget {
           icon: Icons.dashboard_outlined,
           title: 'Procurement(React)',
           subTiles: [
-            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
-            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerSubItem(
+              icon: Icons.beach_access,
+              title: 'Beach',
+              onTap: () {},
+            ),
+            DrawerSubItem(
+              icon: Icons.park,
+              title: 'Park',
+              onTap: () {},
+            ),
             DrawerExpansionItem(
               icon: Icons.place,
               title: 'Places',
               subTiles: [
-                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
-                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+                DrawerSubItem(
+                  icon: Icons.museum,
+                  title: 'Museum',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.local_florist,
+                  title: 'Garden',
+                  onTap: () {},
+                ),
               ],
             ),
           ],
@@ -268,14 +434,30 @@ class DrawerList extends StatelessWidget {
           icon: Icons.dashboard_outlined,
           title: 'Report',
           subTiles: [
-            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
-            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerSubItem(
+              icon: Icons.beach_access,
+              title: 'Beach',
+              onTap: () {},
+            ),
+            DrawerSubItem(
+              icon: Icons.park,
+              title: 'Park',
+              onTap: () {},
+            ),
             DrawerExpansionItem(
               icon: Icons.place,
               title: 'Places',
               subTiles: [
-                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
-                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+                DrawerSubItem(
+                  icon: Icons.museum,
+                  title: 'Museum',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.local_florist,
+                  title: 'Garden',
+                  onTap: () {},
+                ),
               ],
             ),
           ],
@@ -284,14 +466,30 @@ class DrawerList extends StatelessWidget {
           icon: Icons.dashboard_outlined,
           title: 'Inventory Management(React)',
           subTiles: [
-            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
-            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerSubItem(
+              icon: Icons.beach_access,
+              title: 'Beach',
+              onTap: () {},
+            ),
+            DrawerSubItem(
+              icon: Icons.park,
+              title: 'Park',
+              onTap: () {},
+            ),
             DrawerExpansionItem(
               icon: Icons.place,
               title: 'Places',
               subTiles: [
-                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
-                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+                DrawerSubItem(
+                  icon: Icons.museum,
+                  title: 'Museum',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.local_florist,
+                  title: 'Garden',
+                  onTap: () {},
+                ),
               ],
             ),
           ],
@@ -300,14 +498,30 @@ class DrawerList extends StatelessWidget {
           icon: Icons.request_page_outlined,
           title: 'Financial Account',
           subTiles: [
-            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
-            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerSubItem(
+              icon: Icons.beach_access,
+              title: 'Beach',
+              onTap: () {},
+            ),
+            DrawerSubItem(
+              icon: Icons.park,
+              title: 'Park',
+              onTap: () {},
+            ),
             DrawerExpansionItem(
               icon: Icons.place,
               title: 'Places',
               subTiles: [
-                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
-                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+                DrawerSubItem(
+                  icon: Icons.museum,
+                  title: 'Museum',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.local_florist,
+                  title: 'Garden',
+                  onTap: () {},
+                ),
               ],
             ),
           ],
@@ -316,14 +530,30 @@ class DrawerList extends StatelessWidget {
           icon: Icons.dashboard_outlined,
           title: 'Accept-Installment(POS)',
           subTiles: [
-            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
-            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerSubItem(
+              icon: Icons.beach_access,
+              title: 'Beach',
+              onTap: () {},
+            ),
+            DrawerSubItem(
+              icon: Icons.park,
+              title: 'Park',
+              onTap: () {},
+            ),
             DrawerExpansionItem(
               icon: Icons.place,
               title: 'Places',
               subTiles: [
-                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
-                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+                DrawerSubItem(
+                  icon: Icons.museum,
+                  title: 'Museum',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.local_florist,
+                  title: 'Garden',
+                  onTap: () {},
+                ),
               ],
             ),
           ],
@@ -332,14 +562,30 @@ class DrawerList extends StatelessWidget {
           icon: Icons.dashboard_outlined,
           title: 'Sales (React)',
           subTiles: [
-            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
-            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerSubItem(
+              icon: Icons.beach_access,
+              title: 'Beach',
+              onTap: () {},
+            ),
+            DrawerSubItem(
+              icon: Icons.park,
+              title: 'Park',
+              onTap: () {},
+            ),
             DrawerExpansionItem(
               icon: Icons.place,
               title: 'Places',
               subTiles: [
-                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
-                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+                DrawerSubItem(
+                  icon: Icons.museum,
+                  title: 'Museum',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.local_florist,
+                  title: 'Garden',
+                  onTap: () {},
+                ),
               ],
             ),
           ],
@@ -348,14 +594,30 @@ class DrawerList extends StatelessWidget {
           icon: Icons.percent_outlined,
           title: 'Scheme Management',
           subTiles: [
-            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
-            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerSubItem(
+              icon: Icons.beach_access,
+              title: 'Beach',
+              onTap: () {},
+            ),
+            DrawerSubItem(
+              icon: Icons.park,
+              title: 'Park',
+              onTap: () {},
+            ),
             DrawerExpansionItem(
               icon: Icons.place,
               title: 'Places',
               subTiles: [
-                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
-                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+                DrawerSubItem(
+                  icon: Icons.museum,
+                  title: 'Museum',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.local_florist,
+                  title: 'Garden',
+                  onTap: () {},
+                ),
               ],
             ),
           ],
@@ -364,31 +626,63 @@ class DrawerList extends StatelessWidget {
           icon: Icons.dashboard_outlined,
           title: 'Misc Modules/Masters(React)',
           subTiles: [
-            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
-            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerSubItem(
+              icon: Icons.beach_access,
+              title: 'Beach',
+              onTap: () {},
+            ),
+            DrawerSubItem(
+              icon: Icons.park,
+              title: 'Park',
+              onTap: () {},
+            ),
             DrawerExpansionItem(
               icon: Icons.place,
               title: 'Places',
               subTiles: [
-                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
-                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+                DrawerSubItem(
+                  icon: Icons.museum,
+                  title: 'Museum',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.local_florist,
+                  title: 'Garden',
+                  onTap: () {},
+                ),
               ],
             ),
           ],
         ),
-        DrawerItem(icon: Icons.calendar_today, title: 'Calendar'),
+        const DrawerItem(icon: Icons.calendar_today, title: 'Calendar'),
         DrawerExpansionItem(
           icon: Icons.dashboard_outlined,
           title: 'Production Management',
           subTiles: [
-            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
-            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerSubItem(
+              icon: Icons.beach_access,
+              title: 'Beach',
+              onTap: () {},
+            ),
+            DrawerSubItem(
+              icon: Icons.park,
+              title: 'Park',
+              onTap: () {},
+            ),
             DrawerExpansionItem(
               icon: Icons.place,
               title: 'Places',
               subTiles: [
-                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
-                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+                DrawerSubItem(
+                  icon: Icons.museum,
+                  title: 'Museum',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.local_florist,
+                  title: 'Garden',
+                  onTap: () {},
+                ),
               ],
             ),
           ],
@@ -397,14 +691,30 @@ class DrawerList extends StatelessWidget {
           icon: Icons.dashboard_outlined,
           title: 'FG Inventory Management',
           subTiles: [
-            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
-            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerSubItem(
+              icon: Icons.beach_access,
+              title: 'Beach',
+              onTap: () {},
+            ),
+            DrawerSubItem(
+              icon: Icons.park,
+              title: 'Park',
+              onTap: () {},
+            ),
             DrawerExpansionItem(
               icon: Icons.place,
               title: 'Places',
               subTiles: [
-                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
-                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+                DrawerSubItem(
+                  icon: Icons.museum,
+                  title: 'Museum',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.local_florist,
+                  title: 'Garden',
+                  onTap: () {},
+                ),
               ],
             ),
           ],
@@ -413,14 +723,30 @@ class DrawerList extends StatelessWidget {
           icon: Icons.dashboard_outlined,
           title: 'Order Management',
           subTiles: [
-            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
-            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerSubItem(
+              icon: Icons.beach_access,
+              title: 'Beach',
+              onTap: () {},
+            ),
+            DrawerSubItem(
+              icon: Icons.park,
+              title: 'Park',
+              onTap: () {},
+            ),
             DrawerExpansionItem(
               icon: Icons.place,
               title: 'Places',
               subTiles: [
-                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
-                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+                DrawerSubItem(
+                  icon: Icons.museum,
+                  title: 'Museum',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.local_florist,
+                  title: 'Garden',
+                  onTap: () {},
+                ),
               ],
             ),
           ],
@@ -429,14 +755,30 @@ class DrawerList extends StatelessWidget {
           icon: Icons.dashboard_outlined,
           title: 'Point Of Sales',
           subTiles: [
-            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
-            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerSubItem(
+              icon: Icons.beach_access,
+              title: 'Beach',
+              onTap: () {},
+            ),
+            DrawerSubItem(
+              icon: Icons.park,
+              title: 'Park',
+              onTap: () {},
+            ),
             DrawerExpansionItem(
               icon: Icons.place,
               title: 'Places',
               subTiles: [
-                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
-                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+                DrawerSubItem(
+                  icon: Icons.museum,
+                  title: 'Museum',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.local_florist,
+                  title: 'Garden',
+                  onTap: () {},
+                ),
               ],
             ),
           ],
@@ -445,36 +787,62 @@ class DrawerList extends StatelessWidget {
           icon: Icons.dashboard_outlined,
           title: 'Procurement Management',
           subTiles: [
-            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
-            DrawerSubItem(icon: Icons.park, title: 'Park'),
+            DrawerSubItem(
+              icon: Icons.beach_access,
+              title: 'Beach',
+              onTap: () {},
+            ),
+            DrawerSubItem(
+              icon: Icons.park,
+              title: 'Park',
+              onTap: () {},
+            ),
             DrawerExpansionItem(
               icon: Icons.place,
               title: 'Places',
               subTiles: [
-                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
-                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+                DrawerSubItem(
+                  icon: Icons.museum,
+                  title: 'Museum',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.local_florist,
+                  title: 'Garden',
+                  onTap: () {},
+                ),
               ],
             ),
           ],
         ),
-        DrawerItem(icon: Icons.dashboard_outlined, title: 'Loyalty'),
-        DrawerItem(icon: Icons.remove_red_eye, title: 'View Transaction'),
-        DrawerItem(
+        const DrawerItem(icon: Icons.dashboard_outlined, title: 'Loyalty'),
+        const DrawerItem(icon: Icons.remove_red_eye, title: 'View Transaction'),
+        const DrawerItem(
             icon: Icons.receipt_long_outlined, title: 'View FA Transaction'),
-        DrawerItem(icon: Icons.dashboard_outlined, title: 'Migrations'),
-        DrawerItem(icon: Icons.dashboard_outlined, title: 'Formula Procedures'),
-        DrawerItem(icon: Icons.dashboard_outlined, title: 'Generic Masters'),
-        DrawerItem(icon: Icons.cloud, title: 'Application Management'),
+        const DrawerItem(icon: Icons.dashboard_outlined, title: 'Migrations'),
+        const DrawerItem(
+            icon: Icons.dashboard_outlined, title: 'Formula Procedures'),
+        const DrawerItem(
+            icon: Icons.dashboard_outlined, title: 'Generic Masters'),
+        const DrawerItem(icon: Icons.cloud, title: 'Application Management'),
         DrawerExpansionItem(
           icon: Icons.airplane_ticket,
           title: 'Flights',
           subTiles: [
-            DrawerSubItem(icon: Icons.flight_takeoff, title: 'Departure'),
-            DrawerSubItem(icon: Icons.flight_land, title: 'Arrival'),
+            DrawerSubItem(
+              icon: Icons.flight_takeoff,
+              title: 'Departure',
+              onTap: () {},
+            ),
+            DrawerSubItem(
+              icon: Icons.flight_land,
+              title: 'Arrival',
+              onTap: () {},
+            ),
           ],
         ),
-        DrawerItem(icon: Icons.notifications, title: 'Notifications'),
-        DrawerItem(icon: Icons.settings, title: 'Settings'),
+        const DrawerItem(icon: Icons.notifications, title: 'Notifications'),
+        const DrawerItem(icon: Icons.settings, title: 'Settings'),
       ],
     );
   }
@@ -566,11 +934,13 @@ class DrawerExpansionItem extends ConsumerWidget {
 class DrawerSubItem extends ConsumerWidget {
   final IconData icon;
   final String title;
+  final Function onTap;
 
   const DrawerSubItem({
     super.key,
     required this.icon,
     required this.title,
+    required this.onTap,
   });
 
   @override
@@ -594,7 +964,7 @@ class DrawerSubItem extends ConsumerWidget {
             ),
           ),
           onTap: () {
-            // Handle sub-tile tap
+            onTap();
           },
         ),
         //const Divider(color: Colors.grey),
