@@ -1,5 +1,3 @@
-import 'package:fluentui_system_icons/fluentui_system_icons.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/feature/home/drawer/header.dart';
@@ -33,7 +31,7 @@ class CustomDrawer extends StatelessWidget {
           final isCollapsed = ref.watch(drawerStateProvider);
           return AnimatedContainer(
             duration: const Duration(milliseconds: 300),
-            width: isCollapsed ? 70 : 250,
+            width: isCollapsed ? 70 : 300,
             margin: const EdgeInsets.only(bottom: 10, top: 10),
             decoration: const BoxDecoration(
               borderRadius: BorderRadius.only(
@@ -86,26 +84,36 @@ class DrawerList extends StatelessWidget {
     return ListView(
       padding: EdgeInsets.zero,
       children: const [
-        DrawerItem(icon: Icons.dashboard, title: 'Pending Document(Trans)'),
+        DrawerItem(
+            icon: Icons.dashboard_outlined, title: 'Pending Document(Trans)'),
         DrawerExpansionItem(
           icon: Icons.currency_rupee,
           title: 'Rate Updation',
           subTiles: [
             DrawerSubItem(
-                icon: Icons.dashboard, title: 'Metal Rate Updation(Filter)'),
-            DrawerSubItem(icon: Icons.dashboard, title: 'Stone Buying Rate'),
-            DrawerSubItem(icon: Icons.dashboard, title: 'Stone Selling Rate'),
-            DrawerSubItem(icon: Icons.dashboard, title: 'Gst Percentage'),
-            DrawerSubItem(icon: Icons.dashboard, title: 'Labour Rate Updation'),
+                icon: Icons.dashboard_outlined,
+                title: 'Metal Rate Updation(Filter)'),
             DrawerSubItem(
-                icon: Icons.dashboard, title: 'Discount Rate Updation'),
+                icon: Icons.dashboard_outlined, title: 'Stone Buying Rate'),
             DrawerSubItem(
-                icon: Icons.dashboard, title: 'Style(SP) Rate Updation'),
+                icon: Icons.dashboard_outlined, title: 'Stone Selling Rate'),
             DrawerSubItem(
-                icon: Icons.dashboard,
+                icon: Icons.dashboard_outlined, title: 'Gst Percentage'),
+            DrawerSubItem(
+                icon: Icons.dashboard_outlined, title: 'Labour Rate Updation'),
+            DrawerSubItem(
+                icon: Icons.dashboard_outlined,
+                title: 'Discount Rate Updation'),
+            DrawerSubItem(
+                icon: Icons.dashboard_outlined,
+                title: 'Style(SP) Rate Updation'),
+            DrawerSubItem(
+                icon: Icons.dashboard_outlined,
                 title: 'Formula Rate Updation(Style Wastage)'),
-            DrawerSubItem(icon: Icons.dashboard, title: 'OMP Fineness'),
-            DrawerSubItem(icon: Icons.dashboard, title: 'Allowable Discount'),
+            DrawerSubItem(
+                icon: Icons.dashboard_outlined, title: 'OMP Fineness'),
+            DrawerSubItem(
+                icon: Icons.dashboard_outlined, title: 'Allowable Discount'),
           ],
         ),
         DrawerExpansionItem(
@@ -123,7 +131,7 @@ class DrawerList extends StatelessWidget {
           ],
         ),
         DrawerExpansionItem(
-          icon: Icons.dashboard,
+          icon: Icons.dashboard_outlined,
           title: 'Mater-POS',
           subTiles: [
             DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
@@ -139,23 +147,61 @@ class DrawerList extends StatelessWidget {
           ],
         ),
         DrawerExpansionItem(
-          icon: Icons.dashboard,
+          icon: Icons.dashboard_outlined,
           title: 'Master',
           subTiles: [
-            DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
-            DrawerSubItem(icon: Icons.park, title: 'Park'),
             DrawerExpansionItem(
-              icon: Icons.place,
-              title: 'Places',
+              icon: Icons.dashboard_outlined,
+              title: 'Company Specific',
               subTiles: [
-                DrawerSubItem(icon: Icons.museum, title: 'Museum'),
-                DrawerSubItem(icon: Icons.local_florist, title: 'Garden'),
+                DrawerSubItem(icon: Icons.museum_outlined, title: 'Company'),
+                DrawerSubItem(
+                    icon: Icons.location_on_outlined, title: 'Location'),
+                DrawerSubItem(
+                    icon: Icons.dashboard_outlined, title: 'Financial Year'),
+                DrawerSubItem(icon: Icons.currency_rupee, title: 'Currency'),
+              ],
+            ),
+            DrawerExpansionItem(
+              icon: Icons.dashboard_outlined,
+              title: 'Party Specific',
+              subTiles: [
+                DrawerSubItem(icon: Icons.museum_outlined, title: 'Company'),
+                DrawerSubItem(
+                    icon: Icons.location_on_outlined, title: 'Location'),
+                DrawerSubItem(
+                    icon: Icons.dashboard_outlined, title: 'Financial Year'),
+                DrawerSubItem(icon: Icons.currency_rupee, title: 'Currency'),
+              ],
+            ),
+            DrawerExpansionItem(
+              icon: Icons.dashboard_outlined,
+              title: 'Attribute Specific',
+              subTiles: [
+                DrawerSubItem(icon: Icons.museum_outlined, title: 'Company'),
+                DrawerSubItem(
+                    icon: Icons.location_on_outlined, title: 'Location'),
+                DrawerSubItem(
+                    icon: Icons.dashboard_outlined, title: 'Financial Year'),
+                DrawerSubItem(icon: Icons.currency_rupee, title: 'Currency'),
+              ],
+            ),
+            DrawerExpansionItem(
+              icon: Icons.dashboard_outlined,
+              title: 'Item Specific',
+              subTiles: [
+                DrawerSubItem(
+                    icon: Icons.museum_outlined,
+                    title: 'Jwellery Specific Master'),
+                DrawerSubItem(
+                    icon: Icons.location_on_outlined,
+                    title: 'Item Master & Variant'),
               ],
             ),
           ],
         ),
         DrawerExpansionItem(
-          icon: Icons.dashboard,
+          icon: Icons.dashboard_outlined,
           title: 'Procurement',
           subTiles: [
             DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
@@ -171,7 +217,7 @@ class DrawerList extends StatelessWidget {
           ],
         ),
         DrawerExpansionItem(
-          icon: Icons.dashboard,
+          icon: Icons.dashboard_outlined,
           title: 'Order Management(React)',
           subTiles: [
             DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
@@ -187,7 +233,7 @@ class DrawerList extends StatelessWidget {
           ],
         ),
         DrawerExpansionItem(
-          icon: Icons.dashboard,
+          icon: Icons.dashboard_outlined,
           title: 'Production',
           subTiles: [
             DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
@@ -203,7 +249,7 @@ class DrawerList extends StatelessWidget {
           ],
         ),
         DrawerExpansionItem(
-          icon: Icons.dashboard,
+          icon: Icons.dashboard_outlined,
           title: 'Procurement(React)',
           subTiles: [
             DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
@@ -219,7 +265,7 @@ class DrawerList extends StatelessWidget {
           ],
         ),
         DrawerExpansionItem(
-          icon: Icons.dashboard,
+          icon: Icons.dashboard_outlined,
           title: 'Report',
           subTiles: [
             DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
@@ -235,7 +281,7 @@ class DrawerList extends StatelessWidget {
           ],
         ),
         DrawerExpansionItem(
-          icon: Icons.dashboard,
+          icon: Icons.dashboard_outlined,
           title: 'Inventory Management(React)',
           subTiles: [
             DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
@@ -267,7 +313,7 @@ class DrawerList extends StatelessWidget {
           ],
         ),
         DrawerExpansionItem(
-          icon: Icons.dashboard,
+          icon: Icons.dashboard_outlined,
           title: 'Accept-Installment(POS)',
           subTiles: [
             DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
@@ -283,7 +329,7 @@ class DrawerList extends StatelessWidget {
           ],
         ),
         DrawerExpansionItem(
-          icon: Icons.dashboard,
+          icon: Icons.dashboard_outlined,
           title: 'Sales (React)',
           subTiles: [
             DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
@@ -315,7 +361,7 @@ class DrawerList extends StatelessWidget {
           ],
         ),
         DrawerExpansionItem(
-          icon: Icons.dashboard,
+          icon: Icons.dashboard_outlined,
           title: 'Misc Modules/Masters(React)',
           subTiles: [
             DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
@@ -332,7 +378,7 @@ class DrawerList extends StatelessWidget {
         ),
         DrawerItem(icon: Icons.calendar_today, title: 'Calendar'),
         DrawerExpansionItem(
-          icon: Icons.dashboard,
+          icon: Icons.dashboard_outlined,
           title: 'Production Management',
           subTiles: [
             DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
@@ -348,7 +394,7 @@ class DrawerList extends StatelessWidget {
           ],
         ),
         DrawerExpansionItem(
-          icon: Icons.dashboard,
+          icon: Icons.dashboard_outlined,
           title: 'FG Inventory Management',
           subTiles: [
             DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
@@ -364,7 +410,7 @@ class DrawerList extends StatelessWidget {
           ],
         ),
         DrawerExpansionItem(
-          icon: Icons.dashboard,
+          icon: Icons.dashboard_outlined,
           title: 'Order Management',
           subTiles: [
             DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
@@ -380,7 +426,7 @@ class DrawerList extends StatelessWidget {
           ],
         ),
         DrawerExpansionItem(
-          icon: Icons.dashboard,
+          icon: Icons.dashboard_outlined,
           title: 'Point Of Sales',
           subTiles: [
             DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
@@ -396,7 +442,7 @@ class DrawerList extends StatelessWidget {
           ],
         ),
         DrawerExpansionItem(
-          icon: Icons.dashboard,
+          icon: Icons.dashboard_outlined,
           title: 'Procurement Management',
           subTiles: [
             DrawerSubItem(icon: Icons.beach_access, title: 'Beach'),
@@ -411,13 +457,13 @@ class DrawerList extends StatelessWidget {
             ),
           ],
         ),
-        DrawerItem(icon: Icons.dashboard, title: 'Loyalty'),
+        DrawerItem(icon: Icons.dashboard_outlined, title: 'Loyalty'),
         DrawerItem(icon: Icons.remove_red_eye, title: 'View Transaction'),
         DrawerItem(
             icon: Icons.receipt_long_outlined, title: 'View FA Transaction'),
-        DrawerItem(icon: Icons.dashboard, title: 'Migrations'),
-        DrawerItem(icon: Icons.dashboard, title: 'Formula Procedures'),
-        DrawerItem(icon: Icons.dashboard, title: 'Generic Masters'),
+        DrawerItem(icon: Icons.dashboard_outlined, title: 'Migrations'),
+        DrawerItem(icon: Icons.dashboard_outlined, title: 'Formula Procedures'),
+        DrawerItem(icon: Icons.dashboard_outlined, title: 'Generic Masters'),
         DrawerItem(icon: Icons.cloud, title: 'Application Management'),
         DrawerExpansionItem(
           icon: Icons.airplane_ticket,
@@ -496,7 +542,7 @@ class DrawerExpansionItem extends ConsumerWidget {
           child: Text(
             maxLines: 2,
             title,
-            style: const TextStyle(color: Colors.black, fontSize: 14),
+            style: const TextStyle(color: Colors.black, fontSize: 13),
             overflow: TextOverflow.ellipsis,
           ),
         ),
