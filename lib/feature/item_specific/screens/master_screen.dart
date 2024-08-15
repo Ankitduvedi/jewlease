@@ -311,9 +311,15 @@ class MasterScreenState extends ConsumerState<MasterScreen> {
                   ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      backgroundColor: const Color.fromARGB(255, 5, 168, 84),
                     ),
-                    child: const Text('View Catalog'),
+                    child: const Text(
+                      'View Catalog',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ],
               ),
@@ -347,9 +353,15 @@ class MasterScreenState extends ConsumerState<MasterScreen> {
                     ElevatedButton(
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 25, 167, 72),
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        backgroundColor: Color.fromARGB(255, 0, 68, 0),
                       ),
-                      child: const Text('Load'),
+                      child: const Text(
+                        'Load',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ],
                 ),
