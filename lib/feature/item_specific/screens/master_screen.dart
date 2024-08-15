@@ -429,11 +429,20 @@ class MasterScreenState extends ConsumerState<MasterScreen> {
         ref.read(masterTypeProvider.notifier).state = [category, null, null];
       },
       style: ElevatedButton.styleFrom(
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         backgroundColor: ref.watch(masterTypeProvider)[0] == category
-            ? Colors.blueAccent
-            : Colors.grey[300],
+            ? const Color.fromARGB(255, 0, 52, 80)
+            : Colors.white,
       ),
-      child: Text(category),
+      child: Text(
+        category,
+        style: TextStyle(
+          color: ref.watch(masterTypeProvider)[0] == category
+              ? Colors.white
+              : Colors.black,
+        ),
+      ),
     );
   }
 }
