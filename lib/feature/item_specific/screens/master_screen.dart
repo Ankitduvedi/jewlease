@@ -247,28 +247,26 @@ class MasterScreenState extends State<MasterScreen> {
             child: Padding(
               padding: const EdgeInsets.all(12.0),
               child: GridView.count(
-                crossAxisCount: 3,
+                crossAxisCount: 4,
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
                 childAspectRatio: 3.5,
                 children: [
                   _buildTextField('Item Type...*'),
                   _buildTextField('Item Group...*'),
-                  _buildTextField('Variant Type...'),
+                  _buildTextField('Variant Name'),
                   _buildTextField('Item Name'),
                   _buildTextField('Old Variant Name'),
                   _buildTextField('Attribute Description'),
+                  _buildTextField('Variant Remark'),
                   _buildTextField('Customer Variant Name'),
-                  _buildTextField('Project / Co...'),
                   ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: const Color.fromARGB(255, 25, 167, 72),
                     ),
                     child: const Text('Load'),
                   ),
-                  _buildTextField('Variant Name'),
-                  _buildTextField('Variant Remark'),
                 ],
               ),
             ),
@@ -281,7 +279,8 @@ class MasterScreenState extends State<MasterScreen> {
   Widget _buildTextField(String hintText) {
     return TextField(
       decoration: InputDecoration(
-        hintText: hintText,
+        labelText: hintText,
+        //hintText: hintText,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
         ),
