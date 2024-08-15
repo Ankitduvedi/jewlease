@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fpdart/fpdart.dart';
 
 // Define a provider to manage the state of the selected master type
 final masterTypeProvider =
@@ -43,6 +44,7 @@ class MasterScreenState extends ConsumerState<MasterScreen> {
     log(masterType.toString());
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Master'),
         actions: [
           IconButton(
@@ -108,7 +110,7 @@ class MasterScreenState extends ConsumerState<MasterScreen> {
                 // Right panel (Select Item or Variant Master)
                 Expanded(
                   flex: 3,
-                  child: _buildSelectItemVariantMasterPanel(masterType[2]),
+                  child: _buildVariantMasterPanel(masterType[2]),
                 ),
               ],
             ),
@@ -136,7 +138,7 @@ class MasterScreenState extends ConsumerState<MasterScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.fromLTRB(20, 12.0, 12, 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -150,6 +152,7 @@ class MasterScreenState extends ConsumerState<MasterScreen> {
               ],
             ),
           ),
+          const Divider(color: Color.fromARGB(160, 158, 158, 158)),
           const SizedBox(height: 10),
           Expanded(
             child: ListView.builder(
@@ -206,20 +209,7 @@ class MasterScreenState extends ConsumerState<MasterScreen> {
     );
   }
 
-  // Modify this method to show different content based on the master type
-  Widget _buildSelectItemVariantMasterPanel(String? masterType) {
-    if (masterType == 'variant master') {
-      return _buildVariantMasterPanel();
-    } else if (masterType == 'item master') {
-      return _buildItemMasterPanel();
-    } else {
-      return const Center(
-        child: Text('Please select a master type.'),
-      );
-    }
-  }
-
-  Widget _buildVariantMasterPanel() {
+  Widget _buildVariantMasterPanel(String? masterType) {
     final masterType = ref.watch(masterTypeProvider);
 
     return Card(
@@ -232,7 +222,7 @@ class MasterScreenState extends ConsumerState<MasterScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
-            padding: EdgeInsets.all(12.0),
+            padding: EdgeInsets.fromLTRB(20, 12, 12, 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -250,143 +240,121 @@ class MasterScreenState extends ConsumerState<MasterScreen> {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: Row(
-              children: [
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green[100],
-                  ),
-                  child: const Text(
-                    'Item Master',
-                    style: TextStyle(color: Colors.black),
-                  ),
+          const Divider(color: Color.fromARGB(160, 158, 158, 158)),
+          if (masterType[2] == null)
+            const Expanded(
+              flex: 2,
+              child: Center(
+                child: Text(
+                  'Select master to load filter',
+                  style: TextStyle(fontStyle: FontStyle.italic),
                 ),
-                const SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue[100],
-                  ),
-                  child: const Text(
-                    'Variant Master',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ),
-                const Spacer(),
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                  ),
-                  child: const Text('View Catalog'),
-                ),
-              ],
+              ),
             ),
-          ),
-          const SizedBox(height: 10),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: GridView.count(
-                crossAxisCount: 4,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                childAspectRatio: 3.5,
+          if (masterType[2] != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12.0, 12, 12, 12),
+              child: Row(
                 children: [
-                  _buildReadOnlyTextField(
-                      'Item Type', masterType[0] ?? 'Item Type'),
-                  _buildReadOnlyTextField(
-                      'Item Group...*', masterType[1] ?? 'Item Group...*'),
-                  _buildTextField('Variant Name'),
-                  _buildTextField('Item Name'),
-                  _buildTextField('Old Variant Name'),
-                  _buildTextField('Attribute Description'),
-                  _buildTextField('Variant Remark'),
-                  _buildTextField('Customer Variant Name'),
+                  ElevatedButton(
+                    onPressed: () {
+                      ref.read(masterTypeProvider.notifier).state = [
+                        masterType[0],
+                        masterType[1],
+                        'item master'
+                      ];
+                    },
+                    style: ElevatedButton.styleFrom(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      backgroundColor: masterType[2] == 'item master'
+                          ? const Color.fromARGB(255, 0, 52, 80)
+                          : Colors.white,
+                    ),
+                    child: Text(
+                      'Item Master',
+                      style: TextStyle(
+                        color: masterType[2] == 'item master'
+                            ? Colors.white
+                            : Colors.black,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      ref.read(masterTypeProvider.notifier).state = [
+                        masterType[0],
+                        masterType[1],
+                        'variant master'
+                      ];
+                    },
+                    style: ElevatedButton.styleFrom(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      backgroundColor: masterType[2] == 'variant master'
+                          ? const Color.fromARGB(255, 0, 52, 80)
+                          : Colors.white,
+                    ),
+                    child: Text(
+                      'Variant Master',
+                      style: TextStyle(
+                        color: masterType[2] == 'variant master'
+                            ? Colors.white
+                            : Colors.black,
+                      ),
+                    ),
+                  ),
+                  const Spacer(),
                   ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 25, 167, 72),
+                      backgroundColor: Colors.green,
                     ),
-                    child: const Text('Load'),
+                    child: const Text('View Catalog'),
                   ),
                 ],
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildItemMasterPanel() {
-    return Card(
-      color: Colors.white,
-      margin: const EdgeInsets.all(8.0),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.all(12.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Item Master Panel',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  'Form HDR ID: 327',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: TextField(
-              decoration: InputDecoration(
-                labelText: 'Enter Item Information',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+          if (masterType[2] != null) const SizedBox(height: 10),
+          if (masterType[2] != null)
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: GridView.count(
+                  crossAxisCount: 4,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  childAspectRatio: 3.5,
+                  children: [
+                    _buildReadOnlyTextField(
+                        'Item Type', masterType[0] ?? 'Item Type'),
+                    _buildReadOnlyTextField(
+                        'Item Group...*', masterType[1] ?? 'Item Group...*'),
+                    if (masterType[2] == 'variant master')
+                      _buildTextField('Variant Name'),
+                    _buildTextField('Item Name'),
+                    if (masterType[2] == 'variant master')
+                      _buildTextField('Old Variant Name'),
+                    if (masterType[2] == 'variant master')
+                      _buildTextField('Attribute Description'),
+                    if (masterType[2] == 'variant master')
+                      _buildTextField('Variant Remark'),
+                    if (masterType[2] == 'variant master')
+                      _buildTextField('Customer Variant Name'),
+                    ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 25, 167, 72),
+                      ),
+                      child: const Text('Load'),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ),
-          // Add more widgets as needed
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: TextField(
-              decoration: InputDecoration(
-                labelText: 'Additional Info',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-            ),
-          ),
-          const Spacer(),
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ElevatedButton(
-                  onPressed: () {},
-                  child: const Text('Submit'),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
