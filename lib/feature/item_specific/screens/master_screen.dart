@@ -1,13 +1,20 @@
-import 'package:flutter/material.dart';
+import 'dart:developer';
 
-class MasterScreen extends StatefulWidget {
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+// Define a provider to manage the state of the selected master type
+final masterTypeProvider =
+    StateProvider<List<String?>>((ref) => ['Style', null, null]);
+
+class MasterScreen extends ConsumerStatefulWidget {
   const MasterScreen({super.key});
 
   @override
   MasterScreenState createState() => MasterScreenState();
 }
 
-class MasterScreenState extends State<MasterScreen> {
+class MasterScreenState extends ConsumerState<MasterScreen> {
   String selectedCategory = 'Style';
 
   // Define different content for each category
@@ -31,6 +38,9 @@ class MasterScreenState extends State<MasterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Access the current value of the master type from the provider
+    final masterType = ref.watch(masterTypeProvider);
+    log(masterType.toString());
     return Scaffold(
       appBar: AppBar(
         title: const Text('Master'),
@@ -50,7 +60,12 @@ class MasterScreenState extends State<MasterScreen> {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
-              // Handle refresh action
+              // Reset the provider value to null on refresh
+              ref.watch(masterTypeProvider.notifier).state = [
+                'Style',
+                null,
+                null
+              ];
             },
           ),
           IconButton(
@@ -87,13 +102,13 @@ class MasterScreenState extends State<MasterScreen> {
                   flex: 2,
                   child: _buildPanel(
                     'Select Master',
-                    categoryContent[selectedCategory] ?? [],
+                    categoryContent[masterType[0]] ?? [],
                   ),
                 ),
                 // Right panel (Select Item or Variant Master)
                 Expanded(
                   flex: 3,
-                  child: _buildSelectItemVariantMasterPanel(),
+                  child: _buildSelectItemVariantMasterPanel(masterType[2]),
                 ),
               ],
             ),
@@ -108,6 +123,8 @@ class MasterScreenState extends State<MasterScreen> {
     String title,
     List<String> items,
   ) {
+    final masterType = ref.watch(masterTypeProvider);
+
     return Card(
       color: Colors.white,
       elevation: 4,
@@ -141,12 +158,17 @@ class MasterScreenState extends State<MasterScreen> {
                 return ListTile(
                   title: Text(items[index]),
                   trailing: Row(
-                    mainAxisSize: MainAxisSize
-                        .min, // Ensures the Row takes only as much space as needed
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Flexible(
                         child: TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            ref.watch(masterTypeProvider.notifier).state = [
+                              masterType[0],
+                              items[index],
+                              'item master'
+                            ];
+                          },
                           child: const Text(
                             'Item',
                             style: TextStyle(
@@ -155,10 +177,16 @@ class MasterScreenState extends State<MasterScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8), // Adding space between buttons
+                      const SizedBox(width: 8),
                       Flexible(
                         child: TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            ref.watch(masterTypeProvider.notifier).state = [
+                              masterType[0],
+                              items[index],
+                              'variant master'
+                            ];
+                          },
                           child: const Text(
                             'Variant',
                             style: TextStyle(
@@ -178,8 +206,24 @@ class MasterScreenState extends State<MasterScreen> {
     );
   }
 
-  Widget _buildSelectItemVariantMasterPanel() {
+  // Modify this method to show different content based on the master type
+  Widget _buildSelectItemVariantMasterPanel(String? masterType) {
+    if (masterType == 'variant master') {
+      return _buildVariantMasterPanel();
+    } else if (masterType == 'item master') {
+      return _buildItemMasterPanel();
+    } else {
+      return const Center(
+        child: Text('Please select a master type.'),
+      );
+    }
+  }
+
+  Widget _buildVariantMasterPanel() {
+    final masterType = ref.watch(masterTypeProvider);
+
     return Card(
+      color: Colors.white,
       margin: const EdgeInsets.all(8.0),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
@@ -252,8 +296,10 @@ class MasterScreenState extends State<MasterScreen> {
                 mainAxisSpacing: 10,
                 childAspectRatio: 3.5,
                 children: [
-                  _buildTextField('Item Type...*'),
-                  _buildTextField('Item Group...*'),
+                  _buildReadOnlyTextField(
+                      'Item Type', masterType[0] ?? 'Item Type'),
+                  _buildReadOnlyTextField(
+                      'Item Group...*', masterType[1] ?? 'Item Group...*'),
                   _buildTextField('Variant Name'),
                   _buildTextField('Item Name'),
                   _buildTextField('Old Variant Name'),
@@ -276,36 +322,118 @@ class MasterScreenState extends State<MasterScreen> {
     );
   }
 
-  Widget _buildTextField(String hintText) {
-    return TextField(
-      decoration: InputDecoration(
-        labelText: hintText,
-        //hintText: hintText,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-        ),
+  Widget _buildItemMasterPanel() {
+    return Card(
+      color: Colors.white,
+      margin: const EdgeInsets.all(8.0),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(12.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Item Master Panel',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'Form HDR ID: 327',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: TextField(
+              decoration: InputDecoration(
+                labelText: 'Enter Item Information',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+            ),
+          ),
+          // Add more widgets as needed
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: TextField(
+              decoration: InputDecoration(
+                labelText: 'Additional Info',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+            ),
+          ),
+          const Spacer(),
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ElevatedButton(
+                  onPressed: () {},
+                  child: const Text('Submit'),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  // Method to create header buttons
-  Widget _buildHeaderButton(String title) {
+  // Utility method to build a text field
+  Widget _buildReadOnlyTextField(String labelText, String hintText) {
+    return TextField(
+        onTap: () {
+          // Prevent any interaction with the text field
+        },
+        //enabled: false,
+        readOnly: true,
+        decoration: InputDecoration(
+          labelText: labelText,
+          hintText: hintText,
+          floatingLabelBehavior:
+              FloatingLabelBehavior.always, // Keeps the label always at the top
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+        ));
+  }
+
+  Widget _buildTextField(String labelText) {
+    return TextField(
+        decoration: InputDecoration(
+      labelText: labelText,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+    ));
+  }
+
+  // Method to build header buttons
+  Widget _buildHeaderButton(String category) {
     return ElevatedButton(
       onPressed: () {
-        setState(() {
-          selectedCategory = title;
-        });
+        // Update the provider value, which automatically triggers UI rebuild
+        ref.read(masterTypeProvider.notifier).state = [category, null, null];
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: selectedCategory == title ? Colors.blue : Colors.white,
-        foregroundColor:
-            selectedCategory == title ? Colors.white : Colors.black,
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        backgroundColor: ref.watch(masterTypeProvider)[0] == category
+            ? Colors.blueAccent
+            : Colors.grey[300],
       ),
-      child: Text(title),
+      child: Text(category),
     );
   }
 }
