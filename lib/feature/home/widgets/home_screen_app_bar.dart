@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/feature/home/drawer/drawer_toogle_button.dart';
 
 class Appbar extends ConsumerWidget implements PreferredSizeWidget {
   const Appbar({super.key});
@@ -15,9 +16,14 @@ class Appbar extends ConsumerWidget implements PreferredSizeWidget {
       backgroundColor: Colors.white,
       automaticallyImplyLeading: false,
       titleSpacing: 0, // Adjust spacing to align the search box
-      title: const Padding(
-        padding: EdgeInsets.only(left: 20),
-        child: Text('Welcome! '),
+      title: Padding(
+        padding: const EdgeInsets.only(left: 2),
+        child: Row(
+          children: [
+            IconButton(onPressed: () {}, icon: const Icon(Icons.home)),
+            const DrawerToggleButton(),
+          ],
+        ),
       ),
       flexibleSpace: Align(
         alignment: Alignment.center,

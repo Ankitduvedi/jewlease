@@ -40,7 +40,7 @@ dependencies:
   firebase_messaging: ^14.7.10
   flutter_riverpod: ^2.5.1
   google_fonts: ^6.2.1
-  go_router: ^14.2.1
+  go_router: 
   flutter_secure_storage: ^9.2.2
   cloud_firestore: 
   fpdart: ^1.1.0

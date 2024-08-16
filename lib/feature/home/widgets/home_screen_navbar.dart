@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:jewlease/feature/home/drawer/custom_drawer.dart';
 import 'package:jewlease/feature/home/widgets/home_screen_app_bar.dart';
 // Import the new widget
@@ -16,6 +17,7 @@ class ScaffoldWithNavBar extends ConsumerStatefulWidget {
 class _ScaffoldWithNavBarState extends ConsumerState<ScaffoldWithNavBar> {
   @override
   Widget build(BuildContext context) {
+    final String currentUrl = GoRouterState.of(context).uri.toString();
     return Scaffold(
       appBar: const Appbar(),
       backgroundColor: const Color.fromARGB(255, 229, 229, 229),

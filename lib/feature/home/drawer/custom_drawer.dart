@@ -3,24 +3,11 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:jewlease/feature/home/controller/home_controller.dart';
+import 'package:jewlease/feature/home/drawer/drawer_expansion_item.dart';
+import 'package:jewlease/feature/home/drawer/drawer_item.dart';
+import 'package:jewlease/feature/home/drawer/drawer_sub_item.dart';
 import 'package:jewlease/feature/home/drawer/header.dart';
-
-// StateNotifier for managing the drawer state
-final drawerStateProvider = StateNotifierProvider<DrawerStateNotifier, bool>(
-  (ref) => DrawerStateNotifier(),
-);
-
-class DrawerStateNotifier extends StateNotifier<bool> {
-  DrawerStateNotifier() : super(true); // Initial state: collapsed
-
-  void toggleDrawer() {
-    state = !state;
-  }
-
-  void expandDrawer() {
-    state = false;
-  }
-}
 
 // Main Drawer Widget
 class CustomDrawer extends StatelessWidget {
@@ -48,32 +35,11 @@ class CustomDrawer extends StatelessWidget {
                 CustomDrawerHeader(),
                 Divider(color: Colors.grey),
                 Expanded(child: DrawerList()),
-                Divider(color: Colors.grey),
-                DrawerToggleButton(),
               ],
             ),
           );
         },
       ),
-    );
-  }
-}
-
-// Separate widget for the toggle button
-class DrawerToggleButton extends ConsumerWidget {
-  const DrawerToggleButton({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isCollapsed = ref.watch(drawerStateProvider);
-    return IconButton(
-      icon: Icon(
-        isCollapsed ? Icons.arrow_forward_ios : Icons.arrow_back_ios,
-        color: Colors.black,
-      ),
-      onPressed: () {
-        ref.read(drawerStateProvider.notifier).toggleDrawer();
-      },
     );
   }
 }
@@ -843,131 +809,6 @@ class DrawerList extends StatelessWidget {
         ),
         const DrawerItem(icon: Icons.notifications, title: 'Notifications'),
         const DrawerItem(icon: Icons.settings, title: 'Settings'),
-      ],
-    );
-  }
-}
-
-// Drawer Item widget
-class DrawerItem extends ConsumerWidget {
-  final IconData icon;
-  final String title;
-
-  const DrawerItem({
-    super.key,
-    required this.icon,
-    required this.title,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isCollapsed = ref.watch(drawerStateProvider);
-
-    return ListTile(
-      leading: Icon(icon, color: Colors.black),
-      title: AnimatedOpacity(
-        opacity: isCollapsed ? 0.0 : 1.0,
-        duration: const Duration(milliseconds: 150),
-        child: Text(
-          title,
-          style: const TextStyle(color: Colors.black, fontSize: 14),
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
-      onTap: () {
-        // Handle tap
-      },
-    );
-  }
-}
-
-// Drawer Expansion Tile widget
-class DrawerExpansionItem extends ConsumerWidget {
-  final IconData icon;
-  final String title;
-  final List<Widget> subTiles;
-
-  const DrawerExpansionItem({
-    super.key,
-    required this.icon,
-    required this.title,
-    required this.subTiles,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isCollapsed = ref.watch(drawerStateProvider);
-
-    return Theme(
-      data: ThemeData(
-        dividerColor: Colors.grey,
-      ),
-      child: ExpansionTile(
-        leading: Icon(icon, color: Colors.black),
-        title: AnimatedOpacity(
-          opacity: isCollapsed ? 0.0 : 1.0,
-          duration: const Duration(milliseconds: 150),
-          child: Text(
-            maxLines: 2,
-            title,
-            style: const TextStyle(color: Colors.black, fontSize: 13),
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        trailing: isCollapsed ? const SizedBox.shrink() : null,
-        onExpansionChanged: (isExpanded) {
-          if (isExpanded && isCollapsed) {
-            ref.read(drawerStateProvider.notifier).expandDrawer();
-          }
-        },
-        tilePadding: const EdgeInsets.symmetric(horizontal: 16.0),
-        childrenPadding: EdgeInsets.symmetric(
-          horizontal: isCollapsed ? 0.0 : 16.0,
-        ),
-        children: subTiles,
-      ),
-    );
-  }
-}
-
-// Drawer Sub Item widget
-class DrawerSubItem extends ConsumerWidget {
-  final IconData icon;
-  final String title;
-  final Function onTap;
-
-  const DrawerSubItem({
-    super.key,
-    required this.icon,
-    required this.title,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isCollapsed = ref.watch(drawerStateProvider);
-
-    return Column(
-      children: [
-        ListTile(
-          leading: Icon(icon, color: Colors.black),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16, // Adjust padding based on drawer state
-          ),
-          title: AnimatedOpacity(
-            opacity: isCollapsed ? 0.0 : 1.0,
-            duration: const Duration(milliseconds: 150),
-            child: Text(
-              title,
-              style: const TextStyle(color: Colors.black, fontSize: 14),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          onTap: () {
-            onTap();
-          },
-        ),
-        //const Divider(color: Colors.grey),
       ],
     );
   }
