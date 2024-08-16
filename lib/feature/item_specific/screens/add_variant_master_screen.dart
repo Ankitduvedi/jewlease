@@ -1,13 +1,41 @@
-import 'package:flutter/material.dart';
+import 'dart:developer';
 
-class AddVariantMasterScreen extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:jewlease/feature/item_specific/controller/item_master_and_variant.dart';
+import 'package:jewlease/feature/item_specific/widgets/app_bar_buttons.dart';
+
+class AddVariantMasterScreen extends ConsumerWidget {
   const AddVariantMasterScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isChecked = ref.watch(checkboxProvider);
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        centerTitle: false,
         title: const Text('Variant Master (Item Group - Gold)'),
+        actions: [
+          AppBarButtons(
+            ontap: [
+              () {},
+              () {},
+              () {
+                // Reset the provider value to null on refresh
+                ref.watch(masterTypeProvider.notifier).state = [
+                  'Style',
+                  null,
+                  null
+                ];
+              },
+              () {}
+            ],
+          )
+        ],
       ),
       body: Row(
         children: [
@@ -31,31 +59,44 @@ class AddVariantMasterScreen extends StatelessWidget {
                   // Form Fields
                   Expanded(
                     child: GridView.count(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 10,
-                      childAspectRatio: 3.5,
+                      crossAxisCount: 4,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 0,
+                      childAspectRatio: 4.5,
                       children: [
-                        _buildFormField('Metal Name...', Icons.search, context),
-                        _buildFormField('Metal Variant Name', null, context),
-                        _buildFormField(
-                            'Base Metal V...', Icons.search, context),
-                        _buildFormField(
-                            'Vendor Name...', Icons.search, context),
-                        _buildFormField('Reorder Qty', null, context),
-                        _buildFormField(
-                            'Used as BOM...', Icons.search, context),
-                        _buildFormField('Verified Status', null, context),
-                        _buildDropdownField('Manual Code Gen', context),
-                        _buildDropdownField('Variant Type...', context),
-                        _buildFormField('Std. Selling Rate', null, context),
-                        _buildFormField('Std. Buying Rate', null, context),
-                        _buildDropdownField('Row Status', context),
+                        _buildFormField('Metal Name...', Icons.search),
+                        _buildFormField('Metal Variant Name', null),
+                        _buildDropdownField(
+                            'Manual Code Gen', context, ['No', 'Yes'], 'No'),
+                        _buildFormField('Variant Type...', Icons.search),
+                        _buildFormField('Base Metal V...', Icons.search),
+                        _buildFormField('Vendor Name...', Icons.search),
+                        _buildNumberInputField('Std.Selling Rate'),
+                        _buildNumberInputField('Std.Buying Rate'),
+                        _buildNumberInputField('Reorder Qty'),
+                        _buildFormField('Used as BOM...', Icons.search),
                         Row(
                           children: [
-                            Checkbox(value: false, onChanged: (bool? value) {}),
-                            Expanded(child: Text('Can Return in Melting')),
+                            Checkbox(
+                              value: isChecked,
+                              onChanged: (bool? value) {
+                                // Update the state when the checkbox is pressed
+                                ref.read(checkboxProvider.notifier).state =
+                                    value!;
+                              },
+                              activeColor: Colors
+                                  .green, // Optional: Set the color of the tick
+                            ),
+                            const Expanded(
+                              child: Text('Can Return in Melting'),
+                            ),
                           ],
+                        ),
+                        _buildDropdownField('Row Status', context,
+                            ['In Active', 'Active'], 'Active'),
+                        _buildFormField(
+                          'Verified Status',
+                          null,
                         ),
                       ],
                     ),
@@ -89,7 +130,7 @@ class AddVariantMasterScreen extends StatelessWidget {
           Expanded(
             flex: 1,
             child: Container(
-              color: Colors.blue[900],
+              color: const Color.fromARGB(255, 0, 52, 80),
               child: const Padding(
                 padding: EdgeInsets.all(16.0),
                 child: Column(
@@ -125,13 +166,18 @@ class AddVariantMasterScreen extends StatelessWidget {
   }
 
   // Method to build a form field with an optional icon
-  Widget _buildFormField(
-      String labelText, IconData? icon, BuildContext context) {
+  Widget _buildFormField(String labelText, IconData? icon,
+      {VoidCallback? onIconPressed}) {
     return TextField(
-      readOnly: true,
+      // Set to true if the field is meant to be non-editable
       decoration: InputDecoration(
         labelText: labelText,
-        suffixIcon: icon != null ? Icon(icon) : null,
+        suffixIcon: icon != null
+            ? IconButton(
+                icon: Icon(icon),
+                onPressed: onIconPressed ?? () {},
+              )
+            : null,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
         ),
@@ -140,21 +186,50 @@ class AddVariantMasterScreen extends StatelessWidget {
   }
 
   // Method to build a dropdown field
-  Widget _buildDropdownField(String labelText, BuildContext context) {
-    return DropdownButtonFormField<String>(
+  Widget _buildDropdownField(String labelText, BuildContext context,
+      List<String> items, String initialValue) {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        highlightColor: Colors.transparent, // Removes the grey color on tap
+        focusColor: Colors.transparent, // Removes the grey color on focus
+      ),
+      child: DropdownButtonFormField<String>(
+        value: initialValue, // Set the default value here
+        decoration: InputDecoration(
+          labelText: labelText,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+        ),
+        items: items
+            .map((option) => DropdownMenuItem(
+                  value: option,
+                  child: Text(option),
+                ))
+            .toList(),
+        onChanged: (value) {
+          // Handle the change here
+        },
+        dropdownColor: Colors.white, // Set the dropdown menu background color
+        style: TextStyle(color: Colors.black), // Text color for dropdown items
+      ),
+    );
+  }
+
+  Widget _buildNumberInputField(String labelText) {
+    return TextField(
+      keyboardType: TextInputType.number,
+      textAlign: TextAlign.right, // Text starts entering from the right
+      inputFormatters: [
+        FilteringTextInputFormatter.digitsOnly, // Only allows digits
+      ],
       decoration: InputDecoration(
         labelText: labelText,
+        hintText: '0',
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
         ),
       ),
-      items: ['Option 1', 'Option 2', 'Option 3']
-          .map((option) => DropdownMenuItem(
-                child: Text(option),
-                value: option,
-              ))
-          .toList(),
-      onChanged: (value) {},
     );
   }
 }

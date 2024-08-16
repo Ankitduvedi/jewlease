@@ -5,7 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant.dart';
 
 class AppBarButtons extends ConsumerWidget {
-  const AppBarButtons({super.key});
+  final List<VoidCallback> ontap;
+  const AppBarButtons({super.key, required this.ontap});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
@@ -22,34 +23,22 @@ class AppBarButtons extends ConsumerWidget {
               label: 'New',
               icon: Icons.add_circle_outline,
               color: Colors.blue,
-              onPressed: () {
-                log('new pressed');
-                context.push('/addVariantMasterScreen');
-              }),
+              onPressed: ontap[0]),
           _buildCustomButton(
               label: 'Save',
               icon: Icons.save_alt,
               color: Colors.green,
-              onPressed: () {
-                log('save pressed');
-              }),
+              onPressed: ontap[1]),
           _buildCustomButton(
               label: 'Refresh',
               icon: Icons.refresh,
               color: Colors.blue,
-              onPressed: () {
-                // Reset the provider value to null on refresh
-                ref.watch(masterTypeProvider.notifier).state = [
-                  'Style',
-                  null,
-                  null
-                ];
-              }),
+              onPressed: ontap[2]),
           _buildCustomButton(
               label: 'Settings',
               icon: Icons.settings,
               color: Colors.grey,
-              onPressed: () {}),
+              onPressed: ontap[3]),
           _buildCustomButton(
               label: 'Back',
               icon: Icons.cancel_outlined,
@@ -129,7 +118,7 @@ class AppBarButtons extends ConsumerWidget {
                     context,
                     label: 'No, Stay',
                     textcolor: Colors.black,
-                    buttoncolor: Color.fromARGB(255, 241, 244, 245),
+                    buttoncolor: const Color.fromARGB(255, 241, 244, 245),
                     onPressed: () {
                       Navigator.of(context).pop(); // Close the dialog
                     },
@@ -138,7 +127,7 @@ class AppBarButtons extends ConsumerWidget {
                     context,
                     label: 'Yes, Close Page',
                     textcolor: Colors.white,
-                    buttoncolor: Color.fromARGB(255, 185, 18, 17),
+                    buttoncolor: const Color.fromARGB(255, 185, 18, 17),
                     onPressed: () {
                       Navigator.of(context).pop(); // Close the dialog
                       context.pop(); // Navigate back to the previous page
