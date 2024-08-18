@@ -5,3 +5,5 @@ Map<String, String> tourMap = {
   "UserProfileScreen2": "C",
   "ChatUser": "D",
 };
+
+String url = 'http://13.239.113.142:3000/';

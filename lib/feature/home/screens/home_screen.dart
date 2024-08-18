@@ -1,14 +1,35 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/feature/home/controller/home_controller.dart';
 import 'package:jewlease/feature/home/widgets/center_tiles_widget.dart';
 import 'package:jewlease/feature/home/widgets/right_tiles.dart';
 
-class HomeScreen extends ConsumerWidget {
+final isOnHomeScreenProvider = StateProvider<bool>((ref) => true);
+
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => HomeScreenState();
+}
+
+class HomeScreenState extends ConsumerState<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    ref.read(isOnHomeScreenProvider.notifier).state = true;
+  }
+
+  @override
+  void dispose() {
+    ref.read(isOnHomeScreenProvider.notifier).state = false;
+    log('leave screen');
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     log('Home screen rebuild');
 
     return Row(

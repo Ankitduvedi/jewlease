@@ -131,6 +131,24 @@ class DrawerList extends StatelessWidget {
                 ),
               ],
             ),
+            DrawerExpansionItem(
+              icon: Icons.place,
+              title: 'Item Specific Rules',
+              subTiles: [
+                DrawerSubItem(
+                  icon: Icons.museum,
+                  title: 'Item Configuration',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.local_florist,
+                  title: 'Item-Attribute Mapping',
+                  onTap: () {
+                    context.go('/itemConfigurationScreen');
+                  },
+                ),
+              ],
+            ),
           ],
         ),
         DrawerExpansionItem(

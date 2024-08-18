@@ -1,5 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+final isOnHomeScreenProvider = StateProvider<bool>((ref) => true);
+final currentRouteProvider = StateProvider<String>((ref) {
+  return '/';
+});
+
 final drawerStateProvider = StateNotifierProvider<DrawerStateNotifier, bool>(
   (ref) => DrawerStateNotifier(),
 );

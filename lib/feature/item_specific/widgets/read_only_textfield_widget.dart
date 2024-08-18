@@ -4,8 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class ReadOnlyTextFieldWidget extends ConsumerWidget {
   final String labelText;
   final String hintText;
+  final IconData? icon;
+  final VoidCallback? onIconPressed;
   const ReadOnlyTextFieldWidget(
-      {super.key, required this.labelText, required this.hintText});
+      {super.key,
+      required this.labelText,
+      required this.hintText,
+      this.icon,
+      this.onIconPressed});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return TextField(
@@ -17,6 +23,12 @@ class ReadOnlyTextFieldWidget extends ConsumerWidget {
         decoration: InputDecoration(
           labelText: labelText,
           hintText: hintText,
+          suffixIcon: icon != null
+              ? IconButton(
+                  icon: Icon(icon),
+                  onPressed: onIconPressed ?? () {},
+                )
+              : null,
           floatingLabelBehavior:
               FloatingLabelBehavior.always, // Keeps the label always at the top
           border: OutlineInputBorder(

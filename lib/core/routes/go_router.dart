@@ -5,6 +5,8 @@ import 'package:jewlease/feature/auth/screens/login_screen_staff.dart';
 import 'package:jewlease/feature/home/screens/home_screen.dart';
 import 'package:jewlease/feature/home/widgets/home_screen_navbar.dart';
 import 'package:jewlease/feature/home/screens/welcome_screen.dart';
+import 'package:jewlease/feature/item_configuration/screens/item_configuration_screen.dart';
+import 'package:jewlease/feature/item_configuration/screens/new_item_configuration_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/add_variant_master_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/master_screen.dart';
 import 'package:jewlease/feature/splas_screen/splash_view.dart';
@@ -90,23 +92,16 @@ final goRouter = GoRouter(
               builder: (context, state) {
                 return const AddVariantMasterScreen();
               }),
-
-          // GoRoute(
-          //   path: '/hotelDetailsScreen/:id',
-          //   builder: (context, state) =>
-          //       HotelDetailsScreen(restaurantId: state.pathParameters['id']!),
-          // ),
-          // GoRoute(
-          //   path: '/createMenuScreen',
-          //   builder: (context, state) {
-          //     return const CreateMenuScreen();
-          //   },
-          //),
-
-          // GoRoute(
-          //   path: '/account',
-          //   builder: (context, state) => const ProfileScreen(),
-          // )
+          GoRoute(
+              path: '/itemConfigurationScreen',
+              builder: (context, state) {
+                return const ItemConfigurationScreen();
+              }),
+          GoRoute(
+              path: '/addItemConfigurtionScreen',
+              builder: (context, state) {
+                return const AddItemConfigurtionScreen();
+              }),
         ]),
   ],
 );
