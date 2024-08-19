@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
 import 'package:jewlease/feature/item_configuration/widgets/custom_app_bar_finder.dart';
+import 'package:jewlease/feature/item_specific/widgets/drop_down_text_field.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
 
 class ItemTypeDialogScreen extends ConsumerStatefulWidget {
@@ -56,22 +57,31 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                       Consumer(
                         builder: (context, ref, child) {
                           final key = ref.watch(dropDownValueProvider);
-                          return DropdownButton<String>(
-                            value: _selectedColumn,
-                            items: key.map((key) {
-                              return DropdownMenuItem<String>(
-                                value: key,
-                                child: Text(key.toUpperCase()),
-                              );
-                            }).toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedColumn = value!;
-                              });
-                            },
+                          return Expanded(
+                            flex: 1,
+                            child: DropDownTextFieldWidget(
+                              initialValue: key[0],
+                              items: key,
+                              labelText: 'Search By Column',
+                            ),
                           );
                         },
                       ),
+                      TextButton.icon(
+                        onPressed: () {},
+                        label: const Text(
+                          'Reload',
+                          style: TextStyle(
+                              color: Color(0xFF346B43),
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500),
+                        ),
+                        icon: const Icon(
+                          weight: 20,
+                          Icons.refresh_rounded,
+                          color: Color(0xFF346B43),
+                        ),
+                      )
                     ],
                   ),
                   const SizedBox(height: 18),
@@ -120,7 +130,7 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
 
                           return DataTable(
                             headingRowColor:
-                                MaterialStateColor.resolveWith((states) {
+                                WidgetStateColor.resolveWith((states) {
                               return const Color.fromARGB(255, 0, 52, 80);
                             }),
                             columns:
