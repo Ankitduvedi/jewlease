@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jewlease/feature/item_configuration/widgets/item_group_widget.dart';
-import 'package:jewlease/feature/item_configuration/widgets/item_type_widget.dart';
+import 'package:jewlease/feature/item_configuration/widgets/item_dailog_widget.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant.dart';
 import 'package:jewlease/feature/item_specific/widgets/app_bar_buttons.dart';
 import 'package:jewlease/feature/item_specific/widgets/read_only_textfield_widget.dart';
@@ -70,7 +69,10 @@ class AddItemConfigurtionScreen extends ConsumerWidget {
                         onIconPressed: () {
                           showDialog(
                             context: context,
-                            builder: (context) => const ItemTypeDialogScreen(),
+                            builder: (context) => const ItemTypeDialogScreen(
+                              title: 'Item Type',
+                              endUrl: 'ItemConfiguration/ItemType/',
+                            ),
                           );
                         },
                       ),
@@ -81,7 +83,10 @@ class AddItemConfigurtionScreen extends ConsumerWidget {
                         onIconPressed: () {
                           showDialog(
                             context: context,
-                            builder: (context) => const ItemGroupDialogScreen(),
+                            builder: (context) => const ItemTypeDialogScreen(
+                              title: 'Item Group',
+                              endUrl: 'ItemConfiguration/ItemGroup/',
+                            ),
                           );
                         },
                       ),
@@ -93,7 +98,10 @@ class AddItemConfigurtionScreen extends ConsumerWidget {
                         onIconPressed: () {
                           showDialog(
                             context: context,
-                            builder: (context) => const ItemTypeDialogScreen(),
+                            builder: (context) => const ItemTypeDialogScreen(
+                              title: 'Item Nature',
+                              endUrl: 'ItemConfiguration/ItemNature/',
+                            ),
                           );
                         },
                       ),
@@ -104,7 +112,10 @@ class AddItemConfigurtionScreen extends ConsumerWidget {
                         onIconPressed: () {
                           showDialog(
                             context: context,
-                            builder: (context) => const ItemTypeDialogScreen(),
+                            builder: (context) => const ItemTypeDialogScreen(
+                              title: 'Stock UOM',
+                              endUrl: 'ItemConfiguration/StockUOM/',
+                            ),
                           );
                         },
                       ),
@@ -116,7 +127,10 @@ class AddItemConfigurtionScreen extends ConsumerWidget {
                         onIconPressed: () {
                           showDialog(
                             context: context,
-                            builder: (context) => const ItemTypeDialogScreen(),
+                            builder: (context) => const ItemTypeDialogScreen(
+                              title: 'Dependent Criteria',
+                              endUrl: 'ItemConfiguration/DependentCriteria/',
+                            ),
                           );
                         },
                       ),
@@ -258,38 +272,6 @@ class AddItemConfigurtionScreen extends ConsumerWidget {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
         ),
-      ),
-    );
-  }
-
-  // Method to build a dropdown field
-  Widget _buildDropdownField(String labelText, BuildContext context,
-      List<String> items, String initialValue) {
-    return Theme(
-      data: Theme.of(context).copyWith(
-        highlightColor: Colors.transparent, // Removes the grey color on tap
-        focusColor: Colors.transparent, // Removes the grey color on focus
-      ),
-      child: DropdownButtonFormField<String>(
-        value: initialValue, // Set the default value here
-        decoration: InputDecoration(
-          labelText: labelText,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-        ),
-        items: items
-            .map((option) => DropdownMenuItem(
-                  value: option,
-                  child: Text(option),
-                ))
-            .toList(),
-        onChanged: (value) {
-          // Handle the change here
-        },
-        dropdownColor: Colors.white, // Set the dropdown menu background color
-        style: const TextStyle(
-            color: Colors.black), // Text color for dropdown items
       ),
     );
   }

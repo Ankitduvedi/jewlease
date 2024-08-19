@@ -6,7 +6,10 @@ import 'package:jewlease/feature/item_specific/widgets/drop_down_text_field.dart
 import 'package:jewlease/providers/dailog_selection_provider.dart';
 
 class ItemTypeDialogScreen extends ConsumerStatefulWidget {
-  const ItemTypeDialogScreen({super.key});
+  const ItemTypeDialogScreen(
+      {super.key, required this.title, required this.endUrl});
+  final String title;
+  final String endUrl;
 
   @override
   ItemTypeDialogScreenState createState() => ItemTypeDialogScreenState();
@@ -21,7 +24,8 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final itemDataAsyncValue = ref.watch(itemTypeFutureProvider);
+    final itemDataAsyncValue = ref.watch(itemTypeFutureProvider(widget.endUrl));
+
     final selectedItem = ref.watch(dialogSelectionProvider);
 
     return Dialog(
@@ -32,7 +36,7 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
         borderRadius: BorderRadius.circular(20.0), // Rounded corners for dialog
         child: Column(
           children: [
-            const CustomAppBarExample(title: 'Item Type'),
+            CustomAppBarExample(title: widget.title),
             Padding(
               padding: const EdgeInsets.all(18.0),
               child: Column(
@@ -68,7 +72,11 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                         },
                       ),
                       TextButton.icon(
-                        onPressed: () {},
+                        onPressed: () {
+                          ref
+                              .read(dialogSelectionProvider.notifier)
+                              .clearSelection(widget.title);
+                        },
                         label: const Text(
                           'Reload',
                           style: TextStyle(
@@ -143,7 +151,7 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                               );
                             }).toList(),
                             rows: _filteredItems.map((item) {
-                              final isSelected = selectedItem['Item Type'] ==
+                              final isSelected = selectedItem[widget.title] ==
                                   item['ConfigValue'];
 
                               return DataRow(
@@ -153,7 +161,7 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                                     ref
                                         .read(dialogSelectionProvider.notifier)
                                         .updateSelection(
-                                            'Item Type', item['ConfigValue']);
+                                            widget.title, item['ConfigValue']);
                                   }
                                 },
                                 cells: _keys
@@ -184,7 +192,7 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                   ElevatedButton(
                     onPressed: () {
                       final selectedItemID =
-                          ref.read(dialogSelectionProvider)['Item Type'];
+                          ref.read(dialogSelectionProvider)[widget.title];
                       if (selectedItemID != null) {
                         // Save the selected item ID to the provider or perform any action you need
                         Navigator.of(context).pop(); // Close the dialog
