@@ -63,10 +63,40 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                           final key = ref.watch(dropDownValueProvider);
                           return Expanded(
                             flex: 1,
-                            child: DropDownTextFieldWidget(
-                              initialValue: key[0],
-                              items: key,
-                              labelText: 'Search By Column',
+                            child: Theme(
+                              data: Theme.of(context).copyWith(
+                                highlightColor: Colors
+                                    .transparent, // Removes the grey color on tap
+                                focusColor: Colors
+                                    .transparent, // Removes the grey color on focus
+                              ),
+                              child: DropdownButtonFormField<String>(
+                                value: key[0], // Set the default value here
+                                decoration: InputDecoration(
+                                  labelText: 'Search By Column',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                ),
+                                items: key
+                                    .map((option) => DropdownMenuItem(
+                                          value: option,
+                                          child: Text(option),
+                                        ))
+                                    .toList(),
+                                onChanged: (value) {
+                                  if (value != null) {
+                                    setState(() {
+                                      _selectedColumn = value;
+                                    });
+                                  }
+                                },
+                                dropdownColor: Colors
+                                    .white, // Set the dropdown menu background color
+                                style: const TextStyle(
+                                    color: Colors
+                                        .black), // Text color for dropdown items
+                              ),
                             ),
                           );
                         },

@@ -14,9 +14,4 @@ class ItemRepository {
     final response = await _dio.get('$url$endUrl');
     return List<Map<String, dynamic>>.from(response.data);
   }
-
-  Future<List<Map<String, dynamic>>> fetchItemGroup() async {
-    final response = await _dio.get('${url}ItemConfiguration/ItemGroup/');
-    return List<Map<String, dynamic>>.from(response.data);
-  }
 }
