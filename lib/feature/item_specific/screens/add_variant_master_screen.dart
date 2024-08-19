@@ -1,12 +1,9 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant.dart';
 import 'package:jewlease/feature/item_specific/widgets/app_bar_buttons.dart';
-import 'package:jewlease/feature/item_specific/widgets/read_only_textfield_widget.dart';
+import 'package:jewlease/feature/item_specific/widgets/drop_down_text_field.dart';
 
 class AddVariantMasterScreen extends ConsumerWidget {
   const AddVariantMasterScreen({super.key});
@@ -67,8 +64,10 @@ class AddVariantMasterScreen extends ConsumerWidget {
                       children: [
                         _buildFormField('Metal Name...', Icons.search),
                         _buildFormField('Metal Variant Name', null),
-                        _buildDropdownField(
-                            'Manual Code Gen', context, ['No', 'Yes'], 'No'),
+                        const DropDownTextFieldWidget(
+                            labelText: 'Manual Code Gen',
+                            items: ['No', 'Yes'],
+                            initialValue: 'No'),
                         _buildFormField('Variant Type...', Icons.search),
                         _buildFormField('Base Metal V...', Icons.search),
                         _buildFormField('Vendor Name...', Icons.search),
@@ -93,8 +92,10 @@ class AddVariantMasterScreen extends ConsumerWidget {
                             ),
                           ],
                         ),
-                        _buildDropdownField('Row Status', context,
-                            ['In Active', 'Active'], 'Active'),
+                        const DropDownTextFieldWidget(
+                            labelText: 'Row Status',
+                            items: ['In Active', 'Active'],
+                            initialValue: 'Active'),
                         _buildFormField(
                           'Verified Status',
                           null,
@@ -186,37 +187,6 @@ class AddVariantMasterScreen extends ConsumerWidget {
     );
   }
   // Method to build a form field with an optional icon
-
-  // Method to build a dropdown field
-  Widget _buildDropdownField(String labelText, BuildContext context,
-      List<String> items, String initialValue) {
-    return Theme(
-      data: Theme.of(context).copyWith(
-        highlightColor: Colors.transparent, // Removes the grey color on tap
-        focusColor: Colors.transparent, // Removes the grey color on focus
-      ),
-      child: DropdownButtonFormField<String>(
-        value: initialValue, // Set the default value here
-        decoration: InputDecoration(
-          labelText: labelText,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-        ),
-        items: items
-            .map((option) => DropdownMenuItem(
-                  value: option,
-                  child: Text(option),
-                ))
-            .toList(),
-        onChanged: (value) {
-          // Handle the change here
-        },
-        dropdownColor: Colors.white, // Set the dropdown menu background color
-        style: TextStyle(color: Colors.black), // Text color for dropdown items
-      ),
-    );
-  }
 
   Widget _buildNumberInputField(String labelText) {
     return TextField(

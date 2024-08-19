@@ -1,8 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
 
-// final dialogSelectionProvider =
-//     StateProvider<Map<String, String?>>((ref) => {});
+final dropDownValueProvider = StateProvider<List<String>>((ref) => ['All']);
 
 class DialogSelectionNotifier extends StateNotifier<Map<String, String?>> {
   DialogSelectionNotifier() : super({'Item Group': null});

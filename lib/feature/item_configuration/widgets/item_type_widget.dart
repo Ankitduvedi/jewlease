@@ -16,6 +16,7 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
   String _selectedColumn = 'All'; // Default column is "All"
 
   List<Map<String, dynamic>> _filteredItems = [];
+  List<String> _keys = []; // List to store the keys from the first item
 
   @override
   Widget build(BuildContext context) {
@@ -30,9 +31,7 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
         borderRadius: BorderRadius.circular(20.0), // Rounded corners for dialog
         child: Column(
           children: [
-            const CustomAppBarExample(
-              title: 'Item Type',
-            ),
+            const CustomAppBarExample(title: 'Item Type'),
             Padding(
               padding: const EdgeInsets.all(18.0),
               child: Column(
@@ -54,39 +53,23 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                         ),
                       ),
                       const SizedBox(width: 10),
-                      DropdownButton<String>(
-                        value: _selectedColumn,
-                        items: const [
-                          DropdownMenuItem(
-                            value: 'All',
-                            child: Text('All'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'ConfigID',
-                            child: Text('CONFIG ID'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'ConfigType',
-                            child: Text('CONFIG TYPE'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'ConfigCode',
-                            child: Text('CONFIG CODE'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'ConfigValue',
-                            child: Text('CONFIG VALUE'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'ConfigRemark1',
-                            child: Text('CONFIG REMARK_1'),
-                          ),
-                          // Add other columns as needed
-                        ],
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedColumn = value!;
-                          });
+                      Consumer(
+                        builder: (context, ref, child) {
+                          final key = ref.watch(dropDownValueProvider);
+                          return DropdownButton<String>(
+                            value: _selectedColumn,
+                            items: key.map((key) {
+                              return DropdownMenuItem<String>(
+                                value: key,
+                                child: Text(key.toUpperCase()),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedColumn = value!;
+                              });
+                            },
+                          );
                         },
                       ),
                     ],
@@ -99,6 +82,22 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                       // Rounded corners for DataTable
                       child: itemDataAsyncValue.when(
                         data: (items) {
+                          if (items.isEmpty) {
+                            return const Center(
+                                child: Text('No data available'));
+                          }
+                          if (items.isNotEmpty && _keys.isEmpty) {
+                            _keys = items.first.keys.toList();
+                            _keys.insert(0, 'All');
+                            Future(
+                              () {
+                                ref.read(dropDownValueProvider.notifier).state =
+                                    _keys;
+                              },
+                            );
+                          }
+
+                          // Update _filteredItems based on search query
                           _filteredItems = items.where((item) {
                             if (_searchQuery.isEmpty) {
                               return true;
@@ -124,43 +123,15 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                                 MaterialStateColor.resolveWith((states) {
                               return const Color.fromARGB(255, 0, 52, 80);
                             }),
-                            columns: const [
-                              DataColumn(
-                                  label: Text(
-                                'CONFIG ID',
-                                style: TextStyle(color: Colors.white),
-                              )),
-                              DataColumn(
-                                  label: Text('CONFIG TYPE',
-                                      style: TextStyle(color: Colors.white))),
-                              DataColumn(
-                                  label: Text('CONFIG CODE',
-                                      style: TextStyle(color: Colors.white))),
-                              DataColumn(
-                                  label: Text('CONFIG VALUE',
-                                      style: TextStyle(color: Colors.white))),
-                              DataColumn(
-                                  label: Text('CONFIG REMARK_1',
-                                      style: TextStyle(color: Colors.white))),
-                              DataColumn(
-                                  label: Text('CONFIG REMARK_2',
-                                      style: TextStyle(color: Colors.white))),
-                              DataColumn(
-                                  label: Text('DepdConfigCode',
-                                      style: TextStyle(color: Colors.white))),
-                              DataColumn(
-                                  label: Text('DepdConfigID',
-                                      style: TextStyle(color: Colors.white))),
-                              DataColumn(
-                                  label: Text('DepdConfigValue',
-                                      style: TextStyle(color: Colors.white))),
-                              DataColumn(
-                                  label: Text('Keywords',
-                                      style: TextStyle(color: Colors.white))),
-                              DataColumn(
-                                  label: Text('RowStatus',
-                                      style: TextStyle(color: Colors.white))),
-                            ],
+                            columns:
+                                _keys.where((key) => key != 'All').map((key) {
+                              return DataColumn(
+                                label: Text(
+                                  key.toUpperCase(),
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              );
+                            }).toList(),
                             rows: _filteredItems.map((item) {
                               final isSelected = selectedItem['Item Type'] ==
                                   item['ConfigValue'];
@@ -175,28 +146,20 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                                             'Item Type', item['ConfigValue']);
                                   }
                                 },
-                                cells: [
-                                  DataCell(Text(item['ConfigID'].toString())),
-                                  DataCell(Text(item['ConfigType'] ?? '')),
-                                  DataCell(Text(item['ConfigCode'] ?? '')),
-                                  DataCell(Text(item['ConfigValue'] ?? '')),
-                                  DataCell(Text(item['ConfigRemark1'] ?? '')),
-                                  DataCell(Text(item['ConfigRemark2'] ?? '')),
-                                  DataCell(Text(item['DepdConfigCode'] ?? '')),
-                                  DataCell(Text(item['DepdConfigID'] ?? '')),
-                                  DataCell(Text(item['DepdConfigValue'] ?? '')),
-                                  DataCell(Text(item['Keywords'] ?? '')),
-                                  DataCell(Text(item['RowStatus'] ?? '')),
-                                ],
+                                cells: _keys
+                                    .where((key) => key != 'All')
+                                    .map((key) {
+                                  return DataCell(
+                                      Text(item[key]?.toString() ?? ''));
+                                }).toList(),
                               );
                             }).toList(),
                           );
                         },
                         loading: () =>
                             const Center(child: CircularProgressIndicator()),
-                        error: (error, stackTrace) => Center(
-                          child: Text('Error: $error'),
-                        ),
+                        error: (error, stackTrace) =>
+                            Center(child: Text('Error: $error')),
                       ),
                     ),
                   ),
