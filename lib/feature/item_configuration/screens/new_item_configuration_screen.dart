@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/feature/item_configuration/widgets/item_group_widget.dart';
 import 'package:jewlease/feature/item_configuration/widgets/item_type_widget.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant.dart';
 import 'package:jewlease/feature/item_specific/widgets/app_bar_buttons.dart';
@@ -69,24 +70,56 @@ class AddItemConfigurtionScreen extends ConsumerWidget {
                         onIconPressed: () {
                           showDialog(
                             context: context,
-                            builder: (context) => const ItemDialogScreen(),
+                            builder: (context) => const ItemTypeDialogScreen(),
                           );
                         },
                       ),
-                      _buildFormField(
-                        'Item Type',
-                        Icons.search,
+                      ReadOnlyTextFieldWidget(
+                        hintText: textFieldvalues['Item Group'] ?? 'Item Group',
+                        labelText: 'Item Group',
+                        icon: Icons.search,
                         onIconPressed: () {
                           showDialog(
                             context: context,
-                            builder: (context) => const ItemDialogScreen(),
+                            builder: (context) => const ItemGroupDialogScreen(),
                           );
                         },
                       ),
-                      _buildFormField('Item Group', Icons.search),
-                      _buildFormField('Item Nature', Icons.search),
-                      _buildFormField('Stock UOM...', Icons.search),
-                      _buildFormField('Dependent Cr...', Icons.search),
+                      ReadOnlyTextFieldWidget(
+                        hintText:
+                            textFieldvalues['Item Nature'] ?? 'Item Nature',
+                        labelText: 'Item Nature',
+                        icon: Icons.search,
+                        onIconPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => const ItemTypeDialogScreen(),
+                          );
+                        },
+                      ),
+                      ReadOnlyTextFieldWidget(
+                        hintText: textFieldvalues['Stock UOM'] ?? 'Stock UOM',
+                        labelText: 'Stock UOM',
+                        icon: Icons.search,
+                        onIconPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => const ItemTypeDialogScreen(),
+                          );
+                        },
+                      ),
+                      ReadOnlyTextFieldWidget(
+                        hintText:
+                            textFieldvalues['Dependent Cr'] ?? 'Dependent Cr',
+                        labelText: 'Dependent Cr',
+                        icon: Icons.search,
+                        onIconPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => const ItemTypeDialogScreen(),
+                          );
+                        },
+                      ),
                       Row(
                         children: [
                           Checkbox(

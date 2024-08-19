@@ -8,8 +8,14 @@ final itemRepositoryProvider = Provider<ItemRepository>((ref) {
   return ItemRepository(dio);
 });
 
-final itemFutureProvider =
+final itemTypeFutureProvider =
     FutureProvider<List<Map<String, dynamic>>>((ref) async {
   final repository = ref.read(itemRepositoryProvider);
-  return await repository.fetchItems();
+  return await repository.fetchItemType();
+});
+
+final itemGroupFutureProvider =
+    FutureProvider<List<Map<String, dynamic>>>((ref) async {
+  final repository = ref.read(itemRepositoryProvider);
+  return await repository.fetchItemGroup();
 });

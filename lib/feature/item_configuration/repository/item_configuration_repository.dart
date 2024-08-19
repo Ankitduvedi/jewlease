@@ -7,8 +7,13 @@ class ItemRepository {
 
   ItemRepository(this._dio);
 
-  Future<List<Map<String, dynamic>>> fetchItems() async {
+  Future<List<Map<String, dynamic>>> fetchItemType() async {
     final response = await _dio.get('${url}ItemConfiguration/ItemType/');
+    return List<Map<String, dynamic>>.from(response.data);
+  }
+
+  Future<List<Map<String, dynamic>>> fetchItemGroup() async {
+    final response = await _dio.get('${url}ItemConfiguration/ItemGroup/');
     return List<Map<String, dynamic>>.from(response.data);
   }
 }
