@@ -90,7 +90,7 @@ class MasterScreenState extends ConsumerState<MasterScreen> {
                   ),
                 ),
                 // Right panel (Select Item or Variant Master)
-                const Expanded(
+                Expanded(
                   flex: 3,
                   child: VariantMasterPanelWidget(),
                 ),

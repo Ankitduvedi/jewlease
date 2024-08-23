@@ -5,7 +5,10 @@ import 'package:jewlease/feature/item_specific/widgets/read_only_textfield_widge
 import 'package:jewlease/feature/item_specific/widgets/text_field_widget.dart';
 
 class VariantMasterPanelWidget extends ConsumerWidget {
-  const VariantMasterPanelWidget({super.key});
+  VariantMasterPanelWidget({super.key});
+  final TextEditingController itemType = TextEditingController();
+  final TextEditingController itemGroup = TextEditingController();
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final masterType = ref.watch(masterTypeProvider);

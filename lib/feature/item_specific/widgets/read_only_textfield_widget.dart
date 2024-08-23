@@ -6,6 +6,7 @@ class ReadOnlyTextFieldWidget extends ConsumerWidget {
   final String hintText;
   final IconData? icon;
   final VoidCallback? onIconPressed;
+
   const ReadOnlyTextFieldWidget(
       {super.key,
       required this.labelText,
@@ -18,6 +19,7 @@ class ReadOnlyTextFieldWidget extends ConsumerWidget {
         onTap: () {
           // Prevent any interaction with the text field
         },
+
         //enabled: false,
         readOnly: true,
         decoration: InputDecoration(

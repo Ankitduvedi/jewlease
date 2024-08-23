@@ -100,7 +100,7 @@ final goRouter = GoRouter(
           GoRoute(
               path: '/addItemConfigurtionScreen',
               builder: (context, state) {
-                return const AddItemConfigurtionScreen();
+                return AddItemConfigurtionScreen();
               }),
         ]),
   ],

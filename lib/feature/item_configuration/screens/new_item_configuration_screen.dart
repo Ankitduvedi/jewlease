@@ -1,18 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/data/model/item_type_model.dart';
+import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
 import 'package:jewlease/feature/item_configuration/widgets/item_dailog_widget.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant.dart';
 import 'package:jewlease/feature/item_specific/widgets/app_bar_buttons.dart';
 import 'package:jewlease/feature/item_specific/widgets/read_only_textfield_widget.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
 
-class AddItemConfigurtionScreen extends ConsumerWidget {
+class AddItemConfigurtionScreen extends ConsumerStatefulWidget {
   const AddItemConfigurtionScreen({super.key});
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() {
+    return AddItemConfigurtionScreenState();
+  }
+}
+
+class AddItemConfigurtionScreenState
+    extends ConsumerState<AddItemConfigurtionScreen> {
+  final TextEditingController wastage = TextEditingController();
+  final TextEditingController inwardRateTollerance = TextEditingController();
+  final TextEditingController inwardRateTollerances = TextEditingController();
+  final TextEditingController metalTolleranceDo = TextEditingController();
+  final TextEditingController metalTolleranceUp = TextEditingController();
+  final TextEditingController alloyTolleranceDo = TextEditingController();
+  final TextEditingController alloyTolleranceDow = TextEditingController();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isChecked = ref.watch(checkboxProvider);
+  void dispose() {
+    wastage.dispose();
+    inwardRateTollerance.dispose();
+    inwardRateTollerances.dispose();
+    metalTolleranceDo.dispose();
+    metalTolleranceUp.dispose();
+    alloyTolleranceDo.dispose();
+    alloyTolleranceDow.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isChecked = ref.watch(chechkBoxSelectionProvider);
+
     final textFieldvalues = ref.watch(dialogSelectionProvider);
     return Scaffold(
         backgroundColor: Colors.white,
@@ -128,7 +158,7 @@ class AddItemConfigurtionScreen extends ConsumerWidget {
                           showDialog(
                             context: context,
                             builder: (context) => const ItemTypeDialogScreen(
-                              title: 'Dependent Criteria',
+                              title: 'Dependent Cr',
                               endUrl: 'ItemConfiguration/DependentCriteria/',
                             ),
                           );
@@ -137,11 +167,12 @@ class AddItemConfigurtionScreen extends ConsumerWidget {
                       Row(
                         children: [
                           Checkbox(
-                            value: isChecked,
+                            value: isChecked['BOM Indicator'] ?? false,
                             onChanged: (bool? value) {
-                              // Update the state when the checkbox is pressed
-                              ref.read(checkboxProvider.notifier).state =
-                                  value!;
+                              //Update the state when the checkbox is pressed
+                              ref
+                                  .read(chechkBoxSelectionProvider.notifier)
+                                  .updateSelection('BOM Indicator', value!);
                             },
                             activeColor: Colors
                                 .green, // Optional: Set the color of the tick
@@ -154,11 +185,14 @@ class AddItemConfigurtionScreen extends ConsumerWidget {
                       Row(
                         children: [
                           Checkbox(
-                            value: isChecked,
+                            value:
+                                isChecked['LOT Management Indicator'] ?? false,
                             onChanged: (bool? value) {
                               // Update the state when the checkbox is pressed
-                              ref.read(checkboxProvider.notifier).state =
-                                  value!;
+                              ref
+                                  .read(chechkBoxSelectionProvider.notifier)
+                                  .updateSelection(
+                                      'LOT Management Indicator', value!);
                             },
                             activeColor: Colors
                                 .green, // Optional: Set the color of the tick
@@ -172,11 +206,13 @@ class AddItemConfigurtionScreen extends ConsumerWidget {
                       Row(
                         children: [
                           Checkbox(
-                            value: isChecked,
+                            value: isChecked['Custom Stock Reqd Ind'] ?? false,
                             onChanged: (bool? value) {
                               // Update the state when the checkbox is pressed
-                              ref.read(checkboxProvider.notifier).state =
-                                  value!;
+                              ref
+                                  .read(chechkBoxSelectionProvider.notifier)
+                                  .updateSelection(
+                                      'Custom Stock Reqd Ind', value!);
                             },
                             activeColor: Colors
                                 .green, // Optional: Set the color of the tick
@@ -186,16 +222,21 @@ class AddItemConfigurtionScreen extends ConsumerWidget {
                           ),
                         ],
                       ),
-                      _buildNumberInputField('Wastage(%)'),
-                      _buildNumberInputField('Inward Rate Tollerance'),
+                      _buildNumberInputField('Wastage(%)', wastage),
+                      _buildNumberInputField(
+                          'Inward Rate Tollerance', inwardRateTollerance),
+                      _buildNumberInputField(
+                          'Inward Rate Tollerance', inwardRateTollerances),
                       Row(
                         children: [
                           Checkbox(
-                            value: isChecked,
+                            value: isChecked['Operation Reqd Ind'] ?? false,
                             onChanged: (bool? value) {
                               // Update the state when the checkbox is pressed
-                              ref.read(checkboxProvider.notifier).state =
-                                  value!;
+                              ref
+                                  .read(chechkBoxSelectionProvider.notifier)
+                                  .updateSelection(
+                                      'Operation Reqd Ind', value!);
                             },
                             activeColor: Colors
                                 .green, // Optional: Set the color of the tick
@@ -208,11 +249,12 @@ class AddItemConfigurtionScreen extends ConsumerWidget {
                       Row(
                         children: [
                           Checkbox(
-                            value: isChecked,
+                            value: isChecked['Row Creation Ind'] ?? false,
                             onChanged: (bool? value) {
                               // Update the state when the checkbox is pressed
-                              ref.read(checkboxProvider.notifier).state =
-                                  value!;
+                              ref
+                                  .read(chechkBoxSelectionProvider.notifier)
+                                  .updateSelection('Row Creation Ind', value!);
                             },
                             activeColor: Colors
                                 .green, // Optional: Set the color of the tick
@@ -222,10 +264,14 @@ class AddItemConfigurtionScreen extends ConsumerWidget {
                           ),
                         ],
                       ),
-                      _buildNumberInputField('Metal Tollerance(Do..)'),
-                      _buildNumberInputField('Metal Tollerance(Up..)'),
-                      _buildNumberInputField('Alloy Tollerance(Do..)'),
-                      _buildNumberInputField('Alloy Tollerance(Do..)'),
+                      _buildNumberInputField(
+                          'Metal Tollerance(Do..)', metalTolleranceDo),
+                      _buildNumberInputField(
+                          'Metal Tollerance(Up..)', metalTolleranceUp),
+                      _buildNumberInputField(
+                          'Alloy Tollerance(Do..)', alloyTolleranceDo),
+                      _buildNumberInputField(
+                          'Alloy Tollerance(Do..)', alloyTolleranceDow),
                     ],
                   ),
                 ),
@@ -235,18 +281,56 @@ class AddItemConfigurtionScreen extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        final config = ItemConfiguration(
+                          itemType: textFieldvalues['Item Type']!,
+                          itemGroup: textFieldvalues['Item Group']!,
+                          itemNature: textFieldvalues['Item Nature']!,
+                          lotManagementIndicator:
+                              isChecked['LOT Management Indicator'] ?? false,
+                          customStockReqdInd:
+                              isChecked['Custom Stock Reqd Ind'] ?? false,
+                          bomIndicator: isChecked['BOM Indicator'] ?? false,
+                          operationReqdInd:
+                              isChecked['Operation Reqd Ind'] ?? false,
+                          metalToleranceDown:
+                              double.parse(metalTolleranceDo.text),
+                          metalToleranceUp:
+                              double.parse(metalTolleranceUp.text),
+                          alloyToleranceDown:
+                              double.parse(alloyTolleranceDo.text),
+                          stockUom: textFieldvalues['Stock UOM']!,
+                          dependentCriteria: textFieldvalues['Dependent Cr']!,
+                          otherLossIndicator: '',
+                          wastagePercentage: double.parse(wastage.text),
+                          inwardRateToleranceUp:
+                              double.parse(inwardRateTollerance.text),
+                          inwardRateToleranceDown:
+                              double.parse(inwardRateTollerances.text),
+                          rowCreationInd:
+                              isChecked['Row Creation Ind'] ?? false,
+                          alloyToleranceUp:
+                              double.parse(alloyTolleranceDow.text),
+                        );
+                        ref
+                            .read(itemConfigurationControllerProvider.notifier)
+                            .submitItemConfiguration(config, context);
+                      },
                       style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
+                          padding: const EdgeInsets.fromLTRB(50, 20, 50, 20),
                           elevation: 4,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)),
                           backgroundColor:
                               const Color.fromARGB(255, 40, 112, 62)),
-                      child: const Text(
-                        'Done',
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      child: !ref.watch(itemConfigurationControllerProvider)
+                          ? const Text(
+                              'Done',
+                              style: TextStyle(color: Colors.white),
+                            )
+                          : const CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
                     ),
                   ],
                 ),
@@ -276,8 +360,10 @@ class AddItemConfigurtionScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildNumberInputField(String labelText) {
+  Widget _buildNumberInputField(
+      String labelText, TextEditingController controller) {
     return TextField(
+      controller: controller,
       keyboardType: TextInputType.number,
       textAlign: TextAlign.right, // Text starts entering from the right
       inputFormatters: [

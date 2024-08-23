@@ -138,14 +138,14 @@ class DrawerList extends StatelessWidget {
                 DrawerSubItem(
                   icon: Icons.museum,
                   title: 'Item Configuration',
-                  onTap: () {},
+                  onTap: () {
+                    context.push('/itemConfigurationScreen');
+                  },
                 ),
                 DrawerSubItem(
                   icon: Icons.local_florist,
                   title: 'Item-Attribute Mapping',
-                  onTap: () {
-                    context.go('/itemConfigurationScreen');
-                  },
+                  onTap: () {},
                 ),
               ],
             ),
