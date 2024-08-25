@@ -245,22 +245,49 @@ class DrawerList extends StatelessWidget {
               subTiles: [
                 DrawerSubItem(
                   icon: Icons.museum_outlined,
-                  title: 'Company',
+                  title: 'Metal Karat',
                   onTap: () {},
                 ),
                 DrawerSubItem(
                   icon: Icons.location_on_outlined,
-                  title: 'Location',
+                  title: 'Metal Color',
                   onTap: () {},
                 ),
                 DrawerSubItem(
                   icon: Icons.dashboard_outlined,
-                  title: 'Financial Year',
+                  title: 'Stone Quality',
                   onTap: () {},
                 ),
                 DrawerSubItem(
                   icon: Icons.currency_rupee,
-                  title: 'Currency',
+                  title: 'Sieve Chart',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.currency_rupee,
+                  title: 'Stone color',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.currency_rupee,
+                  title: 'Stone Shape',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.currency_rupee,
+                  title: 'Product Size',
+                  onTap: () {},
+                ),
+                DrawerSubItem(
+                  icon: Icons.currency_rupee,
+                  title: 'All Attributes',
+                  onTap: () {
+                    context.go('/allAttributeScreen');
+                  },
+                ),
+                DrawerSubItem(
+                  icon: Icons.currency_rupee,
+                  title: 'Hsn/Sac Master',
                   onTap: () {},
                 ),
               ],

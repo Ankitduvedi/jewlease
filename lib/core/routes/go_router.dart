@@ -1,5 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:jewlease/core/routes/navigation_const.dart';
+import 'package:jewlease/feature/all_attributes/screen/all_attribute_screen.dart';
+import 'package:jewlease/feature/all_attributes/screen/new_attribute_screen.dart';
 import 'package:jewlease/feature/auth/screens/login_screen_owner.dart';
 import 'package:jewlease/feature/auth/screens/login_screen_staff.dart';
 import 'package:jewlease/feature/home/screens/home_screen.dart';
@@ -100,7 +102,17 @@ final goRouter = GoRouter(
           GoRoute(
               path: '/addItemConfigurtionScreen',
               builder: (context, state) {
-                return AddItemConfigurtionScreen();
+                return const AddItemConfigurtionScreen();
+              }),
+          GoRoute(
+              path: '/allAttributeScreen',
+              builder: (context, state) {
+                return const AllAttributeScreen();
+              }),
+          GoRoute(
+              path: '/addAttributeScreen',
+              builder: (context, state) {
+                return const AddAttributeScreen();
               }),
         ]),
   ],

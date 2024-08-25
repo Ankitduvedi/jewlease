@@ -4,22 +4,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jewlease/feature/item_configuration/widgets/data_widget.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant.dart';
-import 'package:jewlease/feature/item_specific/widgets/app_bar_buttons.dart';
+import 'package:jewlease/widgets/app_bar_buttons.dart';
 
-class ItemConfigurationScreen extends ConsumerWidget {
-  const ItemConfigurationScreen({super.key});
+class AllAttributeScreen extends ConsumerWidget {
+  const AllAttributeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Item Configuration'),
+          title: const Text('All Attribute'),
           actions: [
             AppBarButtons(
               ontap: [
                 () {
                   log('new pressed');
-                  context.push('/addItemConfigurtionScreen');
+                  context.push('/addAttributeScreen');
                 },
                 () {},
                 () {
