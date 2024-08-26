@@ -149,6 +149,24 @@ class DrawerList extends StatelessWidget {
                 ),
               ],
             ),
+            DrawerExpansionItem(
+              icon: Icons.place,
+              title: 'Code Generation Rules',
+              subTiles: [
+                DrawerSubItem(
+                  icon: Icons.museum,
+                  title: 'Code Generation For Item',
+                  onTap: () {
+                    context.push('/itemConfigurationScreen');
+                  },
+                ),
+                DrawerSubItem(
+                  icon: Icons.local_florist,
+                  title: 'Code Generation For Transaction',
+                  onTap: () {},
+                ),
+              ],
+            ),
           ],
         ),
         DrawerExpansionItem(
