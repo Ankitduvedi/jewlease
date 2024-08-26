@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
-import 'package:jewlease/feature/item_configuration/widgets/custom_app_bar_finder.dart';
+import 'package:jewlease/widgets/custom_app_bar_finder.dart';
 
 import 'package:jewlease/providers/dailog_selection_provider.dart';
 

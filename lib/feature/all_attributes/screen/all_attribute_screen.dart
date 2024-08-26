@@ -37,7 +37,7 @@ class AllAttributeScreen extends ConsumerWidget {
         ),
         body: const ItemDataScreen(
           title: '',
-          endUrl: 'ItemConfiguration/',
+          endUrl: 'AllAttribute/',
         ));
   }
 }

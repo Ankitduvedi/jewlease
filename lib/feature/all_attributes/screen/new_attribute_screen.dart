@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/data/model/all_attribute_model.dart';
+import 'package:jewlease/feature/all_attributes/controller/all_attribute_controller.dart';
 import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
 import 'package:jewlease/feature/item_configuration/widgets/item_dailog_widget.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant.dart';
@@ -30,6 +32,7 @@ class AddAttributeScreenState extends ConsumerState<AddAttributeScreen> {
   @override
   Widget build(BuildContext context) {
     final isChecked = ref.watch(chechkBoxSelectionProvider);
+    final dropDownValue = ref.watch(dropDownProvider);
 
     final textFieldvalues = ref.watch(dialogSelectionProvider);
     return Scaffold(
@@ -90,7 +93,7 @@ class AddAttributeScreenState extends ConsumerState<AddAttributeScreen> {
                             context: context,
                             builder: (context) => const ItemTypeDialogScreen(
                               title: 'Attribute Type',
-                              endUrl: 'AllAttribute/ParentForm/',
+                              endUrl: 'AllAttribute/AttributeType',
                             ),
                           );
                         },
@@ -130,7 +133,19 @@ class AddAttributeScreenState extends ConsumerState<AddAttributeScreen> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        final config = AllAttribute(
+                          attributeType: textFieldvalues['Attribute Type']!,
+                          attributeCode: attributeCode.text,
+                          attributeDescription: attributeDescription.text,
+                          defaultIndicator:
+                              isChecked['Default Indicator'] ?? false,
+                          rowStatus: dropDownValue['Row Status'] ?? 'Active',
+                        );
+                        ref
+                            .read(allAttributeControllerProvider.notifier)
+                            .submitItemConfiguration(config, context);
+                      },
                       style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.fromLTRB(50, 20, 50, 20),
                           elevation: 4,

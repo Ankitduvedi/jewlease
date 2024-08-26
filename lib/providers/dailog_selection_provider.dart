@@ -37,3 +37,21 @@ final chechkBoxSelectionProvider =
     StateNotifierProvider<ChechkBoxSelectionNotifier, Map<String, bool?>>(
   (ref) => ChechkBoxSelectionNotifier(),
 );
+
+class DropDownSelectionNotifier extends StateNotifier<Map<String, String?>> {
+  DropDownSelectionNotifier() : super({'test': null});
+
+  void updateSelection(String key, String value) {
+    state = {...state, key: value};
+  }
+
+  void clearSelection(String key) {
+    state.remove(key);
+    state = {...state};
+  }
+}
+
+final dropDownProvider =
+    StateNotifierProvider<DropDownSelectionNotifier, Map<String, String?>>(
+  (ref) => DropDownSelectionNotifier(),
+);

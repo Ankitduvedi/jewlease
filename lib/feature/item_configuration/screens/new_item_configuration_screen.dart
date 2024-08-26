@@ -5,8 +5,8 @@ import 'package:jewlease/data/model/item_type_model.dart';
 import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
 import 'package:jewlease/feature/item_configuration/widgets/item_dailog_widget.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant.dart';
-import 'package:jewlease/feature/item_specific/widgets/app_bar_buttons.dart';
-import 'package:jewlease/feature/item_specific/widgets/read_only_textfield_widget.dart';
+import 'package:jewlease/widgets/app_bar_buttons.dart';
+import 'package:jewlease/widgets/read_only_textfield_widget.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
 
 class AddItemConfigurtionScreen extends ConsumerStatefulWidget {

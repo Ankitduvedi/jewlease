@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant.dart';
-import 'package:jewlease/feature/item_specific/widgets/read_only_textfield_widget.dart';
-import 'package:jewlease/feature/item_specific/widgets/text_field_widget.dart';
+import 'package:jewlease/widgets/read_only_textfield_widget.dart';
+import 'package:jewlease/widgets/text_field_widget.dart';
 
 class VariantMasterPanelWidget extends ConsumerWidget {
   VariantMasterPanelWidget({super.key});

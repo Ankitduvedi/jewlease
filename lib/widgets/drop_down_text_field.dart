@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/providers/dailog_selection_provider.dart';
 
 class DropDownTextFieldWidget extends ConsumerWidget {
   final String labelText;
@@ -34,6 +35,9 @@ class DropDownTextFieldWidget extends ConsumerWidget {
             .toList(),
         onChanged: (value) {
           // Handle the change here
+          ref
+              .read(dropDownProvider.notifier)
+              .updateSelection(labelText, value!);
         },
         dropdownColor: Colors.white, // Set the dropdown menu background color
         style: const TextStyle(
