@@ -158,11 +158,14 @@ class VariantMasterPanelWidget extends ConsumerWidget {
                         elevation: 4,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)),
-                        backgroundColor: const Color.fromARGB(255, 0, 68, 0),
+                        backgroundColor: const Color.fromARGB(255, 40, 112, 62),
                       ),
                       child: const Text(
                         'Load',
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16),
                       ),
                     ),
                   ],

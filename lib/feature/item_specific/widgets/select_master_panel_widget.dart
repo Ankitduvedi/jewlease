@@ -42,7 +42,7 @@ class SelectMasterPanelWidget extends ConsumerWidget {
               itemCount: items.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  selected: ref.watch(masterTypeProvider)[1] == items[index],
+                  selected: masterType[1] == items[index],
                   selectedTileColor: const Color.fromARGB(255, 40, 112, 62),
                   selectedColor: Colors.white,
                   title: Text(items[index]),
@@ -61,10 +61,8 @@ class SelectMasterPanelWidget extends ConsumerWidget {
                           child: Text(
                             'Item',
                             style: TextStyle(
-                                color: ref.watch(masterTypeProvider)[1] ==
-                                        items[index]
-                                    ? ref.watch(masterTypeProvider)[2] ==
-                                            'item master'
+                                color: masterType[1] == items[index]
+                                    ? masterType[2] == 'item master'
                                         ? Colors.white
                                         : Colors.white70
                                     : const Color.fromARGB(255, 40, 112, 62),
@@ -85,10 +83,8 @@ class SelectMasterPanelWidget extends ConsumerWidget {
                           child: Text(
                             'Variant',
                             style: TextStyle(
-                                color: ref.watch(masterTypeProvider)[1] ==
-                                        items[index]
-                                    ? ref.watch(masterTypeProvider)[2] ==
-                                            'variant master'
+                                color: masterType[1] == items[index]
+                                    ? masterType[2] == 'variant master'
                                         ? Colors.white
                                         : Colors.white70
                                     : const Color.fromARGB(255, 40, 112, 62),
