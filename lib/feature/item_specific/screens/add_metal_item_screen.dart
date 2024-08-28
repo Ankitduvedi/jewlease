@@ -8,6 +8,7 @@ import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
 import 'package:jewlease/widgets/check_box.dart';
 import 'package:jewlease/widgets/drop_down_text_field.dart';
+import 'package:jewlease/widgets/icon_text_button_widget.dart';
 import 'package:jewlease/widgets/text_field_widget.dart';
 
 class AddMetalItemScreen extends ConsumerStatefulWidget {
@@ -29,102 +30,137 @@ class AddMetalItemScreenState extends ConsumerState<AddMetalItemScreen> {
     super.dispose();
   }
 
+  final List<String> content = [
+    'Parent Form',
+    'Item Attribute',
+  ];
   @override
   Widget build(BuildContext context) {
     final isChecked = ref.watch(chechkBoxSelectionProvider);
     final textFieldvalues = ref.watch(dialogSelectionProvider);
     return Scaffold(
-        persistentFooterButtons: [
-          ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.fromLTRB(50, 20, 50, 20),
-                elevation: 4,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-                backgroundColor: const Color.fromARGB(255, 40, 112, 62)),
-            child: !ref.watch(itemConfigurationControllerProvider)
-                ? const Text(
-                    'Next',
-                    style: TextStyle(color: Colors.white),
-                  )
-                : const CircularProgressIndicator(
-                    color: Colors.white,
-                  ),
-          ),
+      persistentFooterButtons: [
+        ElevatedButton(
+          onPressed: () {},
+          style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.fromLTRB(50, 20, 50, 20),
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              backgroundColor: const Color.fromARGB(255, 40, 112, 62)),
+          child: !ref.watch(itemConfigurationControllerProvider)
+              ? const Text(
+                  'Next',
+                  style: TextStyle(color: Colors.white),
+                )
+              : const CircularProgressIndicator(
+                  color: Colors.white,
+                ),
+        ),
+      ],
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        centerTitle: false,
+        title: const Text('Item Master (Item Group - Gold)'),
+        actions: [
+          AppBarButtons(
+            ontap: [
+              () {},
+              () {},
+              () {
+                // Reset the provider value to null on refresh
+                ref.watch(masterTypeProvider.notifier).state = [
+                  'Style',
+                  null,
+                  null
+                ];
+              },
+              () {}
+            ],
+          )
         ],
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          centerTitle: false,
-          title: const Text('Item Master (Item Group - Gold)'),
-          actions: [
-            AppBarButtons(
-              ontap: [
-                () {},
-                () {},
-                () {
-                  // Reset the provider value to null on refresh
-                  ref.watch(masterTypeProvider.notifier).state = [
-                    'Style',
-                    null,
-                    null
-                  ];
-                },
-                () {}
-              ],
-            )
-          ],
-        ),
-        body: Expanded(
-          flex: 3,
-          child:
-              Padding(padding: const EdgeInsets.all(16.0), child: parentForm()),
-        ));
-  }
-
-  Widget parentForm() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        // Form Title
-        const Text(
-          'Parent Form',
-          style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color.fromARGB(255, 3, 102, 200)),
-        ),
-        const SizedBox(height: 16),
-        // Form Fields
-        Expanded(
-          child: GridView.count(
-            crossAxisCount: 6,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 20,
-            childAspectRatio: 4.5,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white, // Background color of the container
+            borderRadius: BorderRadius.circular(12.0), // Rounded corners
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2), // Shadow color
+                spreadRadius: 1, // How far the shadow spreads
+                blurRadius: 8, // Softens the shadow
+                offset: const Offset(
+                    4, 4), // Moves the shadow horizontally and vertically
+              ),
+            ],
+            border: Border.all(
+              color: const Color.fromARGB(
+                  255, 219, 219, 219), // Outline (border) color
+              width: 2.0, // Border width
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              TextFieldWidget(
-                controller: metalCode,
-                labelText: 'Metal Code',
+              const SizedBox(
+                width: 8,
               ),
-              const CheckBoxWidget(
-                labelText: 'Exclusive Indicator',
+              Wrap(
+                direction: Axis.vertical,
+                spacing: 8.0,
+                children: content.asMap().entries.map((entry) {
+                  return IconTextButtonWidget(
+                    labelText: entry.value,
+                    index: entry.key, // Passing the index to the widget
+                  );
+                }).toList(),
               ),
-              TextFieldWidget(
-                controller: description,
-                labelText: 'Description',
+              const SizedBox(
+                width: 8,
               ),
-              const DropDownTextFieldWidget(
-                initialValue: 'Active',
-                items: ['InActive', 'Active'],
-                labelText: 'Row Status',
-              )
+              const VerticalDivider(),
+              const SizedBox(
+                width: 8,
+              ),
+              Expanded(
+                  child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: parentForm(),
+              )),
             ],
           ),
         ),
+      ),
+    );
+  }
 
-        // Previous and Next Buttons
+  Widget parentForm() {
+    return GridView.count(
+      crossAxisCount: 6,
+      crossAxisSpacing: 10,
+      mainAxisSpacing: 20,
+      childAspectRatio: 4.5,
+      children: [
+        TextFieldWidget(
+          controller: metalCode,
+          labelText: 'Metal Code',
+        ),
+        const CheckBoxWidget(
+          labelText: 'Exclusive Indicator',
+        ),
+        TextFieldWidget(
+          controller: description,
+          labelText: 'Description',
+        ),
+        const DropDownTextFieldWidget(
+          initialValue: 'Active',
+          items: ['InActive', 'Active'],
+          labelText: 'Row Status',
+        )
       ],
     );
   }

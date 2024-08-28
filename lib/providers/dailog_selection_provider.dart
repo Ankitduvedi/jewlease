@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final dropDownValueProvider = StateProvider<List<String>>((ref) => ['All']);
+final formSequenceProvider = StateProvider<int>((ref) => 0);
 
 class DialogSelectionNotifier extends StateNotifier<Map<String, String?>> {
   DialogSelectionNotifier() : super({'Item Group': null});
