@@ -50,7 +50,12 @@ class MasterScreenState extends ConsumerState<MasterScreen> {
             ontap: [
               () {
                 log('new pressed');
-                context.push('/addVariantMasterScreen');
+                if (masterType[1] != null && masterType[2] != null) {
+                  if (masterType[1] == 'Gold' &&
+                      masterType[2] == 'item master') {
+                    context.go('/masterScreen/addMetalItemScreen');
+                  }
+                }
               },
               () {},
               () {

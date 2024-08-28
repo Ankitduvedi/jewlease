@@ -142,16 +142,34 @@ class VariantMasterPanelWidget extends ConsumerWidget {
                         labelText: 'Item Group...*',
                         hintText: masterType[1] ?? 'Item Group...*'),
                     if (masterType[2] == 'variant master')
-                      const TextFieldWidget(labelText: 'Variant Name'),
-                    const TextFieldWidget(labelText: 'Item Name'),
+                      TextFieldWidget(
+                        labelText: 'Variant Name',
+                        controller: itemType,
+                      ),
+                    TextFieldWidget(
+                      labelText: 'Item Name',
+                      controller: itemType,
+                    ),
                     if (masterType[2] == 'variant master')
-                      const TextFieldWidget(labelText: 'Old Variant Name'),
+                      TextFieldWidget(
+                        labelText: 'Old Variant Name',
+                        controller: itemType,
+                      ),
                     if (masterType[2] == 'variant master')
-                      const TextFieldWidget(labelText: 'Attribute Description'),
+                      TextFieldWidget(
+                        labelText: 'Attribute Description',
+                        controller: itemType,
+                      ),
                     if (masterType[2] == 'variant master')
-                      const TextFieldWidget(labelText: 'Variant Remark'),
+                      TextFieldWidget(
+                        labelText: 'Variant Remark',
+                        controller: itemType,
+                      ),
                     if (masterType[2] == 'variant master')
-                      const TextFieldWidget(labelText: 'Customer Variant Name'),
+                      TextFieldWidget(
+                        labelText: 'Customer Variant Name',
+                        controller: itemType,
+                      ),
                     ElevatedButton(
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(

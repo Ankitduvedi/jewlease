@@ -9,6 +9,7 @@ import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/widgets/drop_down_text_field.dart';
 import 'package:jewlease/widgets/read_only_textfield_widget.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
+import 'package:jewlease/widgets/text_field_widget.dart';
 
 class AddAttributeScreen extends ConsumerStatefulWidget {
   const AddAttributeScreen({super.key});
@@ -98,9 +99,12 @@ class AddAttributeScreenState extends ConsumerState<AddAttributeScreen> {
                           );
                         },
                       ),
-                      _buildFormField('Attribute Code', attributeCode),
-                      _buildFormField(
-                          'Attribute Description', attributeDescription),
+                      TextFieldWidget(
+                          labelText: 'Attribute Code',
+                          controller: attributeCode),
+                      TextFieldWidget(
+                          labelText: 'Attribute Description',
+                          controller: attributeDescription),
                       Row(
                         children: [
                           Checkbox(
@@ -168,21 +172,5 @@ class AddAttributeScreenState extends ConsumerState<AddAttributeScreen> {
             ),
           ),
         ));
-  }
-
-  // Method to build a form field with an optional icon
-  Widget _buildFormField(
-    String labelText,
-    TextEditingController? controller,
-  ) {
-    return TextField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: labelText,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-      ),
-    );
   }
 }

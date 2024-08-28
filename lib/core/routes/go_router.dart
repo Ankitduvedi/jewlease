@@ -11,6 +11,7 @@ import 'package:jewlease/feature/item_code_generation/screen/item_code_generatio
 import 'package:jewlease/feature/item_code_generation/screen/new_item_code_generation_screen.dart';
 import 'package:jewlease/feature/item_configuration/screens/item_configuration_screen.dart';
 import 'package:jewlease/feature/item_configuration/screens/new_item_configuration_screen.dart';
+import 'package:jewlease/feature/item_specific/screens/add_metal_item_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/add_variant_master_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/master_screen.dart';
 import 'package:jewlease/feature/splas_screen/splash_view.dart';
@@ -77,7 +78,14 @@ final goRouter = GoRouter(
               path: '/masterScreen',
               builder: (context, state) {
                 return const MasterScreen();
-              }),
+              },
+              routes: [
+                GoRoute(
+                    path: 'addMetalItemScreen',
+                    builder: (context, state) {
+                      return const AddMetalItemScreen();
+                    }),
+              ]),
           GoRoute(
               path: '/addVariantMasterScreen',
               builder: (context, state) {

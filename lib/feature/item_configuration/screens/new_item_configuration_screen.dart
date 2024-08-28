@@ -6,6 +6,8 @@ import 'package:jewlease/feature/item_configuration/controller/item_configuratio
 import 'package:jewlease/feature/item_configuration/widgets/item_dailog_widget.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
+import 'package:jewlease/widgets/check_box.dart';
+import 'package:jewlease/widgets/number_input_text_field.dart';
 import 'package:jewlease/widgets/read_only_textfield_widget.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
 
@@ -164,114 +166,43 @@ class AddItemConfigurtionScreenState
                           );
                         },
                       ),
-                      Row(
-                        children: [
-                          Checkbox(
-                            value: isChecked['BOM Indicator'] ?? false,
-                            onChanged: (bool? value) {
-                              //Update the state when the checkbox is pressed
-                              ref
-                                  .read(chechkBoxSelectionProvider.notifier)
-                                  .updateSelection('BOM Indicator', value!);
-                            },
-                            activeColor: Colors
-                                .green, // Optional: Set the color of the tick
-                          ),
-                          const Expanded(
-                            child: Text('BOM Indicator'),
-                          ),
-                        ],
+                      const CheckBoxWidget(
+                        labelText: 'BOM Indicator',
                       ),
-                      Row(
-                        children: [
-                          Checkbox(
-                            value:
-                                isChecked['LOT Management Indicator'] ?? false,
-                            onChanged: (bool? value) {
-                              // Update the state when the checkbox is pressed
-                              ref
-                                  .read(chechkBoxSelectionProvider.notifier)
-                                  .updateSelection(
-                                      'LOT Management Indicator', value!);
-                            },
-                            activeColor: Colors
-                                .green, // Optional: Set the color of the tick
-                          ),
-                          const Expanded(
-                            child: Text('LOT Management Indicator'),
-                          ),
-                        ],
+                      const CheckBoxWidget(
+                        labelText: 'LOT Management Indicator',
                       ),
                       _buildFormField('Other Loss I...', Icons.search),
-                      Row(
-                        children: [
-                          Checkbox(
-                            value: isChecked['Custom Stock Reqd Ind'] ?? false,
-                            onChanged: (bool? value) {
-                              // Update the state when the checkbox is pressed
-                              ref
-                                  .read(chechkBoxSelectionProvider.notifier)
-                                  .updateSelection(
-                                      'Custom Stock Reqd Ind', value!);
-                            },
-                            activeColor: Colors
-                                .green, // Optional: Set the color of the tick
-                          ),
-                          const Expanded(
-                            child: Text('Custom Stock Reqd Ind'),
-                          ),
-                        ],
+                      const CheckBoxWidget(
+                        labelText: 'Custom Stock Reqd Ind',
                       ),
                       _buildNumberInputField('Wastage(%)', wastage),
                       _buildNumberInputField(
                           'Inward Rate Tollerance', inwardRateTollerance),
                       _buildNumberInputField(
                           'Inward Rate Tollerance', inwardRateTollerances),
-                      Row(
-                        children: [
-                          Checkbox(
-                            value: isChecked['Operation Reqd Ind'] ?? false,
-                            onChanged: (bool? value) {
-                              // Update the state when the checkbox is pressed
-                              ref
-                                  .read(chechkBoxSelectionProvider.notifier)
-                                  .updateSelection(
-                                      'Operation Reqd Ind', value!);
-                            },
-                            activeColor: Colors
-                                .green, // Optional: Set the color of the tick
-                          ),
-                          const Expanded(
-                            child: Text('Operation Reqd Ind'),
-                          ),
-                        ],
+                      const CheckBoxWidget(
+                        labelText: 'Operation Reqd Ind',
                       ),
-                      Row(
-                        children: [
-                          Checkbox(
-                            value: isChecked['Row Creation Ind'] ?? false,
-                            onChanged: (bool? value) {
-                              // Update the state when the checkbox is pressed
-                              ref
-                                  .read(chechkBoxSelectionProvider.notifier)
-                                  .updateSelection('Row Creation Ind', value!);
-                            },
-                            activeColor: Colors
-                                .green, // Optional: Set the color of the tick
-                          ),
-                          const Expanded(
-                            child: Text('Row Creation Ind'),
-                          ),
-                        ],
+                      const CheckBoxWidget(
+                        labelText: 'Row Creation Ind',
                       ),
-                      _buildNumberInputField(
-                          'Metal Tollerance(Do..)', metalTolleranceDo),
-                      _buildNumberInputField(
-                          'Metal Tollerance(Up..)', metalTolleranceUp),
-                      _buildNumberInputField(
-                          'Alloy Tollerance(Do..)', alloyTolleranceDo),
-                      _buildNumberInputField(
-                          'Alloy Tollerance(Do..)', alloyTolleranceDow),
+                      NumberTextFieldWidget(
+                        controller: metalTolleranceDo,
+                        labelText: 'Metal Tollerance(Do..)',
+                      ),
+                      NumberTextFieldWidget(
+                        controller: metalTolleranceUp,
+                        labelText: 'Metal Tollerance(Up..)',
+                      ),
+                      NumberTextFieldWidget(
+                        controller: alloyTolleranceDo,
+                        labelText: 'Alloy Tollerance(Do..)',
+                      ),
+                      NumberTextFieldWidget(
+                        controller: alloyTolleranceDow,
+                        labelText: 'Alloy Tollerance(Do..)',
+                      ),
                     ],
                   ),
                 ),
