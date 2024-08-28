@@ -25,10 +25,6 @@ final goRouter = GoRouter(
       builder: (context, state) => const SplashScreen(),
     ),
 
-    // GoRoute(
-    //   path: '/updateAppScreen',
-    //   builder: (context, state) => const UpdateAppScreen(),
-    // ),
     GoRoute(
       path: '/welcomeScreen',
       builder: (context, state) => const WelcomeScreen(),
@@ -42,15 +38,6 @@ final goRouter = GoRouter(
       builder: (context, state) => const LoginScreenStaff(),
     ),
 
-    // GoRoute(
-    //   path: '/setupHotelScreen',
-    //   builder: (context, state) => const SetupHotelScreen(),
-    // ),
-
-    // GoRoute(
-    //   path: '/appointStaffScreen',
-    //   builder: (context, state) => const AppointStaffScreen(),
-    // ),
     // GoRoute(
     //     path: '/onBoardingScreens',
     //     builder: (context, state) => const OnBoardingScreen(),

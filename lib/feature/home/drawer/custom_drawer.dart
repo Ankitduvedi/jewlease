@@ -324,7 +324,7 @@ class DrawerList extends StatelessWidget {
                   title: 'Item Master & Variant',
                   onTap: () {
                     log('button tapped');
-                    context.push('/masterScreen');
+                    context.go('/masterScreen');
                   },
                 ),
               ],
