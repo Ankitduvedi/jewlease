@@ -7,6 +7,8 @@ import 'package:jewlease/feature/auth/screens/login_screen_staff.dart';
 import 'package:jewlease/feature/home/screens/home_screen.dart';
 import 'package:jewlease/feature/home/widgets/home_screen_navbar.dart';
 import 'package:jewlease/feature/home/screens/welcome_screen.dart';
+import 'package:jewlease/feature/item_code_generation/screen/item_code_generation_screen.dart';
+import 'package:jewlease/feature/item_code_generation/screen/new_item_code_generation_screen.dart';
 import 'package:jewlease/feature/item_configuration/screens/item_configuration_screen.dart';
 import 'package:jewlease/feature/item_configuration/screens/new_item_configuration_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/add_variant_master_screen.dart';
@@ -113,6 +115,16 @@ final goRouter = GoRouter(
               path: '/addAttributeScreen',
               builder: (context, state) {
                 return const AddAttributeScreen();
+              }),
+          GoRoute(
+              path: '/itemCodeGenerationScreen',
+              builder: (context, state) {
+                return const ItemCodeGenerationScreen();
+              }),
+          GoRoute(
+              path: '/addItemCodeGenerationScreen',
+              builder: (context, state) {
+                return const AddItemCodeGenerationScreen();
               }),
         ]),
   ],

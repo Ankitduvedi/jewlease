@@ -7,9 +7,10 @@ import 'package:jewlease/providers/dailog_selection_provider.dart';
 
 class ItemTypeDialogScreen extends ConsumerStatefulWidget {
   const ItemTypeDialogScreen(
-      {super.key, required this.title, required this.endUrl});
+      {super.key, required this.title, required this.endUrl, this.value});
   final String title;
   final String endUrl;
+  final String? value;
 
   @override
   ItemTypeDialogScreenState createState() => ItemTypeDialogScreenState();
@@ -30,18 +31,17 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
 
     return Dialog(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20.0), // Rounded corners for dialog
+        borderRadius: BorderRadius.circular(20.0),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(20.0), // Rounded corners for dialog
+        borderRadius: BorderRadius.circular(20.0),
         child: Column(
           children: [
             CustomAppBarExample(title: widget.title),
             Padding(
-              padding: const EdgeInsets.all(18.0),
+              padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
-                  // Search Bar and Dropdown Menu
                   Row(
                     children: [
                       Expanded(
@@ -58,48 +58,37 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                         ),
                       ),
                       const SizedBox(width: 10),
-                      Consumer(
-                        builder: (context, ref, child) {
-                          final key = ref.watch(dropDownValueProvider);
-                          return Expanded(
-                            flex: 1,
-                            child: Theme(
-                              data: Theme.of(context).copyWith(
-                                highlightColor: Colors
-                                    .transparent, // Removes the grey color on tap
-                                focusColor: Colors
-                                    .transparent, // Removes the grey color on focus
-                              ),
-                              child: DropdownButtonFormField<String>(
-                                value: key[0], // Set the default value here
-                                decoration: InputDecoration(
-                                  labelText: 'Search By Column',
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                  ),
+                      Expanded(
+                        flex: 1,
+                        child: Consumer(
+                          builder: (context, ref, child) {
+                            final key = ref.watch(dropDownValueProvider);
+                            return DropdownButtonFormField<String>(
+                              value: key[0],
+                              decoration: InputDecoration(
+                                labelText: 'Search By Column',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
                                 ),
-                                items: key
-                                    .map((option) => DropdownMenuItem(
-                                          value: option,
-                                          child: Text(option),
-                                        ))
-                                    .toList(),
-                                onChanged: (value) {
-                                  if (value != null) {
-                                    setState(() {
-                                      _selectedColumn = value;
-                                    });
-                                  }
-                                },
-                                dropdownColor: Colors
-                                    .white, // Set the dropdown menu background color
-                                style: const TextStyle(
-                                    color: Colors
-                                        .black), // Text color for dropdown items
                               ),
-                            ),
-                          );
-                        },
+                              items: key
+                                  .map((option) => DropdownMenuItem(
+                                        value: option,
+                                        child: Text(option),
+                                      ))
+                                  .toList(),
+                              onChanged: (value) {
+                                if (value != null) {
+                                  setState(() {
+                                    _selectedColumn = value;
+                                  });
+                                }
+                              },
+                              dropdownColor: Colors.white,
+                              style: const TextStyle(color: Colors.black),
+                            );
+                          },
+                        ),
                       ),
                       TextButton.icon(
                         onPressed: () {
@@ -122,96 +111,91 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                       )
                     ],
                   ),
-                  const SizedBox(height: 18),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(20.0),
+                ],
+              ),
+            ),
+            const SizedBox(height: 18),
+            Expanded(
+              child: itemDataAsyncValue.when(
+                data: (items) {
+                  if (items.isEmpty) {
+                    return const Center(child: Text('No data available'));
+                  }
+
+                  if (items.isNotEmpty && _keys.isEmpty) {
+                    _keys = items.first.keys.toList();
+                    _keys.insert(0, 'All');
+                    Future(
+                      () {
+                        ref.read(dropDownValueProvider.notifier).state = _keys;
+                      },
+                    );
+                  }
+
+                  _filteredItems = items.where((item) {
+                    if (_searchQuery.isEmpty) {
+                      return true;
+                    }
+                    if (_selectedColumn == 'All') {
+                      return item.values.any((value) =>
+                          value != null &&
+                          value
+                              .toString()
+                              .toLowerCase()
+                              .contains(_searchQuery));
+                    } else {
+                      return item[_selectedColumn]
+                              ?.toString()
+                              .toLowerCase()
+                              .contains(_searchQuery) ??
+                          false;
+                    }
+                  }).toList();
+
+                  return SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
                     child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      // Rounded corners for DataTable
-                      child: itemDataAsyncValue.when(
-                        data: (items) {
-                          if (items.isEmpty) {
-                            return const Center(
-                                child: Text('No data available'));
-                          }
-                          if (items.isNotEmpty && _keys.isEmpty) {
-                            _keys = items.first.keys.toList();
-                            _keys.insert(0, 'All');
-                            Future(
-                              () {
-                                ref.read(dropDownValueProvider.notifier).state =
-                                    _keys;
-                              },
-                            );
-                          }
+                      scrollDirection: Axis.vertical,
+                      child: DataTable(
+                        headingRowColor: WidgetStateColor.resolveWith((states) {
+                          return const Color.fromARGB(255, 0, 52, 80);
+                        }),
+                        columns: _keys.where((key) => key != 'All').map((key) {
+                          return DataColumn(
+                            label: Text(
+                              key.toUpperCase(),
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          );
+                        }).toList(),
+                        rows: _filteredItems.map((item) {
+                          final isSelected = selectedItem[widget.title] ==
+                              item[widget.value ?? 'ConfigValue'];
 
-                          // Update _filteredItems based on search query
-                          _filteredItems = items.where((item) {
-                            if (_searchQuery.isEmpty) {
-                              return true;
-                            }
-                            if (_selectedColumn == 'All') {
-                              return item.values.any((value) =>
-                                  value != null &&
-                                  value
-                                      .toString()
-                                      .toLowerCase()
-                                      .contains(_searchQuery));
-                            } else {
-                              return item[_selectedColumn]
-                                      ?.toString()
-                                      .toLowerCase()
-                                      .contains(_searchQuery) ??
-                                  false;
-                            }
-                          }).toList();
-
-                          return DataTable(
-                            headingRowColor:
-                                WidgetStateColor.resolveWith((states) {
-                              return const Color.fromARGB(255, 0, 52, 80);
-                            }),
-                            columns:
+                          return DataRow(
+                            selected: isSelected,
+                            onSelectChanged: (bool? selected) {
+                              if (selected == true) {
+                                ref
+                                    .read(dialogSelectionProvider.notifier)
+                                    .updateSelection(widget.title,
+                                        item[widget.value ?? 'ConfigValue']);
+                              }
+                            },
+                            cells:
                                 _keys.where((key) => key != 'All').map((key) {
-                              return DataColumn(
-                                label: Text(
-                                  key.toUpperCase(),
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                              );
-                            }).toList(),
-                            rows: _filteredItems.map((item) {
-                              final isSelected = selectedItem[widget.title] ==
-                                  item['ConfigValue'];
-
-                              return DataRow(
-                                selected: isSelected,
-                                onSelectChanged: (bool? selected) {
-                                  if (selected == true) {
-                                    ref
-                                        .read(dialogSelectionProvider.notifier)
-                                        .updateSelection(
-                                            widget.title, item['ConfigValue']);
-                                  }
-                                },
-                                cells: _keys
-                                    .where((key) => key != 'All')
-                                    .map((key) {
-                                  return DataCell(
-                                      Text(item[key]?.toString() ?? ''));
-                                }).toList(),
-                              );
+                              return DataCell(
+                                  Text(item[key]?.toString() ?? ''));
                             }).toList(),
                           );
-                        },
-                        loading: () =>
-                            const Center(child: CircularProgressIndicator()),
-                        error: (error, stackTrace) =>
-                            Center(child: Text('Error: $error')),
+                        }).toList(),
                       ),
                     ),
-                  ),
-                ],
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, stackTrace) =>
+                    Center(child: Text('Error: $error')),
               ),
             ),
             Padding(

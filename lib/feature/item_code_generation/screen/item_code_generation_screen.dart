@@ -6,20 +6,20 @@ import 'package:jewlease/feature/item_configuration/widgets/data_widget.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 
-class AllAttributeScreen extends ConsumerWidget {
-  const AllAttributeScreen({super.key});
+class ItemCodeGenerationScreen extends ConsumerWidget {
+  const ItemCodeGenerationScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('All Attribute'),
+          title: const Text('Item Code Generation'),
           actions: [
             AppBarButtons(
               ontap: [
                 () {
                   log('new pressed');
-                  context.push('/addAttributeScreen');
+                  context.push('/addItemCodeGenerationScreen');
                 },
                 () {},
                 () {
@@ -37,7 +37,7 @@ class AllAttributeScreen extends ConsumerWidget {
         ),
         body: const ItemDataScreen(
           title: '',
-          endUrl: 'AllAttribute/',
+          endUrl: 'ItemCodeGeneration/',
         ));
   }
 }

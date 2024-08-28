@@ -4,20 +4,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jewlease/core/utils/utils.dart';
-import 'package:jewlease/data/model/all_attribute_model.dart';
-import 'package:jewlease/feature/all_attributes/repository/item_configuration_repository.dart';
+import 'package:jewlease/data/model/item_code_generation_model.dart';
+import 'package:jewlease/feature/item_code_generation/repository/item_configuration_repository.dart';
 
 // Create a StateNotifier for managing the state and interactions
-class AllAttributeController extends StateNotifier<bool> {
-  final AllAttributeRepository _allAttributeRepository;
+class ItemCodeGEnerationController extends StateNotifier<bool> {
+  final ItemCodeGenerationRepository _allAttributeRepository;
 
-  AllAttributeController(this._allAttributeRepository) : super(false);
+  ItemCodeGEnerationController(this._allAttributeRepository) : super(false);
 
-  Future<void> submitItemConfiguration(
-      AllAttribute config, BuildContext context) async {
+  Future<void> submitItemCodeGenerationConfiguration(
+      ItemCodeGeneration config, BuildContext context) async {
     try {
       state = true;
-      final response = await _allAttributeRepository.addAttribute(config);
+      final response =
+          await _allAttributeRepository.addItemCodeGeneration(config);
       state = false;
       response.fold((l) => Utils.snackBar(l.message, context), (r) {
         Utils.snackBar('New Item Configuration Created', context);
@@ -32,9 +33,9 @@ class AllAttributeController extends StateNotifier<bool> {
 }
 
 // Define a provider for the controller
-final allAttributeControllerProvider =
-    StateNotifierProvider<AllAttributeController, bool>((ref) {
+final itemCodeGenerationProvider =
+    StateNotifierProvider<ItemCodeGEnerationController, bool>((ref) {
   final dio = Dio();
-  final repository = AllAttributeRepository(dio);
-  return AllAttributeController(repository);
+  final repository = ItemCodeGenerationRepository(dio);
+  return ItemCodeGEnerationController(repository);
 });

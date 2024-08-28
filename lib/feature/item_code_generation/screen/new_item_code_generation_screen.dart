@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/data/model/all_attribute_model.dart';
+import 'package:jewlease/data/model/item_code_generation_model.dart';
 import 'package:jewlease/feature/all_attributes/controller/all_attribute_controller.dart';
+import 'package:jewlease/feature/item_code_generation/controller/all_attribute_controller.dart';
 import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
 import 'package:jewlease/feature/item_configuration/widgets/item_dailog_widget.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/widgets/drop_down_text_field.dart';
+import 'package:jewlease/widgets/number_input_text_field.dart';
 import 'package:jewlease/widgets/read_only_textfield_widget.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
 
@@ -20,13 +23,18 @@ class AddItemCodeGenerationScreen extends ConsumerStatefulWidget {
 
 class AddItemCodeGenerationScreenState
     extends ConsumerState<AddItemCodeGenerationScreen> {
-  final TextEditingController attributeCode = TextEditingController();
-  final TextEditingController attributeDescription = TextEditingController();
+  final TextEditingController codeGenFormat = TextEditingController();
+  final TextEditingController startWith = TextEditingController();
+  final TextEditingController incrBy = TextEditingController();
+  final TextEditingController srNoSeperator = TextEditingController();
 
   @override
   void dispose() {
-    attributeCode.dispose();
-    attributeDescription.dispose();
+    codeGenFormat.dispose();
+    startWith.dispose();
+    incrBy.dispose();
+    srNoSeperator.dispose();
+
     super.dispose();
   }
 
@@ -41,7 +49,7 @@ class AddItemCodeGenerationScreenState
         appBar: AppBar(
           automaticallyImplyLeading: false,
           centerTitle: false,
-          title: const Text('All Attribute'),
+          title: const Text('Item Code Generation'),
           actions: [
             AppBarButtons(
               ontap: [
@@ -93,37 +101,41 @@ class AddItemCodeGenerationScreenState
                             context: context,
                             builder: (context) => const ItemTypeDialogScreen(
                               title: 'Item Group',
-                              endUrl: 'AllAttribute/AttributeType',
+                              endUrl: 'ItemConfiguration/',
+                              value: 'ItemGroup',
                             ),
                           );
                         },
                       ),
-                      _buildFormField('Attribute Code', attributeCode),
-                      _buildFormField(
-                          'Attribute Description', attributeDescription),
+                      _buildFormField('Code Gen Format', codeGenFormat),
+                      NumberTextFieldWidget(
+                        controller: startWith,
+                        labelText: 'Start With',
+                      ),
+                      NumberTextFieldWidget(
+                        controller: incrBy,
+                        labelText: 'Incr By',
+                      ),
+                      _buildFormField('SrNo Seperator', srNoSeperator),
                       Row(
                         children: [
                           Checkbox(
-                            value: isChecked['Default Indicator'] ?? false,
+                            value: isChecked['Master Variant Ind'] ?? false,
                             onChanged: (bool? value) {
                               //Update the state when the checkbox is pressed
                               ref
                                   .read(chechkBoxSelectionProvider.notifier)
-                                  .updateSelection('Default Indicator', value!);
+                                  .updateSelection(
+                                      'Master Variant Ind', value!);
                             },
                             activeColor: Colors
                                 .green, // Optional: Set the color of the tick
                           ),
                           const Expanded(
-                            child: Text('Default Indicator'),
+                            child: Text('Master Variant Ind'),
                           ),
                         ],
                       ),
-                      const DropDownTextFieldWidget(
-                        labelText: 'Row Status',
-                        initialValue: 'Active',
-                        items: ['Active', 'InActive'],
-                      )
                     ],
                   ),
                 ),
@@ -134,17 +146,19 @@ class AddItemCodeGenerationScreenState
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        final config = AllAttribute(
-                          attributeType: textFieldvalues['Attribute Type']!,
-                          attributeCode: attributeCode.text,
-                          attributeDescription: attributeDescription.text,
-                          defaultIndicator:
-                              isChecked['Default Indicator'] ?? false,
-                          rowStatus: dropDownValue['Row Status'] ?? 'Active',
+                        final config = ItemCodeGeneration(
+                          itemGroup: textFieldvalues['Item Group']!,
+                          codeGenFormat: codeGenFormat.text,
+                          startWith: int.parse(startWith.text),
+                          incrBy: int.parse(startWith.text),
+                          srNoSeparator: srNoSeperator.text,
+                          masterVariantInd:
+                              isChecked['Master Variant Ind'] ?? false,
                         );
                         ref
-                            .read(allAttributeControllerProvider.notifier)
-                            .submitItemConfiguration(config, context);
+                            .read(itemCodeGenerationProvider.notifier)
+                            .submitItemCodeGenerationConfiguration(
+                                config, context);
                       },
                       style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.fromLTRB(50, 20, 50, 20),
@@ -153,7 +167,7 @@ class AddItemCodeGenerationScreenState
                               borderRadius: BorderRadius.circular(10)),
                           backgroundColor:
                               const Color.fromARGB(255, 40, 112, 62)),
-                      child: !ref.watch(itemConfigurationControllerProvider)
+                      child: !ref.watch(itemCodeGenerationProvider)
                           ? const Text(
                               'Done',
                               style: TextStyle(color: Colors.white),

@@ -157,7 +157,7 @@ class DrawerList extends StatelessWidget {
                   icon: Icons.museum,
                   title: 'Code Generation For Item',
                   onTap: () {
-                    context.push('/itemConfigurationScreen');
+                    context.go('/itemCodeGenerationScreen');
                   },
                 ),
                 DrawerSubItem(

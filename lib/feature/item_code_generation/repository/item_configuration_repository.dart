@@ -3,18 +3,19 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:jewlease/data/model/all_attribute_model.dart';
 import 'package:jewlease/data/model/failure.dart';
+import 'package:jewlease/data/model/item_code_generation_model.dart';
 
-class AllAttributeRepository {
+class ItemCodeGenerationRepository {
   final Dio _dio;
 
-  AllAttributeRepository(this._dio);
+  ItemCodeGenerationRepository(this._dio);
 
-  Future<Either<Failure, String>> addAttribute(AllAttribute config) async {
+  Future<Either<Failure, String>> addItemCodeGeneration(
+      ItemCodeGeneration config) async {
     try {
       final response = await _dio.post(
-        'http://13.239.113.142:3000/AllAttribute/',
+        'http://13.239.113.142:3000/ItemCodeGeneration/',
         data: config.toJson(),
         options: Options(
           headers: {'Content-Type': 'application/json'},
