@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jewlease/data/model/item_type_model.dart';
 import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
@@ -9,6 +7,7 @@ import 'package:jewlease/providers/dailog_selection_provider.dart';
 import 'package:jewlease/widgets/check_box.dart';
 import 'package:jewlease/widgets/drop_down_text_field.dart';
 import 'package:jewlease/widgets/icon_text_button_widget.dart';
+import 'package:jewlease/widgets/test.dart';
 import 'package:jewlease/widgets/text_field_widget.dart';
 
 class AddMetalItemScreen extends ConsumerStatefulWidget {
@@ -36,6 +35,7 @@ class AddMetalItemScreenState extends ConsumerState<AddMetalItemScreen> {
   ];
   @override
   Widget build(BuildContext context) {
+    final selectedContent = ref.watch(formSequenceProvider);
     final isChecked = ref.watch(chechkBoxSelectionProvider);
     final textFieldvalues = ref.watch(dialogSelectionProvider);
     return Scaffold(
@@ -129,12 +129,24 @@ class AddMetalItemScreenState extends ConsumerState<AddMetalItemScreen> {
               Expanded(
                   child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: parentForm(),
+                child: selectedContent == 0
+                    ? parentForm()
+                    : const ItemAttributesScreen(
+                        attributeTypes: [
+                          'HSN - SAC CODE',
+                        ],
+                      ),
               )),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget second() {
+    return const Center(
+      child: Text('second'),
     );
   }
 
