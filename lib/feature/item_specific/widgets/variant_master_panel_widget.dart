@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant.dart';
 import 'package:jewlease/widgets/read_only_textfield_widget.dart';
 import 'package:jewlease/widgets/text_field_widget.dart';
@@ -171,7 +172,10 @@ class VariantMasterPanelWidget extends ConsumerWidget {
                         controller: itemType,
                       ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        context.go(
+                            '/masterScreen/itemMasterGoldScreen/hello/AllAttribute/');
+                      },
                       style: ElevatedButton.styleFrom(
                         elevation: 4,
                         shape: RoundedRectangleBorder(

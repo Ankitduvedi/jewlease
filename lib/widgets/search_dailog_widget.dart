@@ -7,10 +7,15 @@ import 'package:jewlease/providers/dailog_selection_provider.dart';
 
 class ItemTypeDialogScreen extends ConsumerStatefulWidget {
   const ItemTypeDialogScreen(
-      {super.key, required this.title, required this.endUrl, this.value});
+      {super.key,
+      required this.title,
+      required this.endUrl,
+      this.value,
+      this.query});
   final String title;
   final String endUrl;
   final String? value;
+  final String? query;
 
   @override
   ItemTypeDialogScreenState createState() => ItemTypeDialogScreenState();
@@ -117,7 +122,16 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
             const SizedBox(height: 18),
             Expanded(
               child: itemDataAsyncValue.when(
-                data: (items) {
+                data: (item) {
+                  final List<Map<String, dynamic>> items;
+                  if (widget.query != null) {
+                    items = item.where((item) {
+                      return item.values.any(
+                          (value) => value.toString().contains(widget.query!));
+                    }).toList();
+                  } else {
+                    items = item;
+                  }
                   if (items.isEmpty) {
                     return const Center(child: Text('No data available'));
                   }

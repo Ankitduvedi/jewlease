@@ -7,7 +7,7 @@ import 'package:jewlease/providers/dailog_selection_provider.dart';
 import 'package:jewlease/widgets/check_box.dart';
 import 'package:jewlease/widgets/drop_down_text_field.dart';
 import 'package:jewlease/widgets/icon_text_button_widget.dart';
-import 'package:jewlease/widgets/test.dart';
+import 'package:jewlease/widgets/item_attribute_widget.dart';
 import 'package:jewlease/widgets/text_field_widget.dart';
 
 class AddMetalItemScreen extends ConsumerStatefulWidget {
@@ -141,12 +141,6 @@ class AddMetalItemScreenState extends ConsumerState<AddMetalItemScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget second() {
-    return const Center(
-      child: Text('second'),
     );
   }
 

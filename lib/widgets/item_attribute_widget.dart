@@ -1,6 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fpdart/fpdart.dart';
+import 'package:jewlease/providers/dailog_selection_provider.dart';
+import 'package:jewlease/widgets/read_only_textfield_widget.dart';
+import 'package:jewlease/widgets/search_dailog_widget.dart';
 
 class ItemAttributesScreen extends ConsumerWidget {
   const ItemAttributesScreen({super.key, required this.attributeTypes});
@@ -67,7 +71,7 @@ class ItemAttributesScreen extends ConsumerWidget {
   }
 }
 
-class TableRowItem extends StatelessWidget {
+class TableRowItem extends ConsumerWidget {
   final String attributeType;
   final String attributeValue;
   final String attributeDesc;
@@ -80,7 +84,10 @@ class TableRowItem extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final textFieldvalues = ref.watch(dialogSelectionProvider);
+    log(textFieldvalues['AttributeCode'].toString());
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
@@ -98,18 +105,21 @@ class TableRowItem extends StatelessWidget {
             ),
           ),
           Expanded(
-            flex: 1,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(attributeValue),
-                IconButton(
-                  icon: const Icon(Icons.search, size: 18),
-                  onPressed: () {
-                    // Handle search icon pressed
-                  },
-                ),
-              ],
+            child: ReadOnlyTextFieldWidget(
+              hintText: textFieldvalues['Attribute Type'] ?? 'Attribute Type',
+              labelText: 'Attribute Type',
+              icon: Icons.search,
+              onIconPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => const ItemTypeDialogScreen(
+                    value: 'AttributeCode',
+                    title: 'Attribute Type',
+                    endUrl: 'AllAttribute',
+                    query: 'HSN',
+                  ),
+                );
+              },
             ),
           ),
           Expanded(
