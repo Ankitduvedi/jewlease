@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/data/model/item_master_metal.dart';
 import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
-import 'package:jewlease/feature/item_specific/controller/item_master_and_variant.dart';
+import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
 import 'package:jewlease/widgets/check_box.dart';
@@ -38,10 +39,31 @@ class AddMetalItemScreenState extends ConsumerState<AddMetalItemScreen> {
     final selectedContent = ref.watch(formSequenceProvider);
     final isChecked = ref.watch(chechkBoxSelectionProvider);
     final textFieldvalues = ref.watch(dialogSelectionProvider);
+    final dropDownValue = ref.watch(dropDownProvider);
+
     return Scaffold(
       persistentFooterButtons: [
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            if (selectedContent == 0) {
+              ref.read(formSequenceProvider.notifier).state = 1;
+            }
+            if (selectedContent == 1) {
+              final config = ItemMasterMetal(
+                  metalCode: metalCode.text,
+                  exclusiveIndicator: isChecked['Exclusive Indicator'] ?? false,
+                  description: description.text,
+                  rowStatus: dropDownValue['Row Status'] ?? 'Active',
+                  createdDate: DateTime.timestamp(),
+                  updateDate: DateTime.timestamp(),
+                  attributeType: 'HSN - SAC CODE',
+                  attributeValue: textFieldvalues['Attribute Type']!);
+
+              ref
+                  .read(itemSpecificControllerProvider.notifier)
+                  .submitMetalItemConfiguration(config, context);
+            }
+          },
           style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.fromLTRB(50, 20, 50, 20),
               elevation: 4,
@@ -49,9 +71,9 @@ class AddMetalItemScreenState extends ConsumerState<AddMetalItemScreen> {
                   borderRadius: BorderRadius.circular(10)),
               backgroundColor: const Color.fromARGB(255, 40, 112, 62)),
           child: !ref.watch(itemConfigurationControllerProvider)
-              ? const Text(
-                  'Next',
-                  style: TextStyle(color: Colors.white),
+              ? Text(
+                  selectedContent == 0 ? 'Next' : 'Save',
+                  style: const TextStyle(color: Colors.white),
                 )
               : const CircularProgressIndicator(
                   color: Colors.white,

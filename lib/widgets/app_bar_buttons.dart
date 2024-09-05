@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:jewlease/feature/item_specific/controller/item_master_and_variant.dart';
+import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 
 class AppBarButtons extends ConsumerWidget {
   final List<VoidCallback> ontap;

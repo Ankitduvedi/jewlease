@@ -1,32 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 
-class CustomInfoSection extends StatelessWidget {
+class CustomInfoSection extends ConsumerWidget {
   const CustomInfoSection({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final data = ref.watch(selectedMetalDataProvider);
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: Colors.blue.shade900, // Background color matching the image
         borderRadius: BorderRadius.circular(8),
       ),
-      child: const Row(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           // Metal Code
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'Metal Code',
                 style: TextStyle(color: Colors.white),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
-                'AG',
-                style:
-                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                data.metalCode,
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -40,7 +43,7 @@ class CustomInfoSection extends StatelessWidget {
               ),
               SizedBox(height: 4),
               Text(
-                '-',
+                data.exclusiveIndicator ? '1' : '-',
                 style:
                     TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
@@ -56,7 +59,7 @@ class CustomInfoSection extends StatelessWidget {
               ),
               SizedBox(height: 4),
               Text(
-                'ALLOY GOLD',
+                data.description,
                 style:
                     TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
@@ -72,7 +75,7 @@ class CustomInfoSection extends StatelessWidget {
               ),
               SizedBox(height: 4),
               Text(
-                '1',
+                data.rowStatus,
                 style:
                     TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
@@ -88,7 +91,7 @@ class CustomInfoSection extends StatelessWidget {
               ),
               SizedBox(height: 4),
               Text(
-                '29/01/2024 01:12 pm',
+                data.createdDate.toString(),
                 style:
                     TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
@@ -104,7 +107,7 @@ class CustomInfoSection extends StatelessWidget {
               ),
               SizedBox(height: 4),
               Text(
-                '-',
+                data.updateDate.toString(),
                 style:
                     TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),

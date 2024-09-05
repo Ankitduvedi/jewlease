@@ -4,7 +4,7 @@ import 'package:jewlease/data/model/all_attribute_model.dart';
 import 'package:jewlease/feature/all_attributes/controller/all_attribute_controller.dart';
 import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
 import 'package:jewlease/widgets/search_dailog_widget.dart';
-import 'package:jewlease/feature/item_specific/controller/item_master_and_variant.dart';
+import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/widgets/drop_down_text_field.dart';
 import 'package:jewlease/widgets/read_only_textfield_widget.dart';

@@ -87,11 +87,12 @@ final goRouter = GoRouter(
                       return const AddMetalItemScreen();
                     }),
                 GoRoute(
-                    path: 'itemMasterGoldScreen/:title/:endUrl',
+                    path: 'itemMasterGoldScreen',
                     builder: (context, state) {
-                      return ItemMasterGoldScreen(
-                        title: state.pathParameters['title']!,
-                        endUrl: state.pathParameters['endUrl']!,
+                      return const ItemMasterGoldScreen(
+                        title: 'Metal code',
+                        endUrl: 'ItemMasterAndVariants/Metal/Gold/Item/',
+                        value: 'Metal code',
                       );
                     }),
               ]),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jewlease/feature/item_specific/controller/item_master_and_variant.dart';
+import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 
 class SelectMasterPanelWidget extends ConsumerWidget {
   final String title;

@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/data/model/item_type_model.dart';
 import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
 import 'package:jewlease/widgets/search_dailog_widget.dart';
-import 'package:jewlease/feature/item_specific/controller/item_master_and_variant.dart';
+import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/widgets/check_box.dart';
 import 'package:jewlease/widgets/number_input_text_field.dart';
