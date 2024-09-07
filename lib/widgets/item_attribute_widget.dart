@@ -8,7 +8,7 @@ import 'package:jewlease/widgets/search_dailog_widget.dart';
 
 class ItemAttributesScreen extends ConsumerWidget {
   const ItemAttributesScreen({super.key, required this.attributeTypes});
-  final List<String> attributeTypes;
+  final List<List<String>> attributeTypes;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -55,7 +55,8 @@ class ItemAttributesScreen extends ConsumerWidget {
               child: ListView(
                 children: attributeTypes.map((value) {
                   return TableRowItem(
-                    attributeType: value,
+                    attributeData: value,
+                    attributeType: value[0],
                     attributeValue: '',
                     attributeDesc: '',
                   );
@@ -72,6 +73,7 @@ class ItemAttributesScreen extends ConsumerWidget {
 }
 
 class TableRowItem extends ConsumerWidget {
+  final List<String> attributeData;
   final String attributeType;
   final String attributeValue;
   final String attributeDesc;
@@ -81,12 +83,13 @@ class TableRowItem extends ConsumerWidget {
     required this.attributeType,
     required this.attributeValue,
     required this.attributeDesc,
+    required this.attributeData,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final textFieldvalues = ref.watch(dialogSelectionProvider);
-    log(textFieldvalues['AttributeCode'].toString());
+    log(textFieldvalues[attributeData[2]].toString());
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -106,17 +109,17 @@ class TableRowItem extends ConsumerWidget {
           ),
           Expanded(
             child: ReadOnlyTextFieldWidget(
-              hintText: textFieldvalues['Attribute Type'] ?? 'Attribute Type',
-              labelText: 'Attribute Type',
+              hintText: textFieldvalues[attributeData[2]] ?? attributeType,
+              labelText: attributeType,
               icon: Icons.search,
               onIconPressed: () {
                 showDialog(
                   context: context,
-                  builder: (context) => const ItemTypeDialogScreen(
-                    value: 'AttributeCode',
-                    title: 'Attribute Type',
-                    endUrl: 'AllAttribute',
-                    query: 'HSN',
+                  builder: (context) => ItemTypeDialogScreen(
+                    value: attributeData[1],
+                    title: attributeData[2],
+                    endUrl: attributeData[3],
+                    query: attributeData[4],
                   ),
                 );
               },

@@ -176,11 +176,14 @@ class AddItemConfigurtionScreenState
                       const CheckBoxWidget(
                         labelText: 'Custom Stock Reqd Ind',
                       ),
-                      _buildNumberInputField('Wastage(%)', wastage),
-                      _buildNumberInputField(
-                          'Inward Rate Tollerance', inwardRateTollerance),
-                      _buildNumberInputField(
-                          'Inward Rate Tollerance', inwardRateTollerances),
+                      NumberTextFieldWidget(
+                          labelText: 'Wastage(%)', controller: wastage),
+                      NumberTextFieldWidget(
+                          labelText: 'Inward Rate Tollerance',
+                          controller: inwardRateTollerance),
+                      NumberTextFieldWidget(
+                          labelText: 'Inward Rate Tollerance',
+                          controller: inwardRateTollerances),
                       const CheckBoxWidget(
                         labelText: 'Operation Reqd Ind',
                       ),
@@ -284,25 +287,6 @@ class AddItemConfigurtionScreenState
                 onPressed: onIconPressed ?? () {},
               )
             : null,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNumberInputField(
-      String labelText, TextEditingController controller) {
-    return TextField(
-      controller: controller,
-      keyboardType: TextInputType.number,
-      textAlign: TextAlign.right, // Text starts entering from the right
-      inputFormatters: [
-        FilteringTextInputFormatter.digitsOnly, // Only allows digits
-      ],
-      decoration: InputDecoration(
-        labelText: labelText,
-        hintText: '0',
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
         ),

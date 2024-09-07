@@ -54,6 +54,9 @@ class MasterScreenState extends ConsumerState<MasterScreen> {
                   if (masterType[1] == 'Gold' &&
                       masterType[2] == 'item master') {
                     context.go('/masterScreen/addMetalItemScreen');
+                  } else if (masterType[1] == 'Gold' &&
+                      masterType[2] == 'variant master') {
+                    context.go('/masterScreen/addMetalVariantScreen');
                   }
                 }
               },

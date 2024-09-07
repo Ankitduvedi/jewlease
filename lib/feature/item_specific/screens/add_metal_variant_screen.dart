@@ -9,19 +9,25 @@ import 'package:jewlease/widgets/check_box.dart';
 import 'package:jewlease/widgets/drop_down_text_field.dart';
 import 'package:jewlease/widgets/icon_text_button_widget.dart';
 import 'package:jewlease/widgets/item_attribute_widget.dart';
+import 'package:jewlease/widgets/number_input_text_field.dart';
+import 'package:jewlease/widgets/read_only_textfield_widget.dart';
+import 'package:jewlease/widgets/search_dailog_widget.dart';
 import 'package:jewlease/widgets/text_field_widget.dart';
 
-class AddMetalItemScreen extends ConsumerStatefulWidget {
-  const AddMetalItemScreen({super.key});
+class AddMetalVariantScreen extends ConsumerStatefulWidget {
+  const AddMetalVariantScreen({super.key});
   @override
   ConsumerState<ConsumerStatefulWidget> createState() {
-    return AddMetalItemScreenState();
+    return AddMetalVariantScreenState();
   }
 }
 
-class AddMetalItemScreenState extends ConsumerState<AddMetalItemScreen> {
+class AddMetalVariantScreenState extends ConsumerState<AddMetalVariantScreen> {
   final TextEditingController metalCode = TextEditingController();
   final TextEditingController description = TextEditingController();
+  final TextEditingController reorderQty = TextEditingController();
+  final TextEditingController stdBuyingRate = TextEditingController();
+  final TextEditingController stdSellingRate = TextEditingController();
 
   @override
   void dispose() {
@@ -57,7 +63,7 @@ class AddMetalItemScreenState extends ConsumerState<AddMetalItemScreen> {
                   createdDate: DateTime.timestamp(),
                   updateDate: DateTime.timestamp(),
                   attributeType: 'HSN - SAC CODE',
-                  attributeValue: textFieldvalues['Attribute Code']!);
+                  attributeValue: textFieldvalues['Attribute Type']!);
 
               ref
                   .read(itemSpecificControllerProvider.notifier)
@@ -84,7 +90,7 @@ class AddMetalItemScreenState extends ConsumerState<AddMetalItemScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         centerTitle: false,
-        title: const Text('Item Master (Item Group - Gold)'),
+        title: const Text('Variant Master (Item Group - Gold)'),
         actions: [
           AppBarButtons(
             ontap: [
@@ -156,12 +162,19 @@ class AddMetalItemScreenState extends ConsumerState<AddMetalItemScreen> {
                     : const ItemAttributesScreen(
                         attributeTypes: [
                           [
-                            'HSN - SAC CODE',
+                            'METAL COLOR',
                             'AttributeCode',
                             'Attribute Code',
                             'AllAttribute',
-                            'HSN'
+                            'METAL COLOR'
                           ],
+                          [
+                            'KARAT',
+                            'AttributeCode',
+                            'Attribute Code',
+                            'AllAttribute',
+                            'KARAT'
+                          ]
                         ],
                       ),
               )),
@@ -173,22 +186,72 @@ class AddMetalItemScreenState extends ConsumerState<AddMetalItemScreen> {
   }
 
   Widget parentForm() {
+    final textFieldvalues = ref.watch(dialogSelectionProvider);
     return GridView.count(
       crossAxisCount: 6,
       crossAxisSpacing: 10,
       mainAxisSpacing: 20,
       childAspectRatio: 4.5,
       children: [
-        TextFieldWidget(
-          controller: metalCode,
-          labelText: 'Metal Code',
+        ReadOnlyTextFieldWidget(
+          hintText: textFieldvalues['Metal code'] ?? 'Metal code',
+          labelText: 'Metal code',
+          icon: Icons.search,
+          onIconPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) => const ItemTypeDialogScreen(
+                title: 'Metal code',
+                endUrl: 'ItemMasterAndVariants/Metal/Gold/Item/',
+                value: 'Metal code',
+              ),
+            );
+          },
+        ),
+        const DropDownTextFieldWidget(
+          initialValue: 'STYLE',
+          items: ['STYLE', 'STYLEDESIGN'],
+          labelText: 'Variant Type',
+        ),
+        ReadOnlyTextFieldWidget(
+          hintText:
+              textFieldvalues['Base Metal Variant'] ?? 'Base Metal Variant',
+          labelText: 'Base Metal Variant',
+        ),
+        ReadOnlyTextFieldWidget(
+          hintText: textFieldvalues['Vendor Name'] ?? 'Vendor Name',
+          labelText: 'Vendor Name',
+          icon: Icons.search,
+          onIconPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) => const ItemTypeDialogScreen(
+                title: 'Vendor Name',
+                endUrl: 'ItemMasterAndVariants/Metal/Gold/Item/',
+                value: 'Vendor Name',
+              ),
+            );
+          },
+        ),
+        NumberTextFieldWidget(
+          controller: stdSellingRate,
+          labelText: 'Std.Selling Rate',
+        ),
+        NumberTextFieldWidget(
+          controller: stdBuyingRate,
+          labelText: 'Std.Buying Rate',
+        ),
+        NumberTextFieldWidget(
+          controller: reorderQty,
+          labelText: 'Reorder Qty',
+        ),
+        const DropDownTextFieldWidget(
+          initialValue: 'Yes',
+          items: ['No', 'Yes'],
+          labelText: 'Used As BOM',
         ),
         const CheckBoxWidget(
-          labelText: 'Exclusive Indicator',
-        ),
-        TextFieldWidget(
-          controller: description,
-          labelText: 'Description',
+          labelText: 'Can Return In Melting',
         ),
         const DropDownTextFieldWidget(
           initialValue: 'Active',
