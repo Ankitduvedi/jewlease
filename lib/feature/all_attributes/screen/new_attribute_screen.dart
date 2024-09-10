@@ -95,6 +95,7 @@ class AddAttributeScreenState extends ConsumerState<AddAttributeScreen> {
                             builder: (context) => const ItemTypeDialogScreen(
                               title: 'Attribute Type',
                               endUrl: 'AllAttribute/AttributeType',
+                              value: 'ConfigValue',
                             ),
                           );
                         },

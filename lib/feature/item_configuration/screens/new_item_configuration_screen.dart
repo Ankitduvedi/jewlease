@@ -104,6 +104,7 @@ class AddItemConfigurtionScreenState
                             builder: (context) => const ItemTypeDialogScreen(
                               title: 'Item Type',
                               endUrl: 'ItemConfiguration/ItemType/',
+                              value: 'ConfigValue',
                             ),
                           );
                         },
@@ -116,6 +117,7 @@ class AddItemConfigurtionScreenState
                           showDialog(
                             context: context,
                             builder: (context) => const ItemTypeDialogScreen(
+                              value: 'ConfigValue',
                               title: 'Item Group',
                               endUrl: 'ItemConfiguration/ItemGroup/',
                             ),
@@ -133,6 +135,7 @@ class AddItemConfigurtionScreenState
                             builder: (context) => const ItemTypeDialogScreen(
                               title: 'Item Nature',
                               endUrl: 'ItemConfiguration/ItemNature/',
+                              value: 'ConfigValue',
                             ),
                           );
                         },
@@ -146,6 +149,7 @@ class AddItemConfigurtionScreenState
                             context: context,
                             builder: (context) => const ItemTypeDialogScreen(
                               title: 'Stock UOM',
+                              value: 'ConfigValue',
                               endUrl: 'ItemConfiguration/StockUOM/',
                             ),
                           );
@@ -160,6 +164,7 @@ class AddItemConfigurtionScreenState
                           showDialog(
                             context: context,
                             builder: (context) => const ItemTypeDialogScreen(
+                              value: 'ConfigValue',
                               title: 'Dependent Cr',
                               endUrl: 'ItemConfiguration/DependentCriteria/',
                             ),

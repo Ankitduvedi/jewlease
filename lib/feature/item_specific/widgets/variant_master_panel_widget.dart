@@ -173,12 +173,15 @@ class VariantMasterPanelWidget extends ConsumerWidget {
                       ),
                     ElevatedButton(
                       onPressed: () {
-                        const String endRoute =
-                            "ItemMasterAndVariants/Metal/Gold/Item/";
-                        const String title = "hello";
-                        context.go(
-                          '/masterScreen/itemMasterGoldScreen',
-                        );
+                        if (masterType[2] == 'variant master') {
+                          context.go(
+                            '/masterScreen/variantMasterGoldScreen',
+                          );
+                        } else {
+                          context.go(
+                            '/masterScreen/itemMasterGoldScreen',
+                          );
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         elevation: 4,

@@ -155,13 +155,13 @@ class AddMetalItemScreenState extends ConsumerState<AddMetalItemScreen> {
                     ? parentForm()
                     : const ItemAttributesScreen(
                         attributeTypes: [
-                          [
-                            'HSN - SAC CODE',
-                            'AttributeCode',
-                            'Attribute Code',
-                            'AllAttribute',
-                            'HSN'
-                          ],
+                          {
+                            'title': 'HSN - SAC CODE',
+                            'key': 'HSN - SAC CODE',
+                            'value': 'AttributeCode',
+                            'endUrl': 'AllAttribute',
+                            'query': 'HSN'
+                          },
                         ],
                       ),
               )),

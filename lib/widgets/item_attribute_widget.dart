@@ -8,7 +8,7 @@ import 'package:jewlease/widgets/search_dailog_widget.dart';
 
 class ItemAttributesScreen extends ConsumerWidget {
   const ItemAttributesScreen({super.key, required this.attributeTypes});
-  final List<List<String>> attributeTypes;
+  final List<Map<String, String>> attributeTypes;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -56,7 +56,7 @@ class ItemAttributesScreen extends ConsumerWidget {
                 children: attributeTypes.map((value) {
                   return TableRowItem(
                     attributeData: value,
-                    attributeType: value[0],
+                    attributeType: value['title'] ?? '',
                     attributeValue: '',
                     attributeDesc: '',
                   );
@@ -73,7 +73,7 @@ class ItemAttributesScreen extends ConsumerWidget {
 }
 
 class TableRowItem extends ConsumerWidget {
-  final List<String> attributeData;
+  final Map<String, String> attributeData;
   final String attributeType;
   final String attributeValue;
   final String attributeDesc;
@@ -89,7 +89,6 @@ class TableRowItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final textFieldvalues = ref.watch(dialogSelectionProvider);
-    log(textFieldvalues[attributeData[2]].toString());
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -109,17 +108,17 @@ class TableRowItem extends ConsumerWidget {
           ),
           Expanded(
             child: ReadOnlyTextFieldWidget(
-              hintText: textFieldvalues[attributeData[2]] ?? attributeType,
+              hintText: textFieldvalues[attributeData['key']] ?? attributeType,
               labelText: attributeType,
               icon: Icons.search,
               onIconPressed: () {
                 showDialog(
                   context: context,
                   builder: (context) => ItemTypeDialogScreen(
-                    value: attributeData[1],
-                    title: attributeData[2],
-                    endUrl: attributeData[3],
-                    query: attributeData[4],
+                    value: attributeData['value']!,
+                    title: attributeData['title']!,
+                    endUrl: attributeData['endUrl']!,
+                    query: attributeData['query'],
                   ),
                 );
               },

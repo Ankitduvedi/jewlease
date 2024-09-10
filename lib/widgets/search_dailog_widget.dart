@@ -10,12 +10,14 @@ class ItemTypeDialogScreen extends ConsumerStatefulWidget {
       {super.key,
       required this.title,
       required this.endUrl,
-      this.value,
+      required this.value,
+      this.keyOfMap,
       this.query});
   final String title;
   final String endUrl;
-  final String? value;
+  final String value;
   final String? query;
+  final String? keyOfMap;
 
   @override
   ItemTypeDialogScreenState createState() => ItemTypeDialogScreenState();
@@ -183,8 +185,9 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                           );
                         }).toList(),
                         rows: _filteredItems.map((item) {
-                          final isSelected = selectedItem[widget.title] ==
-                              item[widget.value ?? 'ConfigValue'];
+                          final isSelected =
+                              selectedItem[widget.keyOfMap ?? widget.title] ==
+                                  item[widget.value];
 
                           return DataRow(
                             selected: isSelected,
@@ -192,8 +195,9 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                               if (selected == true) {
                                 ref
                                     .read(dialogSelectionProvider.notifier)
-                                    .updateSelection(widget.title,
-                                        item[widget.value ?? 'ConfigValue']);
+                                    .updateSelection(
+                                        widget.keyOfMap ?? widget.title,
+                                        item[widget.value]);
                               }
                             },
                             cells:
@@ -219,8 +223,8 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      final selectedItemID =
-                          ref.read(dialogSelectionProvider)[widget.title];
+                      final selectedItemID = ref.read(dialogSelectionProvider)[
+                          widget.keyOfMap ?? widget.title];
                       if (selectedItemID != null) {
                         // Save the selected item ID to the provider or perform any action you need
                         Navigator.of(context).pop(); // Close the dialog

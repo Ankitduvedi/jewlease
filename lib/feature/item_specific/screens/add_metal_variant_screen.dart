@@ -12,7 +12,6 @@ import 'package:jewlease/widgets/item_attribute_widget.dart';
 import 'package:jewlease/widgets/number_input_text_field.dart';
 import 'package:jewlease/widgets/read_only_textfield_widget.dart';
 import 'package:jewlease/widgets/search_dailog_widget.dart';
-import 'package:jewlease/widgets/text_field_widget.dart';
 
 class AddMetalVariantScreen extends ConsumerStatefulWidget {
   const AddMetalVariantScreen({super.key});
@@ -161,20 +160,20 @@ class AddMetalVariantScreenState extends ConsumerState<AddMetalVariantScreen> {
                     ? parentForm()
                     : const ItemAttributesScreen(
                         attributeTypes: [
-                          [
-                            'METAL COLOR',
-                            'AttributeCode',
-                            'Attribute Code',
-                            'AllAttribute',
-                            'METAL COLOR'
-                          ],
-                          [
-                            'KARAT',
-                            'AttributeCode',
-                            'Attribute Code',
-                            'AllAttribute',
-                            'KARAT'
-                          ]
+                          {
+                            'title': 'METAL COLOR',
+                            'key': 'METAL COLOR',
+                            'value': 'AttributeCode',
+                            'endUrl': 'AllAttribute',
+                            'query': 'METAL COLOR'
+                          },
+                          {
+                            'title': 'KARAT',
+                            'key': 'KARAT',
+                            'value': 'AttributeCode',
+                            'endUrl': 'AllAttribute',
+                            'query': 'KARAT'
+                          }
                         ],
                       ),
               )),

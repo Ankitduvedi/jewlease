@@ -109,18 +109,6 @@ class TableRowItem extends ConsumerWidget {
             child: ReadOnlyTextFieldWidget(
               hintText: data.attributeValue,
               labelText: 'Attribute Type',
-              icon: Icons.search,
-              onIconPressed: () {
-                // showDialog(
-                //   context: context,
-                //   builder: (context) => const ItemTypeDialogScreen(
-                //     value: 'AttributeCode',
-                //     title: 'Attribute Type',
-                //     endUrl: 'AllAttribute',
-                //     query: 'HSN',
-                //   ),
-                // );
-              },
             ),
           ),
           Expanded(

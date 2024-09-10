@@ -14,6 +14,7 @@ import 'package:jewlease/feature/item_configuration/screens/new_item_configurati
 import 'package:jewlease/feature/item_specific/screens/add_metal_item_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/add_metal_variant_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/load_data_of_item_master_gold.dart';
+import 'package:jewlease/feature/item_specific/screens/load_data_of_variant_master_gold.dart';
 import 'package:jewlease/feature/item_specific/screens/master_screen.dart';
 import 'package:jewlease/feature/splas_screen/splash_view.dart';
 
@@ -95,7 +96,16 @@ final goRouter = GoRouter(
                     path: 'itemMasterGoldScreen',
                     builder: (context, state) {
                       return const ItemMasterGoldScreen(
-                        title: 'Metal code',
+                        title: 'Item Master (Item Group- Gold)',
+                        endUrl: 'ItemMasterAndVariants/Metal/Gold/Item/',
+                        value: 'Metal code',
+                      );
+                    }),
+                GoRoute(
+                    path: 'variantMasterGoldScreen',
+                    builder: (context, state) {
+                      return const VariantMasterGoldScreen(
+                        title: 'Variant Master (Item Group- Gold)',
                         endUrl: 'ItemMasterAndVariants/Metal/Gold/Item/',
                         value: 'Metal code',
                       );
