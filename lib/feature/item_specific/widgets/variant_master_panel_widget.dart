@@ -34,10 +34,6 @@ class VariantMasterPanelWidget extends ConsumerWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Text(
-                  'Form HDR ID: 327',
-                  style: TextStyle(fontSize: 16),
-                ),
               ],
             ),
           ),

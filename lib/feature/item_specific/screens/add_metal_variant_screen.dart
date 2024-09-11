@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jewlease/data/model/item_master_metal.dart';
+import 'package:jewlease/data/model/variant_master_metal.dart';
 import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
@@ -54,19 +54,25 @@ class AddMetalVariantScreenState extends ConsumerState<AddMetalVariantScreen> {
               ref.read(formSequenceProvider.notifier).state = 1;
             }
             if (selectedContent == 1) {
-              final config = ItemMasterMetal(
-                  metalCode: metalCode.text,
-                  exclusiveIndicator: isChecked['Exclusive Indicator'] ?? false,
-                  description: description.text,
+              final config = VariantMasterMetal(
                   rowStatus: dropDownValue['Row Status'] ?? 'Active',
                   createdDate: DateTime.timestamp(),
                   updateDate: DateTime.timestamp(),
-                  attributeType: 'HSN - SAC CODE',
-                  attributeValue: textFieldvalues['Attribute Type']!);
+                  metalName: textFieldvalues['Metal code']!,
+                  variantType: dropDownValue['Variant Type'] ?? 'STYLE',
+                  baseMetalVariant: '24Kt',
+                  stdSellingRate: double.parse(stdSellingRate.text),
+                  stdBuyingRate: double.parse(stdBuyingRate.text),
+                  reorderQty: int.parse(reorderQty.text),
+                  usedInBom: dropDownValue['Used As BOM'] ?? 'Yes',
+                  canReturnInMelting:
+                      isChecked['Can Return In Melting'] ?? false,
+                  metalColor: textFieldvalues['METAL COLOR']!,
+                  karat: textFieldvalues['KARAT']!);
 
               ref
                   .read(itemSpecificControllerProvider.notifier)
-                  .submitMetalItemConfiguration(config, context);
+                  .submitMetalVariantConfiguration(config, context);
             }
           },
           style: ElevatedButton.styleFrom(
@@ -212,9 +218,8 @@ class AddMetalVariantScreenState extends ConsumerState<AddMetalVariantScreen> {
           items: ['STYLE', 'STYLEDESIGN'],
           labelText: 'Variant Type',
         ),
-        ReadOnlyTextFieldWidget(
-          hintText:
-              textFieldvalues['Base Metal Variant'] ?? 'Base Metal Variant',
+        const ReadOnlyTextFieldWidget(
+          hintText: '24Kt',
           labelText: 'Base Metal Variant',
         ),
         ReadOnlyTextFieldWidget(

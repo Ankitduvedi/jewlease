@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 
-class CustomInfoSection extends ConsumerWidget {
-  const CustomInfoSection({super.key});
+class VariantMasterDetail extends ConsumerWidget {
+  const VariantMasterDetail({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,12 +33,12 @@ class CustomInfoSection extends ConsumerWidget {
               ),
             ],
           ),
-          // Exclusive Indicator
+          // Variant Type
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Exclusive Indicator',
+                'Variant Type',
                 style: TextStyle(color: Colors.white),
               ),
               const SizedBox(height: 4),
@@ -49,12 +49,12 @@ class CustomInfoSection extends ConsumerWidget {
               ),
             ],
           ),
-          // Description
+          // Base Metal Variant
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Description',
+                'Base Metal Variant',
                 style: TextStyle(color: Colors.white),
               ),
               const SizedBox(height: 4),

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jewlease/core/utils/utils.dart';
 import 'package:jewlease/data/model/item_master_metal.dart';
+import 'package:jewlease/data/model/variant_master_metal.dart';
 import 'package:jewlease/feature/item_specific/repository/item_configuration_repository.dart';
 
 final masterTypeProvider =
@@ -34,6 +35,23 @@ class ItemSpecificController extends StateNotifier<bool> {
     try {
       state = true;
       final response = await _itemSpecificRepository.addMetalItem(config);
+      state = false;
+      response.fold((l) => Utils.snackBar(l.message, context), (r) {
+        Utils.snackBar('New Metal Item Created', context);
+        context.pop();
+        null;
+      });
+      // Optionally update the state if necessary after submission
+    } catch (e) {
+      state = false;
+    }
+  }
+
+  Future<void> submitMetalVariantConfiguration(
+      VariantMasterMetal config, BuildContext context) async {
+    try {
+      state = true;
+      final response = await _itemSpecificRepository.addMetalVariant(config);
       state = false;
       response.fold((l) => Utils.snackBar(l.message, context), (r) {
         Utils.snackBar('New Metal Item Created', context);

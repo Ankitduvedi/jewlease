@@ -108,7 +108,7 @@ class TableRowItem extends ConsumerWidget {
           Expanded(
             child: ReadOnlyTextFieldWidget(
               hintText: data.attributeValue,
-              labelText: 'Attribute Type',
+              labelText: 'Attribute Value',
             ),
           ),
           Expanded(
