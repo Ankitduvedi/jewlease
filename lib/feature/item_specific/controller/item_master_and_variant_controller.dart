@@ -1,4 +1,6 @@
 // Define a provider to manage the state of the selected master type
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -33,6 +35,8 @@ class ItemSpecificController extends StateNotifier<bool> {
   Future<void> submitMetalItemConfiguration(
       ItemMasterMetal config, BuildContext context) async {
     try {
+      log('in controller');
+
       state = true;
       final response = await _itemSpecificRepository.addMetalItem(config);
       state = false;
@@ -43,6 +47,8 @@ class ItemSpecificController extends StateNotifier<bool> {
       });
       // Optionally update the state if necessary after submission
     } catch (e) {
+      log('error');
+      Utils.snackBar(e.toString(), context);
       state = false;
     }
   }
@@ -54,7 +60,7 @@ class ItemSpecificController extends StateNotifier<bool> {
       final response = await _itemSpecificRepository.addMetalVariant(config);
       state = false;
       response.fold((l) => Utils.snackBar(l.message, context), (r) {
-        Utils.snackBar('New Metal Item Created', context);
+        Utils.snackBar('New Metal Variant Created', context);
         context.pop();
         null;
       });

@@ -68,8 +68,10 @@ class VariantMasterMetal {
         "Used in BOM": usedInBom,
         "Can Return in Melting": canReturnInMelting,
         "Row status": rowStatus,
-        "Created Date": createdDate.toIso8601String(),
-        "Update Date": updateDate.toIso8601String(),
+        "Created Date":
+            "${createdDate.year.toString().padLeft(4, '0')}-${createdDate.month.toString().padLeft(2, '0')}-${createdDate.day.toString().padLeft(2, '0')}",
+        "Update Date":
+            "${updateDate.year.toString().padLeft(4, '0')}-${updateDate.month.toString().padLeft(2, '0')}-${updateDate.day.toString().padLeft(2, '0')}",
         "Metal Color": metalColor,
         "Karat": karat,
       };

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/data/model/item_master_metal.dart';
@@ -49,6 +51,7 @@ class AddMetalItemScreenState extends ConsumerState<AddMetalItemScreen> {
               ref.read(formSequenceProvider.notifier).state = 1;
             }
             if (selectedContent == 1) {
+              log('pressed');
               final config = ItemMasterMetal(
                   metalCode: metalCode.text,
                   exclusiveIndicator: isChecked['Exclusive Indicator'] ?? false,
@@ -57,7 +60,9 @@ class AddMetalItemScreenState extends ConsumerState<AddMetalItemScreen> {
                   createdDate: DateTime.timestamp(),
                   updateDate: DateTime.timestamp(),
                   attributeType: 'HSN - SAC CODE',
-                  attributeValue: textFieldvalues['Attribute Code']!);
+                  attributeValue: textFieldvalues['HSN - SAC CODE']!);
+
+              log(config.toJson().toString());
 
               ref
                   .read(itemSpecificControllerProvider.notifier)
@@ -70,7 +75,7 @@ class AddMetalItemScreenState extends ConsumerState<AddMetalItemScreen> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
               backgroundColor: const Color.fromARGB(255, 40, 112, 62)),
-          child: !ref.watch(itemConfigurationControllerProvider)
+          child: !ref.watch(itemSpecificControllerProvider)
               ? Text(
                   selectedContent == 0 ? 'Next' : 'Save',
                   style: const TextStyle(color: Colors.white),

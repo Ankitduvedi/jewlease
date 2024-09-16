@@ -81,7 +81,7 @@ class AddMetalVariantScreenState extends ConsumerState<AddMetalVariantScreen> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
               backgroundColor: const Color.fromARGB(255, 40, 112, 62)),
-          child: !ref.watch(itemConfigurationControllerProvider)
+          child: !ref.watch(itemSpecificControllerProvider)
               ? Text(
                   selectedContent == 0 ? 'Next' : 'Save',
                   style: const TextStyle(color: Colors.white),

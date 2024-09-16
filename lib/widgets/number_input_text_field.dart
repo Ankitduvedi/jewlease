@@ -8,18 +8,21 @@ class NumberTextFieldWidget extends ConsumerWidget {
 
   const NumberTextFieldWidget(
       {super.key, required this.labelText, required this.controller});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return TextField(
       controller: controller,
-      keyboardType: TextInputType.number,
+      keyboardType: TextInputType.numberWithOptions(
+          decimal: true), // Enable decimal input
       textAlign: TextAlign.right, // Text starts entering from the right
       inputFormatters: [
-        FilteringTextInputFormatter.digitsOnly, // Only allows digits
+        FilteringTextInputFormatter.allow(
+            RegExp(r'^\d*\.?\d*')), // Allows digits and decimal point
       ],
       decoration: InputDecoration(
         labelText: labelText,
-        hintText: '0',
+        hintText: '0.00', // Hint for decimal input
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
         ),
