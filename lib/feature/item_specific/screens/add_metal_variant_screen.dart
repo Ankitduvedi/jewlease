@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/data/model/variant_master_metal.dart';
-import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
@@ -45,6 +44,7 @@ class AddMetalVariantScreenState extends ConsumerState<AddMetalVariantScreen> {
     final isChecked = ref.watch(chechkBoxSelectionProvider);
     final textFieldvalues = ref.watch(dialogSelectionProvider);
     final dropDownValue = ref.watch(dropDownProvider);
+    final masterType = ref.watch(masterTypeProvider);
 
     return Scaffold(
       persistentFooterButtons: [
@@ -95,7 +95,7 @@ class AddMetalVariantScreenState extends ConsumerState<AddMetalVariantScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         centerTitle: false,
-        title: const Text('Variant Master (Item Group - Gold)'),
+        title: Text('Variant Master (Item Group - ${masterType[1]})'),
         actions: [
           AppBarButtons(
             ontap: [

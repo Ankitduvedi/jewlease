@@ -54,9 +54,6 @@ class MasterScreenState extends ConsumerState<MasterScreen> {
                   if (masterType[0] == 'Metal' &&
                       masterType[2] == 'item master') {
                     context.push('/masterScreen/addMetalItemScreen');
-                  } else if (masterType[1] == 'Gold' &&
-                      masterType[2] == 'variant master') {
-                    context.push('/masterScreen/addMetalVariantScreen');
                   } else if (masterType[0] == 'Stone' &&
                       masterType[2] == 'item master') {
                     context.push('/masterScreen/addStoneItemScreen');
@@ -72,6 +69,9 @@ class MasterScreenState extends ConsumerState<MasterScreen> {
                   } else if (masterType[0] == 'Packing Material' &&
                       masterType[2] == 'item master') {
                     context.push('/masterScreen/addPackingMaterialItemScreen');
+                  } else if (masterType[0] == 'Metal' &&
+                      masterType[2] == 'variant master') {
+                    context.push('/masterScreen/addMetalVariantScreen');
                   }
                 }
               },
