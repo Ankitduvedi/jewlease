@@ -60,6 +60,9 @@ class MasterScreenState extends ConsumerState<MasterScreen> {
                   } else if (masterType[0] == 'Stone' &&
                       masterType[2] == 'item master') {
                     context.push('/masterScreen/addStoneItemScreen');
+                  } else if (masterType[0] == 'Consumables' &&
+                      masterType[2] == 'item master') {
+                    context.push('/masterScreen/addConsumablesItemScreen');
                   }
                 }
               },
