@@ -9,7 +9,6 @@ import 'package:jewlease/widgets/check_box.dart';
 import 'package:jewlease/widgets/drop_down_text_field.dart';
 import 'package:jewlease/widgets/image_data.dart';
 import 'package:jewlease/widgets/image_upload_dailog_box.dart';
-import 'package:jewlease/widgets/read_only_textfield_widget.dart';
 import 'package:jewlease/widgets/text_field_widget.dart';
 
 class AddStyleItemScreen extends ConsumerStatefulWidget {

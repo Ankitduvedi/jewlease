@@ -27,6 +27,16 @@ final selectedMetalDataProvider = StateProvider<ItemMasterMetal>((ref) =>
         attributeType: '',
         attributeValue: ''));
 
+final selectedStoneItemDataProvider = StateProvider<ItemMasterStone>((ref) =>
+    ItemMasterStone(
+        stoneCode: '',
+        description: '',
+        rowStatus: '',
+        createdDate: DateTime(2024),
+        updateDate: DateTime(2024),
+        attributeType: '',
+        attributeValue: ''));
+
 // Create a StateNotifier for managing the state and interactions
 class ItemSpecificController extends StateNotifier<bool> {
   final ItemSpecificRepository _itemSpecificRepository;

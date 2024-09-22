@@ -1,9 +1,6 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
-import 'package:jewlease/providers/dailog_selection_provider.dart';
 import 'package:jewlease/widgets/read_only_textfield_widget.dart';
 
 class LoadItemAttributesScreen extends ConsumerWidget {
@@ -85,8 +82,6 @@ class TableRowItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final textFieldvalues = ref.watch(dialogSelectionProvider);
-    log(textFieldvalues['AttributeCode'].toString());
     final data = ref.watch(selectedMetalDataProvider);
 
     return Container(

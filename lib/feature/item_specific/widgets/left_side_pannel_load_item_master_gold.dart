@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/data/model/item_master_metal.dart';
+import 'package:jewlease/data/model/item_master_stone.dart';
 import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 
@@ -33,6 +34,7 @@ class LeftPannelSearchWidgetState
   @override
   Widget build(BuildContext context) {
     final itemDataAsyncValue = ref.watch(itemTypeFutureProvider(widget.endUrl));
+    final masterType = ref.watch(masterTypeProvider);
 
     final selectedItem = ref.watch(dialogSelectionProvider);
 
@@ -114,8 +116,14 @@ class LeftPannelSearchWidgetState
                               .read(dialogSelectionProvider.notifier)
                               .updateSelection(widget.title, item[_keys[0]]);
                           log(' metal code ${item['Metal code']}');
-                          ref.read(selectedMetalDataProvider.notifier).state =
-                              ItemMasterMetal.fromJson(item);
+                          if (masterType[0] == 'Metal') {
+                            ref.read(selectedMetalDataProvider.notifier).state =
+                                ItemMasterMetal.fromJson(item);
+                          } else if (masterType[0] == 'Stone') {
+                            ref
+                                .read(selectedStoneItemDataProvider.notifier)
+                                .state = ItemMasterStone.fromJson(item);
+                          }
                         }
                       },
                       cells: [DataCell(Text(item[_keys[0]].toString()))],

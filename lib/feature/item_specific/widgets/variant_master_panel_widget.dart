@@ -173,9 +173,15 @@ class VariantMasterPanelWidget extends ConsumerWidget {
                           context.go(
                             '/masterScreen/variantMasterGoldScreen',
                           );
-                        } else {
+                        } else if ((masterType[0] == 'Metal') &&
+                            (masterType[2] == 'item master')) {
                           context.go(
                             '/masterScreen/itemMasterGoldScreen',
+                          );
+                        } else if ((masterType[0] == 'Stone') &&
+                            (masterType[2] == 'item master')) {
+                          context.go(
+                            '/masterScreen/itemMasterStoneScreen',
                           );
                         }
                       },
