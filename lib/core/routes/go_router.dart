@@ -14,6 +14,7 @@ import 'package:jewlease/feature/item_configuration/screens/new_item_configurati
 import 'package:jewlease/feature/item_specific/screens/add_consumables_item_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/add_metal_item_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/add_metal_variant_screen.dart';
+import 'package:jewlease/feature/item_specific/screens/add_set_item_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/add_stone_item_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/load_data_of_item_master_gold.dart';
 import 'package:jewlease/feature/item_specific/screens/load_data_of_variant_master_gold.dart';
@@ -98,6 +99,11 @@ final goRouter = GoRouter(
                     path: 'addConsumablesItemScreen',
                     builder: (context, state) {
                       return const AddConsumablesItemScreen();
+                    }),
+                GoRoute(
+                    path: 'addSetItemScreen',
+                    builder: (context, state) {
+                      return const AddSetItemScreen();
                     }),
                 GoRoute(
                     path: 'addMetalVariantScreen',
