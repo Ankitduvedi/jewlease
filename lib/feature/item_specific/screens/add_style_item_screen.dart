@@ -7,6 +7,7 @@ import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
 import 'package:jewlease/widgets/check_box.dart';
 import 'package:jewlease/widgets/drop_down_text_field.dart';
+import 'package:jewlease/widgets/image_data.dart';
 import 'package:jewlease/widgets/image_upload_dailog_box.dart';
 import 'package:jewlease/widgets/read_only_textfield_widget.dart';
 import 'package:jewlease/widgets/text_field_widget.dart';
@@ -40,6 +41,7 @@ class AddStyleItemScreenState extends ConsumerState<AddStyleItemScreen> {
     final textFieldvalues = ref.watch(dialogSelectionProvider);
     final dropDownValue = ref.watch(dropDownProvider);
     final masterType = ref.watch(masterTypeProvider);
+    final images = ref.watch(imageProvider);
 
     return Scaffold(
       persistentFooterButtons: [
@@ -123,13 +125,56 @@ class AddStyleItemScreenState extends ConsumerState<AddStyleItemScreen> {
           ),
           child: Expanded(
               child: Padding(
-                  padding: const EdgeInsets.all(8.0), child: parentForm())),
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Expanded(child: parentForm(images)),
+                      Container(
+                        decoration: BoxDecoration(
+                          color:
+                              Colors.white, // Background color of the container
+                          borderRadius:
+                              BorderRadius.circular(12.0), // Rounded corners
+                          boxShadow: [
+                            BoxShadow(
+                              color:
+                                  Colors.black.withOpacity(0.2), // Shadow color
+                              spreadRadius: 1, // How far the shadow spreads
+                              blurRadius: 8, // Softens the shadow
+                              offset: const Offset(4,
+                                  4), // Moves the shadow horizontally and vertically
+                            ),
+                          ],
+                          border: Border.all(
+                            color: const Color.fromARGB(
+                                255, 219, 219, 219), // Outline (border) color
+                            width: 2.0, // Border width
+                          ),
+                        ),
+                        child: TextButton(
+                          child: const Text('Upload Imae'),
+                          onPressed: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) =>
+                                    const ImageUploadDialog());
+                          },
+                        ),
+                      ),
+                      Flexible(
+                        flex: 2,
+                        child: ImageList(
+                          images: images,
+                        ),
+                      )
+                    ],
+                  ))),
         ),
       ),
     );
   }
 
-  Widget parentForm() {
+  Widget parentForm(List<ImageModel> images) {
     return GridView.count(
       crossAxisCount: 6,
       crossAxisSpacing: 10,
@@ -166,15 +211,6 @@ class AddStyleItemScreenState extends ConsumerState<AddStyleItemScreen> {
           initialValue: 'Active',
           items: ['InActive', 'Active'],
           labelText: 'Row Status',
-        ),
-        ReadOnlyTextFieldWidget(
-          hintText: 'Attribute Type',
-          labelText: 'Attribute Type',
-          icon: Icons.search,
-          onIconPressed: () {
-            showDialog(
-                context: context, builder: (context) => ImageUploadDialog());
-          },
         ),
       ],
     );
