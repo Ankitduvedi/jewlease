@@ -106,7 +106,7 @@ final goRouter = GoRouter(
                     builder: (context, state) {
                       return const VariantMasterGoldScreen(
                         title: 'Variant Master (Item Group- Gold)',
-                        endUrl: 'ItemMasterAndVariants/Metal/Gold/Item/',
+                        endUrl: 'ItemMasterAndVariants/Metal/Gold/Variant/',
                         value: 'Metal code',
                       );
                     }),

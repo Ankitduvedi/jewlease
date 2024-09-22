@@ -33,12 +33,13 @@ class ItemSpecificController extends StateNotifier<bool> {
   ItemSpecificController(this._itemSpecificRepository) : super(false);
 
   Future<void> submitMetalItemConfiguration(
-      ItemMasterMetal config, BuildContext context) async {
+      ItemMasterMetal config, BuildContext context, String metal) async {
     try {
       log('in controller');
 
       state = true;
-      final response = await _itemSpecificRepository.addMetalItem(config);
+      final response =
+          await _itemSpecificRepository.addMetalItem(config, metal);
       state = false;
       response.fold((l) => Utils.snackBar(l.message, context), (r) {
         Utils.snackBar('New Metal Item Created', context);

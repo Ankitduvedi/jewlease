@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/data/model/item_master_metal.dart';
-import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
@@ -42,6 +41,7 @@ class AddMetalItemScreenState extends ConsumerState<AddMetalItemScreen> {
     final isChecked = ref.watch(chechkBoxSelectionProvider);
     final textFieldvalues = ref.watch(dialogSelectionProvider);
     final dropDownValue = ref.watch(dropDownProvider);
+    final masterType = ref.watch(masterTypeProvider);
 
     return Scaffold(
       persistentFooterButtons: [
@@ -66,7 +66,8 @@ class AddMetalItemScreenState extends ConsumerState<AddMetalItemScreen> {
 
               ref
                   .read(itemSpecificControllerProvider.notifier)
-                  .submitMetalItemConfiguration(config, context);
+                  .submitMetalItemConfiguration(
+                      config, context, masterType[1]!);
             }
           },
           style: ElevatedButton.styleFrom(
@@ -89,7 +90,7 @@ class AddMetalItemScreenState extends ConsumerState<AddMetalItemScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         centerTitle: false,
-        title: const Text('Item Master (Item Group - Gold)'),
+        title: Text('Item Master (Item Group - ${masterType[1]})'),
         actions: [
           AppBarButtons(
             ontap: [
