@@ -51,11 +51,15 @@ class MasterScreenState extends ConsumerState<MasterScreen> {
               () {
                 log('new pressed');
                 if (masterType[1] != null && masterType[2] != null) {
-                  if (masterType[2] == 'item master') {
-                    context.go('/masterScreen/addMetalItemScreen');
+                  if (masterType[0] == 'Metal' &&
+                      masterType[2] == 'item master') {
+                    context.push('/masterScreen/addMetalItemScreen');
                   } else if (masterType[1] == 'Gold' &&
                       masterType[2] == 'variant master') {
-                    context.go('/masterScreen/addMetalVariantScreen');
+                    context.push('/masterScreen/addMetalVariantScreen');
+                  } else if (masterType[0] == 'Stone' &&
+                      masterType[2] == 'item master') {
+                    context.push('/masterScreen/addStoneItemScreen');
                   }
                 }
               },
