@@ -5,6 +5,7 @@ import 'package:jewlease/data/model/item_master_metal.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
+import 'package:jewlease/widgets/check_box.dart';
 import 'package:jewlease/widgets/drop_down_text_field.dart';
 import 'package:jewlease/widgets/text_field_widget.dart';
 
@@ -17,13 +18,13 @@ class AddStyleItemScreen extends ConsumerStatefulWidget {
 }
 
 class AddStyleItemScreenState extends ConsumerState<AddStyleItemScreen> {
-  final TextEditingController consumableName = TextEditingController();
-  final TextEditingController description = TextEditingController();
+  final TextEditingController styleName = TextEditingController();
+  final TextEditingController remark = TextEditingController();
 
   @override
   void dispose() {
-    consumableName.dispose();
-    description.dispose();
+    styleName.dispose();
+    remark.dispose();
     super.dispose();
   }
 
@@ -43,9 +44,9 @@ class AddStyleItemScreenState extends ConsumerState<AddStyleItemScreen> {
         ElevatedButton(
           onPressed: () {
             final config = ItemMasterMetal(
-                metalCode: consumableName.text,
+                metalCode: styleName.text,
                 exclusiveIndicator: isChecked['Exclusive Indicator'] ?? false,
-                description: description.text,
+                description: remark.text,
                 rowStatus: dropDownValue['Row Status'] ?? 'Active',
                 createdDate: DateTime.timestamp(),
                 updateDate: DateTime.timestamp(),
@@ -134,8 +135,30 @@ class AddStyleItemScreenState extends ConsumerState<AddStyleItemScreen> {
       childAspectRatio: 4.5,
       children: [
         TextFieldWidget(
-          controller: consumableName,
-          labelText: 'Consumable Name',
+          controller: styleName,
+          labelText: 'Style Name',
+        ),
+        const CheckBoxWidget(
+          labelText: 'Exclusive Indicator',
+        ),
+        const CheckBoxWidget(
+          labelText: 'Hold Indicator',
+        ),
+        const CheckBoxWidget(
+          labelText: 'Rework Indicator',
+        ),
+        const CheckBoxWidget(
+          labelText: 'Reject Indicator',
+        ),
+        const CheckBoxWidget(
+          labelText: 'Proto Required Indicator',
+        ),
+        const CheckBoxWidget(
+          labelText: 'Auto Variant Code Gen Indicator',
+        ),
+        TextFieldWidget(
+          controller: remark,
+          labelText: 'Remark',
         ),
         const DropDownTextFieldWidget(
           initialValue: 'Active',

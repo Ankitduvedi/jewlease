@@ -136,8 +136,6 @@ final goRouter = GoRouter(
                     path: 'itemMasterGoldScreen',
                     builder: (context, state) {
                       return const ItemMasterGoldScreen(
-                        title: 'Item Master (Item Group- Gold)',
-                        endUrl: 'ItemMasterAndVariants/Metal/Gold/Item/',
                         value: 'Metal code',
                       );
                     }),

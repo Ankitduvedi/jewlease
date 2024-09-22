@@ -4,18 +4,11 @@ import 'package:jewlease/feature/item_specific/controller/item_master_and_varian
 import 'package:jewlease/feature/item_specific/widgets/left_side_pannel_load_item_master_gold.dart';
 import 'package:jewlease/feature/item_specific/widgets/right_side_pannel_load_item_master_gold.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
-import 'package:jewlease/widgets/item_attribute_widget.dart';
 import 'package:jewlease/widgets/load_item_attribute_widget.dart';
 
 class ItemMasterGoldScreen extends ConsumerStatefulWidget {
-  const ItemMasterGoldScreen(
-      {super.key,
-      required this.title,
-      required this.endUrl,
-      this.value,
-      this.query});
-  final String title;
-  final String endUrl;
+  const ItemMasterGoldScreen({super.key, this.value, this.query});
+
   final String? value;
   final String? query;
 
@@ -26,11 +19,13 @@ class ItemMasterGoldScreen extends ConsumerStatefulWidget {
 class ItemMasterGoldScreenState extends ConsumerState<ItemMasterGoldScreen> {
   @override
   Widget build(BuildContext context) {
+    final masterType = ref.watch(masterTypeProvider);
+
     return Scaffold(
         appBar: AppBar(
           centerTitle: false,
           automaticallyImplyLeading: false,
-          title: Text(widget.title),
+          title: Text('Variant Master (Item Group- ${masterType[1]})'),
           actions: [
             AppBarButtons(
               ontap: [
@@ -53,8 +48,8 @@ class ItemMasterGoldScreenState extends ConsumerState<ItemMasterGoldScreen> {
           children: [
             Expanded(
               child: LeftPannelSearchWidget(
-                endUrl: widget.endUrl,
-                title: widget.title,
+                endUrl: 'ItemMasterAndVariants/Metal/${masterType[1]}/Item/',
+                title: 'Variant Master (Item Group- ${masterType[1]})',
               ),
             ),
             const Expanded(
