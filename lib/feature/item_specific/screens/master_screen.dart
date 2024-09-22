@@ -69,6 +69,9 @@ class MasterScreenState extends ConsumerState<MasterScreen> {
                   } else if (masterType[0] == 'Certificate' &&
                       masterType[2] == 'item master') {
                     context.push('/masterScreen/addCertificateItemScreen');
+                  } else if (masterType[0] == 'Packing Material' &&
+                      masterType[2] == 'item master') {
+                    context.push('/masterScreen/addPackingMaterialItemScreen');
                   }
                 }
               },
