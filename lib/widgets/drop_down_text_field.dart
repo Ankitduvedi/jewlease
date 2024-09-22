@@ -21,16 +21,26 @@ class DropDownTextFieldWidget extends ConsumerWidget {
       ),
       child: DropdownButtonFormField<String>(
         value: initialValue, // Set the default value here
+
         decoration: InputDecoration(
+          labelStyle: const TextStyle(fontSize: 12),
           labelText: labelText,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
           ),
+          contentPadding: EdgeInsets.symmetric(
+            vertical: 0.0, // Adjust the vertical padding
+            horizontal: 12.0, // Adjust the horizontal padding if necessary
+          ), // Ensure enough space for the content
         ),
+
         items: items
             .map((option) => DropdownMenuItem(
                   value: option,
-                  child: Text(option),
+                  child: Text(
+                    option,
+                    style: const TextStyle(fontSize: 13),
+                  ),
                 ))
             .toList(),
         onChanged: (value) {
@@ -41,7 +51,9 @@ class DropDownTextFieldWidget extends ConsumerWidget {
         },
         dropdownColor: Colors.white, // Set the dropdown menu background color
         style: const TextStyle(
-            color: Colors.black), // Text color for dropdown items
+          fontSize: 13,
+          color: Colors.black, // Text color for dropdown items
+        ),
       ),
     );
   }

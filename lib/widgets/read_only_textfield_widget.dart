@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/main.dart';
 
 class ReadOnlyTextFieldWidget extends ConsumerWidget {
   final String labelText;
@@ -15,6 +16,9 @@ class ReadOnlyTextFieldWidget extends ConsumerWidget {
       this.onIconPressed});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    screenHeight = MediaQuery.of(context).size.height;
+    screenWidth = MediaQuery.of(context).size.width;
+
     return TextField(
         onTap: () {
           // Prevent any interaction with the text field
@@ -24,10 +28,16 @@ class ReadOnlyTextFieldWidget extends ConsumerWidget {
         readOnly: true,
         decoration: InputDecoration(
           labelText: labelText,
+          labelStyle: const TextStyle(fontSize: 12),
           hintText: hintText,
+          hintStyle: const TextStyle(fontSize: 13),
+
           suffixIcon: icon != null
               ? IconButton(
-                  icon: Icon(icon),
+                  icon: Icon(
+                    icon,
+                    size: 17,
+                  ),
                   onPressed: onIconPressed ?? () {},
                 )
               : null,
@@ -36,6 +46,8 @@ class ReadOnlyTextFieldWidget extends ConsumerWidget {
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
           ),
+          contentPadding:
+              EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
         ));
   }
 }

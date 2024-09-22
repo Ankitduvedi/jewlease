@@ -6,11 +6,13 @@ import 'package:jewlease/feature/home/controller/home_controller.dart';
 class DrawerItem extends ConsumerWidget {
   final IconData icon;
   final String title;
+  final VoidCallback onTap;
 
   const DrawerItem({
     super.key,
     required this.icon,
     required this.title,
+    required this.onTap,
   });
 
   @override
@@ -29,7 +31,7 @@ class DrawerItem extends ConsumerWidget {
         ),
       ),
       onTap: () {
-        // Handle tap
+        onTap();
       },
     );
   }

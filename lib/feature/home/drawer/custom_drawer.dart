@@ -53,8 +53,11 @@ class DrawerList extends StatelessWidget {
     return ListView(
       padding: EdgeInsets.zero,
       children: [
-        const DrawerItem(
-            icon: Icons.dashboard_outlined, title: 'Pending Document(Trans)'),
+        DrawerItem(
+          icon: Icons.dashboard_outlined,
+          title: 'Pending Document(Trans)',
+          onTap: () {},
+        ),
         DrawerExpansionItem(
           icon: Icons.currency_rupee,
           title: 'Rate Updation',
@@ -238,7 +241,10 @@ class DrawerList extends StatelessWidget {
                 DrawerSubItem(
                   icon: Icons.museum_outlined,
                   title: 'Company',
-                  onTap: () {},
+                  onTap: () {
+                    log('button tapped');
+                    context.go('/vendorScreen');
+                  },
                 ),
                 DrawerSubItem(
                   icon: Icons.location_on_outlined,
@@ -683,7 +689,11 @@ class DrawerList extends StatelessWidget {
             ),
           ],
         ),
-        const DrawerItem(icon: Icons.calendar_today, title: 'Calendar'),
+        DrawerItem(
+          icon: Icons.calendar_today,
+          title: 'Calendar',
+          onTap: () {},
+        ),
         DrawerExpansionItem(
           icon: Icons.dashboard_outlined,
           title: 'Production Management',
@@ -844,16 +854,43 @@ class DrawerList extends StatelessWidget {
             ),
           ],
         ),
-        const DrawerItem(icon: Icons.dashboard_outlined, title: 'Loyalty'),
-        const DrawerItem(icon: Icons.remove_red_eye, title: 'View Transaction'),
-        const DrawerItem(
-            icon: Icons.receipt_long_outlined, title: 'View FA Transaction'),
-        const DrawerItem(icon: Icons.dashboard_outlined, title: 'Migrations'),
-        const DrawerItem(
-            icon: Icons.dashboard_outlined, title: 'Formula Procedures'),
-        const DrawerItem(
-            icon: Icons.dashboard_outlined, title: 'Generic Masters'),
-        const DrawerItem(icon: Icons.cloud, title: 'Application Management'),
+        DrawerItem(
+          icon: Icons.dashboard_outlined,
+          title: 'Loyalty',
+          onTap: () {},
+        ),
+        DrawerItem(
+          icon: Icons.remove_red_eye,
+          title: 'View Transaction',
+          onTap: () {},
+        ),
+        DrawerItem(
+          icon: Icons.receipt_long_outlined,
+          title: 'View FA Transaction',
+          onTap: () {},
+        ),
+        DrawerItem(
+          icon: Icons.dashboard_outlined,
+          title: 'Migrations',
+          onTap: () {},
+        ),
+        DrawerItem(
+          icon: Icons.dashboard_outlined,
+          title: 'Formula Procedures',
+          onTap: () {
+            context.go('/formulaProcedureScreen');
+          },
+        ),
+        DrawerItem(
+          icon: Icons.dashboard_outlined,
+          title: 'Generic Masters',
+          onTap: () {},
+        ),
+        DrawerItem(
+          icon: Icons.cloud,
+          title: 'Application Management',
+          onTap: () {},
+        ),
         DrawerExpansionItem(
           icon: Icons.airplane_ticket,
           title: 'Flights',
@@ -870,8 +907,16 @@ class DrawerList extends StatelessWidget {
             ),
           ],
         ),
-        const DrawerItem(icon: Icons.notifications, title: 'Notifications'),
-        const DrawerItem(icon: Icons.settings, title: 'Settings'),
+        DrawerItem(
+          icon: Icons.notifications,
+          title: 'Notifications',
+          onTap: () {},
+        ),
+        DrawerItem(
+          icon: Icons.settings,
+          title: 'Settings',
+          onTap: () {},
+        ),
       ],
     );
   }

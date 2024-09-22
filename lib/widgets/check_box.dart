@@ -22,7 +22,11 @@ class CheckBoxWidget extends ConsumerWidget {
           activeColor: Colors.green, // Optional: Set the color of the tick
         ),
         Expanded(
-          child: Text(labelText),
+          child: Text(
+            labelText,
+            style:
+                const TextStyle(fontSize: 13, overflow: TextOverflow.ellipsis),
+          ),
         ),
       ],
     );

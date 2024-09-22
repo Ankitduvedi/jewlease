@@ -12,6 +12,7 @@ class TextFieldWidget extends ConsumerWidget {
         controller: controller,
         decoration: InputDecoration(
           labelText: labelText,
+          labelStyle: const TextStyle(fontSize: 12),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
           ),
