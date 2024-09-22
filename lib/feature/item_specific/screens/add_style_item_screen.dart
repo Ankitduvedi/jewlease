@@ -7,6 +7,8 @@ import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
 import 'package:jewlease/widgets/check_box.dart';
 import 'package:jewlease/widgets/drop_down_text_field.dart';
+import 'package:jewlease/widgets/image_upload_dailog_box.dart';
+import 'package:jewlease/widgets/read_only_textfield_widget.dart';
 import 'package:jewlease/widgets/text_field_widget.dart';
 
 class AddStyleItemScreen extends ConsumerStatefulWidget {
@@ -164,7 +166,16 @@ class AddStyleItemScreenState extends ConsumerState<AddStyleItemScreen> {
           initialValue: 'Active',
           items: ['InActive', 'Active'],
           labelText: 'Row Status',
-        )
+        ),
+        ReadOnlyTextFieldWidget(
+          hintText: 'Attribute Type',
+          labelText: 'Attribute Type',
+          icon: Icons.search,
+          onIconPressed: () {
+            showDialog(
+                context: context, builder: (context) => ImageUploadDialog());
+          },
+        ),
       ],
     );
   }
