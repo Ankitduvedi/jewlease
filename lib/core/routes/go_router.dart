@@ -4,9 +4,11 @@ import 'package:jewlease/feature/all_attributes/screen/all_attribute_screen.dart
 import 'package:jewlease/feature/all_attributes/screen/new_attribute_screen.dart';
 import 'package:jewlease/feature/auth/screens/login_screen_owner.dart';
 import 'package:jewlease/feature/auth/screens/login_screen_staff.dart';
+import 'package:jewlease/feature/formula/screens/addFormulaProcedure.dart';
+import 'package:jewlease/feature/formula/screens/formula_procedure.dart';
 import 'package:jewlease/feature/home/screens/home_screen.dart';
-import 'package:jewlease/feature/home/widgets/home_screen_navbar.dart';
 import 'package:jewlease/feature/home/screens/welcome_screen.dart';
+import 'package:jewlease/feature/home/widgets/home_screen_navbar.dart';
 import 'package:jewlease/feature/item_code_generation/screen/item_code_generation_screen.dart';
 import 'package:jewlease/feature/item_code_generation/screen/new_item_code_generation_screen.dart';
 import 'package:jewlease/feature/item_configuration/screens/item_configuration_screen.dart';
@@ -22,6 +24,8 @@ import 'package:jewlease/feature/item_specific/screens/load_data_of_item_master_
 import 'package:jewlease/feature/item_specific/screens/load_data_of_variant_master_gold.dart';
 import 'package:jewlease/feature/item_specific/screens/master_screen.dart';
 import 'package:jewlease/feature/splas_screen/splash_view.dart';
+import 'package:jewlease/feature/vendor/screens/new_vendor_screen.dart';
+import 'package:jewlease/feature/vendor/screens/vendor_screen.dart';
 
 final goRouter = GoRouter(
   debugLogDiagnostics: true,
@@ -170,6 +174,26 @@ final goRouter = GoRouter(
               path: '/addItemCodeGenerationScreen',
               builder: (context, state) {
                 return const AddItemCodeGenerationScreen();
+              }),
+          GoRoute(
+              path: '/vendorScreen',
+              builder: (context, state) {
+                return const VendorScreen();
+              }),
+          GoRoute(
+              path: '/addVendorScreen',
+              builder: (context, state) {
+                return const AddVendor();
+              }),
+          GoRoute(
+              path: '/formulaProcedureScreen',
+              builder: (context, state) {
+                return const FormulaProcdedureScreen();
+              }),
+          GoRoute(
+              path: '/addformulaProcedureScreen',
+              builder: (context, state) {
+                return const AddFormulaProcedure();
               }),
         ]),
   ],

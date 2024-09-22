@@ -13,6 +13,7 @@ class NumberTextFieldWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return TextField(
       controller: controller,
+
       keyboardType: TextInputType.numberWithOptions(
           decimal: true), // Enable decimal input
       textAlign: TextAlign.right, // Text starts entering from the right
@@ -22,7 +23,12 @@ class NumberTextFieldWidget extends ConsumerWidget {
       ],
       decoration: InputDecoration(
         labelText: labelText,
+
         hintText: '0.00', // Hint for decimal input
+
+        labelStyle: const TextStyle(fontSize: 12),
+        hintStyle: const TextStyle(fontSize: 13),
+
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8.0),
         ),
