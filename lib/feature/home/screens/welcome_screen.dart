@@ -54,6 +54,7 @@ class WelcomeScreen extends StatelessWidget {
               onPressed: () {
                 // Navigate to owner screen
                 context.push('/loginScreen');
+                print("pressed button");
               },
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white,

@@ -1,38 +1,133 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
+    <script src="https://cdn.jsdelivr.net/npm/handsontable@11.1.0/dist/handsontable.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hyperformula@1.4.0/dist/hyperformula.full.min.js"></script>
+    <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/handsontable@11.1.0/dist/handsontable.full.min.css"
+    />
+    <base href="$FLUTTER_BASE_HREF" />
 
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
+    <meta charset="UTF-8" />
+    <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
 
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+    <meta name="description" content="A new Flutter project." />
 
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
-  <base href="$FLUTTER_BASE_HREF">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
 
-  <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+        /* Initially, set the spreadsheet container to very small (dot-like) */
+        #spreadsheet {
+            width: 1px;
+            height: 1px;
+            visibility: hidden;
+            position: relative;
+            z-index: 1;
+            margin-top: 50vh;
+            margin-left: auto;
 
-  <!-- iOS meta tags & icons -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="jewlease">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+        }
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
+        /* Button styles */
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 14px;
+        }
 
-  <title>jewlease</title>
-  <link rel="manifest" href="manifest.json">
+        /* Show dismiss button only when needed */
+        #dismissBtn {
+            display: none;
+        }
+    </style>
 </head>
 <body>
-  <script src="flutter_bootstrap.js" async></script>
+
+<!-- Spreadsheet container -->
+<div id="spreadsheet"></div>
+
+<!-- Dismiss button, hidden by default -->
+<button id="dismissBtn" class="hide" onclick="dismissSpreadsheet()">Dismiss Spreadsheet</button>
+
+<script src="flutter_bootstrap.js" async></script>
+<script>
+    var hotInstance;
+
+    function initializeHandsontable() {
+        console.log("Initializing Handsontable...");
+
+        const hyperformulaInstance = HyperFormula.buildEmpty();
+        var container = document.getElementById('spreadsheet');
+        var dismissBtn = document.getElementById('dismissBtn');  // Get reference to dismiss button
+
+        if (container) {
+            // Expand the spreadsheet container when initializing
+            container.style.width = '100vw';
+            container.style.height = '100vh';
+            container.style.p
+            container.style.visibility = 'visible';  // Make the container visible
+
+            hotInstance = new Handsontable(container, {
+                data: Handsontable.helper.createEmptySpreadsheetData(20, 10),
+                rowHeaders: true,
+                colHeaders: true,
+                formulas: {
+                    engine: hyperformulaInstance
+                },
+                licenseKey: 'non-commercial-and-evaluation',
+                contextMenu: true,
+                stretchH: 'all',
+                autoWrapRow: true,
+                autoWrapCol: true,
+                width: '75%',
+                height: '55vh',
+                minRows: 50,
+                minCols: 20,
+                afterChange: function(changes, source) {
+                    console.log("Cell changed: ", changes);
+                }
+            });
+
+            // Show the dismiss button when the spreadsheet is visible
+            dismissBtn.style.display = 'block';
+
+            // Prevent Flutter's event handling from blocking selection
+            container.addEventListener('mousedown', function(event) {
+                event.stopPropagation();
+            });
+
+        } else {
+            console.error('Spreadsheet container not found');
+        }
+    }
+
+    // Function to dismiss (hide) the spreadsheet
+    function dismissSpreadsheet() {
+        var container = document.getElementById('spreadsheet');
+        var dismissBtn = document.getElementById('dismissBtn');  // Get reference to dismiss button
+
+        // Destroy the Handsontable instance to free up memory
+        if (hotInstance) {
+            hotInstance.destroy();  // This removes Handsontable
+            console.log("Spreadsheet destroyed.");
+        }
+
+        // Resize the spreadsheet container to a dot-like size and hide it
+        container.style.width = '1px';
+        container.style.height = '1px';
+        container.style.visibility = 'hidden';  // Hide the container
+
+        // Hide the dismiss button as well
+        dismissBtn.style.display = 'none';
+    }
+
+    // Initialize Handsontable after a delay or call from Flutter WebView
+    // setTimeout(initializeHandsontable, 1000);  // Example: Delay (comment out if not needed)
+</script>
+
 </body>
 </html>
