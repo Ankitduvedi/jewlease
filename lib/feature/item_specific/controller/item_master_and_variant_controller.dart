@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jewlease/core/utils/utils.dart';
 import 'package:jewlease/data/model/item_master_metal.dart';
+import 'package:jewlease/data/model/item_master_stone.dart';
 import 'package:jewlease/data/model/variant_master_metal.dart';
 import 'package:jewlease/feature/item_specific/repository/item_configuration_repository.dart';
 
@@ -23,6 +24,16 @@ final selectedMetalDataProvider = StateProvider<ItemMasterMetal>((ref) =>
         rowStatus: '',
         createdDate: DateTime.now(),
         updateDate: DateTime.now(),
+        attributeType: '',
+        attributeValue: ''));
+
+final selectedStoneItemDataProvider = StateProvider<ItemMasterStone>((ref) =>
+    ItemMasterStone(
+        stoneCode: '',
+        description: '',
+        rowStatus: '',
+        createdDate: DateTime(2024),
+        updateDate: DateTime(2024),
         attributeType: '',
         attributeValue: ''));
 
@@ -43,6 +54,28 @@ class ItemSpecificController extends StateNotifier<bool> {
       state = false;
       response.fold((l) => Utils.snackBar(l.message, context), (r) {
         Utils.snackBar('New Metal Item Created', context);
+        context.pop();
+        null;
+      });
+      // Optionally update the state if necessary after submission
+    } catch (e) {
+      log('error');
+
+      state = false;
+    }
+  }
+
+  Future<void> submitStoneItemConfiguration(
+      ItemMasterStone config, BuildContext context, String stone) async {
+    try {
+      log('in controller');
+
+      state = true;
+      final response =
+          await _itemSpecificRepository.addStoneItem(config, stone);
+      state = false;
+      response.fold((l) => Utils.snackBar(l.message, context), (r) {
+        Utils.snackBar('New Stone ($stone) Item Created', context);
         context.pop();
         null;
       });

@@ -50,27 +50,25 @@ class MasterScreenState extends ConsumerState<MasterScreen> {
             ontap: [
               () {
                 log('new pressed');
-                if (masterType[1] != null && masterType[2] != null) {
-                  if (masterType[0] == 'Metal' &&
-                      masterType[2] == 'item master') {
+                if (masterType[1] != null && masterType[2] == 'item master') {
+                  if (masterType[0] == 'Style') {
+                    context.push('/masterScreen/addStyleItemScreen');
+                  } else if (masterType[0] == 'Metal') {
                     context.push('/masterScreen/addMetalItemScreen');
-                  } else if (masterType[0] == 'Stone' &&
-                      masterType[2] == 'item master') {
+                  } else if (masterType[0] == 'Stone') {
                     context.push('/masterScreen/addStoneItemScreen');
-                  } else if (masterType[0] == 'Consumables' &&
-                      masterType[2] == 'item master') {
+                  } else if (masterType[0] == 'Consumables') {
                     context.push('/masterScreen/addConsumablesItemScreen');
-                  } else if (masterType[0] == 'Set' &&
-                      masterType[2] == 'item master') {
+                  } else if (masterType[0] == 'Set') {
                     context.push('/masterScreen/addSetItemScreen');
-                  } else if (masterType[0] == 'Certificate' &&
-                      masterType[2] == 'item master') {
+                  } else if (masterType[0] == 'Certificate') {
                     context.push('/masterScreen/addCertificateItemScreen');
-                  } else if (masterType[0] == 'Packing Material' &&
-                      masterType[2] == 'item master') {
+                  } else if (masterType[0] == 'Packing Material') {
                     context.push('/masterScreen/addPackingMaterialItemScreen');
-                  } else if (masterType[0] == 'Metal' &&
-                      masterType[2] == 'variant master') {
+                  }
+                } else if (masterType[1] != null &&
+                    masterType[2] == 'variant master') {
+                  if (masterType[0] == 'Metal') {
                     context.push('/masterScreen/addMetalVariantScreen');
                   }
                 }

@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jewlease/data/model/item_master_metal.dart';
+import 'package:jewlease/data/model/item_master_stone.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
@@ -36,7 +36,6 @@ class AddStoneItemScreenState extends ConsumerState<AddStoneItemScreen> {
   @override
   Widget build(BuildContext context) {
     final selectedContent = ref.watch(formSequenceProvider);
-    final isChecked = ref.watch(chechkBoxSelectionProvider);
     final textFieldvalues = ref.watch(dialogSelectionProvider);
     final dropDownValue = ref.watch(dropDownProvider);
     final masterType = ref.watch(masterTypeProvider);
@@ -50,22 +49,20 @@ class AddStoneItemScreenState extends ConsumerState<AddStoneItemScreen> {
             }
             if (selectedContent == 1) {
               log('pressed');
-              final config = ItemMasterMetal(
-                  metalCode: stoneCode.text,
-                  exclusiveIndicator: isChecked['Exclusive Indicator'] ?? false,
+              final config = ItemMasterStone(
+                  stoneCode: stoneCode.text,
                   description: description.text,
                   rowStatus: dropDownValue['Row Status'] ?? 'Active',
                   createdDate: DateTime.timestamp(),
                   updateDate: DateTime.timestamp(),
                   attributeType: 'HSN - SAC CODE',
                   attributeValue: textFieldvalues['HSN - SAC CODE']!);
-
               log(config.toJson().toString());
 
               ref
                   .read(itemSpecificControllerProvider.notifier)
-                  .submitMetalItemConfiguration(
-                      config, context, masterType[1]!);
+                  .submitStoneItemConfiguration(
+                      config, context, masterType[1]!.replaceAll(' ', ''));
             }
           },
           style: ElevatedButton.styleFrom(

@@ -21,7 +21,9 @@ import 'package:jewlease/feature/item_specific/screens/add_metal_variant_screen.
 import 'package:jewlease/feature/item_specific/screens/add_packing_material_item_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/add_set_item_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/add_stone_item_screen.dart';
-import 'package:jewlease/feature/item_specific/screens/load_data_of_item_master_gold.dart';
+import 'package:jewlease/feature/item_specific/screens/add_style_item_screen.dart';
+import 'package:jewlease/feature/item_specific/screens/load_data_of_item_master_metal.dart';
+import 'package:jewlease/feature/item_specific/screens/load_data_of_item_master_stone.dart';
 import 'package:jewlease/feature/item_specific/screens/load_data_of_variant_master_gold.dart';
 import 'package:jewlease/feature/item_specific/screens/master_screen.dart';
 import 'package:jewlease/feature/splas_screen/splash_view.dart';
@@ -93,6 +95,11 @@ final goRouter = GoRouter(
               },
               routes: [
                 GoRoute(
+                    path: 'addStyleItemScreen',
+                    builder: (context, state) {
+                      return const AddStyleItemScreen();
+                    }),
+                GoRoute(
                     path: 'addMetalItemScreen',
                     builder: (context, state) {
                       return const AddMetalItemScreen();
@@ -131,9 +138,14 @@ final goRouter = GoRouter(
                     path: 'itemMasterGoldScreen',
                     builder: (context, state) {
                       return const ItemMasterGoldScreen(
-                        title: 'Item Master (Item Group- Gold)',
-                        endUrl: 'ItemMasterAndVariants/Metal/Gold/Item/',
                         value: 'Metal code',
+                      );
+                    }),
+                GoRoute(
+                    path: 'itemMasterStoneScreen',
+                    builder: (context, state) {
+                      return const ItemMasterStoneScreen(
+                        value: 'Stone code',
                       );
                     }),
                 GoRoute(
