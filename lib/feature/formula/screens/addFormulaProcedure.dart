@@ -1,6 +1,10 @@
+import 'dart:html'; // For DivElement
+import 'dart:js' as js; // For invoking JavaScript
+import 'dart:ui' as ui; // For platformViewRegistry (Web only)
+
+import 'package:flutter/foundation.dart'; // For kIsWeb
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jewlease/feature/formula/screens/excelScreen.dart';
 import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
@@ -33,6 +37,19 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
   final TextEditingController initial = TextEditingController();
 
   @override
+  void initState() {
+    // TODO: implement initState
+    if (kIsWeb) {
+      // Register the custom HTML element (only for Flutter Web)
+      ui.platformViewRegistry.registerViewFactory(
+        'handsontable-container',
+        (int viewId) => DivElement()..id = 'spreadsheet',
+      );
+    }
+    js.context.callMethod('initializeHandsontable');
+    super.initState();
+  }
+
   void dispose() {
     procedureTy.dispose();
 
@@ -41,7 +58,7 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
     calculateOne.dispose();
     minimumValue.dispose();
     midRangeTy.dispose();
-
+    js.context.callMethod('dismissSpreadsheet');
     super.dispose();
   }
 
@@ -126,7 +143,7 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
             child: Padding(
                 padding: const EdgeInsets.all(8.0), child: parentForm()),
           ),
-          Expanded(flex: 1, child: ExcelSheet())
+          // Expanded(flex: 1, child: ExcelSheet())
         ]),
       ),
     );
@@ -235,6 +252,7 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
         ),
         NumberTextFieldWidget(labelText: 'Maximum Value', controller: maxValue),
         TextFieldWidget(labelText: 'Procedure Set', controller: procedureSet),
+        Expanded(child: HtmlElementView(viewType: 'handsontable-container'))
       ],
     );
   }

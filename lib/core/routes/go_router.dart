@@ -5,6 +5,7 @@ import 'package:jewlease/feature/all_attributes/screen/new_attribute_screen.dart
 import 'package:jewlease/feature/auth/screens/login_screen_owner.dart';
 import 'package:jewlease/feature/auth/screens/login_screen_staff.dart';
 import 'package:jewlease/feature/formula/screens/addFormulaProcedure.dart';
+import 'package:jewlease/feature/formula/screens/excelScreen.dart';
 import 'package:jewlease/feature/formula/screens/formula_procedure.dart';
 import 'package:jewlease/feature/home/screens/home_screen.dart';
 import 'package:jewlease/feature/home/screens/welcome_screen.dart';
@@ -207,6 +208,11 @@ final goRouter = GoRouter(
               builder: (context, state) {
                 return const AddFormulaProcedure();
               }),
+          GoRoute(
+              path: '/excelScreen',
+              builder: (context, state) {
+                return ExcelSheet();
+              })
         ]),
   ],
 );
