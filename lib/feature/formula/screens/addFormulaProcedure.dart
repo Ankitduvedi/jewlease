@@ -1,12 +1,12 @@
-import 'dart:html'; // For DivElement
-import 'dart:js' as js; // For invoking JavaScript
-import 'dart:ui' as ui; // For platformViewRegistry (Web only)
+import 'dart:io';
 
-import 'package:flutter/foundation.dart'; // For kIsWeb
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
+import 'package:jewlease/main.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/widgets/number_input_text_field.dart';
@@ -36,17 +36,11 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
   final TextEditingController defaultTerm = TextEditingController();
   final TextEditingController initial = TextEditingController();
 
+  InAppWebViewController? webViewController;
   @override
   void initState() {
     // TODO: implement initState
-    if (kIsWeb) {
-      // Register the custom HTML element (only for Flutter Web)
-      ui.platformViewRegistry.registerViewFactory(
-        'handsontable-container',
-        (int viewId) => DivElement()..id = 'spreadsheet',
-      );
-    }
-    js.context.callMethod('initializeHandsontable');
+
     super.initState();
   }
 
@@ -58,7 +52,7 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
     calculateOne.dispose();
     minimumValue.dispose();
     midRangeTy.dispose();
-    js.context.callMethod('dismissSpreadsheet');
+
     super.dispose();
   }
 
@@ -66,6 +60,53 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
     'Parent Form',
     'Item Attribute',
   ];
+  void _showOptionsDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Select an Option'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                GestureDetector(
+                  child: Text('Option 1'),
+                  onTap: () {
+                    _selectOption('Option 1');
+                  },
+                ),
+                Padding(padding: EdgeInsets.all(8.0)),
+                GestureDetector(
+                  child: Text('Option 2'),
+                  onTap: () {
+                    _selectOption('Option 2');
+                  },
+                ),
+                Padding(padding: EdgeInsets.all(8.0)),
+                GestureDetector(
+                  child: Text('Option 3'),
+                  onTap: () {
+                    _selectOption('Option 3');
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _selectOption(String option) {
+    context.pop();
+    _updateCellWithOption(option);
+  }
+
+  void _updateCellWithOption(String option) {
+    webViewController?.evaluateJavascript(source: """
+      updateExcelCell('$option');
+    """);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -143,6 +184,29 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
             child: Padding(
                 padding: const EdgeInsets.all(8.0), child: parentForm()),
           ),
+          Container(
+            height: screenHeight * 0.53,
+            child: InAppWebView(
+              initialUrlRequest: URLRequest(
+                url: WebUri.uri(
+                  Uri.file(File(
+                          "C:\\Users\\ASUS\\StudioProjects\\jewlease\\lib\\test.html")
+                      .absolute
+                      .path),
+                ),
+              ),
+              onWebViewCreated: (controller) {
+                webViewController = controller;
+              },
+              onLoadStop: (controller, url) async {
+                await Future.delayed(Duration(seconds: 1));
+                await webViewController?.evaluateJavascript(source: """
+            window.userId = '123456';
+            console.log('Injected User ID:', window.userId);
+          """);
+              },
+            ),
+          )
           // Expanded(flex: 1, child: ExcelSheet())
         ]),
       ),
@@ -252,7 +316,11 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
         ),
         NumberTextFieldWidget(labelText: 'Maximum Value', controller: maxValue),
         TextFieldWidget(labelText: 'Procedure Set', controller: procedureSet),
-        Expanded(child: HtmlElementView(viewType: 'handsontable-container'))
+        IconButton(
+            onPressed: () {
+              _showOptionsDialog();
+            },
+            icon: Icon(Icons.edit))
       ],
     );
   }
