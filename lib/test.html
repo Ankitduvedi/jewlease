@@ -1,27 +1,34 @@
+
+
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/handsontable@11.1.0/dist/handsontable.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/hyperformula@1.4.0/dist/hyperformula.full.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable@11.1.0/dist/handsontable.full.min.css" />
     <meta charset="UTF-8" />
     <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
     <meta name="description" content="A new Flutter project." />
+    <title>Handsontable with Flutter Dialog Integration</title>
+    <script src="https://cdn.jsdelivr.net/npm/handsontable@11.1.0/dist/handsontable.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hyperformula@1.4.0/dist/hyperformula.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable@11.1.0/dist/handsontable.full.min.css" />
     <style>
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
         }
+
         #spreadsheet {
             width: 100vw;
             height: 100vh;
             visibility: visible;
         }
+
         button {
             margin-top: 20px;
             padding: 10px;
             font-size: 14px;
         }
+
         #dismissBtn {
             display: none;
         }
@@ -30,8 +37,10 @@
 <body>
 <div id="spreadsheet"></div>
 <button id="dismissBtn" class="hide" onclick="dismissSpreadsheet()">Dismiss Spreadsheet</button>
+
 <script>
     var hotInstance;
+    var selectedCellCoords = null; // Global variable to store selected cell coordinates
 
     function initializeHandsontable() {
         const hyperformulaInstance = HyperFormula.buildEmpty();
@@ -52,12 +61,12 @@
                 stretchH: 'all',
                 autoWrapRow: true,
                 autoWrapCol: true,
-
-                afterChange: function(changes, source) {
+                afterChange: function (changes, source) {
                     console.log("Cell changed: ", changes);
-                }
+                },
             });
 
+            // Enable zooming with Ctrl + Mouse Wheel
             container.addEventListener('wheel', function(event) {
                 if (event.ctrlKey || event.deltaY || event.deltaX) {
                     event.preventDefault();
@@ -74,19 +83,58 @@
                 event.stopPropagation();
             });
 
+
+
+            // Add a global keydown listener to capture Alt + 0
+            document.addEventListener('keydown', function(event) {
+                // Detect Alt + 0 (Note: '0' key without Shift)
+                if (event.altKey && (event.key === '0')) {
+                    event.preventDefault(); // Prevent default behavior if necessary
+                    var selected = hotInstance.getSelected();
+
+                    if (selected) {
+                        // `getSelected` returns an array of [startRow, startCol, endRow, endCol]
+                        // We'll use the first selected cell
+                        var row = selected[0][0];
+                        var col = selected[0][1];
+                        console.log(`Alt + 0 pressed on cell [${row}, ${col}]`);
+                        selectedCellCoords = { row: row, col: col }; // Store selected cell coordinates
+
+                        if (window.flutter_inappwebview) {
+                            window.flutter_inappwebview.callHandler('openDialog', { row: row, col: col });
+                        }
+                    }
+                }
+            });
         } else {
             console.error('Spreadsheet container not found');
         }
     }
 
-    function updateHandsontableData(jsonData) {
-        if (hotInstance) {
-            hotInstance.loadData(JSON.parse(jsonData));
+    // Update Handsontable cell with selected value from Flutter
+    function updateCellWithDialogValue(value) {
+        if (selectedCellCoords) {
+            hotInstance.setDataAtCell(selectedCellCoords.row, selectedCellCoords.col, value);
+            console.log(`Updated cell at row ${selectedCellCoords.row}, col ${selectedCellCoords.col} with value: ${value}`);
+            // Optionally, reset selectedCellCoords after updating
+            selectedCellCoords = null;
         } else {
-            console.error('Handsontable instance not found');
+            console.error('No cell selected to update.');
         }
     }
-
+function updateHandsontableData(jsonData) {
+        console.log("Updating data with:", jsonData);
+        try {
+            var data = JSON.parse(jsonData);
+            if (Array.isArray(data)) {
+                hotInstance.loadData(data);
+            } else {
+                console.error('Invalid data format: Expected an array of arrays');
+            }
+        } catch (error) {
+            console.error('Failed to parse JSON data:', error);
+        }
+    }
     function dismissSpreadsheet() {
         var container = document.getElementById('spreadsheet');
         var dismissBtn = document.getElementById('dismissBtn');
@@ -103,9 +151,13 @@
     function getHandsontableData() {
         return hotInstance.getData();
     }
+window.onload = initializeHandsontable;
+window.initializeHandsontable = initializeHandsontable;
+window.updateHandsontableData = updateHandsontableData;
+window.setCellValue = setCellValue;
 
-    window.initializeHandsontable = initializeHandsontable;
-    window.updateHandsontableData = updateHandsontableData;
+    // Make update function available globally
+    window.updateCellWithDialogValue = updateCellWithDialogValue;
 </script>
 </body>
 </html>

@@ -1,8 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
@@ -42,7 +43,6 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
   void initState() {
     // TODO: implement initState
     _focusNode.requestFocus();
-    // _initializeWebView(jsonData);
     super.initState();
   }
 
@@ -63,9 +63,6 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
     'Item Attribute',
   ];
 
-  final String jsonData =
-      "data is [[1, 2, 3, , , , , , , , , , , , , , , , , ], [4, 5, , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ], [, , , , , , , , , , , , , , , , , , , ]]";
-
   Future<void> _uploadData() async {
     await Future.delayed(Duration(seconds: 1)); // Allow time for JS to load
     final data = await webViewController?.evaluateJavascript(
@@ -75,66 +72,91 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
     print("data is $data");
   }
 
-  void _showOptionsDialog(int column) {
-    print("column is $column");
-    String dialogContent;
-    switch (column) {
-      case 0:
-        dialogContent = 'You pressed Alt+O on column 0!';
-        break;
-      case 1:
-        dialogContent = 'You pressed Alt+O on column 1!';
-        break;
-      // Add more cases for other columns as needed
-      default:
-        dialogContent = 'You pressed Alt+O on column $column!';
-    }
+  final List<List<dynamic>> spreadsheetData = [
+    ["Name", "Age", "City"],
+    ["Alice", 30, "New York"],
+    ["Bob", 25, "Los Angeles"],
+    ["Charlie", 28, "Chicago"],
+  ];
+
+  void sendApiUpdatedData(String newJsonData) {
+    final String jsonData2 = jsonEncode(spreadsheetData);
+    webViewController?.evaluateJavascript(
+      source: "updateHandsontableData('$jsonData2');",
+    );
+  }
+
+  void _showColumnDialog(int rowIndex, int colIndex) {
+    String columnName = _getColumnName(colIndex);
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Select an Option'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                GestureDetector(
-                  child: Text(dialogContent),
-                  onTap: () {
-                    _selectOption('Option 1');
-                  },
-                ),
-                Padding(padding: EdgeInsets.all(8.0)),
-                GestureDetector(
-                  child: Text('Option 2'),
-                  onTap: () {
-                    _selectOption('Option 2');
-                  },
-                ),
-                Padding(padding: EdgeInsets.all(8.0)),
-                GestureDetector(
-                  child: Text('Option 3'),
-                  onTap: () {
-                    _selectOption('Option 3');
-                  },
-                ),
-              ],
-            ),
+          title: Text('Select Value for Column $columnName'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Example options; replace with your actual options
+              ListTile(
+                title: Text('Option 1'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _sendSelectedValueToWebView('Option 1');
+                },
+              ),
+              ListTile(
+                title: Text('Option 2'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _sendSelectedValueToWebView('Option 2');
+                },
+              ),
+              ListTile(
+                title: Text('Option 3'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _sendSelectedValueToWebView('Option 3');
+                },
+              ),
+            ],
           ),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                // Optionally, reset selectedCellCoords
+              },
+            ),
+          ],
         );
       },
     );
   }
 
-  void _selectOption(String option) {
-    context.pop();
-    _updateCellWithOption(option);
+  // Helper function to convert column index to column name (e.g., 0 -> A, 1 -> B)
+  String _getColumnName(int index) {
+    String column = '';
+    int temp = index;
+    while (temp >= 0) {
+      column = String.fromCharCode((temp % 26) + 65) + column;
+      temp = (temp ~/ 26) - 1;
+    }
+    return column;
   }
 
-  void _updateCellWithOption(String option) {
-    webViewController?.evaluateJavascript(source: """
-      updateExcelCell('$option');
-    """);
+  // Function to send the selected value back to JavaScript
+  void _sendSelectedValueToWebView(String value) {
+    if (webViewController != null) {
+      // Escape the value to prevent JavaScript injection
+      String escapedValue = jsonEncode(value);
+      webViewController?.evaluateJavascript(
+        source: 'updateCellWithDialogValue($escapedValue);',
+      );
+    } else {
+      print('WebView controller is null.');
+    }
   }
 
   @override
@@ -143,17 +165,16 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
     final isChecked = ref.watch(chechkBoxSelectionProvider);
     final textFieldvalues = ref.watch(dialogSelectionProvider);
     final dropDownValue = ref.watch(dropDownProvider);
-
+    int? selectedColumn;
+    int? _selectedRow;
+    int? _selectedCol;
     return RawKeyboardListener(
         focusNode: _focusNode,
         onKey: (RawKeyEvent event) {
           if (event.isKeyPressed(LogicalKeyboardKey.altLeft) &&
               event.isKeyPressed(LogicalKeyboardKey.keyO)) {
-            webViewController?.evaluateJavascript(source: """
-              if (selectedColumn !== null) {
-                window.flutter_inappwebview.callHandler('openDialog', selectedColumn);
-              }
-            """);
+            print('Alt+O pressed!');
+            // _showOptionsDialog(selectedColumn!);
           }
         },
         child: Scaffold(
@@ -239,19 +260,19 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
                   ),
                   onWebViewCreated: (controller) {
                     webViewController = controller;
+
                     controller.addJavaScriptHandler(
                       handlerName: 'openDialog',
                       callback: (args) {
-                        print("arg is $args");
-                        int column = args[0];
-                        _showOptionsDialog(column);
+                        if (args.isNotEmpty) {
+                          // Expecting args[0] to be a Map with 'row' and 'col'
+                          var cellInfo = args[0];
+                          int rowIndex = cellInfo['row'];
+                          int colIndex = cellInfo['col'];
+                          _showColumnDialog(rowIndex, colIndex);
+                        }
                       },
                     );
-                    // Initialize Handsontable after a short delay
-                    Future.delayed(Duration(seconds: 1), () {
-                      controller.evaluateJavascript(
-                          source: 'initializeHandsontable();');
-                    });
                   },
                 ),
               )
@@ -366,7 +387,8 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
         TextFieldWidget(labelText: 'Procedure Set', controller: procedureSet),
         IconButton(
             onPressed: () {
-              _uploadData();
+              // _uploadData();
+              sendApiUpdatedData('');
             },
             icon: Icon(Icons.edit))
       ],
