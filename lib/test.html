@@ -1,118 +1,111 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Excel-like Grid with Handsontable and Formulas</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/handsontable/dist/handsontable.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/hyperformula/dist/hyperformula.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/handsontable@11.1.0/dist/handsontable.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hyperformula@1.4.0/dist/hyperformula.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable@11.1.0/dist/handsontable.full.min.css" />
+    <meta charset="UTF-8" />
+    <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
+    <meta name="description" content="A new Flutter project." />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        #spreadsheet {
+            width: 100vw;
+            height: 100vh;
+            visibility: visible;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 14px;
+        }
+        #dismissBtn {
+            display: none;
+        }
+    </style>
 </head>
 <body>
-
-<h1>Handsontable with Dynamic Expansion and Formulas</h1>
-<div id="excelGrid" style="width: 100%; height: 500px; overflow: hidden;"></div>
-
+<div id="spreadsheet"></div>
+<button id="dismissBtn" class="hide" onclick="dismissSpreadsheet()">Dismiss Spreadsheet</button>
 <script>
-    // Initialize HyperFormula
-    const hyperformulaInstance = HyperFormula.buildEmpty();
+    var hotInstance;
 
-    const container = document.getElementById('excelGrid');
-    const hot = new Handsontable(container, {
-        data: Handsontable.helper.createEmptySpreadsheetData(20, 10),  // Initial 20 rows, 10 columns
-        rowHeaders: true,
-        colHeaders: true,
-        formulas: {
-            engine: hyperformulaInstance // Enable HyperFormula for formula support
-        },
-        licenseKey: 'non-commercial-and-evaluation',  // Non-commercial license key
+    function initializeHandsontable() {
+        const hyperformulaInstance = HyperFormula.buildEmpty();
+        var container = document.getElementById('spreadsheet');
+        var dismissBtn = document.getElementById('dismissBtn');
 
-        // Enable context menu to allow inserting/removing rows and columns
-        contextMenu: true,
+        if (container) {
+            hotInstance = new Handsontable(container, {
+                data: Handsontable.helper.createEmptySpreadsheetData(50, 20),
+                rowHeaders: true,
+                colHeaders: true,
+                formulas: {
+                    engine: hyperformulaInstance
+                },
+                manualColumnResize: true,
+                licenseKey: 'non-commercial-and-evaluation',
+                contextMenu: true,
+                stretchH: 'all',
+                autoWrapRow: true,
+                autoWrapCol: true,
 
-        // Dynamically expand rows and columns when users scroll
-        stretchH: 'all',  // Make columns fill the available width
-        minRows: 20,  // Minimum number of rows
-        minCols: 10,  // Minimum number of columns
-        autoWrapRow: true,  // Automatically add new rows when scrolling down
-        autoWrapCol: true,  // Automatically add new columns when scrolling right
+                afterChange: function(changes, source) {
+                    console.log("Cell changed: ", changes);
+                }
+            });
 
-        // After reaching the last row or column, automatically add more
-        afterScrollVertically() {
-            const lastRow = hot.countRows();
-            if (hot.getSelectedLast()[0] >= lastRow - 1) {
-                hot.alter('insert_row', lastRow);
-            }
-        },
-        afterScrollHorizontally() {
-            const lastCol = hot.countCols();
-            if (hot.getSelectedLast()[1] >= lastCol - 1) {
-                hot.alter('insert_col', lastCol);
-            }
-        },
+            container.addEventListener('wheel', function(event) {
+                if (event.ctrlKey || event.deltaY || event.deltaX) {
+                    event.preventDefault();
+                    var scale = parseFloat(container.style.transform.split('(')[1]) || 1;
+                    scale += event.deltaY * -0.01;
+                    scale = Math.min(Math.max(0.5, scale), 2);
+                    container.style.transform = `scale(${scale})`;
+                    container.style.transformOrigin = '0 0';
+                }
+            });
 
-        // Use the 'afterChange' hook to apply formulas automatically
-        afterChange(changes, source) {
-            if (source === 'edit' || source === 'paste') {
-                // Refresh HyperFormula calculations
-                hot.getPlugin('formulas').recalculateFull();
-            }
-        }
-    });
+            dismissBtn.style.display = 'block';
+            container.addEventListener('mousedown', function(event) {
+                event.stopPropagation();
+            });
 
-    // Function to update the Excel cell with the selected option
-    function updateExcelCell(option) {
-        const selected = hot.getSelected();
-        if (selected) {
-            const [row, col] = selected[0];
-            hot.setDataAtCell(row, col, option);
         } else {
-            console.log('No cell selected');
+            console.error('Spreadsheet container not found');
         }
     }
 
-    // Function to send data to the server
-    function sendDataToServer(data) {
-        fetch('https://your-server-endpoint.com/api/upload', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Success:', data);
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-        });
-    }
-
-    // Function to get data from Excel and send it
-    function getExcelDataAndSend() {
-        let excelData = hot.getData(); // Get data from Handsontable
-        excelData.userId = window.userId; // Add user ID to the data
-        sendDataToServer(excelData);
-    }
-
-    // Example function to display the user ID
-    function displayUserId() {
-        if (window.userId) {
-            console.log('User ID:', window.userId); // Debugging line
-            document.getElementById('userIdDisplay').innerText = 'User ID: ' + window.userId;
+    function updateHandsontableData(jsonData) {
+        if (hotInstance) {
+            hotInstance.loadData(JSON.parse(jsonData));
         } else {
-            console.log('User ID is not set yet.');
-            setTimeout(displayUserId, 100); // Retry after 100ms
+            console.error('Handsontable instance not found');
         }
     }
 
-    // Call displayUserId when the page loads
-    window.onload = displayUserId;
+    function dismissSpreadsheet() {
+        var container = document.getElementById('spreadsheet');
+        var dismissBtn = document.getElementById('dismissBtn');
+
+        if (hotInstance) {
+            hotInstance.destroy();
+            console.log("Spreadsheet destroyed.");
+        }
+
+        container.style.visibility = 'hidden';
+        dismissBtn.style.display = 'none';
+    }
+
+    function getHandsontableData() {
+        return hotInstance.getData();
+    }
+
+    window.initializeHandsontable = initializeHandsontable;
+    window.updateHandsontableData = updateHandsontableData;
 </script>
-
-<div id="userIdDisplay">Loading user ID...</div>
-<button onclick="getExcelDataAndSend()">Send Data</button>
-
 </body>
 </html>

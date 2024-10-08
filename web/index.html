@@ -1,27 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-
     <script src="https://cdn.jsdelivr.net/npm/handsontable@11.1.0/dist/handsontable.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/hyperformula@1.4.0/dist/hyperformula.full.min.js"></script>
-    <link
-            rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/handsontable@11.1.0/dist/handsontable.full.min.css"
-    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable@11.1.0/dist/handsontable.full.min.css" />
     <base href="$FLUTTER_BASE_HREF" />
-
     <meta charset="UTF-8" />
     <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
-
     <meta name="description" content="A new Flutter project." />
-
     <style>
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
         }
-
-        /* Initially, set the spreadsheet container to very small (dot-like) */
         #spreadsheet {
             width: 1px;
             height: 1px;
@@ -30,48 +21,31 @@
             z-index: 1;
             margin-top: 50vh;
             margin-left: auto;
-
         }
-
-        /* Button styles */
         button {
             margin-top: 20px;
             padding: 10px;
             font-size: 14px;
         }
-
-        /* Show dismiss button only when needed */
         #dismissBtn {
             display: none;
         }
     </style>
 </head>
 <body>
-
-<!-- Spreadsheet container -->
 <div id="spreadsheet"></div>
-
-<!-- Dismiss button, hidden by default -->
 <button id="dismissBtn" class="hide" onclick="dismissSpreadsheet()">Dismiss Spreadsheet</button>
-
 <script src="flutter_bootstrap.js" async></script>
 <script>
     var hotInstance;
-
     function initializeHandsontable() {
-        console.log("Initializing Handsontable...");
-
         const hyperformulaInstance = HyperFormula.buildEmpty();
         var container = document.getElementById('spreadsheet');
-        var dismissBtn = document.getElementById('dismissBtn');  // Get reference to dismiss button
-
+        var dismissBtn = document.getElementById('dismissBtn');
         if (container) {
-            // Expand the spreadsheet container when initializing
             container.style.width = '100vw';
             container.style.height = '100vh';
-            container.style.p
-            container.style.visibility = 'visible';  // Make the container visible
-
+            container.style.visibility = 'visible';
             hotInstance = new Handsontable(container, {
                 data: Handsontable.helper.createEmptySpreadsheetData(20, 10),
                 rowHeaders: true,
@@ -79,6 +53,7 @@
                 formulas: {
                     engine: hyperformulaInstance
                 },
+                manualColumnResize: true,
                 licenseKey: 'non-commercial-and-evaluation',
                 contextMenu: true,
                 stretchH: 'all',
@@ -92,11 +67,18 @@
                     console.log("Cell changed: ", changes);
                 }
             });
+            container.addEventListener('wheel', function(event) {
+                if (event.ctrlKey || event.deltaY || event.deltaX) {
+                    event.preventDefault();
+                    var scale = parseFloat(container.style.transform.split('(')[1]) || 1;
+                    scale += event.deltaY * -0.01;
+                    scale = Math.min(Math.max(0.5, scale), 2);
+                    container.style.transform = `scale(${scale})`;
+                    container.style.transformOrigin = '0 0';
+                }
+            });
 
-            // Show the dismiss button when the spreadsheet is visible
             dismissBtn.style.display = 'block';
-
-            // Prevent Flutter's event handling from blocking selection
             container.addEventListener('mousedown', function(event) {
                 event.stopPropagation();
             });
@@ -106,29 +88,20 @@
         }
     }
 
-    // Function to dismiss (hide) the spreadsheet
     function dismissSpreadsheet() {
         var container = document.getElementById('spreadsheet');
-        var dismissBtn = document.getElementById('dismissBtn');  // Get reference to dismiss button
-
-        // Destroy the Handsontable instance to free up memory
+        var dismissBtn = document.getElementById('dismissBtn');
         if (hotInstance) {
-            hotInstance.destroy();  // This removes Handsontable
+            hotInstance.destroy();
             console.log("Spreadsheet destroyed.");
         }
-
-        // Resize the spreadsheet container to a dot-like size and hide it
         container.style.width = '1px';
         container.style.height = '1px';
-        container.style.visibility = 'hidden';  // Hide the container
-
-        // Hide the dismiss button as well
+        container.style.visibility = 'hidden';
         dismissBtn.style.display = 'none';
     }
 
-    // Initialize Handsontable after a delay or call from Flutter WebView
-    // setTimeout(initializeHandsontable, 1000);  // Example: Delay (comment out if not needed)
-</script>
 
+</script>
 </body>
 </html>
