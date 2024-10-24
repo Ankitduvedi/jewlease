@@ -201,7 +201,7 @@ final goRouter = GoRouter(
           GoRoute(
               path: '/formulaProcedureScreen',
               builder: (context, state) {
-                return const FormulaProcdedureScreen();
+                return FormulaProcdedureScreen();
               }),
           GoRoute(
               path: '/addformulaProcedureScreen',

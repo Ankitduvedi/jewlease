@@ -13,6 +13,7 @@ import 'package:jewlease/widgets/read_only_textfield_widget.dart';
 import 'package:jewlease/widgets/text_field_widget.dart';
 
 import '../../../main.dart';
+import '../../../providers/excelProvider.dart';
 import '../../../widgets/search_dailog_widget.dart';
 
 class AddFormulaProcedure extends ConsumerStatefulWidget {
@@ -65,11 +66,27 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
 
   Future<void> _uploadData() async {
     await Future.delayed(Duration(seconds: 1)); // Allow time for JS to load
-    final data = await webViewController?.evaluateJavascript(
+    List<dynamic> data = await webViewController?.evaluateJavascript(
       source: "getHandsontableData()",
     );
+    List<List<dynamic>> newlist = [];
+    for (int i = 0; i < data.length; i++) {
+      List<dynamic> row = [];
+      for (int j = 0; j < data[i].length; j++) {
+        print("row $i col is $j ${data[i][j]} datata is-->${data[i][j]}<--}");
+        if (data[i][j] == null || data[i][j] == '' || data[i][j] == "") {
+          print("enter");
+          data[i][j] = " ";
+          print("new value is ${data[i][j]}");
+        }
+        row.add(data[i][j]);
+      }
+      newlist.add(row);
+    }
 
-    print("data is $data");
+    ref.read(dataListProvider.notifier).setData(newlist);
+
+    print("data is $newlist");
   }
 
   final List<List<dynamic>> spreadsheetData = [
@@ -79,11 +96,146 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
     ["Charlie", 28, "Chicago"],
   ];
 
-  void sendApiUpdatedData(String newJsonData) {
+  void sendApiUpdatedData(dynamic spreadsheetData) {
+    print("data is $spreadsheetData");
     final String jsonData2 = jsonEncode(spreadsheetData);
     webViewController?.evaluateJavascript(
       source: "updateHandsontableData('$jsonData2');",
     );
+  }
+
+  Map<String, String> excelMap = {
+    "B": 'Description',
+    "C": "Data Type",
+    "D": "Variable Name",
+    "E": "Range Value",
+    "F": "Formula",
+    "G": "Row Type",
+    "H": "Round Off",
+    "I": "Account Name",
+    "J": "Editable",
+    "I": "Visible",
+  };
+
+  void _handleOpenDialog(int row, int col) {
+    String columnName = _getColumnName(col);
+    List<String> options = [];
+
+    switch (columnName) {
+      case 'C': // Column 'C'
+        options = [
+          'Range',
+          'Calculation',
+          'Amount',
+          'Total',
+          'Variable',
+          'Column'
+        ];
+        break;
+      case 'D':
+        options = ['GST TAX', 'HST TAX', 'QST TAX', 'AMOUNT BEFORE TAX'];
+      case 'G': // Column 'G'
+        options = ['GST TAX', 'HST TAX', 'QST TAX', 'AMOUNT BEFORE TAX'];
+        break;
+      default:
+        // Handle other columns or ignore
+        print('No dialog defined for column: $columnName');
+        return;
+    }
+
+    // Show the dialog with the options
+    _showOptionsDialog(context, columnName, options, (selectedOption) {
+      // Handle the selected option
+      print('Selected option: $selectedOption in column: $columnName');
+
+      // Optionally, send the selected option back to the WebView
+      // For example, update the cell with the selected option
+      _sendSelectedValueToWebView(selectedOption);
+    });
+  }
+
+  // Function to show a dialog with a list of options
+  void _showOptionsDialog(BuildContext context, String title,
+      List<String> options, Function(String) onOptionSelected) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Select Value of ${excelMap[title]}"),
+          content: Container(
+            // Adjust height as needed
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: options.length,
+              itemBuilder: (BuildContext context, int index) {
+                String option = options[index];
+                return ListTile(
+                  title: Text(option),
+                  onTap: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                    onOptionSelected(option); // Handle the selection
+                  },
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _validateFormulas() async {
+    if (webViewController == null) return;
+
+    try {
+      // Call the validateAllFormulas function in JavaScript
+      bool result = await webViewController!
+          .evaluateJavascript(source: "validateAllFormulas();");
+      // print("result is $result  ");
+
+      // The result is returned as a string, e.g., "true" or "false"
+      bool isValid = false;
+      if (result != null) {
+        // Remove quotes if any
+        if (result == true) {
+          isValid = true;
+        } else if (result == false) {
+          isValid = false;
+        }
+      }
+
+      if (isValid) {
+        // All formulas are valid
+        _showSnackBar('All formulas are valid.', Colors.green);
+      } else {
+        // Some formulas are invalid
+        _showSnackBar(
+            'Some formulas are invalid. Please review them.', Colors.red);
+      }
+    } catch (e) {
+      print('Error during formula validation: $e');
+      _showSnackBar('An error occurred during validation.', Colors.red);
+    }
+  }
+
+  void _showSnackBar(String message, Color color) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      backgroundColor: color,
+      duration: Duration(seconds: 3),
+    );
+
+    // Use ScaffoldMessenger to show the SnackBar
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   void _showColumnDialog(int rowIndex, int colIndex) {
@@ -162,6 +314,8 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
   @override
   Widget build(BuildContext context) {
     final selectedContent = ref.watch(formSequenceProvider);
+    final dataList = ref.watch(dataListProvider);
+
     final isChecked = ref.watch(chechkBoxSelectionProvider);
     final textFieldvalues = ref.watch(dialogSelectionProvider);
     final dropDownValue = ref.watch(dropDownProvider);
@@ -244,7 +398,8 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
                   ),
                 ),
                 child: Padding(
-                    padding: const EdgeInsets.all(8.0), child: parentForm()),
+                    padding: const EdgeInsets.all(8.0),
+                    child: parentForm(dataList)),
               ),
               // Expanded(child: ExcelSheet())
               Container(
@@ -269,7 +424,8 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
                           var cellInfo = args[0];
                           int rowIndex = cellInfo['row'];
                           int colIndex = cellInfo['col'];
-                          _showColumnDialog(rowIndex, colIndex);
+
+                          _handleOpenDialog(rowIndex, colIndex);
                         }
                       },
                     );
@@ -282,7 +438,7 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
         ));
   }
 
-  Widget parentForm() {
+  Widget parentForm(dynamic datalist) {
     return GridView.count(
       crossAxisCount: 6,
       crossAxisSpacing: 10,
@@ -384,13 +540,24 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
           },
         ),
         NumberTextFieldWidget(labelText: 'Maximum Value', controller: maxValue),
-        TextFieldWidget(labelText: 'Procedure Set', controller: procedureSet),
+        // TextFieldWidget(labelText: 'Procedure Set', controller: procedureSet),
+        IconButton(
+            onPressed: () {
+              _validateFormulas();
+            },
+            icon: Text("Validate")),
+        IconButton(
+            onPressed: () {
+              _uploadData();
+            },
+            icon: Text("Save")),
         IconButton(
             onPressed: () {
               // _uploadData();
-              sendApiUpdatedData('');
+              sendApiUpdatedData(datalist);
+              // _validateFormulas();
             },
-            icon: Icon(Icons.edit))
+            icon: Text("Fetch"))
       ],
     );
   }

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
+import 'package:jewlease/providers/dailog_selection_provider.dart';
 import 'package:jewlease/widgets/custom_app_bar_finder.dart';
 
-import 'package:jewlease/providers/dailog_selection_provider.dart';
+import '../feature/formula/controller/heirarchy_controller.dart';
 
 class ItemTypeDialogScreen extends ConsumerStatefulWidget {
   const ItemTypeDialogScreen(
@@ -13,6 +14,7 @@ class ItemTypeDialogScreen extends ConsumerStatefulWidget {
       required this.value,
       this.keyOfMap,
       this.query});
+
   final String title;
   final String endUrl;
   final String value;
@@ -226,6 +228,38 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                       final selectedItemID = ref.read(dialogSelectionProvider)[
                           widget.keyOfMap ?? widget.title];
                       if (selectedItemID != null) {
+                        Map<String, dynamic> selectedRow =
+                            _filteredItems.firstWhere(
+                          (map) {
+                            print("map ${map}");
+                            return map["Config Id"] == selectedItemID;
+                          },
+                          orElse: () => {},
+                        );
+                        print("selected id ${selectedItemID}");
+                        if (widget.title == "Depd Field") {
+                          print("depd field selected ${selectedItemID}");
+                          if (widget.value == 'ConfigValue')
+                            ref
+                                .read(valueProvider.notifier)
+                                .setValue(selectedItemID);
+                          else
+                            ref
+                                .read(valueProvider.notifier)
+                                .setValue(selectedRow["Config value"]);
+                        }
+                        if (widget.title == "Data Type") {
+                          print("data type selected ${selectedItemID}");
+
+                          print("selected row ${selectedRow}");
+                          print(
+                              "selected item is ${selectedRow["Config value"]} ");
+
+                          ref
+                              .read(itemProvider.notifier)
+                              .setItem(selectedRow["Config value"]);
+                        }
+
                         // Save the selected item ID to the provider or perform any action you need
                         Navigator.of(context).pop(); // Close the dialog
                       } else {

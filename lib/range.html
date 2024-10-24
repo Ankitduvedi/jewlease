@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
+    <meta name="description" content="A new Flutter project." />
+    <title>Handsontable with Flutter Dialog Integration</title>
+    <script src="https://cdn.jsdelivr.net/npm/handsontable@11.1.0/dist/handsontable.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hyperformula@1.4.0/dist/hyperformula.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjs@11.5.0/lib/browser/math.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable@11.1.0/dist/handsontable.full.min.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        #spreadsheet {
+            width: 100vw;
+            height: 100vh;
+            visibility: visible;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 14px;
+        }
+        #dismissBtn {
+            display: none;
+        }
+        .htInvalid {
+            background-color: #FFCCCC !important;
+        }
+    </style>
+</head>
+<body>
+<div id="spreadsheet"></div>
+<button id="dismissBtn" onclick="dismissSpreadsheet()">Dismiss Spreadsheet</button>
+<script>
+    var hotInstance;
+    var selectedCellCoords = null;
+    var lastEditedRow = null;
+    const defaultColumnHeaders = ['Row', 'Description', 'Data Type', 'Variable Name', 'Range Value', 'Formula', 'Row Type', 'Round Off', 'Account Name', 'Editable', 'Visible'];
+
+    // Function to initialize Handsontable
+    function initializeHandsontable() {
+        const hyperformulaInstance = HyperFormula.buildEmpty();
+        var container = document.getElementById('spreadsheet');
+        var dismissBtn = document.getElementById('dismissBtn');
+        if (container) {
+            hotInstance = new Handsontable(container, {
+                data: Handsontable.helper.createEmptySpreadsheetData(50, 11),
+                rowHeaders: true,
+                colHeaders: defaultColumnHeaders, // Default headers used initially
+                formulas: { engine: hyperformulaInstance },
+                manualColumnResize: true,
+                licenseKey: 'non-commercial-and-evaluation',
+                contextMenu: true,
+                stretchH: 'all',
+                autoWrapRow: true,
+                autoWrapCol: true,
+                columns: defaultColumnHeaders.map(() => ({})),
+                afterChange: function (changes, source) {
+                    if (source === 'edit') {
+                        changes.forEach(([row, prop, oldValue, newValue]) => {
+                            lastEditedRow = row;
+                        });
+                    }
+                },
+                cells: function (row, col) {
+                    var cellProperties = {};
+                    if (col === 5) {
+                        var dataType = this.instance.getDataAtCell(row, 2);
+                        if (dataType !== 'Calculation') {
+                            cellProperties.readOnly = true;
+                            cellProperties.className = 'htNonEditable';
+                        }
+                    }
+                    return cellProperties;
+                },
+            });
+            document.addEventListener('keydown', function(event) {
+                if (event.altKey && (event.key === '0')) {
+                    event.preventDefault();
+                    var selected = hotInstance.getSelected();
+                    if (selected) {
+                        var row = selected[0][0];
+                        var col = selected[0][1];
+                        console.log(`Alt + 0 pressed on cell [${row}, ${col}]`);
+                        selectedCellCoords = { row: row, col: col };
+                        if (window.flutter_inappwebview) {
+                            window.flutter_inappwebview.callHandler('openDialog', { row: row, col: col });
+                        }
+                    }
+                }
+            });
+
+            dismissBtn.style.display = 'block';
+        } else {
+            console.error('Spreadsheet container not found');
+        }
+    }
+
+    // Function to add custom header row and remove default headers
+    // Function to dynamically set new headers
+function addCustomHeaderRow(newHeaders) {
+  if (!Array.isArray(newHeaders) || newHeaders.length === 0) {
+    console.error("Invalid header array. Must be a non-empty array.");
+    return;
+  }
+
+  // Update column headers with the new ones
+  hotInstance.updateSettings({
+    colHeaders: newHeaders
+  });
+
+  // Adjust the number of columns in the table to match the number of headers
+  const currentData = hotInstance.getData();
+  const currentRows = hotInstance.countRows();
+  const currentCols = hotInstance.countCols();
+
+  // If the current column count is less than the new headers, add columns
+  if (newHeaders.length > currentCols) {
+    const additionalCols = newHeaders.length - currentCols;
+    for (let i = 0; i < currentRows; i++) {
+      currentData[i] = [...currentData[i], ...Array(additionalCols).fill('')];
+    }
+  }
+  // If the current column count is more than the new headers, remove columns
+  else if (newHeaders.length < currentCols) {
+    for (let i = 0; i < currentRows; i++) {
+      currentData[i] = currentData[i].slice(0, newHeaders.length);
+    }
+  }
+
+  hotInstance.loadData(currentData);
+  console.log(`Headers updated: ${newHeaders}`);
+}
+
+
+    // Other utility functions
+    function dismissSpreadsheet() {
+        var container = document.getElementById('spreadsheet');
+        var dismissBtn = document.getElementById('dismissBtn');
+        if (hotInstance) {
+            hotInstance.destroy();
+            console.log("Spreadsheet destroyed.");
+        }
+        container.style.visibility = 'hidden';
+        dismissBtn.style.display = 'none';
+    }
+
+    // Expose necessary functions to the global window
+    window.onload = initializeHandsontable;
+    window.addCustomHeaderRow = addCustomHeaderRow;
+    window.dismissSpreadsheet = dismissSpreadsheet;
+</script>
+</body>
+</html>

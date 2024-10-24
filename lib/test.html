@@ -1,6 +1,3 @@
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,65 +5,191 @@
     <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
     <meta name="description" content="A new Flutter project." />
     <title>Handsontable with Flutter Dialog Integration</title>
+    <!-- Include Handsontable, HyperFormula, and Math.js -->
     <script src="https://cdn.jsdelivr.net/npm/handsontable@11.1.0/dist/handsontable.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/hyperformula@1.4.0/dist/hyperformula.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjs@11.5.0/lib/browser/math.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable@11.1.0/dist/handsontable.full.min.css" />
     <style>
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
         }
-
         #spreadsheet {
             width: 100vw;
             height: 100vh;
             visibility: visible;
         }
-
         button {
             margin-top: 20px;
             padding: 10px;
             font-size: 14px;
         }
-
         #dismissBtn {
             display: none;
         }
+        .htInvalid {
+            background-color: #FFCCCC !important;
+        }
+
     </style>
 </head>
 <body>
 <div id="spreadsheet"></div>
-<button id="dismissBtn" class="hide" onclick="dismissSpreadsheet()">Dismiss Spreadsheet</button>
-
+<button id="dismissBtn" onclick="dismissSpreadsheet()">Dismiss Spreadsheet</button>
 <script>
     var hotInstance;
-    var selectedCellCoords = null; // Global variable to store selected cell coordinates
+    var selectedCellCoords = null;
+    var lastEditedRow = null; // Track the last edited row
+    const columnHeaders = ['Row', 'Description', 'Data Type', 'Variable Name', 'Range Value', 'Formula', 'Row Type', 'Round Off', 'Account Name', 'Editable', 'Visible'];
 
+    // Synchronous validator used by validateAllFormulas
+    function isFormulaValid(value) {
+        if (!value) return true;
+        try {
+            // Replace variables with '1'
+            let expression = value.replace(/r\d+/g, '1');
+
+            // Check for consecutive operators
+            const invalidOperatorPattern = /[+\-*/]{2,}/;
+            if (invalidOperatorPattern.test(expression)) {
+                console.error('Invalid operator sequence detected in the formula.');
+                return false;
+            }
+
+            // Check for invalid operator at the start or end
+            const invalidStartEndPattern = /^[+\-*/]|[+\-*/]$/;
+            if (invalidStartEndPattern.test(expression)) {
+                console.error('Invalid start or end of formula.');
+                return false;
+            }
+
+            // Parse and evaluate
+            math.parse(expression);
+            math.evaluate(expression);
+
+            return true;
+        } catch (error) {
+            console.error('Formula validation error:', error);
+            return false;
+        }
+    }
+
+    // Function to validate all formulas in the "Formula" column and check the last edited row for 'total'
+    function validateAllFormulas() {
+        const formulaColumnIndex = 5; // 0-based index for 'Formula' column
+        const totalRows = hotInstance.countRows();
+        let allValid = true;
+
+        // First, clear all previous invalid markings
+        for (let row = 0; row < totalRows; row++) {
+            hotInstance.setCellMeta(row, formulaColumnIndex, 'className', '');
+        }
+
+        // Validate each formula
+        for (let row = 0; row < totalRows; row++) {
+            let value = hotInstance.getDataAtCell(row, formulaColumnIndex);
+            if (!isFormulaValid(value)) {
+                allValid = false;
+                hotInstance.setCellMeta(row, formulaColumnIndex, 'className', 'htInvalid');
+            }
+        }
+console.log("Last edited row: ", lastEditedRow);
+        // Check the last edited row for the word 'total'
+        if (lastEditedRow !== null && lastEditedRow < totalRows) {
+
+            let rowHasTotal = false;
+            for (let col = 0; col < hotInstance.countCols(); col++) {
+                let cellValue = hotInstance.getDataAtCell(lastEditedRow, col);
+                if (typeof cellValue === 'string' && cellValue.toLowerCase().includes('total')) {
+                print("Total found in row: ", lastEditedRow);
+
+                    rowHasTotal = true;
+                    break;
+                }
+            }
+            if (!rowHasTotal) {
+                allValid = false;
+                // Mark the entire row as invalid
+                for (let col = 0; col < hotInstance.countCols(); col++) {
+                    hotInstance.setCellMeta(lastEditedRow, col, 'className', 'htInvalid');
+                }
+            }
+        }
+        else {
+        allValid = false;   }
+
+        hotInstance.render(); // Refresh the table to apply styles
+        return allValid;
+    }
+
+    // Function to initialize Handsontable
     function initializeHandsontable() {
         const hyperformulaInstance = HyperFormula.buildEmpty();
         var container = document.getElementById('spreadsheet');
         var dismissBtn = document.getElementById('dismissBtn');
-
         if (container) {
             hotInstance = new Handsontable(container, {
-                data: Handsontable.helper.createEmptySpreadsheetData(50, 20),
+                data: Handsontable.helper.createEmptySpreadsheetData(50, 11),
                 rowHeaders: true,
-                colHeaders: true,
-                formulas: {
-                    engine: hyperformulaInstance
-                },
+                colHeaders: columnHeaders,
+                formulas: { engine: hyperformulaInstance },
                 manualColumnResize: true,
                 licenseKey: 'non-commercial-and-evaluation',
                 contextMenu: true,
                 stretchH: 'all',
                 autoWrapRow: true,
                 autoWrapCol: true,
+                columns: [
+                    {}, // Row
+                    {}, // Description
+                    {}, // Data Type
+                    {}, // Variable Name
+                    {}, // Range Value
+                    {}, // Formula
+                    {}, // Row Type
+                    {}, // Round Off
+                    {}, // Account Name
+                    {}, // Editable
+                    {}  // Visible
+                ],
                 afterChange: function (changes, source) {
+                    if (source === 'edit') {
+                        changes.forEach(([row, prop, oldValue, newValue]) => {
+                            if (prop === 2) { // Data Type column index (0-based)
+                                // Update Formula cell's readOnly status based on Data Type
+                                const formulaCol = 5;
+                                const dataType = newValue;
+                                if (dataType === 'Calculation') {
+                                    hotInstance.setCellMeta(row, formulaCol, 'readOnly', false);
+                                    hotInstance.setCellMeta(row, formulaCol, 'className', '');
+                                } else {
+                                    hotInstance.setCellMeta(row, formulaCol, 'readOnly', true);
+                                    hotInstance.setCellMeta(row, formulaCol, 'className', 'htNonEditable');
+                                    hotInstance.setDataAtCell(row, formulaCol, ''); // Clear Formula cell
+                                }
+                                hotInstance.render();
+                            }
+                            // Update the lastEditedRow
+                            lastEditedRow = row;
+                        });
+                    }
                     console.log("Cell changed: ", changes);
+                },
+                cells: function (row, col) {
+                    var cellProperties = {};
+                    if (col === 5) { // Formula column index (0-based)
+                        var dataType = this.instance.getDataAtCell(row, 2); // Column C
+                        if (dataType !== 'Calculation') {
+                            cellProperties.readOnly = true;
+                            cellProperties.className = 'htNonEditable';
+                        }
+                    }
+                    return cellProperties;
                 },
             });
 
-            // Enable zooming with Ctrl + Mouse Wheel
+            // Prevent default zoom behavior and implement custom zoom
             container.addEventListener('wheel', function(event) {
                 if (event.ctrlKey || event.deltaY || event.deltaX) {
                     event.preventDefault();
@@ -79,27 +202,21 @@
             });
 
             dismissBtn.style.display = 'block';
+
             container.addEventListener('mousedown', function(event) {
                 event.stopPropagation();
             });
 
-
-
-            // Add a global keydown listener to capture Alt + 0
+            // Keyboard shortcut handling
             document.addEventListener('keydown', function(event) {
-                // Detect Alt + 0 (Note: '0' key without Shift)
                 if (event.altKey && (event.key === '0')) {
-                    event.preventDefault(); // Prevent default behavior if necessary
+                    event.preventDefault();
                     var selected = hotInstance.getSelected();
-
                     if (selected) {
-                        // `getSelected` returns an array of [startRow, startCol, endRow, endCol]
-                        // We'll use the first selected cell
                         var row = selected[0][0];
                         var col = selected[0][1];
                         console.log(`Alt + 0 pressed on cell [${row}, ${col}]`);
-                        selectedCellCoords = { row: row, col: col }; // Store selected cell coordinates
-
+                        selectedCellCoords = { row: row, col: col };
                         if (window.flutter_inappwebview) {
                             window.flutter_inappwebview.callHandler('openDialog', { row: row, col: col });
                         }
@@ -111,18 +228,19 @@
         }
     }
 
-    // Update Handsontable cell with selected value from Flutter
+    // Function to update a cell with a value from a dialog
     function updateCellWithDialogValue(value) {
         if (selectedCellCoords) {
             hotInstance.setDataAtCell(selectedCellCoords.row, selectedCellCoords.col, value);
             console.log(`Updated cell at row ${selectedCellCoords.row}, col ${selectedCellCoords.col} with value: ${value}`);
-            // Optionally, reset selectedCellCoords after updating
             selectedCellCoords = null;
         } else {
             console.error('No cell selected to update.');
         }
     }
-function updateHandsontableData(jsonData) {
+
+    // Function to update Handsontable data from JSON
+    function updateHandsontableData(jsonData) {
         console.log("Updating data with:", jsonData);
         try {
             var data = JSON.parse(jsonData);
@@ -135,29 +253,44 @@ function updateHandsontableData(jsonData) {
             console.error('Failed to parse JSON data:', error);
         }
     }
+
+    // Function to dismiss the spreadsheet
     function dismissSpreadsheet() {
         var container = document.getElementById('spreadsheet');
         var dismissBtn = document.getElementById('dismissBtn');
-
         if (hotInstance) {
             hotInstance.destroy();
             console.log("Spreadsheet destroyed.");
         }
-
         container.style.visibility = 'hidden';
         dismissBtn.style.display = 'none';
     }
 
+    // Function to get Handsontable data
     function getHandsontableData() {
-        return hotInstance.getData();
+        if (hotInstance) {
+            const data = hotInstance.getData();
+            return JSON.stringify(data);
+        }
+        return null;
     }
-window.onload = initializeHandsontable;
-window.initializeHandsontable = initializeHandsontable;
-window.updateHandsontableData = updateHandsontableData;
-window.setCellValue = setCellValue;
 
-    // Make update function available globally
+    // Function to handle the selected option from Flutter
+    function handleSelectedOption(row, col, option) {
+        // Update the cell with the selected option
+        hotInstance.setDataAtCell(row, col, option);
+        console.log(`Received selected option: ${option} for cell [${row}, ${col}]`);
+    }
+
+    // Initialize Handsontable on window load
+    window.onload = initializeHandsontable;
+    window.initializeHandsontable = initializeHandsontable;
+    window.updateHandsontableData = updateHandsontableData;
     window.updateCellWithDialogValue = updateCellWithDialogValue;
+    window.dismissSpreadsheet = dismissSpreadsheet;
+    window.getHandsontableData = getHandsontableData;
+    window.handleSelectedOption = handleSelectedOption; // Expose the function to JavaScript
+    window.validateAllFormulas = validateAllFormulas; // Expose the validation function
 </script>
 </body>
 </html>
