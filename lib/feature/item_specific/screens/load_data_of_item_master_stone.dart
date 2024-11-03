@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 import 'package:jewlease/feature/item_specific/widgets/left_side_pannel_load_item_master_gold.dart';
-import 'package:jewlease/feature/item_specific/widgets/right_side_pannel_load_item_master_gold.dart';
 import 'package:jewlease/feature/item_specific/widgets/right_side_pannel_load_item_master_stone.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/widgets/load_item_attribute_widget.dart';

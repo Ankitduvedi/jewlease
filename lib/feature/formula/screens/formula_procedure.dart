@@ -13,7 +13,7 @@ final tabIndexProvider = StateProvider<int>((ref) => -1);
 
 class FormulaProcdedureScreen extends ConsumerWidget {
   FormulaProcdedureScreen({super.key});
-  List<String> _tabs = [
+  final List<String> _tabs = [
     'Formula Mapping',
     'Rate Structure',
     'Rate Mapping',
@@ -43,7 +43,7 @@ class FormulaProcdedureScreen extends ConsumerWidget {
                 ),
               ],
             ),
-            child: Container(
+            child: SizedBox(
                 height: double.infinity,
                 width: double.infinity,
                 child: Row(
@@ -91,13 +91,15 @@ class FormulaProcdedureScreen extends ConsumerWidget {
                   AppBarButtons(
                     ontap: [
                       () {
-                        if (selectedIndex == 1)
+                        if (selectedIndex == 1) {
                           showDialog(
                               context: context,
                               builder: (context) => rangeDialog());
+                        }
                         log('new pressed');
-                        if (selectedIndex == 3)
+                        if (selectedIndex == 3) {
                           context.go('/addFormulaProcedureScreen');
+                        }
                       },
                       () {},
                       () {

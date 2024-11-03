@@ -16,6 +16,8 @@ import 'hierarchyDetailsList.dart';
 final boolProvider = StateProvider<bool>((ref) => false);
 
 class rangeDialog extends ConsumerStatefulWidget {
+  const rangeDialog({super.key});
+
   @override
   _rangeDialogState createState() => _rangeDialogState();
 }
@@ -44,7 +46,7 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Select Value of ${excelMap[title]}"),
-          content: Container(
+          content: SizedBox(
             // Adjust height as needed
             width: double.maxFinite,
             child: ListView.builder(
@@ -146,15 +148,16 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
     "I": "Visible",
   };
 
+  @override
   Widget build(BuildContext context) {
     final selectedItems = ref.watch(selectedItemProvider);
     final itemValues = ref.watch(itemValueProvider);
     final textFieldvalues = ref.watch(dialogSelectionProvider);
     bool isToggled = ref.watch(boolProvider);
     // TODO: implement build
-    FocusNode _focusNode = FocusNode();
+    FocusNode focusNode = FocusNode();
     return RawKeyboardListener(
-        focusNode: _focusNode,
+        focusNode: focusNode,
         onKey: (RawKeyEvent event) {
           if (event.isKeyPressed(LogicalKeyboardKey.altLeft) &&
               event.isKeyPressed(LogicalKeyboardKey.keyO)) {
@@ -418,14 +421,14 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
                               border: Border.all(color: Colors.grey.shade400),
                               borderRadius: BorderRadius.circular(15),
                             ),
-                            child: Container(
+                            child: SizedBox(
                               height: screenHeight * 0.53,
                               child: ref.read(boolProvider) == false
                                   ? HierarchyDetailsList()
                                   : InAppWebView(
                                       initialUrlRequest: URLRequest(
                                           url: WebUri.uri(Uri.file(
-                                              "C:/Users/ASUS/StudioProjects/jewlease/lib/range.html"))),
+                                              "D:\flutter projectjewleaselib\range.html"))),
                                       initialOptions: InAppWebViewGroupOptions(
                                         crossPlatform: InAppWebViewOptions(
                                           javaScriptEnabled: true,

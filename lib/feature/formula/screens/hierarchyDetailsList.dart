@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../controller/heirarchy_controller.dart';
 
 class HierarchyDetailsList extends ConsumerWidget {
+  const HierarchyDetailsList({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedItems = ref.watch(selectedItemProvider);

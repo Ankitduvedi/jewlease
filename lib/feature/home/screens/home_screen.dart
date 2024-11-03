@@ -1,7 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jewlease/feature/home/controller/home_controller.dart';
 import 'package:jewlease/feature/home/widgets/center_tiles_widget.dart';
 import 'package:jewlease/feature/home/widgets/right_tiles.dart';
 
