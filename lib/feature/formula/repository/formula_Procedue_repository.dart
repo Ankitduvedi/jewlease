@@ -1,4 +1,5 @@
 // item_repository.dart
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
@@ -48,6 +49,34 @@ class formulaProcedureRepository {
           headers: {'Content-Type': 'application/json'},
         ),
       );
+
+      if (response.statusCode == 201) {
+        // Successfully uploaded
+        log('Data uploaded successfully');
+        return right(r"Successfully signed out.");
+      } else {
+        // Error handling
+        log('Failed to upload data: ${response.statusCode}');
+        return left(Failure(message: response.toString()));
+      }
+    } catch (e) {
+      // Handle errors
+      log('Error occurred: $e');
+      return left(Failure(message: e.toString()));
+    }
+  }
+
+  Future<Either<Failure, String>> addRangeMaster(
+      Map<String, dynamic> requestBody) async {
+    try {
+      final response = await _dio.post(
+        'http://13.49.66.204:3000/FormulaProcedures/RateStructure/',
+        data: jsonEncode(requestBody),
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+      print("response is $requestBody");
 
       if (response.statusCode == 201) {
         // Successfully uploaded

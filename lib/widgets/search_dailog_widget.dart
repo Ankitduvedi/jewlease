@@ -7,19 +7,22 @@ import 'package:jewlease/widgets/custom_app_bar_finder.dart';
 import '../feature/formula/controller/heirarchy_controller.dart';
 
 class ItemTypeDialogScreen extends ConsumerStatefulWidget {
-  const ItemTypeDialogScreen(
-      {super.key,
-      required this.title,
-      required this.endUrl,
-      required this.value,
-      this.keyOfMap,
-      this.query});
+  const ItemTypeDialogScreen({
+    super.key,
+    required this.title,
+    required this.endUrl,
+    required this.value,
+    this.keyOfMap,
+    this.query,
+    this.onOptionSelectd,
+  });
 
   final String title;
   final String endUrl;
   final String value;
   final String? query;
   final String? keyOfMap;
+  final Function(String)? onOptionSelectd;
 
   @override
   ItemTypeDialogScreenState createState() => ItemTypeDialogScreenState();
@@ -190,7 +193,9 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                           final isSelected =
                               selectedItem[widget.keyOfMap ?? widget.title] ==
                                   item[widget.value];
-
+                          print(
+                              "filetered value ${item} ${selectedItem[widget.keyOfMap ?? widget.title]}  ${item[widget.value]} ${widget.value}");
+                          print("seleced $isSelected");
                           return DataRow(
                             selected: isSelected,
                             onSelectChanged: (bool? selected) {
@@ -258,6 +263,10 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                           ref
                               .read(itemProvider.notifier)
                               .setItem(selectedRow["Config value"]);
+                        }
+                        if (widget.onOptionSelectd != null) {
+                          print("hello");
+                          widget.onOptionSelectd!(selectedItemID);
                         }
 
                         // Save the selected item ID to the provider or perform any action you need

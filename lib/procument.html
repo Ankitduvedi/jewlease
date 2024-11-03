@@ -30,6 +30,18 @@
         .htInvalid {
             background-color: #FFCCCC !important;
         }
+        .handsontable th {
+            background-color: #00394e !important; /* Dark blue background */
+            color: #ffffff !important; /* White text color */
+            border-right: 1px solid #cccccc !important; /* Light border color */
+            text-align: center;
+            font-weight: bold;
+        }
+        /* Highlight specific columns in green */
+        .handsontable th:nth-child(4), /* Variant Name */
+        .handsontable th:nth-child(5)  /* Stock Status */ {
+            color: #00FF00 !important; /* Green text color */
+        }
     </style>
 </head>
 <body>
@@ -37,9 +49,19 @@
 <button id="dismissBtn" onclick="dismissSpreadsheet()">Dismiss Spreadsheet</button>
 <script>
     var hotInstance;
-    var selectedCellCoords = null;
+    var selectedCellCoords = null;c
     var lastEditedRow = null;
-    const defaultColumnHeaders = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '];
+    const defaultColumnHeaders = ["Ref Document",
+  "Line No",
+  "Stock Code",
+  "Variant Name",
+  "Stock Status",
+  "Stone Wt",
+  "Pieces",
+  "Weight",
+  "Rate",
+  "Amount",
+  "Wastage"];
 
     // Function to initialize Handsontable
     function initializeHandsontable() {
@@ -99,23 +121,14 @@
             console.error('Spreadsheet container not found');
         }
     }
-    function updateCellWithDialogValue(value) {
-        if (selectedCellCoords) {
-            hotInstance.setDataAtCell(selectedCellCoords.row, selectedCellCoords.col, value);
-            console.log(`Updated cell at row ${selectedCellCoords.row}, col ${selectedCellCoords.col} with value: ${value}`);
-            selectedCellCoords = null;
-        } else {
-            console.error('No cell selected to update.');
-        }
-    }
 
     // Function to add custom header row and remove default headers
     // Function to dynamically set new headers
-    function addCustomHeaderRow(newHeaders) {
-    if (!Array.isArray(newHeaders) || newHeaders.length === 0) {
+function addCustomHeaderRow(newHeaders) {
+  if (!Array.isArray(newHeaders) || newHeaders.length === 0) {
     console.error("Invalid header array. Must be a non-empty array.");
     return;
-    }
+  }
 
   // Update column headers with the new ones
   hotInstance.updateSettings({
@@ -162,7 +175,6 @@
     window.onload = initializeHandsontable;
     window.addCustomHeaderRow = addCustomHeaderRow;
     window.dismissSpreadsheet = dismissSpreadsheet;
-    window.updateCellWithDialogValue = updateCellWithDialogValue;
 </script>
 </body>
 </html>

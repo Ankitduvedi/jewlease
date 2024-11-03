@@ -5,8 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jewlease/core/utils/utils.dart';
 import 'package:jewlease/data/model/item_master_metal.dart';
-import 'package:jewlease/data/model/variant_master_metal.dart';
-import 'package:jewlease/feature/vendor/repository/vendor_repository.dart';
+import 'package:jewlease/feature/formula/repository/formula_Procedue_repository.dart';
 
 final formulaProcedureProvider =
     StateProvider<List<String?>>((ref) => ['Style', null, null]);
@@ -26,36 +25,20 @@ final selectedMetalDataProvider = StateProvider<ItemMasterMetal>((ref) =>
 
 // Create a StateNotifier for managing the state and interactions
 class formulaProcedureController extends StateNotifier<bool> {
-  final vendorRepository _formulaProcedureRepository;
+  final formulaProcedureRepository _formulaProcedureRepository;
 
   formulaProcedureController(this._formulaProcedureRepository) : super(false);
 
-  Future<void> submitMetalItemConfiguration(
-      ItemMasterMetal config, BuildContext context) async {
-    try {
-      state = true;
-      final response = await _formulaProcedureRepository.addVendor(config);
-      state = false;
-      response.fold((l) => Utils.snackBar(l.message, context), (r) {
-        Utils.snackBar('New Metal Item Created', context);
-        context.pop();
-        null;
-      });
-      // Optionally update the state if necessary after submission
-    } catch (e) {
-      state = false;
-    }
-  }
-
-  Future<void> submitMetalVariantConfiguration(
-      VariantMasterMetal config, BuildContext context) async {
+  Future<void> addRangeMaster(
+      Map<String, dynamic> requestBody, BuildContext context) async {
     try {
       state = true;
       final response =
-          await _formulaProcedureRepository.addMetalVariant(config);
+          await _formulaProcedureRepository.addRangeMaster(requestBody);
       state = false;
+
       response.fold((l) => Utils.snackBar(l.message, context), (r) {
-        Utils.snackBar('New Metal Item Created', context);
+        Utils.snackBar('New Range Masster Addded', context);
         context.pop();
         null;
       });
@@ -67,9 +50,9 @@ class formulaProcedureController extends StateNotifier<bool> {
 }
 
 // Define a provider for the controller
-final itemSpecificControllerProvider =
+final formulaProcedureControllerProvider =
     StateNotifierProvider<formulaProcedureController, bool>((ref) {
   final dio = Dio();
-  final repository = vendorRepository(dio);
+  final repository = formulaProcedureRepository(dio);
   return formulaProcedureController(repository);
 });

@@ -1,6 +1,5 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
+import 'package:jewlease/core/routes/go_router.dart';
 import 'package:jewlease/main.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 
@@ -69,10 +68,15 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
         color: Colors.orange.shade200,
         key: ValueKey('Invoicing')),
     _buildTile(
-        title: 'Procurement',
-        icon: Icons.shopping_cart,
-        color: Colors.purple.shade200,
-        key: ValueKey('Procurement')),
+      title: 'Procurement',
+      icon: Icons.shopping_cart,
+      color: Colors.purple.shade200,
+      key: ValueKey('Procurement'),
+      onTap: () {
+        print("called her");
+        goRouter.go('/procumentScreen');
+      },
+    ),
     _buildTile(
         title: 'CRM',
         icon: Icons.person,
@@ -139,12 +143,15 @@ class _buildTile extends StatelessWidget {
   final String title;
   final IconData icon;
   final Color color;
+  final VoidCallback? onTap; // Make onTap nullable
 
-  const _buildTile(
-      {super.key,
-      required this.title,
-      required this.icon,
-      required this.color});
+  const _buildTile({
+    Key? key,
+    required this.title,
+    required this.icon,
+    required this.color,
+    this.onTap,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -158,9 +165,7 @@ class _buildTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: InkWell(
-        onTap: () {
-          log('$title tile pressed');
-        },
+        onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(8.0),

@@ -9,7 +9,7 @@ import 'package:jewlease/main.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/widgets/data_widget.dart';
 
-final tabIndexProvider = StateProvider<int>((ref) => -1);
+final tabIndexProvider = StateProvider<int>((ref) => 1);
 
 class FormulaProcdedureScreen extends ConsumerWidget {
   FormulaProcdedureScreen({super.key});
@@ -22,6 +22,7 @@ class FormulaProcdedureScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    screenWidth = MediaQuery.of(context).size.width;
     final selectedIndex = ref.watch(tabIndexProvider);
     return Column(
       children: [
@@ -56,7 +57,7 @@ class FormulaProcdedureScreen extends ConsumerWidget {
                       },
                       child: Container(
                         color: index == selectedIndex
-                            ? Colors.green
+                            ? Color(0xff28713E)
                             : Colors.white,
                         margin: EdgeInsets.symmetric(
                             horizontal: screenWidth * 0.01),
@@ -68,12 +69,18 @@ class FormulaProcdedureScreen extends ConsumerWidget {
                               vertical: screenHeight * 0.005),
                           decoration: BoxDecoration(
                             color: index == selectedIndex
-                                ? Colors.green
+                                ? Color(0xff28713E)
                                 : Color(0xffF0F4F8),
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: Center(
-                            child: Text(_tabs[index]),
+                            child: Text(
+                              _tabs[index],
+                              style: TextStyle(
+                                  color: index == selectedIndex
+                                      ? Colors.white
+                                      : Colors.black),
+                            ),
                           ),
                         ),
                       ),
@@ -113,9 +120,12 @@ class FormulaProcdedureScreen extends ConsumerWidget {
                   )
                 ],
               ),
-              body: const ItemDataScreen(
-                title: '',
-                endUrl: 'AllAttribute/',
+              body: SizedBox(
+                width: screenWidth,
+                child: const ItemDataScreen(
+                  title: '',
+                  endUrl: 'FormulaProcedures/RateStructure/FormulaRangeMaster/',
+                ),
               )),
         ),
       ],

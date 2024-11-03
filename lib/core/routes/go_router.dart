@@ -30,6 +30,8 @@ import 'package:jewlease/feature/splas_screen/splash_view.dart';
 import 'package:jewlease/feature/vendor/screens/new_vendor_screen.dart';
 import 'package:jewlease/feature/vendor/screens/vendor_screen.dart';
 
+import '../../feature/procument/procumentScreen.dart';
+
 final goRouter = GoRouter(
   debugLogDiagnostics: true,
   navigatorKey: NavigationService.rootNavigatorKey,
@@ -212,6 +214,11 @@ final goRouter = GoRouter(
               path: '/excelScreen',
               builder: (context, state) {
                 return ExcelSheet();
+              }),
+          GoRoute(
+              path: '/procumentScreen',
+              builder: (context, state) {
+                return procumentScreen();
               })
         ]),
   ],

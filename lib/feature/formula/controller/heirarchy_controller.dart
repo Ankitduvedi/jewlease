@@ -1,7 +1,35 @@
 // First map: item -> bool (isSelected)
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+final itemListProvider =
+    StateNotifierProvider<ItemListNotifier, Map<String, List<String>>>((ref) {
+  return ItemListNotifier();
+});
+
+class ItemListNotifier extends StateNotifier<Map<String, List<String>>> {
+  ItemListNotifier() : super({});
+
+  // Function to add a value to the list of a specific key
+  void addItemToList(String key, String value) {
+    // Check if the key already exists, then append the value; otherwise, create a new list
+    state = {
+      ...state,
+      key: [...(state[key] ?? []), value],
+    };
+  }
+}
+
+// Fetch function to retrieve the map
+final fetchMapProvider = Provider((ref) {
+  Map<String, List<String>> fetchMap() {
+    return ref.watch(itemListProvider);
+  }
+
+  return fetchMap;
+});
+
 // First map: item -> isSelected
+
 final selectedItemProvider =
     StateNotifierProvider<SelectedItemNotifier, Map<String, bool>>((ref) {
   return SelectedItemNotifier();
@@ -44,6 +72,9 @@ final fetchMapsProvider = Provider((ref) {
   Map<String, Map<String, dynamic>> fetchMaps() {
     final selectedMap = ref.read(selectedItemProvider);
     final valueMap = ref.read(itemValueProvider);
+
+    print("selected map is $selectedMap");
+    print("value map is $valueMap");
 
     return {
       'selectedItems': selectedMap,

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
@@ -112,6 +110,11 @@ class TableRowItem extends ConsumerWidget {
               labelText: attributeType,
               icon: Icons.search,
               onIconPressed: () {
+                print("value is ${attributeData['value']!}");
+                print("title is ${attributeData["title"]}");
+                print("end url  is ${attributeData['endUrl']!}");
+                print("query is ${attributeData['query']!}");
+
                 showDialog(
                   context: context,
                   builder: (context) => ItemTypeDialogScreen(

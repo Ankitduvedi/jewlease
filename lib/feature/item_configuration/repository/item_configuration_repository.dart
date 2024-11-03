@@ -16,7 +16,7 @@ class ItemRepository {
     log('$url$endUrl');
     if (endUrl.contains("FormulaProcedure")) {
       final response = await _dio.get('$url2$endUrl');
-      print("response is2 $response  ${response.data}");
+      print("response is2 $url2 $response  ${response.data}");
       return List<Map<String, dynamic>>.from(response.data);
     }
     final response = await _dio.get('$url$endUrl');

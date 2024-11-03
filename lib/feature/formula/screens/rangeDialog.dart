@@ -10,6 +10,7 @@ import '../../../providers/dailog_selection_provider.dart';
 import '../../../widgets/read_only_textfield_widget.dart';
 import '../../../widgets/search_dailog_widget.dart';
 import '../../../widgets/text_field_widget.dart';
+import '../controller/forular_prtocedure_controller.dart';
 import '../controller/heirarchy_controller.dart';
 import 'hierarchyDetailsList.dart';
 
@@ -76,49 +77,44 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
   }
 
   void _handleOpenDialog(int row, int col, Map<String, dynamic> selectedItems,
-      Map<String, dynamic> itemValues) {
+      Map<String, List<String>> itemMap) {
     String columnName = _getColumnName(col);
     List<String> options = [];
-    List<String> headerValues = selectedItems.entries.map((entry) {
-      final item = entry.key;
-      final isSelected = entry.value;
-      final String itemValue = itemValues[item] ?? '';
+    final headerValues = itemMap.entries
+        .expand((entry) => entry.key == 'Number'
+            ? entry.value.expand((value) => ['$value start', '$value end'])
+            : entry.value.map((value) => value))
+        .toList();
 
-      return itemValue;
-    }).toList();
-    print("no is ${columnName.codeUnitAt(0)}");
+    int index = (columnName.codeUnitAt(0) - 'A'.codeUnitAt(0)).abs();
+    print("index is $index");
+    final item = headerValues[index - 1];
 
-    switch (headerValues[columnName.codeUnitAt(0) - "A".codeUnitAt(0) + 1]) {
-      case "vjhvhjv": // Column 'C'
-        options = [
-          'Range',
-          'Calculation',
-          'Amount',
-          'Total',
-          'Variable',
-          'Column'
-        ];
-        break;
-      case 'D':
-        options = ['GST TAX', 'HST TAX', 'QST TAX', 'AMOUNT BEFORE TAX'];
-      case 'G': // Column 'G'
-        options = ['GST TAX', 'HST TAX', 'QST TAX', 'AMOUNT BEFORE TAX'];
-        break;
-      default:
-        // Handle other columns or ignore
-        print('No dialog defined for column: $columnName');
-        return;
-    }
+    final isNonNumber = !headerValues
+        .sublist(0, index - 1)
+        .any((element) => element.contains('start') || element.contains('end'));
 
-    // Show the dialog with the options
-    _showOptionsDialog(context, columnName, options, (selectedOption) {
-      // Handle the selected option
-      print('Selected option: $selectedOption in column: $columnName');
+    print("showing dailog $item");
+    final selectedItemID = ref.read(dialogSelectionProvider)[item];
 
-      // Optionally, send the selected option back to the WebView
-      // For example, update the cell with the selected option
-      _sendSelectedValueToWebView(selectedOption);
-    });
+    if (isNonNumber)
+      showDialog(
+        context: context,
+        builder: (context) => ItemTypeDialogScreen(
+          value: 'AttributeCode',
+          title: item,
+          endUrl: 'AllAttribute',
+          query: item,
+          onOptionSelectd: (selectedOption) {
+            // Handle the selected option
+            print('Selected option: $selectedOption in column: $columnName');
+
+            // Optionally, send the selected option back to the WebView
+            // For example, update the cell with the selected option
+            _sendSelectedValueToWebView(selectedOption);
+          },
+        ),
+      );
   }
 
   void _sendSelectedValueToWebView(String value) {
@@ -147,7 +143,11 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
   };
 
   Widget build(BuildContext context) {
+    screenWidth = MediaQuery.of(context).size.width;
+    screenHeight = MediaQuery.of(context).size.height;
     final selectedItems = ref.watch(selectedItemProvider);
+    final itemListNotifier = ref.watch(itemListProvider.notifier);
+    final itemMap = ref.watch(itemListProvider);
     final itemValues = ref.watch(itemValueProvider);
     final textFieldvalues = ref.watch(dialogSelectionProvider);
     bool isToggled = ref.watch(boolProvider);
@@ -222,7 +222,9 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
                             SizedBox(
                               width: screenWidth * 0.13,
                               child: ReadOnlyTextFieldWidget(
-                                hintText: 'Item',
+                                hintText: ref.read(dialogSelectionProvider)[
+                                        'Attribute Type'] ??
+                                    'Item',
                                 labelText: 'Range Type',
                                 icon: Icons.search,
                                 onIconPressed: () {
@@ -231,8 +233,9 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
                                     builder: (context) =>
                                         const ItemTypeDialogScreen(
                                       title: 'Attribute Type',
-                                      endUrl: 'AllAttribute/AttributeType',
-                                      value: 'ConfigValue',
+                                      endUrl:
+                                          'FormulaProcedures/RateStructure/RangeType',
+                                      value: 'Config value',
                                     ),
                                   );
                                 },
@@ -334,10 +337,12 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
                                     ref.read(itemProvider.notifier).getItem();
                                 final currentVal =
                                     ref.read(valueProvider.notifier).getValue();
+                                ref.read(itemProvider.notifier).setItem('');
+                                ref.read(valueProvider.notifier).setValue('');
+                                itemListNotifier.addItemToList(
+                                    currentItem, currentVal);
                                 print(
                                     "cuurent item is $currentItem and value is $currentVal");
-                                ref.read(addItemProvider)(
-                                    currentItem, false, currentVal);
 
                                 String jsCode = """
       addCustomHeaderRow("$currentVal");
@@ -373,16 +378,13 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
                                 ref.read(boolProvider.notifier).state =
                                     !isToggled;
 
-                                Future.delayed(Duration(seconds: 7), () {
-                                  List<String> headerValues =
-                                      selectedItems.entries.map((entry) {
-                                    final item = entry.key;
-                                    final isSelected = entry.value;
-                                    final String itemValue =
-                                        itemValues[item] ?? '';
-
-                                    return itemValue;
-                                  }).toList();
+                                Future.delayed(Duration(seconds: 3), () {
+                                  final headerValues = itemMap.entries
+                                      .expand((entry) => entry.key == 'Number'
+                                          ? entry.value.expand((value) =>
+                                              ['$value start', '$value end'])
+                                          : entry.value.map((value) => value))
+                                      .toList();
                                   print("header values is $headerValues");
                                   headerValues.insert(0, "Output");
                                   _callAddHeaderRow(headerValues);
@@ -419,40 +421,56 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
                               borderRadius: BorderRadius.circular(15),
                             ),
                             child: Container(
-                              height: screenHeight * 0.53,
-                              child: ref.read(boolProvider) == false
-                                  ? HierarchyDetailsList()
-                                  : InAppWebView(
-                                      initialUrlRequest: URLRequest(
-                                          url: WebUri.uri(Uri.file(
-                                              "C:/Users/ASUS/StudioProjects/jewlease/lib/range.html"))),
-                                      initialOptions: InAppWebViewGroupOptions(
-                                        crossPlatform: InAppWebViewOptions(
-                                          javaScriptEnabled: true,
+                                height: screenHeight * 0.53,
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    children: [
+                                      SizedBox(
+                                          width: double.infinity,
+                                          // height: screenHeight,
+                                          child: HierarchyDetailsList()),
+                                      if (ref.read(boolProvider) == false)
+                                        SizedBox(
+                                          height: screenHeight,
+                                          width: screenWidth,
+                                          child: InAppWebView(
+                                              initialUrlRequest: URLRequest(
+                                                  url: WebUri.uri(Uri.file(
+                                                      "C:/Users/ASUS/StudioProjects/jewlease/lib/range.html"))),
+                                              initialOptions:
+                                                  InAppWebViewGroupOptions(
+                                                crossPlatform:
+                                                    InAppWebViewOptions(
+                                                  javaScriptEnabled: true,
+                                                ),
+                                              ),
+                                              onWebViewCreated: (controller) {
+                                                webViewController = controller;
+
+                                                controller.addJavaScriptHandler(
+                                                  handlerName: 'openDialog',
+                                                  callback: (args) {
+                                                    if (args.isNotEmpty) {
+                                                      // Expecting args[0] to be a Map with 'row' and 'col'
+                                                      var cellInfo = args[0];
+                                                      int rowIndex =
+                                                          cellInfo['row'];
+                                                      int colIndex =
+                                                          cellInfo['col'];
+
+                                                      _handleOpenDialog(
+                                                          rowIndex,
+                                                          colIndex,
+                                                          selectedItems,
+                                                          itemMap);
+                                                    }
+                                                  },
+                                                );
+                                              }),
                                         ),
-                                      ),
-                                      onWebViewCreated: (controller) {
-                                        webViewController = controller;
-
-                                        controller.addJavaScriptHandler(
-                                          handlerName: 'openDialog',
-                                          callback: (args) {
-                                            if (args.isNotEmpty) {
-                                              // Expecting args[0] to be a Map with 'row' and 'col'
-                                              var cellInfo = args[0];
-                                              int rowIndex = cellInfo['row'];
-                                              int colIndex = cellInfo['col'];
-
-                                              _handleOpenDialog(
-                                                  rowIndex,
-                                                  colIndex,
-                                                  selectedItems,
-                                                  itemValues);
-                                            }
-                                          },
-                                        );
-                                      }),
-                            )),
+                                    ],
+                                  ),
+                                ))),
                         SizedBox(
                           height: screenHeight * 0.02,
                         ),
@@ -473,20 +491,62 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
                             SizedBox(
                               width: screenWidth * 0.01,
                             ),
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: screenWidth * 0.02,
-                                  vertical: screenHeight * 0.005),
-                              height: screenHeight * 0.05,
-                              decoration: BoxDecoration(
-                                color: Colors.green,
-                                border: Border.all(color: Colors.green),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  'Done',
-                                  style: TextStyle(color: Colors.white),
+                            InkWell(
+                              onTap: () {
+                                final dataList =
+                                    itemMap.entries.expand((entry) {
+                                  if (entry.key == 'Number') {
+                                    // For 'Number', add two maps for each value
+                                    return entry.value.expand((value) => [
+                                          {
+                                            'dataType': entry.key,
+                                            'depdField': '$value start'
+                                          },
+                                          {
+                                            'dataType': entry.key,
+                                            'depdField': '$value end'
+                                          },
+                                        ]);
+                                  } else {
+                                    // For other keys, just create a map for each value
+                                    return entry.value.map(
+                                      (value) => {
+                                        'dataType': entry.key,
+                                        'depdField': value
+                                      },
+                                    );
+                                  }
+                                }).toList();
+                                print("data list is $dataList");
+                                print(
+                                    "selcted range is ${ref.read(dialogSelectionProvider)['Attribute Type']}");
+                                Map<String, dynamic> reqBody = {
+                                  "rangeHierarchyName": rangeHierarchy.text,
+                                  "rangeType":
+                                      ref.read(dialogSelectionProvider)[
+                                          'Attribute Type'],
+                                  "details": dataList,
+                                };
+                                ref
+                                    .read(formulaProcedureControllerProvider
+                                        .notifier)
+                                    .addRangeMaster(reqBody, context);
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: screenWidth * 0.02,
+                                    vertical: screenHeight * 0.005),
+                                height: screenHeight * 0.05,
+                                decoration: BoxDecoration(
+                                  color: Colors.green,
+                                  border: Border.all(color: Colors.green),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    'Done',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                                 ),
                               ),
                             )

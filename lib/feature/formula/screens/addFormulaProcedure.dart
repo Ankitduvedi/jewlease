@@ -215,7 +215,7 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
 
       if (isValid) {
         // All formulas are valid
-        _showSnackBar('All formulas are valid.', Colors.green);
+        _showSnackBar('All formulas are valid.', Color(0xff28713E));
       } else {
         // Some formulas are invalid
         _showSnackBar(
@@ -541,11 +541,11 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
         ),
         NumberTextFieldWidget(labelText: 'Maximum Value', controller: maxValue),
         // TextFieldWidget(labelText: 'Procedure Set', controller: procedureSet),
-        IconButton(
-            onPressed: () {
+        InkWell(
+            onTap: () {
               _validateFormulas();
             },
-            icon: Text("Validate")),
+            child: Container(child: Text("Validate"))),
         IconButton(
             onPressed: () {
               _uploadData();
