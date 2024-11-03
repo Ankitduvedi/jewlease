@@ -157,7 +157,7 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
                                   24), // Rounded corners to match logo style
                               side: BorderSide(
                                   color: const Color.fromARGB(255, 255, 114,
-                                      94)!), // Border color taken from the logo
+                                      94)), // Border color taken from the logo
                             ),
                             elevation:
                                 0, // No shadow for a flat design similar to the logo

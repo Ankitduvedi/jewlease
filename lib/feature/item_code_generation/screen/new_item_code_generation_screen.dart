@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jewlease/data/model/all_attribute_model.dart';
 import 'package:jewlease/data/model/item_code_generation_model.dart';
-import 'package:jewlease/feature/all_attributes/controller/all_attribute_controller.dart';
 import 'package:jewlease/feature/item_code_generation/controller/all_attribute_controller.dart';
-import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
 import 'package:jewlease/widgets/search_dailog_widget.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
-import 'package:jewlease/widgets/drop_down_text_field.dart';
 import 'package:jewlease/widgets/number_input_text_field.dart';
 import 'package:jewlease/widgets/read_only_textfield_widget.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';

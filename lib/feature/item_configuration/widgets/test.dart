@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
 class FileDownloadScreen extends StatefulWidget {
+  const FileDownloadScreen({super.key});
+
   @override
   _FileDownloadScreenState createState() => _FileDownloadScreenState();
 }

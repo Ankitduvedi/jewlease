@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/data/model/item_type_model.dart';
 import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';

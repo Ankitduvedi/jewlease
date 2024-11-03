@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../controller/heirarchy_controller.dart';
 
 class HierarchyDetailsList extends ConsumerWidget {
+  const HierarchyDetailsList({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Watching the itemListProvider to get the map with keys and lists of values

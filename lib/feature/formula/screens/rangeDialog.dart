@@ -17,6 +17,8 @@ import 'hierarchyDetailsList.dart';
 final boolProvider = StateProvider<bool>((ref) => false);
 
 class rangeDialog extends ConsumerStatefulWidget {
+  const rangeDialog({super.key});
+
   @override
   _rangeDialogState createState() => _rangeDialogState();
 }
@@ -45,7 +47,7 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Select Value of ${excelMap[title]}"),
-          content: Container(
+          content: SizedBox(
             // Adjust height as needed
             width: double.maxFinite,
             child: ListView.builder(
@@ -142,6 +144,7 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
     "I": "Visible",
   };
 
+  @override
   Widget build(BuildContext context) {
     screenWidth = MediaQuery.of(context).size.width;
     screenHeight = MediaQuery.of(context).size.height;
@@ -152,9 +155,9 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
     final textFieldvalues = ref.watch(dialogSelectionProvider);
     bool isToggled = ref.watch(boolProvider);
     // TODO: implement build
-    FocusNode _focusNode = FocusNode();
+    FocusNode focusNode = FocusNode();
     return RawKeyboardListener(
-        focusNode: _focusNode,
+        focusNode: focusNode,
         onKey: (RawKeyEvent event) {
           if (event.isKeyPressed(LogicalKeyboardKey.altLeft) &&
               event.isKeyPressed(LogicalKeyboardKey.keyO)) {
@@ -423,54 +426,51 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
                             child: Container(
                                 height: screenHeight * 0.53,
                                 child: SingleChildScrollView(
-                                  child: Column(
-                                    children: [
-                                      SizedBox(
-                                          width: double.infinity,
-                                          // height: screenHeight,
-                                          child: HierarchyDetailsList()),
-                                      if (ref.read(boolProvider) == false)
-                                        SizedBox(
-                                          height: screenHeight,
-                                          width: screenWidth,
-                                          child: InAppWebView(
-                                              initialUrlRequest: URLRequest(
-                                                  url: WebUri.uri(Uri.file(
-                                                      "C:/Users/ASUS/StudioProjects/jewlease/lib/range.html"))),
-                                              initialOptions:
-                                                  InAppWebViewGroupOptions(
-                                                crossPlatform:
-                                                    InAppWebViewOptions(
-                                                  javaScriptEnabled: true,
-                                                ),
-                                              ),
-                                              onWebViewCreated: (controller) {
-                                                webViewController = controller;
+                                    child: Column(children: [
+                                  SizedBox(
+                                      width: double.infinity,
+                                      // height: screenHeight,
+                                      child: HierarchyDetailsList()),
+                                  if (ref.read(boolProvider) == false)
+                                    SizedBox(
+                                      height: screenHeight,
+                                      width: screenWidth,
+                                      child: InAppWebView(
+                                          initialFile: "assets/range.html",
+                                          // initialUrlRequest: URLRequest(
+                                          //     url: WebUri.uri(Uri.directory(
+                                          //         "/jewlease/lib/range.html"))),
+                                          initialOptions:
+                                              InAppWebViewGroupOptions(
+                                            crossPlatform: InAppWebViewOptions(
+                                              javaScriptEnabled: true,
+                                            ),
+                                          ),
+                                          onWebViewCreated: (controller) {
+                                            webViewController = controller;
 
-                                                controller.addJavaScriptHandler(
-                                                  handlerName: 'openDialog',
-                                                  callback: (args) {
-                                                    if (args.isNotEmpty) {
-                                                      // Expecting args[0] to be a Map with 'row' and 'col'
-                                                      var cellInfo = args[0];
-                                                      int rowIndex =
-                                                          cellInfo['row'];
-                                                      int colIndex =
-                                                          cellInfo['col'];
+                                            controller.addJavaScriptHandler(
+                                              handlerName: 'openDialog',
+                                              callback: (args) {
+                                                if (args.isNotEmpty) {
+                                                  // Expecting args[0] to be a Map with 'row' and 'col'
+                                                  var cellInfo = args[0];
+                                                  int rowIndex =
+                                                      cellInfo['row'];
+                                                  int colIndex =
+                                                      cellInfo['col'];
 
-                                                      _handleOpenDialog(
-                                                          rowIndex,
-                                                          colIndex,
-                                                          selectedItems,
-                                                          itemMap);
-                                                    }
-                                                  },
-                                                );
-                                              }),
-                                        ),
-                                    ],
-                                  ),
-                                ))),
+                                                  _handleOpenDialog(
+                                                      rowIndex,
+                                                      colIndex,
+                                                      selectedItems,
+                                                      itemMap);
+                                                }
+                                              },
+                                            );
+                                          }),
+                                    ),
+                                ])))),
                         SizedBox(
                           height: screenHeight * 0.02,
                         ),

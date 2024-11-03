@@ -6,7 +6,6 @@ import 'package:jewlease/data/model/item_master_metal.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
-import 'package:jewlease/widgets/check_box.dart';
 import 'package:jewlease/widgets/drop_down_text_field.dart';
 import 'package:jewlease/widgets/icon_text_button_widget.dart';
 import 'package:jewlease/widgets/item_attribute_widget.dart';

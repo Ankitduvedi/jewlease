@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class WorkToDoWidget extends StatelessWidget {
+  const WorkToDoWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(

@@ -38,7 +38,7 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
   final TextEditingController initial = TextEditingController();
 
   InAppWebViewController? webViewController;
-  FocusNode _focusNode = FocusNode();
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
@@ -47,6 +47,7 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
     super.initState();
   }
 
+  @override
   void dispose() {
     procedureTy.dispose();
 
@@ -162,7 +163,7 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Select Value of ${excelMap[title]}"),
-          content: Container(
+          content: SizedBox(
             // Adjust height as needed
             width: double.maxFinite,
             child: ListView.builder(
@@ -204,15 +205,13 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
 
       // The result is returned as a string, e.g., "true" or "false"
       bool isValid = false;
-      if (result != null) {
-        // Remove quotes if any
-        if (result == true) {
-          isValid = true;
-        } else if (result == false) {
-          isValid = false;
-        }
+      // Remove quotes if any
+      if (result == true) {
+        isValid = true;
+      } else if (result == false) {
+        isValid = false;
       }
-
+    
       if (isValid) {
         // All formulas are valid
         _showSnackBar('All formulas are valid.', Color(0xff28713E));
@@ -320,8 +319,8 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
     final textFieldvalues = ref.watch(dialogSelectionProvider);
     final dropDownValue = ref.watch(dropDownProvider);
     int? selectedColumn;
-    int? _selectedRow;
-    int? _selectedCol;
+    int? selectedRow;
+    int? selectedCol;
     return RawKeyboardListener(
         focusNode: _focusNode,
         onKey: (RawKeyEvent event) {
@@ -402,12 +401,12 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
                     child: parentForm(dataList)),
               ),
               // Expanded(child: ExcelSheet())
-              Container(
+              SizedBox(
                 height: screenHeight * 0.53,
                 child: InAppWebView(
                   initialUrlRequest: URLRequest(
                       url: WebUri.uri(Uri.file(
-                          "C:/Users/ASUS/StudioProjects/jewlease/lib/test.html"))),
+                          "D:\flutter projectjewleaselib\test.html"))),
                   initialOptions: InAppWebViewGroupOptions(
                     crossPlatform: InAppWebViewOptions(
                       javaScriptEnabled: true,

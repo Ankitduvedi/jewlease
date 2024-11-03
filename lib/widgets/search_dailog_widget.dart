@@ -236,27 +236,28 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                         Map<String, dynamic> selectedRow =
                             _filteredItems.firstWhere(
                           (map) {
-                            print("map ${map}");
+                            print("map $map");
                             return map["Config Id"] == selectedItemID;
                           },
                           orElse: () => {},
                         );
-                        print("selected id ${selectedItemID}");
+                        print("selected id $selectedItemID");
                         if (widget.title == "Depd Field") {
-                          print("depd field selected ${selectedItemID}");
-                          if (widget.value == 'ConfigValue')
+                          print("depd field selected $selectedItemID");
+                          if (widget.value == 'ConfigValue') {
                             ref
                                 .read(valueProvider.notifier)
                                 .setValue(selectedItemID);
-                          else
+                          } else {
                             ref
                                 .read(valueProvider.notifier)
                                 .setValue(selectedRow["Config value"]);
+                          }
                         }
                         if (widget.title == "Data Type") {
-                          print("data type selected ${selectedItemID}");
+                          print("data type selected $selectedItemID");
 
-                          print("selected row ${selectedRow}");
+                          print("selected row $selectedRow");
                           print(
                               "selected item is ${selectedRow["Config value"]} ");
 
