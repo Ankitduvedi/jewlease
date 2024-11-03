@@ -1,8 +1,13 @@
+// image_upload_dialog.dart
+
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:jewlease/providers/image_provider.dart';
 import 'package:jewlease/widgets/image_data.dart';
+import 'package:jewlease/widgets/image_list.dart';
+// Ensure you import the image provider
 
 class ImageUploadDialog extends ConsumerStatefulWidget {
   const ImageUploadDialog({super.key});
@@ -16,6 +21,22 @@ class ImageUploadDialogState extends ConsumerState<ImageUploadDialog> {
   String _imageType = 'CATALOGUE'; // default value
   String _description = '';
   bool _isDefault = false;
+
+  final List<String> _imageTypes = [
+    'CATALOGUE',
+    'BACK_IMAGE',
+    'EXTERNAL SOURCE',
+    'FRONT VIEW',
+    'MANUFACTURING',
+    'MISCELLANEOUS',
+    'OTHER IMAGE',
+    'SEARCH RESULT PAGE',
+    'SIDE VIEW',
+    'STANDARD FOR PRODUCT DETAIL PAGE',
+    'TOP VIEW',
+    'VIDEO',
+    'ZOOMED FOR PRODUCT DETAILED PAGE',
+  ];
 
   Future<void> _pickImage() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -40,7 +61,7 @@ class ImageUploadDialogState extends ConsumerState<ImageUploadDialog> {
               isDefault: _isDefault,
             ),
           );
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(); // Close the dialog after saving
     }
   }
 
@@ -49,125 +70,85 @@ class ImageUploadDialogState extends ConsumerState<ImageUploadDialog> {
     final images = ref.watch(imageProvider);
 
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: SizedBox(
         width: 600,
-        height: 600,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  GestureDetector(
-                    onTap: _pickImage,
-                    child: Container(
-                      width: double.infinity,
-                      height: 150,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                      ),
-                      child: Center(
-                        child: _selectedImage == null
-                            ? const Icon(Icons.upload, size: 50)
-                            : Image.memory(_selectedImage!, fit: BoxFit.cover),
-                      ),
-                    ),
+        height: 650,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              GestureDetector(
+                onTap: _pickImage,
+                child: Container(
+                  width: double.infinity,
+                  height: 150,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.grey.shade400),
+                    color: Colors.grey.shade100,
                   ),
-                  const SizedBox(height: 16),
-                  DropdownButtonFormField<String>(
-                    value: _imageType,
-                    decoration: const InputDecoration(labelText: 'Image Type'),
-                    items: const [
-                      DropdownMenuItem(
-                          value: 'CATALOGUE', child: Text('CATALOGUE')),
-                      DropdownMenuItem(
-                          value: 'BACK_IMAGE', child: Text('BACK_IMAGE')),
-                    ],
+                  child: Center(
+                    child: _selectedImage == null
+                        ? const Icon(Icons.upload, size: 50)
+                        : ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child:
+                                Image.memory(_selectedImage!, fit: BoxFit.cover),
+                          ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                value: _imageType,
+                decoration: const InputDecoration(labelText: 'Image Type'),
+                items: _imageTypes
+                    .map((type) => DropdownMenuItem(
+                          value: type,
+                          child: Text(type),
+                        ))
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _imageType = value!;
+                  });
+                },
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                decoration: const InputDecoration(labelText: 'Description'),
+                onChanged: (value) {
+                  _description = value;
+                },
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Checkbox(
+                    value: _isDefault,
                     onChanged: (value) {
                       setState(() {
-                        _imageType = value!;
+                        _isDefault = value!;
                       });
                     },
                   ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    decoration: const InputDecoration(labelText: 'Description'),
-                    onChanged: (value) {
-                      _description = value;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: _isDefault,
-                        onChanged: (value) {
-                          setState(() {
-                            _isDefault = value!;
-                          });
-                        },
-                      ),
-                      const Text('Set As Default'),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  ElevatedButton(
-                    onPressed: _saveImage,
-                    child: const Text('Save'),
-                  ),
+                  const Text('Set As Default'),
                 ],
               ),
-            ),
-            const Divider(),
-            Expanded(
-              child: ImageList(images: images),
-            ),
-          ],
+              ElevatedButton(
+                onPressed: _saveImage,
+                child: const Text('Save'),
+              ),
+              const Divider(height: 24),
+              Expanded(
+                child: ImageList(images: images),
+              ),
+            ],
+          ),
         ),
       ),
-    );
-  }
-}
-
-class ImageList extends ConsumerWidget {
-  final List<ImageModel> images;
-
-  const ImageList({super.key, required this.images});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return GridView.builder(
-      itemCount: images.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 1,
-      ),
-      itemBuilder: (context, index) {
-        final image = images[index];
-        return Stack(
-          children: [
-            Image.memory(image.imageData),
-            Positioned(
-              top: 8,
-              right: 8,
-              child: GestureDetector(
-                onTap: () {
-                  ref.read(imageProvider.notifier).removeImage(index);
-                },
-                child: const Icon(Icons.delete, color: Colors.red),
-              ),
-            ),
-            if (image.isDefault)
-              const Positioned(
-                bottom: 8,
-                right: 8,
-                child: Icon(Icons.check_circle, color: Colors.green),
-              ),
-          ],
-        );
-      },
     );
   }
 }
