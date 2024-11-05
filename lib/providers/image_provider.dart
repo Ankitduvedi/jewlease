@@ -1,8 +1,14 @@
 // image_provider.dart
 
+import 'dart:convert';
+import 'dart:developer';
+import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fpdart/fpdart.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/data/model/failure.dart';
 import 'package:jewlease/widgets/image_data.dart';
-
 
 class ImageNotifier extends StateNotifier<List<ImageModel>> {
   ImageNotifier() : super([]);
@@ -11,9 +17,8 @@ class ImageNotifier extends StateNotifier<List<ImageModel>> {
     if (newImage.isDefault) {
       // Unmark any previously default image
       state = state
-          .map((image) => image.isDefault
-              ? image.copyWith(isDefault: false)
-              : image)
+          .map((image) =>
+              image.isDefault ? image.copyWith(isDefault: false) : image)
           .toList();
     }
     state = [...state, newImage];
@@ -45,6 +50,40 @@ class ImageNotifier extends StateNotifier<List<ImageModel>> {
         return img;
       }
     }).toList();
+  }
+
+  Future<Either<Failure, String>> uploadImage(ImageModel image) async {
+    final uri =
+        Uri.parse('http://13.49.66.204:3000/ItemMasterAndVariants/upload/');
+
+    var request = http.MultipartRequest('POST', uri)
+      ..files.add(http.MultipartFile.fromBytes('image', image.imageData,
+          filename: '${Timestamp.now().toString()}.jpeg'));
+
+    try {
+      final response = await request.send();
+      if (response.statusCode == 201) {
+        final responseBody = await response.stream.bytesToString();
+        final data = jsonDecode(responseBody);
+
+        if (data['url'] != null) {
+          // Add the uploaded image URL to the model
+          log('img url =${data['url']}');
+          image.url = data['url'];
+          return right(data['url']);
+        } else {
+          return left(Failure(message: "URL is empty: ${response.statusCode}"));
+        }
+      } else {
+        log("Failed to upload image. Status code: ${response.statusCode}");
+        return left(Failure(
+            message:
+                "Failed to upload image. Status code: ${response.statusCode}"));
+      }
+    } catch (e) {
+      log("Error uploading image: $e");
+      return left(Failure(message: e.toString()));
+    }
   }
 }
 

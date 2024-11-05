@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/data/model/item_master_metal.dart';
+import 'package:jewlease/data/model/style_item_model.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 import 'package:jewlease/providers/image_provider.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
@@ -48,21 +49,13 @@ class AddStyleItemScreenState extends ConsumerState<AddStyleItemScreen> {
       persistentFooterButtons: [
         ElevatedButton(
           onPressed: () {
-            final config = ItemMasterMetal(
-                metalCode: styleName.text,
-                exclusiveIndicator: isChecked['Exclusive Indicator'] ?? false,
-                description: remark.text,
-                rowStatus: dropDownValue['Row Status'] ?? 'Active',
-                createdDate: DateTime.timestamp(),
-                updateDate: DateTime.timestamp(),
-                attributeType: 'HSN - SAC CODE',
-                attributeValue: textFieldvalues['HSN - SAC CODE']!);
-
+            final config = ItemMasterStyle(styleName: styleName.text, exclusiveIndicator: isChecked['Exclusive Indicator'] ?? false, holdIndicator: isChecked['Hold Indicator'] ?? false, reworkIndicator: isChecked['Rework Indicator'] ?? false, rejectIndicator: isChecked['Reject Indicator'] ?? false, protoRequiredIndicator: isChecked['Proto Required Indicator'] ?? false, autoVarientCodeGenIndicator: isChecked['Auto Variant Code Gen Indicator'] ?? false, remark: remark.text, rowStatus: dropDownValue['Row Status'] ?? 'Active', imageDetails: [],);
             log(config.toJson().toString());
-
-            ref
+            log('save button pressed');
+              ref
                 .read(itemSpecificControllerProvider.notifier)
-                .submitMetalItemConfiguration(config, context, masterType[1]!);
+                .submitStyleItemConfiguration(config,context,ref);
+
           },
           style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.fromLTRB(50, 20, 50, 20),
