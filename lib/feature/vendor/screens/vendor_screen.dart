@@ -20,16 +20,16 @@ class VendorScreen extends ConsumerWidget {
               ontap: [
                 () {
                   log('new pressed');
-                  context.go('/addVendorScreen');
+                  context.push('/addVendorScreen');
                 },
                 () {},
                 () {
                   // Reset the provider value to null on refresh
-                  ref.watch(vendorProvider.notifier).state = [
-                    'Style',
-                    null,
-                    null
-                  ];
+                  // ref.watch(vendorProvider.notifier).state = [
+                  //   'Style',
+                  //   null,
+                  //   null
+                  // ];
                 },
                 () {}
               ],
