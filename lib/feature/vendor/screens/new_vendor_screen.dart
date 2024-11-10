@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/data/model/item_master_metal.dart';
+import 'package:jewlease/data/model/vendor_model.dart';
 import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
+import 'package:jewlease/feature/vendor/controller/vendor_controller.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/widgets/check_box.dart';
@@ -86,7 +88,7 @@ class AddMetalItemScreenState extends ConsumerState<AddVendor> {
 
   final List<String> content = [
     'Parent Form',
-    'Item Attribute',
+    //'Item Attribute',
     // 'Bank Information',
     // 'Location Mapping',
     // 'Supporting Document',
@@ -96,7 +98,6 @@ class AddMetalItemScreenState extends ConsumerState<AddVendor> {
   ];
   @override
   Widget build(BuildContext context) {
-    final selectedContent = ref.watch(formSequenceProvider);
     final isChecked = ref.watch(chechkBoxSelectionProvider);
     final textFieldvalues = ref.watch(dialogSelectionProvider);
     final dropDownValue = ref.watch(dropDownProvider);
@@ -105,24 +106,40 @@ class AddMetalItemScreenState extends ConsumerState<AddVendor> {
       persistentFooterButtons: [
         ElevatedButton(
           onPressed: () {
-            if (selectedContent == 0) {
-              ref.read(formSequenceProvider.notifier).state = 1;
-            }
-            if (selectedContent == 1) {
-              final config = ItemMasterMetal(
-                  metalCode: metalCode.text,
-                  exclusiveIndicator: isChecked['Exclusive Indicator'] ?? false,
-                  description: description.text,
-                  rowStatus: dropDownValue['Row Status'] ?? 'Active',
-                  createdDate: DateTime.timestamp(),
-                  updateDate: DateTime.timestamp(),
-                  attributeType: 'HSN - SAC CODE',
-                  attributeValue: textFieldvalues['Attribute Code']!);
+            final config = Vendor(
+                gstRegistrationType: 'To be replaced',
+                initials: initial.text,
+                vendorCode: vendorCode.text,
+                vendorName: vendorName.text,
+                defaultCurrency: 'To be replaced',
+                agentName: 'To be replaced',
+                defaultTerms: 'To be replaced',
+                rowStatus: dropDownValue['Row Status'] ?? 'Active',
+                logoFileName: logoFileName.text,
+                localSalesTaxNo: localSalesTaxNo.text,
+                salesTaxNo: salesTaxNo.text,
+                panNo: panNo.text,
+                aadharNo: aadharNo.text,
+                msmeCertificateNo: msmeCertificateNo.text,
+                vendorType: dropDownValue['Vendor Type'] ?? 'On Time',
+                tanNo: tanNo.text,
+                vanNo: vatNo.text,
+                gstNo: gstNo.text,
+                msmeRegistered: dropDownValue['MSME Registred'] ?? 'Yes',
+                allowWastage: dropDownValue['MSME Wastage'] ?? 'No',
+                allowLabour: dropDownValue['Allow Labour'] ?? 'None',
+                correspondingLocation: 'To be replaced',
+                nominatedAgency: isChecked['Nominated Agency'] ?? false,
+                exchangePercent: exchangePercentage.text,
+                returnsTerm: returnTerms.text,
+                udyogAdharNo: udyogAdharNumber.text,
+                exchangeTerms: dropDownValue['Exchange Terms'] ?? 'No Exchange',
+                tds194Q: dropDownValue['TDS194Q'] ?? 'No');
+            
 
-              ref
-                  .read(itemSpecificControllerProvider.notifier)
-                  .submitMetalItemConfiguration(config, context, 'Metal');
-            }
+            ref
+                .read(vendorControllerProvider.notifier)
+                .submitVendorConfiguration(config, context);
           },
           style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.fromLTRB(50, 20, 50, 20),
@@ -130,9 +147,9 @@ class AddMetalItemScreenState extends ConsumerState<AddVendor> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
               backgroundColor: const Color.fromARGB(255, 40, 112, 62)),
-          child: !ref.watch(itemConfigurationControllerProvider)
+          child: !ref.watch(vendorControllerProvider)
               ? Text(
-                  selectedContent == 0 ? 'Next' : 'Save',
+                  'Save',
                   style: const TextStyle(color: Colors.white),
                 )
               : const CircularProgressIndicator(
@@ -210,21 +227,7 @@ class AddMetalItemScreenState extends ConsumerState<AddVendor> {
               ),
               Expanded(
                   child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: selectedContent == 0
-                    ? parentForm()
-                    : const ItemAttributesScreen(
-                        attributeTypes: [
-                          {
-                            'title': 'HSN - SAC CODE',
-                            'key': 'HSN - SAC CODE',
-                            'value': 'AttributeCode',
-                            'endUrl': 'AllAttribute',
-                            'query': 'HSN'
-                          },
-                        ],
-                      ),
-              )),
+                      padding: const EdgeInsets.all(8.0), child: parentForm())),
             ],
           ),
         ),
@@ -254,7 +257,11 @@ class AddMetalItemScreenState extends ConsumerState<AddVendor> {
             );
           },
         ),
-        NumberTextFieldWidget(labelText: 'Initials', controller: initial),
+       
+        TextFieldWidget(
+          controller: initial,
+          labelText: 'Initials',
+        ),
         TextFieldWidget(
           controller: vendorCode,
           labelText: 'Vendor Code',
@@ -314,7 +321,7 @@ class AddMetalItemScreenState extends ConsumerState<AddVendor> {
           labelText: 'Row Status',
         ),
         TextFieldWidget(
-          controller: localFileName,
+          controller: logoFileName,
           labelText: 'Logo File Name',
         ),
         TextFieldWidget(
@@ -325,7 +332,10 @@ class AddMetalItemScreenState extends ConsumerState<AddVendor> {
           controller: salesTaxNo,
           labelText: 'Sales TAX No',
         ),
-        TextFieldWidget(labelText: 'PAN No', controller: panNo),
+        TextFieldWidget(
+          labelText: 'PAN No',
+          controller: panNo,
+        ),
         TextFieldWidget(
           controller: aadharNo,
           labelText: 'Aadhar No',
@@ -351,18 +361,21 @@ class AddMetalItemScreenState extends ConsumerState<AddVendor> {
           controller: gstNo,
           labelText: 'GST No',
         ),
-        ReadOnlyTextFieldWidget(
-            labelText: 'MSME Registration',
-            hintText: 'MSME Registration',
-            icon: Icons.search),
-        ReadOnlyTextFieldWidget(
-            labelText: 'Allow Wastage',
-            hintText: 'Allow Wastage',
-            icon: Icons.search),
-        ReadOnlyTextFieldWidget(
-            labelText: 'Allow Labour',
-            hintText: 'Allow Labour',
-            icon: Icons.search),
+        const DropDownTextFieldWidget(
+          initialValue: 'Yes',
+          items: ['Yes', 'No'],
+          labelText: 'MSME Registred',
+        ),
+        const DropDownTextFieldWidget(
+          initialValue: 'No',
+          items: ['Yes', 'No', 'Manual'],
+          labelText: 'Allow Wastage',
+        ),
+        const DropDownTextFieldWidget(
+          initialValue: 'None',
+          items: ['Automatic', 'None', 'Manual'],
+          labelText: 'Allow Labour',
+        ),
         ReadOnlyTextFieldWidget(
             labelText: 'Corresponding',
             hintText: 'Corresponding',
@@ -373,9 +386,24 @@ class AddMetalItemScreenState extends ConsumerState<AddVendor> {
         TextFieldWidget(labelText: 'Return Terms', controller: returnTerms),
         TextFieldWidget(
             labelText: 'Udyog Adhar Number', controller: udyogAdharNumber),
-        TextFieldWidget(labelText: 'Exchange Terms', controller: exchangeTerms),
-        ReadOnlyTextFieldWidget(
-            labelText: 'TDS194Q', hintText: 'TDS194Q', icon: Icons.search),
+        const DropDownTextFieldWidget(
+          initialValue: 'No Exchange',
+          items: [
+            'No Exchange',
+            'Not Applicable',
+            'With Making',
+            'Without Making'
+          ],
+          labelText: 'Exchange Terms',
+        ),
+        const DropDownTextFieldWidget(
+          initialValue: 'No',
+          items: [
+            'Yes',
+            'No',
+          ],
+          labelText: 'TDS194Q',
+        ),
       ],
     );
   }

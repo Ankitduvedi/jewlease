@@ -243,7 +243,7 @@ class DrawerList extends StatelessWidget {
                   title: 'Company',
                   onTap: () {
                     log('button tapped');
-                    context.go('/vendorScreen');
+                    context.push('/vendorScreen');
                   },
                 ),
                 DrawerSubItem(

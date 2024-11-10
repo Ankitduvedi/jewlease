@@ -5,6 +5,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:jewlease/data/model/failure.dart';
 import 'package:jewlease/data/model/item_master_metal.dart';
 import 'package:jewlease/data/model/item_master_stone.dart';
+import 'package:jewlease/data/model/style_item_model.dart';
 import 'package:jewlease/data/model/variant_master_metal.dart';
 
 class ItemSpecificRepository {
@@ -76,6 +77,34 @@ class ItemSpecificRepository {
       log(config.toJson().toString());
       final response = await _dio.post(
         'http://13.239.113.142:3000/ItemMasterAndVariants/Metal/Gold/Variant',
+        data: config,
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+
+      if (response.statusCode == 201) {
+        // Successfully uploaded
+        log('Data uploaded successfully');
+        return right(r"Successfully signed out.");
+      } else {
+        // Error handling
+        log('Failed to upload data: ${response.statusCode}');
+        return left(Failure(message: response.toString()));
+      }
+    } catch (e) {
+      // Handle errors
+      log('Error occurred: $e');
+      return left(Failure(message: e.toString()));
+    }
+  }
+
+    Future<Either<Failure, String>> addStyleItem(
+      ItemMasterStyle config) async {
+    try {
+      log(config.toJson().toString());
+      final response = await _dio.post(
+        'http://13.49.66.204:3000/ItemMasterAndVariants/Style/Style/Item',
         data: config,
         options: Options(
           headers: {'Content-Type': 'application/json'},
