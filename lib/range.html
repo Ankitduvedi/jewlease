@@ -158,10 +158,34 @@
         dismissBtn.style.display = 'none';
     }
 
+    function getHandsontableData() {
+        if (hotInstance) {
+            const data = hotInstance.getData();
+            return JSON.stringify(data);
+        }
+        return null;
+    }
+    // Function to update Handsontable data from JSON
+    function updateHandsontableData(jsonData) {
+        console.log("Updating data with:", jsonData);
+        try {
+            var data = JSON.parse(jsonData);
+            if (Array.isArray(data)) {
+                hotInstance.loadData(data);
+            } else {
+                console.error('Invalid data format: Expected an array of arrays');
+            }
+        } catch (error) {
+            console.error('Failed to parse JSON data:', error);
+        }
+    }
+
     // Expose necessary functions to the global window
     window.onload = initializeHandsontable;
     window.addCustomHeaderRow = addCustomHeaderRow;
+    window.getHandsontableData = getHandsontableData;
     window.dismissSpreadsheet = dismissSpreadsheet;
+    window.updateHandsontableData = updateHandsontableData;
     window.updateCellWithDialogValue = updateCellWithDialogValue;
 </script>
 </body>

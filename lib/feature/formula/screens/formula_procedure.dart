@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:jewlease/feature/formula/controller/forular_prtocedure_controller.dart';
+import 'package:jewlease/feature/formula/controller/formula_prtocedure_controller.dart';
 import 'package:jewlease/feature/formula/screens/rangeDialog.dart';
 import 'package:jewlease/main.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
@@ -13,6 +13,7 @@ final tabIndexProvider = StateProvider<int>((ref) => 1);
 
 class FormulaProcdedureScreen extends ConsumerWidget {
   FormulaProcdedureScreen({super.key});
+
   final List<String> _tabs = [
     'Formula Mapping',
     'Rate Structure',
@@ -124,9 +125,17 @@ class FormulaProcdedureScreen extends ConsumerWidget {
               ),
               body: SizedBox(
                 width: screenWidth,
-                child: const ItemDataScreen(
+                child: ItemDataScreen(
                   title: '',
                   endUrl: 'FormulaProcedures/RateStructure/FormulaRangeMaster/',
+                  canGo: true,
+                  onDoubleClick: (Map<String, dynamic> intialData) {
+                    showDialog(
+                        context: context,
+                        builder: (context) => rangeDialog(
+                              intialData: intialData,
+                            ));
+                  },
                 ),
               )),
         ),

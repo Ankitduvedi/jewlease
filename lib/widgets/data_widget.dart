@@ -4,9 +4,17 @@ import 'package:jewlease/feature/item_configuration/controller/item_configuratio
 import 'package:jewlease/providers/dailog_selection_provider.dart';
 
 class ItemDataScreen extends ConsumerStatefulWidget {
-  const ItemDataScreen({super.key, required this.title, required this.endUrl});
+  ItemDataScreen(
+      {super.key,
+      required this.title,
+      required this.endUrl,
+      this.canGo = false,
+      this.onDoubleClick});
+
   final String title;
   final String endUrl;
+  bool canGo;
+  final Function(Map<String, dynamic>)? onDoubleClick;
 
   @override
   ItemDataScreenState createState() => ItemDataScreenState();
@@ -78,7 +86,8 @@ class ItemDataScreenState extends ConsumerState<ItemDataScreen> {
                           focusColor: Colors.transparent,
                         ),
                         child: DropdownButtonFormField<String>(
-                          value: key[0], // Set the default value here
+                          value: key[0],
+                          // Set the default value here
                           decoration: InputDecoration(
                             labelText: 'Search By Column',
                             border: OutlineInputBorder(
@@ -186,8 +195,26 @@ class ItemDataScreenState extends ConsumerState<ItemDataScreen> {
                           return DataRow(
                             cells:
                                 _keys.where((key) => key != 'All').map((key) {
-                              return DataCell(
-                                  Text(item[key]?.toString() ?? ''));
+                              return DataCell(GestureDetector(
+                                  onDoubleTap: () {
+                                    if (widget.canGo) {
+                                      List<String> keys = _keys
+                                          .where((key) => key != 'All')
+                                          .map((key) {
+                                        return key;
+                                      }).toList();
+                                      List<String> values = _keys
+                                          .where((key) => key != 'All')
+                                          .map((key) {
+                                        return item[key]?.toString() ?? '';
+                                      }).toList();
+                                      Map<String, dynamic> intialData =
+                                          Map.fromIterables(keys, values);
+
+                                      widget.onDoubleClick!(intialData);
+                                    }
+                                  },
+                                  child: Text(item[key]?.toString() ?? '')));
                             }).toList(),
                           );
                         }).toList(),

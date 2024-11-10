@@ -67,9 +67,13 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
 
   Future<void> _uploadData() async {
     await Future.delayed(Duration(seconds: 1)); // Allow time for JS to load
-    List<dynamic> data = await webViewController?.evaluateJavascript(
+    String temdata = await webViewController?.evaluateJavascript(
       source: "getHandsontableData()",
     );
+    print("tem data is $temdata");
+    List<dynamic> data = jsonDecode(await webViewController?.evaluateJavascript(
+      source: "getHandsontableData()",
+    ));
     List<List<dynamic>> newlist = [];
     for (int i = 0; i < data.length; i++) {
       List<dynamic> row = [];
@@ -211,7 +215,7 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
       } else if (result == false) {
         isValid = false;
       }
-    
+
       if (isValid) {
         // All formulas are valid
         _showSnackBar('All formulas are valid.', Color(0xff28713E));
@@ -406,7 +410,7 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
                 child: InAppWebView(
                   initialUrlRequest: URLRequest(
                       url: WebUri.uri(Uri.file(
-                          "D:\flutter projectjewleaselib\test.html"))),
+                          "C:/Users/ASUS/StudioProjects/jewlease/lib/test.html"))),
                   initialOptions: InAppWebViewGroupOptions(
                     crossPlatform: InAppWebViewOptions(
                       javaScriptEnabled: true,

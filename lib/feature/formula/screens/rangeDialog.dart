@@ -10,14 +10,16 @@ import '../../../providers/dailog_selection_provider.dart';
 import '../../../widgets/read_only_textfield_widget.dart';
 import '../../../widgets/search_dailog_widget.dart';
 import '../../../widgets/text_field_widget.dart';
-import '../controller/forular_prtocedure_controller.dart';
+import '../controller/formula_prtocedure_controller.dart';
 import '../controller/heirarchy_controller.dart';
 import 'hierarchyDetailsList.dart';
 
 final boolProvider = StateProvider<bool>((ref) => false);
 
 class rangeDialog extends ConsumerStatefulWidget {
-  const rangeDialog({super.key});
+  rangeDialog({this.intialData = const {}, super.key});
+
+  Map<String, dynamic> intialData;
 
   @override
   _rangeDialogState createState() => _rangeDialogState();
@@ -29,6 +31,54 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
   TextEditingController rangeType = TextEditingController();
   InAppWebViewController? webViewController;
   bool showExcel = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    print("intial data is ${widget.intialData}");
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      intializeExcel();
+      initializeItemList();
+    });
+
+    super.initState();
+  }
+
+  void initializeItemList() async {
+    final itemListNotifier = ref.read(itemListProvider.notifier);
+    List<Map<String, dynamic>> itemList = await ref
+        .read(formulaProcedureControllerProvider.notifier)
+        .fetchRangeMasterList("anjs", "");
+    print("item list is $itemList");
+
+    for (var item in itemList) {
+      final currentItem = item["dataType"];
+      final currentVal = item["depdField"];
+
+      if (currentItem != null && currentVal != null) {
+        itemListNotifier.addItemToList(currentItem, currentVal);
+      }
+    }
+  }
+
+  void intializeExcel() async {
+    print("initializing excel");
+    final itemListNotifier = ref.read(itemListProvider.notifier);
+    List<List<dynamic>> excelData = await ref
+        .read(formulaProcedureControllerProvider.notifier)
+        .fetchRangeMasterExcel("", context);
+    print("excel data is $excelData");
+
+    final String jsonData2 = jsonEncode(excelData);
+
+    Future.delayed(Duration(seconds: 2), () {
+      print("updating excel");
+      webViewController?.evaluateJavascript(
+        source: "updateHandsontableData('$jsonData2');",
+      );
+    });
+  }
 
   String _getColumnName(int index) {
     String column = '';
@@ -436,10 +486,10 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
                                       height: screenHeight,
                                       width: screenWidth,
                                       child: InAppWebView(
-                                          initialFile: "assets/range.html",
-                                          // initialUrlRequest: URLRequest(
-                                          //     url: WebUri.uri(Uri.directory(
-                                          //         "/jewlease/lib/range.html"))),
+                                          // initialFile: "assets/range.html",
+                                          initialUrlRequest: URLRequest(
+                                              url: WebUri.uri(Uri.file(
+                                                  "C:/Users/ASUS/StudioProjects/jewlease/lib/range.html"))),
                                           initialOptions:
                                               InAppWebViewGroupOptions(
                                             crossPlatform: InAppWebViewOptions(
@@ -477,22 +527,12 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: screenWidth * 0.02,
-                                  vertical: screenHeight * 0.005),
-                              height: screenHeight * 0.05,
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.green),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: Center(child: Text('Add Another')),
-                            ),
+                            //
                             SizedBox(
                               width: screenWidth * 0.01,
                             ),
                             InkWell(
-                              onTap: () {
+                              onTap: () async {
                                 final dataList =
                                     itemMap.entries.expand((entry) {
                                   if (entry.key == 'Number') {
@@ -531,6 +571,42 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
                                     .read(formulaProcedureControllerProvider
                                         .notifier)
                                     .addRangeMaster(reqBody, context);
+
+                                // save excel data
+                                List<dynamic> data = jsonDecode(
+                                    await webViewController?.evaluateJavascript(
+                                  source: "getHandsontableData()",
+                                ));
+                                List<List<dynamic>> excelData = [];
+                                for (int i = 0; i < data.length; i++) {
+                                  List<dynamic> row = [];
+                                  for (int j = 0; j < data[i].length; j++) {
+                                    // print(
+                                    //     "row $i col is $j ${data[i][j]} datata is-->${data[i][j]}<--}");
+                                    if (data[i][j] == null ||
+                                        data[i][j] == '' ||
+                                        data[i][j] == "") {
+                                      // print("enter");
+                                      data[i][j] = " ";
+                                      // print("new value is ${data[i][j]}");
+                                    } else
+                                      row.add(data[i][j]);
+                                  }
+                                  if (!row.isEmpty) excelData.add(row);
+                                }
+                                print("excel data is $excelData");
+
+                                Map<String, dynamic> excelReqBody = {
+                                  "rangeHierarchyName": rangeHierarchy.text,
+                                  "details": {"excelData": excelData},
+                                };
+                                print(
+                                    "excel body is ${jsonEncode(excelReqBody)}");
+
+                                ref
+                                    .read(formulaProcedureControllerProvider
+                                        .notifier)
+                                    .addRangeMasterExcel(excelReqBody, context);
                               },
                               child: Container(
                                 padding: EdgeInsets.symmetric(

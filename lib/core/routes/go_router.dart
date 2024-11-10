@@ -27,6 +27,7 @@ import 'package:jewlease/feature/item_specific/screens/load_data_of_item_master_
 import 'package:jewlease/feature/item_specific/screens/load_data_of_variant_master_gold.dart';
 import 'package:jewlease/feature/item_specific/screens/master_screen.dart';
 import 'package:jewlease/feature/splas_screen/splash_view.dart';
+import 'package:jewlease/feature/vendor/screens/Bom&Operation.dart';
 import 'package:jewlease/feature/vendor/screens/new_vendor_screen.dart';
 import 'package:jewlease/feature/vendor/screens/vendor_screen.dart';
 
@@ -219,6 +220,11 @@ final goRouter = GoRouter(
               path: '/procumentScreen',
               builder: (context, state) {
                 return procumentScreen();
+              }),
+          GoRoute(
+              path: '/DataGrid',
+              builder: (context, state) {
+                return MyDataGrid();
               })
         ]),
   ],

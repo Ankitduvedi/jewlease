@@ -36,7 +36,7 @@ class VendorScreen extends ConsumerWidget {
             )
           ],
         ),
-        body: const ItemDataScreen(
+        body: ItemDataScreen(
           title: '',
           endUrl: 'AllAttribute/',
         ));

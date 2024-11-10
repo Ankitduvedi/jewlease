@@ -47,6 +47,57 @@ class formulaProcedureController extends StateNotifier<bool> {
       state = false;
     }
   }
+
+  Future<List<Map<String, dynamic>>> fetchRangeMasterList(
+      String heirarchyName, String rangeType) async {
+    try {
+      state = true;
+      final response =
+          await _formulaProcedureRepository.fetchRangeMaster(heirarchyName, '');
+      state = false;
+      return response;
+    } catch (e) {
+      state = false;
+    }
+    return [];
+  }
+
+  Future<void> addRangeMasterExcel(
+      Map<String, dynamic> reqBody, BuildContext context) async {
+    try {
+      state = true;
+      final response =
+          await _formulaProcedureRepository.addRangeMasterExcel(reqBody);
+      state = false;
+
+      response.fold((l) => Utils.snackBar(l.message, context), (r) {
+        Utils.snackBar('New Range Masster Excel Addded', context);
+        context.pop();
+        null;
+      });
+      // Optionally update the state if necessary after submission
+    } catch (e) {
+      state = false;
+    }
+  }
+
+  Future<List<List<dynamic>>> fetchRangeMasterExcel(
+      String hierarchyName, BuildContext context) async {
+    try {
+      state = true;
+      final response = await _formulaProcedureRepository
+          .fetchRangeMasterExcel(hierarchyName);
+      state = false;
+      print("excel response is $response");
+      return response;
+
+      // Optionally update the state if necessary after submission
+    } catch (e) {
+      print("erro in fetching ");
+      state = false;
+    }
+    return [];
+  }
 }
 
 // Define a provider for the controller

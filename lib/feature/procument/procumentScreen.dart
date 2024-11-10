@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:jewlease/feature/formula/controller/forular_prtocedure_controller.dart';
+import 'package:jewlease/feature/formula/controller/formula_prtocedure_controller.dart';
 import 'package:jewlease/main.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 

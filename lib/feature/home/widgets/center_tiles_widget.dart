@@ -53,10 +53,14 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
         color: const Color.fromARGB(255, 117, 55, 30),
         key: ValueKey('Generic Masters')),
     _buildTile(
-        title: 'Production',
-        icon: Icons.build,
-        color: Colors.purple,
-        key: ValueKey('Production')),
+      title: 'Production',
+      icon: Icons.build,
+      color: Colors.purple,
+      key: ValueKey('Production'),
+      onTap: () {
+        goRouter.go('/DataGrid');
+      },
+    ),
     _buildTile(
         title: 'Order Management',
         icon: Icons.list_alt,
