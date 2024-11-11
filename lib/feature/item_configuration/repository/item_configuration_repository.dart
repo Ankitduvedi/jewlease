@@ -14,7 +14,7 @@ class ItemRepository {
 
   Future<List<Map<String, dynamic>>> fetchItemType(String endUrl) async {
     log('$url$endUrl');
-    if (endUrl.contains("FormulaProcedure")) {
+    if (endUrl.contains("FormulaProcedure") || endUrl.contains('operations')) {
       final response = await _dio.get('$url2$endUrl');
       print("response is2 $url2 $response  ${response.data}");
       return List<Map<String, dynamic>>.from(response.data);

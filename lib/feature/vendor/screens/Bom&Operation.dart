@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:jewlease/core/routes/go_router.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 import '../../../main.dart';
+import '../../../widgets/data_widget.dart';
 
 class MyDataGrid extends StatefulWidget {
   @override
@@ -25,11 +25,11 @@ class _MyDataGridState extends State<MyDataGrid> {
     _dataGridSource2 = MyDataGridSource(_rows2, _removeRow, _updateSummaryRow);
   }
 
-  void _addNewRowWithItemGroup(String itemGroup) {
+  void _addNewRowWithItemGroup(String variantName, String itemGroup) {
     setState(() {
       _rows.add(
         DataGridRow(cells: [
-          DataGridCell<String>(columnName: 'Variant Name', value: ''),
+          DataGridCell<String>(columnName: 'Variant Name', value: variantName),
           DataGridCell<String>(columnName: 'Item Group', value: itemGroup),
           DataGridCell<int>(columnName: 'Pcs', value: 0),
           DataGridCell<double>(columnName: 'Wt', value: 0.0),
@@ -38,6 +38,28 @@ class _MyDataGridState extends State<MyDataGrid> {
           DataGridCell<String>(columnName: 'Operation', value: ''),
           DataGridCell<String>(columnName: 'Type', value: ''),
           DataGridCell<Widget>(columnName: 'Actions', value: null),
+        ]),
+      );
+      _dataGridSource.updateDataGridSource();
+      _dataGridSource.updateDataGridSource();
+      _updateSummaryRow();
+    });
+  }
+
+  void _addNewRowWithOperation(String operation) {
+    setState(() {
+      _rows2.add(
+        DataGridRow(cells: [
+          DataGridCell<String>(columnName: 'Calc Bom', value: 'New Variant'),
+          DataGridCell<String>(columnName: 'Operation', value: operation),
+          DataGridCell<int>(columnName: 'Calc Qty', value: 0),
+          DataGridCell<double>(columnName: 'Type', value: 0.0),
+          DataGridCell<double>(columnName: 'Calc Method', value: 0.0),
+          DataGridCell<String>(columnName: 'Calc Method Value', value: ''),
+          DataGridCell<String>(columnName: 'Depd Method', value: ''),
+          DataGridCell<String>(columnName: 'Depd Method Value', value: ''),
+          DataGridCell<Widget>(columnName: 'Depd Type', value: null),
+          DataGridCell<Widget>(columnName: 'Depd Qty', value: null),
         ]),
       );
       _dataGridSource.updateDataGridSource();
@@ -145,7 +167,25 @@ class _MyDataGridState extends State<MyDataGrid> {
                       Row(
                         children: [
                           TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                        content: ItemDataScreen(
+                                          title: '',
+                                          endUrl: 'Global/operations/',
+                                          canGo: true,
+                                          onDoubleClick: (Map<String, dynamic>
+                                              intialData) {
+                                            print("intial data is $intialData");
+                                            _addNewRowWithOperation(
+                                                intialData["OPERATION_NAME"] ??
+                                                    "");
+                                            Navigator.pop(context);
+                                          },
+                                        ),
+                                      ));
+                            },
                             child: Text('+ Add Operation',
                                 style: TextStyle(color: Color(0xff28713E))),
                           ),
@@ -153,9 +193,24 @@ class _MyDataGridState extends State<MyDataGrid> {
                           PopupMenuButton<String>(
                             onSelected: (String value) {
                               // When an item is selected, add a new row with the item group
-                              goRouter
-                                  .go('/masterScreen/variantMasterGoldScreen');
-                              _addNewRowWithItemGroup(value);
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                        content: ItemDataScreen(
+                                          title: '',
+                                          endUrl: 'Global/operations/',
+                                          canGo: true,
+                                          onDoubleClick: (Map<String, dynamic>
+                                              intialData) {
+                                            print("intial data is $intialData");
+                                            _addNewRowWithItemGroup(
+                                                intialData["OPERATION_NAME"] ??
+                                                    "",
+                                                value);
+                                            Navigator.pop(context);
+                                          },
+                                        ),
+                                      ));
                             },
                             itemBuilder: (BuildContext context) =>
                                 <PopupMenuEntry<String>>[
