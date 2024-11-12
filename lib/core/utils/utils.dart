@@ -38,6 +38,7 @@ class Utils {
   }
 
   static snackBar(String message, BuildContext context) {
+    print("error is $message");
     return ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));
   }

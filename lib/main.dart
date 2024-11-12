@@ -26,8 +26,12 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  //AppInitializations().initializeFirebaseServices;
+
+  // Prevent duplicate initialization
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp();
+  }
+
   runApp(const ProviderScope(child: MyApp()));
 }
 

@@ -1,1 +1,106 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"jewlease-dfd65","appId":"1:244829638667:android:66cdda4324211e7d5d770e","fileOutput":"android/app/google-services.json"}},"ios":{"default":{"projectId":"jewlease-dfd65","appId":"1:244829638667:ios:726e63abbdae062c5d770e","uploadDebugSymbols":false,"fileOutput":"ios/Runner/GoogleService-Info.plist"}},"macos":{"default":{"projectId":"jewlease-dfd65","appId":"1:244829638667:ios:726e63abbdae062c5d770e","uploadDebugSymbols":false,"fileOutput":"macos/Runner/GoogleService-Info.plist"}},"dart":{"lib/firebase_options.dart":{"projectId":"jewlease-dfd65","configurations":{"android":"1:244829638667:android:66cdda4324211e7d5d770e","ios":"1:244829638667:ios:726e63abbdae062c5d770e","macos":"1:244829638667:ios:726e63abbdae062c5d770e","web":"1:244829638667:web:5190e8e7f2e1fa265d770e","windows":"1:244829638667:web:c4d547ec9b1793045d770e"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "jewlease-dfd65",
+          "appId": "1:244829638667:android:66cdda4324211e7d5d770e",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "jewlease-dfd65",
+          "appId": "1:244829638667:ios:726e63abbdae062c5d770e",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "macos": {
+        "default": {
+          "projectId": "jewlease-dfd65",
+          "appId": "1:244829638667:ios:726e63abbdae062c5d770e",
+          "uploadDebugSymbols": false,
+          "fileOutput": "macos/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "jewlease-dfd65",
+          "configurations": {
+            "android": "1:244829638667:android:66cdda4324211e7d5d770e",
+            "ios": "1:244829638667:ios:726e63abbdae062c5d770e",
+            "macos": "1:244829638667:ios:726e63abbdae062c5d770e",
+            "web": "1:244829638667:web:5190e8e7f2e1fa265d770e",
+            "windows": "1:244829638667:web:c4d547ec9b1793045d770e"
+          }
+        }
+      }
+    }
+  },
+  "dataconnect": {
+    "source": "dataconnect"
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ]
+    }
+  ],
+  "hosting": {
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "emulators": {
+    "auth": {
+      "port": 9099
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "database": {
+      "port": 9000
+    },
+    "storage": {
+      "port": 9199
+    },
+    "dataconnect": {
+      "port": 9399
+    },
+    "ui": {
+      "enabled": true
+    },
+    "singleProjectMode": true
+  },
+  "remoteconfig": {
+    "template": "remoteconfig.template.json"
+  },
+  "extensions": {},
+  "database": {
+    "rules": "database.rules.json"
+  }
+}

@@ -51,14 +51,15 @@ class AuthController extends StateNotifier<bool> {
   void loginWithEmailAndPassword(
       String email, String password, BuildContext context) async {
     state = true;
-    final user = await _authRepository.loginWithEmailAndPassword(
-        email, password, context);
-    user.fold((l) => Utils.snackBar(l.message, context), (r) {
-      _ref
-          .watch(apisProvider)
-          .getFirebaseMessagingToken(FirebaseAuth.instance.currentUser!.uid);
-      context.push('/');
-    });
+    // final user = await _authRepository.loginWithEmailAndPassword(
+    //     email, password, context);
+    // user.fold((l) => Utils.snackBar(l.message, context), (r) {
+    //   _ref
+    //       .watch(apisProvider)
+    //       .getFirebaseMessagingToken(FirebaseAuth.instance.currentUser!.uid);
+    //   context.push('/');
+    // });
+    context.push('/');
     state = false;
   }
 

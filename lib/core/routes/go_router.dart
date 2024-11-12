@@ -224,7 +224,8 @@ final goRouter = GoRouter(
           GoRoute(
               path: '/DataGrid',
               builder: (context, state) {
-                return MyDataGrid();
+                return
+                  MyDataGrid();
               })
         ]),
   ],
