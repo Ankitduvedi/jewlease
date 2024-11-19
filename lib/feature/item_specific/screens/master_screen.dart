@@ -68,7 +68,9 @@ class MasterScreenState extends ConsumerState<MasterScreen> {
                   }
                 } else if (masterType[1] != null &&
                     masterType[2] == 'variant master') {
-                  if (masterType[0] == 'Metal') {
+                  if (masterType[0] == 'Style') {
+                    context.push('/masterScreen/addStyleVariantScreen');
+                  } else if (masterType[0] == 'Metal') {
                     context.push('/masterScreen/addMetalVariantScreen');
                   }
                 }

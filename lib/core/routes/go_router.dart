@@ -22,6 +22,7 @@ import 'package:jewlease/feature/item_specific/screens/add_packing_material_item
 import 'package:jewlease/feature/item_specific/screens/add_set_item_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/add_stone_item_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/add_style_item_screen.dart';
+import 'package:jewlease/feature/item_specific/screens/add_style_variant.dart';
 import 'package:jewlease/feature/item_specific/screens/load_data_of_item_master_metal.dart';
 import 'package:jewlease/feature/item_specific/screens/load_data_of_item_master_stone.dart';
 import 'package:jewlease/feature/item_specific/screens/load_data_of_variant_master_gold.dart';
@@ -101,6 +102,11 @@ final goRouter = GoRouter(
                     path: 'addStyleItemScreen',
                     builder: (context, state) {
                       return const AddStyleItemScreen();
+                    }),
+                GoRoute(
+                    path: 'addStyleVariantScreen',
+                    builder: (context, state) {
+                      return const AddStyleVariantScreen();
                     }),
                 GoRoute(
                     path: 'addMetalItemScreen',
@@ -224,8 +230,7 @@ final goRouter = GoRouter(
           GoRoute(
               path: '/DataGrid',
               builder: (context, state) {
-                return
-                  MyDataGrid();
+                return MyDataGrid();
               })
         ]),
   ],

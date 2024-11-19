@@ -12,56 +12,56 @@ class ReorderableTilesScreen extends StatefulWidget {
 
 class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
   final List<Widget> _tiles = [
-    _buildTile(
+    const _buildTile(
         title: 'Financial Accounting',
         icon: Icons.monetization_on,
         color: Colors.green,
         key: ValueKey('Financial Accounting')),
-    _buildTile(
+    const _buildTile(
         title: 'App Management',
         icon: Icons.apps,
         color: Colors.red,
         key: ValueKey('App Management')),
-    _buildTile(
+    const _buildTile(
         title: 'Configuration & Rules',
         icon: Icons.settings,
-        color: const Color.fromARGB(255, 163, 175, 76),
+        color: Color.fromARGB(255, 163, 175, 76),
         key: ValueKey('Configuration & Rules')),
-    _buildTile(
+    const _buildTile(
         title: 'Formula Procedures',
         icon: Icons.functions,
-        color: const Color.fromARGB(255, 222, 192, 74),
+        color: Color.fromARGB(255, 222, 192, 74),
         key: ValueKey('Formula Procedures')),
-    _buildTile(
+    const _buildTile(
         title: 'FG Inventory Management',
         icon: Icons.inventory,
-        color: const Color.fromARGB(255, 59, 120, 104),
+        color: Color.fromARGB(255, 59, 120, 104),
         key: ValueKey('FG Inventory Management')),
-    _buildTile(
+    const _buildTile(
         title: 'RM Inventory Management',
         icon: Icons.store,
         color: Colors.green,
         key: ValueKey('RM Inventory Management')),
-    _buildTile(
+    const _buildTile(
         title: 'Migrations',
         icon: Icons.cloud_upload,
-        color: const Color.fromARGB(255, 7, 159, 229),
+        color: Color.fromARGB(255, 7, 159, 229),
         key: ValueKey('Migrations')),
-    _buildTile(
+    const _buildTile(
         title: 'Generic Masters',
         icon: Icons.layers,
-        color: const Color.fromARGB(255, 117, 55, 30),
+        color: Color.fromARGB(255, 117, 55, 30),
         key: ValueKey('Generic Masters')),
     _buildTile(
       title: 'Production',
       icon: Icons.build,
       color: Colors.purple,
-      key: ValueKey('Production'),
+      key: const ValueKey('Production'),
       onTap: () {
         goRouter.go('/DataGrid');
       },
     ),
-    _buildTile(
+    const _buildTile(
         title: 'Order Management',
         icon: Icons.list_alt,
         color: Colors.blueAccent,
@@ -70,43 +70,43 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
         title: 'Invoicing',
         icon: Icons.receipt,
         color: Colors.orange.shade200,
-        key: ValueKey('Invoicing')),
+        key: const ValueKey('Invoicing')),
     _buildTile(
       title: 'Procurement',
       icon: Icons.shopping_cart,
       color: Colors.purple.shade200,
-      key: ValueKey('Procurement'),
+      key: const ValueKey('Procurement'),
       onTap: () {
         print("called her");
         goRouter.go('/procumentScreen');
       },
     ),
-    _buildTile(
+    const _buildTile(
         title: 'CRM',
         icon: Icons.person,
         color: Colors.brown,
         key: ValueKey('CRM')),
-    _buildTile(
+    const _buildTile(
         title: 'Sub Contracting',
         icon: Icons.people,
         color: Colors.amberAccent,
         key: ValueKey('Sub Contracting')),
-    _buildTile(
+    const _buildTile(
         title: 'Scheme',
         icon: Icons.lightbulb,
         color: Colors.blueAccent,
         key: ValueKey('Scheme')),
-    _buildTile(
+    const _buildTile(
         title: 'Loyalty',
         icon: Icons.emoji_events,
         color: Colors.cyan,
         key: ValueKey('Loyalty')),
-    _buildTile(
+    const _buildTile(
         title: 'Point Of Sale',
         icon: Icons.point_of_sale,
         color: Colors.deepOrangeAccent,
         key: ValueKey('Point Of Sale')),
-    _buildTile(
+    const _buildTile(
         title: 'Item Masters',
         icon: Icons.inventory_2,
         color: Colors.green,
@@ -195,4 +195,4 @@ class _buildTile extends StatelessWidget {
   }
 }
 
-void main() => runApp(MaterialApp(home: ReorderableTilesScreen()));
+void main() => runApp(const MaterialApp(home: ReorderableTilesScreen()));
