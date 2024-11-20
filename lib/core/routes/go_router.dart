@@ -22,7 +22,6 @@ import 'package:jewlease/feature/item_specific/screens/add_packing_material_item
 import 'package:jewlease/feature/item_specific/screens/add_set_item_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/add_stone_item_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/add_style_item_screen.dart';
-import 'package:jewlease/feature/item_specific/screens/add_style_variant.dart';
 import 'package:jewlease/feature/item_specific/screens/load_data_of_item_master_metal.dart';
 import 'package:jewlease/feature/item_specific/screens/load_data_of_item_master_stone.dart';
 import 'package:jewlease/feature/item_specific/screens/load_data_of_variant_master_gold.dart';
@@ -32,6 +31,7 @@ import 'package:jewlease/feature/vendor/screens/Bom&Operation.dart';
 import 'package:jewlease/feature/vendor/screens/new_vendor_screen.dart';
 import 'package:jewlease/feature/vendor/screens/vendor_screen.dart';
 
+import '../../feature/item_specific/screens/add_style_variant.dart';
 import '../../feature/procument/procumentScreen.dart';
 
 final goRouter = GoRouter(
@@ -231,7 +231,7 @@ final goRouter = GoRouter(
               path: '/DataGrid',
               builder: (context, state) {
                 return MyDataGrid();
-              })
+              }),
         ]),
   ],
 );

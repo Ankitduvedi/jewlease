@@ -1,4 +1,5 @@
 import 'dart:developer';
+
 import 'package:firebase_core/firebase_core.dart';
 // import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jewlease/core/routes/go_router.dart';
-import 'package:jewlease/firebase_options.dart';
 
 late double screenHeight;
 late double screenWidth;
@@ -28,9 +28,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Prevent duplicate initialization
-  if (Firebase.apps.isEmpty) {
-    await Firebase.initializeApp();
-  }
+
+  // await Firebase.initializeApp();
 
   runApp(const ProviderScope(child: MyApp()));
 }

@@ -1,6 +1,8 @@
 import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/core/routes/go_router.dart';
 import 'package:jewlease/feature/home/drawer/drawer_toogle_button.dart';
 
 class Appbar extends ConsumerWidget implements PreferredSizeWidget {
@@ -20,7 +22,11 @@ class Appbar extends ConsumerWidget implements PreferredSizeWidget {
         padding: const EdgeInsets.only(left: 2),
         child: Row(
           children: [
-            IconButton(onPressed: () {}, icon: const Icon(Icons.home)),
+            IconButton(
+                onPressed: () {
+                  goRouter.go("/");
+                },
+                icon: const Icon(Icons.home)),
             const DrawerToggleButton(),
           ],
         ),

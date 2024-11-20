@@ -5,11 +5,11 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jewlease/feature/formula/controller/formula_prtocedure_controller.dart';
+import 'package:jewlease/feature/procument/procument_dialog.dart';
 import 'package:jewlease/main.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
-import '../../core/routes/go_router.dart';
 import 'dialog.dart';
 
 final tabIndexProvider = StateProvider<int>((ref) => 0);
@@ -115,206 +115,203 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
           height: 10,
         ),
         Expanded(
-          child: Scaffold(
-            appBar: AppBar(
-              title: const Text('Goods Reciept Note'),
-              actions: [
-                AppBarButtons(
-                  ontap: [
-                    () {
-                      if (selectedIndex == 1)
-                        showDialog(
-                            context: context,
-                            builder: (context) => procumentScreen());
-                      log('new pressed');
-                      if (selectedIndex == 3)
-                        context.go('/addFormulaProcedureScreen');
-                    },
-                    () {},
-                    () {
-                      // Reset the provider value to null on refresh
-                      ref.watch(formulaProcedureProvider.notifier).state = [
-                        'Style',
-                        null,
-                        null
-                      ];
-                    },
-                    () {}
+            child: Scaffold(
+                appBar: AppBar(
+                  title: const Text('Goods Reciept Note'),
+                  actions: [
+                    AppBarButtons(
+                      ontap: [
+                        () {
+                          if (selectedIndex == 1)
+                            showDialog(
+                                context: context,
+                                builder: (context) => procumentScreen());
+                          log('new pressed');
+                          if (selectedIndex == 3)
+                            context.go('/addFormulaProcedureScreen');
+                        },
+                        () {},
+                        () {
+                          // Reset the provider value to null on refresh
+                          ref.watch(formulaProcedureProvider.notifier).state = [
+                            'Style',
+                            null,
+                            null
+                          ];
+                        },
+                        () {}
+                      ],
+                    )
                   ],
-                )
-              ],
-            ),
-            body:ProcumentDataGrid()
+                ),
+                body: ProcumentDataGrid()
 
-
-            // InAppWebView(
-            //     initialUrlRequest: URLRequest(
-            //         url: WebUri.uri(Uri.file(
-            //             "C:/Users/ASUS/StudioProjects/jewlease/lib/procument.html"))),
-            //     initialOptions: InAppWebViewGroupOptions(
-            //       crossPlatform: InAppWebViewOptions(
-            //         javaScriptEnabled: true,
-            //       ),
-            //     ),
-            //     onWebViewCreated: (controller) {
-            //       webViewController = controller;
-            //
-            //       controller.addJavaScriptHandler(
-            //         handlerName: 'openDialog',
-            //         callback: (args) {
-            //           if (args.isNotEmpty) {
-            //             // Expecting args[0] to be a Map with 'row' and 'col'
-            //             var cellInfo = args[0];
-            //             int rowIndex = cellInfo['row'];
-            //             int colIndex = cellInfo['col'];
-            //           }
-            //         },
-            //       );
-            //     }),
-            // SingleChildScrollView(
-            //   child: Column(
-            //     children: [
-            //       // Padding(
-            //       //   padding:
-            //       //       EdgeInsets.symmetric(horizontal: screenWidth * 0.01),
-            //       //   child: Row(
-            //       //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //       //     children: [
-            //       //       Text('Load By'),
-            //       //       const SizedBox(
-            //       //         width: 10,
-            //       //       ),
-            //       //       Container(
-            //       //         width: screenWidth * 0.1,
-            //       //         height: screenHeight * 0.04,
-            //       //         padding: EdgeInsets.symmetric(horizontal: 12.0),
-            //       //         decoration: BoxDecoration(
-            //       //           color: Color(0xff28713E),
-            //       //           // Green background for the selected item
-            //       //           borderRadius: BorderRadius.circular(5.0),
-            //       //         ),
-            //       //         child: DropdownButton<String>(
-            //       //           value: selectedValue,
-            //       //           hint: Text(
-            //       //             "Select an option",
-            //       //             style: TextStyle(color: Colors.white),
-            //       //           ),
-            //       //           icon: Icon(Icons.arrow_drop_down,
-            //       //               color: Colors.white),
-            //       //           // Down arrow icon
-            //       //           dropdownColor: Colors.white,
-            //       //           // Background color of dropdown menu
-            //       //           underline: SizedBox(),
-            //       //           // Removes the underline
-            //       //           isExpanded: true,
-            //       //           items: [
-            //       //             DropdownMenuItem(
-            //       //               value: "Variant",
-            //       //               child: Text(
-            //       //                 "Variant",
-            //       //                 style: TextStyle(
-            //       //                     color: Colors
-            //       //                         .black), // Dropdown item color
-            //       //               ),
-            //       //             ),
-            //       //             DropdownMenuItem(
-            //       //               value: "Reference",
-            //       //               child: Text(
-            //       //                 "Reference",
-            //       //                 style: TextStyle(
-            //       //                     color: Colors
-            //       //                         .black), // Dropdown item color
-            //       //               ),
-            //       //             ),
-            //       //           ],
-            //       //           onChanged: (value) {
-            //       //             setState(() {
-            //       //               selectedValue = value;
-            //       //             });
-            //       //           },
-            //       //           style: TextStyle(
-            //       //             color: Colors.white, // Selected value color
-            //       //             fontWeight: FontWeight.w400,
-            //       //           ),
-            //       //         ),
-            //       //       ),
-            //       //       SizedBox(
-            //       //         height: screenHeight * 0.04,
-            //       //         width: screenWidth * 0.15,
-            //       //         child: TextField(
-            //       //           decoration: InputDecoration(
-            //       //             labelText: 'Search',
-            //       //             border: OutlineInputBorder(),
-            //       //             prefixIcon: Icon(Icons.search),
-            //       //           ),
-            //       //           onChanged: (query) {
-            //       //             setState(() {});
-            //       //           },
-            //       //         ),
-            //       //       ),
-            //       //       Container(
-            //       //         padding: EdgeInsets.symmetric(
-            //       //             horizontal: 10, vertical: 5),
-            //       //         decoration: BoxDecoration(
-            //       //             borderRadius: BorderRadius.circular(5),
-            //       //             color: Color(0xff28713E)),
-            //       //         child: Row(
-            //       //           children: [
-            //       //             Icon(
-            //       //               Icons.filter_alt_rounded,
-            //       //               color: Colors.white,
-            //       //             ),
-            //       //             Text(
-            //       //               'Filter',
-            //       //               style: TextStyle(color: Colors.white),
-            //       //             ),
-            //       //           ],
-            //       //         ),
-            //       //       ),
-            //       //       SizedBox(
-            //       //         width: screenWidth * 0.5,
-            //       //       )
-            //       //     ],
-            //       //   ),
-            //       // ),
-            //       SizedBox(
-            //         height: screenHeight * 0.8,
-            //         width: screenWidth,
-            //         child: InAppWebView(
-            //             initialUrlRequest: URLRequest(
-            //                 url: WebUri.uri(Uri.file(
-            //                     "C:/Users/ASUS/StudioProjects/jewlease/lib/procument.html"))),
-            //             initialOptions: InAppWebViewGroupOptions(
-            //               crossPlatform: InAppWebViewOptions(
-            //                 javaScriptEnabled: true,
-            //               ),
-            //             ),
-            //             onWebViewCreated: (controller) {
-            //               webViewController = controller;
-            //
-            //               controller.addJavaScriptHandler(
-            //                 handlerName: 'openDialog',
-            //                 callback: (args) {
-            //                   if (args.isNotEmpty) {
-            //                     // Expecting args[0] to be a Map with 'row' and 'col'
-            //                     var cellInfo = args[0];
-            //                     int rowIndex = cellInfo['row'];
-            //                     int colIndex = cellInfo['col'];
-            //                   }
-            //                 },
-            //               );
-            //             }),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-          )
-        ),
+                // InAppWebView(
+                //     initialUrlRequest: URLRequest(
+                //         url: WebUri.uri(Uri.file(
+                //             "C:/Users/ASUS/StudioProjects/jewlease/lib/procument.html"))),
+                //     initialOptions: InAppWebViewGroupOptions(
+                //       crossPlatform: InAppWebViewOptions(
+                //         javaScriptEnabled: true,
+                //       ),
+                //     ),
+                //     onWebViewCreated: (controller) {
+                //       webViewController = controller;
+                //
+                //       controller.addJavaScriptHandler(
+                //         handlerName: 'openDialog',
+                //         callback: (args) {
+                //           if (args.isNotEmpty) {
+                //             // Expecting args[0] to be a Map with 'row' and 'col'
+                //             var cellInfo = args[0];
+                //             int rowIndex = cellInfo['row'];
+                //             int colIndex = cellInfo['col'];
+                //           }
+                //         },
+                //       );
+                //     }),
+                // SingleChildScrollView(
+                //   child: Column(
+                //     children: [
+                //       // Padding(
+                //       //   padding:
+                //       //       EdgeInsets.symmetric(horizontal: screenWidth * 0.01),
+                //       //   child: Row(
+                //       //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //       //     children: [
+                //       //       Text('Load By'),
+                //       //       const SizedBox(
+                //       //         width: 10,
+                //       //       ),
+                //       //       Container(
+                //       //         width: screenWidth * 0.1,
+                //       //         height: screenHeight * 0.04,
+                //       //         padding: EdgeInsets.symmetric(horizontal: 12.0),
+                //       //         decoration: BoxDecoration(
+                //       //           color: Color(0xff28713E),
+                //       //           // Green background for the selected item
+                //       //           borderRadius: BorderRadius.circular(5.0),
+                //       //         ),
+                //       //         child: DropdownButton<String>(
+                //       //           value: selectedValue,
+                //       //           hint: Text(
+                //       //             "Select an option",
+                //       //             style: TextStyle(color: Colors.white),
+                //       //           ),
+                //       //           icon: Icon(Icons.arrow_drop_down,
+                //       //               color: Colors.white),
+                //       //           // Down arrow icon
+                //       //           dropdownColor: Colors.white,
+                //       //           // Background color of dropdown menu
+                //       //           underline: SizedBox(),
+                //       //           // Removes the underline
+                //       //           isExpanded: true,
+                //       //           items: [
+                //       //             DropdownMenuItem(
+                //       //               value: "Variant",
+                //       //               child: Text(
+                //       //                 "Variant",
+                //       //                 style: TextStyle(
+                //       //                     color: Colors
+                //       //                         .black), // Dropdown item color
+                //       //               ),
+                //       //             ),
+                //       //             DropdownMenuItem(
+                //       //               value: "Reference",
+                //       //               child: Text(
+                //       //                 "Reference",
+                //       //                 style: TextStyle(
+                //       //                     color: Colors
+                //       //                         .black), // Dropdown item color
+                //       //               ),
+                //       //             ),
+                //       //           ],
+                //       //           onChanged: (value) {
+                //       //             setState(() {
+                //       //               selectedValue = value;
+                //       //             });
+                //       //           },
+                //       //           style: TextStyle(
+                //       //             color: Colors.white, // Selected value color
+                //       //             fontWeight: FontWeight.w400,
+                //       //           ),
+                //       //         ),
+                //       //       ),
+                //       //       SizedBox(
+                //       //         height: screenHeight * 0.04,
+                //       //         width: screenWidth * 0.15,
+                //       //         child: TextField(
+                //       //           decoration: InputDecoration(
+                //       //             labelText: 'Search',
+                //       //             border: OutlineInputBorder(),
+                //       //             prefixIcon: Icon(Icons.search),
+                //       //           ),
+                //       //           onChanged: (query) {
+                //       //             setState(() {});
+                //       //           },
+                //       //         ),
+                //       //       ),
+                //       //       Container(
+                //       //         padding: EdgeInsets.symmetric(
+                //       //             horizontal: 10, vertical: 5),
+                //       //         decoration: BoxDecoration(
+                //       //             borderRadius: BorderRadius.circular(5),
+                //       //             color: Color(0xff28713E)),
+                //       //         child: Row(
+                //       //           children: [
+                //       //             Icon(
+                //       //               Icons.filter_alt_rounded,
+                //       //               color: Colors.white,
+                //       //             ),
+                //       //             Text(
+                //       //               'Filter',
+                //       //               style: TextStyle(color: Colors.white),
+                //       //             ),
+                //       //           ],
+                //       //         ),
+                //       //       ),
+                //       //       SizedBox(
+                //       //         width: screenWidth * 0.5,
+                //       //       )
+                //       //     ],
+                //       //   ),
+                //       // ),
+                //       SizedBox(
+                //         height: screenHeight * 0.8,
+                //         width: screenWidth,
+                //         child: InAppWebView(
+                //             initialUrlRequest: URLRequest(
+                //                 url: WebUri.uri(Uri.file(
+                //                     "C:/Users/ASUS/StudioProjects/jewlease/lib/procument.html"))),
+                //             initialOptions: InAppWebViewGroupOptions(
+                //               crossPlatform: InAppWebViewOptions(
+                //                 javaScriptEnabled: true,
+                //               ),
+                //             ),
+                //             onWebViewCreated: (controller) {
+                //               webViewController = controller;
+                //
+                //               controller.addJavaScriptHandler(
+                //                 handlerName: 'openDialog',
+                //                 callback: (args) {
+                //                   if (args.isNotEmpty) {
+                //                     // Expecting args[0] to be a Map with 'row' and 'col'
+                //                     var cellInfo = args[0];
+                //                     int rowIndex = cellInfo['row'];
+                //                     int colIndex = cellInfo['col'];
+                //                   }
+                //                 },
+                //               );
+                //             }),
+                //       ),
+                //     ],
+                //   ),
+                // ),
+                )),
       ],
     );
   }
 }
-
 
 class ProcumentDataGrid extends StatefulWidget {
   @override
@@ -330,13 +327,12 @@ class _ProcumentDataGridState extends State<ProcumentDataGrid> {
   void initState() {
     super.initState();
     _initializeRows();
-    _dataGridSource = ProcumentDataGridSource(_rows, _removeRow, _updateSummaryRow);
+    _dataGridSource =
+        ProcumentDataGridSource(_rows, _removeRow, _updateSummaryRow);
   }
 
   void _addNewRowWithItemGroup(String itemGroup) {
     setState(() {
-
-
       _rows.add(
         DataGridRow(cells: [
           DataGridCell<String>(columnName: 'Ref Document', value: ''),
@@ -348,9 +344,8 @@ class _ProcumentDataGridState extends State<ProcumentDataGrid> {
           DataGridCell<String>(columnName: 'Pieces', value: ''),
           DataGridCell<String>(columnName: 'Weight', value: ''),
           DataGridCell<Widget>(columnName: 'Rate', value: null),
-      DataGridCell<Widget>(columnName: 'Amount', value: null),
-      DataGridCell<Widget>(columnName: 'Wastage', value: null),
-
+          DataGridCell<Widget>(columnName: 'Amount', value: null),
+          DataGridCell<Widget>(columnName: 'Wastage', value: null),
         ]),
       );
       _dataGridSource.updateDataGridSource();
@@ -373,7 +368,6 @@ class _ProcumentDataGridState extends State<ProcumentDataGrid> {
         DataGridCell<Widget>(columnName: 'Rate', value: null),
         DataGridCell<Widget>(columnName: 'Amount', value: null),
         DataGridCell<Widget>(columnName: 'Wastage', value: null),
-
       ]),
     ];
   }
@@ -410,10 +404,11 @@ class _ProcumentDataGridState extends State<ProcumentDataGrid> {
         DataGridCell<Widget>(columnName: 'Rate', value: null),
         DataGridCell<Widget>(columnName: 'Amount', value: null),
         DataGridCell<Widget>(columnName: 'Wastage', value: null),
-
       ]);
     });
   }
+
+  bool showDialogBom = false;
 
   @override
   Widget build(BuildContext context) {
@@ -428,7 +423,7 @@ class _ProcumentDataGridState extends State<ProcumentDataGrid> {
       body: Column(
         children: [
           Container(
-            height: screenHeight * 0.68,
+            height: screenHeight * 0.67,
             margin: EdgeInsets.only(top: 10, left: 10),
             // padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
@@ -445,7 +440,7 @@ class _ProcumentDataGridState extends State<ProcumentDataGrid> {
               ],
             ),
             // height: screenHeight * 0.5,
-            width: screenWidth * 0.94  ,
+            width: screenWidth * 0.94,
             child: Expanded(
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -469,9 +464,9 @@ class _ProcumentDataGridState extends State<ProcumentDataGrid> {
                             5, // Adjust column width to fit 4-5 columns
                         label: Container(
                           decoration: BoxDecoration(
-                            color: Color(0xFF003450),
-                            borderRadius: BorderRadius.only(topLeft: Radius.circular(15))
-                          ),
+                              color: Color(0xFF003450),
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(15))),
                           alignment: Alignment.center,
                           child: Text(
                             'Ref Document',
@@ -480,7 +475,6 @@ class _ProcumentDataGridState extends State<ProcumentDataGrid> {
                           ),
                         ),
                       ),
-
                       GridColumn(
                         columnName: 'Stock Code',
                         width: gridWidth / 5,
@@ -510,26 +504,65 @@ class _ProcumentDataGridState extends State<ProcumentDataGrid> {
                       GridColumn(
                         columnName: 'Variant Name',
                         width: gridWidth / 5,
-                        label: Container(
-                          color: Color(0xFF003450),
-                          alignment: Alignment.center,
-                          child: Text(
-                            'Variant Name',
-                            style: TextStyle(color: Colors.green),
-                            overflow: TextOverflow.ellipsis,
+                        label: InkWell(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return Dialog(
+                                  alignment: Alignment.bottomCenter,
+                                  backgroundColor: Colors.transparent,
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    height: MediaQuery.of(context).size.height *
+                                        0.5, // 45% of screen height
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.vertical(
+                                          top: Radius.circular(16)),
+                                    ),
+                                    padding: EdgeInsets.all(16),
+                                    child: procumentBomGridDialog(),
+                                  ),
+                                );
+                              },
+                            );
+
+                            // showBottomSheet(
+                            //   backgroundColor: Colors.red,
+                            //   context: context,
+                            //   builder: (BuildContext context) {
+                            //     return SizedBox(
+                            //         width: 1500, child: procumentBomDialog());
+                            //   },
+                            // );
+                          },
+                          child: Container(
+                            color: Color(0xFF003450),
+                            alignment: Alignment.center,
+                            child: Text(
+                              'Variant Name',
+                              style: TextStyle(color: Colors.green),
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                         ),
                       ),
                       GridColumn(
                         columnName: 'Stock Status',
                         width: gridWidth / 5,
-                        label: Container(
-                          color: Color(0xFF003450),
-                          alignment: Alignment.center,
-                          child: Text(
-                            'Stock Status',
-                            style: TextStyle(color: Colors.green),
-                            overflow: TextOverflow.ellipsis,
+                        label: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            color: Color(0xFF003450),
+                            alignment: Alignment.center,
+                            child: Text(
+                              'Stock Status',
+                              style: TextStyle(color: Colors.green),
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                         ),
                       ),
@@ -603,11 +636,10 @@ class _ProcumentDataGridState extends State<ProcumentDataGrid> {
                         width: gridWidth /
                             5, // Adjust column width to fit 4-5 columns
                         label: Container(
-
                           decoration: BoxDecoration(
                               color: Color(0xFF003450),
-                            borderRadius: BorderRadius.only(topRight: Radius.circular(15))
-                          ),
+                              borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(15))),
                           alignment: Alignment.center,
                           child: Text(
                             'Wastage',
@@ -624,7 +656,6 @@ class _ProcumentDataGridState extends State<ProcumentDataGrid> {
               ),
             ),
           ),
-
         ],
       ),
     );
@@ -655,15 +686,15 @@ class ProcumentDataGridSource extends DataGridSource {
           .value as String;
       pcsValue += groupName.contains('Gold') == true ? 1 : 0;
       final avgWtValue = row
-          .getCells()
-          .firstWhere((c) => c.columnName == "Avg Wt(Pcs)")
-          .value ??
+              .getCells()
+              .firstWhere((c) => c.columnName == "Avg Wt(Pcs)")
+              .value ??
           0;
       double avgWt = row
-          .getCells()
-          .firstWhere((c) => c.columnName == "Avg Wt(Pcs)")
-          .value *
-          1.0 ??
+                  .getCells()
+                  .firstWhere((c) => c.columnName == "Avg Wt(Pcs)")
+                  .value *
+              1.0 ??
           0;
       double Wt =
           row.getCells().firstWhere((c) => c.columnName == "Wt").value * 1.0 ??
@@ -736,9 +767,9 @@ class ProcumentDataGridSource extends DataGridSource {
         }
 
         bool isMetalRow = row.getCells().any(
-                (cell) => cell.columnName == 'Item Group' && cell.value == 'Metal');
+            (cell) => cell.columnName == 'Item Group' && cell.value == 'Metal');
         bool isGoldRow = row.getCells().any((cell) =>
-        cell.columnName == 'Item Group' && cell.value == 'Metal - Gold');
+            cell.columnName == 'Item Group' && cell.value == 'Metal - Gold');
         bool isPcsColumn = dataCell.columnName == 'Pcs';
 
         return Container(
@@ -757,13 +788,13 @@ class ProcumentDataGridSource extends DataGridSource {
                       value: parsedValue,
                     )
                   else if (cell.columnName == "Wt")
-                  // Recalculate Wt as Pcs * Avg Wt(Pcs)
+                    // Recalculate Wt as Pcs * Avg Wt(Pcs)
                     DataGridCell<double>(
                       columnName: cell.columnName,
                       value: row
-                          .getCells()
-                          .firstWhere((c) => c.columnName == "Pcs")
-                          .value *
+                              .getCells()
+                              .firstWhere((c) => c.columnName == "Pcs")
+                              .value *
                           1.0 *
                           row
                               .getCells()

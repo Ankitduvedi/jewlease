@@ -98,6 +98,42 @@ class formulaProcedureController extends StateNotifier<bool> {
     }
     return [];
   }
+
+  Future<void> addFormulaExcel(
+      Map<String, dynamic> reqBody, BuildContext context) async {
+    try {
+      state = true;
+      final response =
+          await _formulaProcedureRepository.addFormulaExcel(reqBody);
+      state = false;
+
+      response.fold((l) => Utils.snackBar(l.message, context), (r) {
+        Utils.snackBar('New Range Masster Excel Addded', context);
+        context.pop();
+        null;
+      });
+      // Optionally update the state if necessary after submission
+    } catch (e) {
+      state = false;
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchFormulaExcel(
+      String formulaProcedureName, BuildContext context) async {
+    try {
+      state = true;
+      final response = await _formulaProcedureRepository.fetchFormulaExcel();
+      state = false;
+      print(" formula excel response is $response");
+      return response;
+
+      // Optionally update the state if necessary after submission
+    } catch (e) {
+      print("erro in fetching $e ");
+      state = false;
+    }
+    return {};
+  }
 }
 
 // Define a provider for the controller

@@ -15,6 +15,7 @@ import 'package:jewlease/widgets/text_field_widget.dart';
 import '../../../main.dart';
 import '../../../providers/excelProvider.dart';
 import '../../../widgets/search_dailog_widget.dart';
+import '../controller/formula_prtocedure_controller.dart';
 
 class AddFormulaProcedure extends ConsumerStatefulWidget {
   const AddFormulaProcedure({super.key});
@@ -44,6 +45,9 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
   void initState() {
     // TODO: implement initState
     _focusNode.requestFocus();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      fetchApiUpdatedData('');
+    });
     super.initState();
   }
 
@@ -75,21 +79,62 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
       source: "getHandsontableData()",
     ));
     List<List<dynamic>> newlist = [];
-    for (int i = 0; i < data.length; i++) {
-      List<dynamic> row = [];
-      for (int j = 0; j < data[i].length; j++) {
-        print("row $i col is $j ${data[i][j]} datata is-->${data[i][j]}<--}");
-        if (data[i][j] == null || data[i][j] == '' || data[i][j] == "") {
-          print("enter");
-          data[i][j] = " ";
-          print("new value is ${data[i][j]}");
+
+    int lastEditedRow = -1;
+    int lastEditedColumn = -1;
+
+    // Find the bounds of the edited area
+    for (int row = 0; row < data.length; row++) {
+      for (int col = 0; col < data[row].length; col++) {
+        if (!(data[row][col] == null ||
+            data[row][col] == '' ||
+            data[row][col] == "")) {
+          lastEditedRow = row > lastEditedRow ? row : lastEditedRow;
+          lastEditedColumn = col > lastEditedColumn ? col : lastEditedColumn;
         }
+      }
+    }
+    print("last edited row $lastEditedRow $lastEditedColumn");
+
+    for (int i = 0; i < lastEditedRow + 1; i++) {
+      List<dynamic> row = [];
+      for (int j = 0; j < lastEditedColumn + 1; j++) {
         row.add(data[i][j]);
       }
-      newlist.add(row);
+      if (row.length != 0) {
+        newlist.add(row);
+      }
     }
+    Map<String, dynamic> excelReqBody = {
+      "procedureType": procedureTy.text,
+      "formulaProcedureName": formulaProcdureNa.text,
+      "calculateOn": calculateOne.text,
+      "minimumValueBasedOn": minimumValue.text,
+      "minRangeType": minimumValue.text,
+      "maximumValueBasedOn": minimumValue.text,
+      "maxRangeType": minimumValue.text,
+      "excelDetail": {
+        "sheetName": formulaProcdureNa.text,
+        "headers": [
+          'Row',
+          'Description',
+          'Data Type',
+          'Row Type',
+          'Formula',
+          'Range Value',
+          'Editable',
+          'Visible',
+          'Round Off',
+          'Account Name',
+        ],
+        "data": newlist
+      }
+    };
+    print("Req body is $excelReqBody");
 
-    ref.read(dataListProvider.notifier).setData(newlist);
+    ref
+        .read(formulaProcedureControllerProvider.notifier)
+        .addFormulaExcel(excelReqBody, context);
 
     print("data is $newlist");
   }
@@ -101,25 +146,42 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
     ["Charlie", 28, "Chicago"],
   ];
 
-  void sendApiUpdatedData(dynamic spreadsheetData) {
+  void fetchApiUpdatedData(dynamic spreadsheetData) async {
     print("data is $spreadsheetData");
-    final String jsonData2 = jsonEncode(spreadsheetData);
-    webViewController?.evaluateJavascript(
-      source: "updateHandsontableData('$jsonData2');",
-    );
+    List<List<dynamic>> excelData = [];
+    Map<String, dynamic> data = await ref
+        .read(formulaProcedureControllerProvider.notifier)
+        .fetchFormulaExcel('a', context);
+    // List<dynamic> headers = data["Excel Detail"]["headers"];
+    // excelData.add(headers);
+    List<dynamic> temList = data["Excel Detail"]["data"];
+    for (int i = 0; i < temList.length; i++) {
+      print("item is ${temList[i]}");
+      excelData.add(temList[i]);
+    }
+    print("type is ${temList[0].runtimeType}");
+    // excelData.addAll(temList);
+    print("final excel Data is $excelData");
+    final String jsonData2 = jsonEncode(excelData);
+    Future.delayed(Duration(seconds: 1), () {
+      webViewController?.evaluateJavascript(
+        source: "updateHandsontableData('$jsonData2');",
+      );
+      setState(() {});
+    });
   }
 
   Map<String, String> excelMap = {
+    "A": "Row",
     "B": 'Description',
     "C": "Data Type",
-    "D": "Variable Name",
-    "E": "Range Value",
-    "F": "Formula",
-    "G": "Row Type",
-    "H": "Round Off",
-    "I": "Account Name",
-    "J": "Editable",
-    "I": "Visible",
+    "D": "Row Type",
+    "E": "Formula",
+    "F": "Range Value",
+    "G": "Editable",
+    "H": "Visible",
+    "I": "Round Off",
+    "J": "Account Name",
   };
 
   void _handleOpenDialog(int row, int col) {
@@ -137,7 +199,7 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
           'Column'
         ];
         break;
-      case 'D':
+      case 'F':
         options = ['GST TAX', 'HST TAX', 'QST TAX', 'AMOUNT BEFORE TAX'];
       case 'G': // Column 'G'
         options = ['GST TAX', 'HST TAX', 'QST TAX', 'AMOUNT BEFORE TAX'];
@@ -164,37 +226,14 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
       List<String> options, Function(String) onOptionSelected) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Select Value of ${excelMap[title]}"),
-          content: SizedBox(
-            // Adjust height as needed
-            width: double.maxFinite,
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: options.length,
-              itemBuilder: (BuildContext context, int index) {
-                String option = options[index];
-                return ListTile(
-                  title: Text(option),
-                  onTap: () {
-                    Navigator.of(context).pop(); // Close the dialog
-                    onOptionSelected(option); // Handle the selection
-                  },
-                );
-              },
-            ),
-          ),
-          actions: [
-            TextButton(
-              child: Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-          ],
-        );
-      },
+      builder: (context) => ItemTypeDialogScreen(
+        title: 'Attribute Type',
+        endUrl: 'FormulaProcedures/RateStructure/RangeType/',
+        value: 'Config Id',
+        onOptionSelectd: (selectedValue) {
+          onOptionSelected(selectedValue);
+        },
+      ),
     );
   }
 
@@ -548,19 +587,43 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
             onTap: () {
               _validateFormulas();
             },
-            child: Container(child: Text("Validate"))),
-        IconButton(
-            onPressed: () {
+            child: Container(
+                decoration: BoxDecoration(
+                    color: Color(0xff003450),
+                    borderRadius: BorderRadius.circular(8)),
+                child: Center(
+                    child: Text(
+                  "Validate",
+                  style: TextStyle(color: Colors.white),
+                )))),
+        InkWell(
+            onTap: () {
               _uploadData();
             },
-            icon: Text("Save")),
-        IconButton(
-            onPressed: () {
+            child: Container(
+                decoration: BoxDecoration(
+                    color: Color(0xff003450),
+                    borderRadius: BorderRadius.circular(8)),
+                child: Center(
+                    child: Text(
+                  "Save",
+                  style: TextStyle(color: Colors.white),
+                )))),
+        InkWell(
+            onTap: () {
               // _uploadData();
-              sendApiUpdatedData(datalist);
+              fetchApiUpdatedData(datalist);
               // _validateFormulas();
             },
-            icon: Text("Fetch"))
+            child: Container(
+                decoration: BoxDecoration(
+                    color: Color(0xff003450),
+                    borderRadius: BorderRadius.circular(8)),
+                child: Center(
+                    child: Text(
+                  "Fetch",
+                  style: TextStyle(color: Colors.white),
+                ))))
       ],
     );
   }

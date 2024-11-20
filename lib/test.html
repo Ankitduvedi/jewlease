@@ -41,7 +41,7 @@
     var hotInstance;
     var selectedCellCoords = null;
     var lastEditedRow = null; // Track the last edited row
-    const columnHeaders = ['Row', 'Description', 'Data Type', 'Variable Name', 'Range Value', 'Formula', 'Row Type', 'Round Off', 'Account Name', 'Editable', 'Visible'];
+    const columnHeaders = ['Row', 'Description','Data Type', 'Row Type', 'Formula', 'Range Value','Editable','Visible', 'Round Off', 'Account Name', ];
 
     // Synchronous validator used by validateAllFormulas
     function isFormulaValid(value) {
@@ -241,6 +241,7 @@ console.log("Last edited row: ", lastEditedRow);
 
     // Function to update Handsontable data from JSON
     function updateHandsontableData(jsonData) {
+
         console.log("Updating data with:", jsonData);
         try {
             var data = JSON.parse(jsonData);
