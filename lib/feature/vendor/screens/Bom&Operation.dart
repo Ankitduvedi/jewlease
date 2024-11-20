@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
@@ -5,14 +7,16 @@ import '../../../main.dart';
 import '../../../widgets/data_widget.dart';
 
 class MyDataGrid extends StatefulWidget {
+  const MyDataGrid({super.key});
+
   @override
-  _MyDataGridState createState() => _MyDataGridState();
+  MyDataGridState createState() => MyDataGridState();
 }
 
-class _MyDataGridState extends State<MyDataGrid> {
+class MyDataGridState extends State<MyDataGrid> {
   final DataGridController _dataGridController = DataGridController();
   List<DataGridRow> _rows = [];
-  List<DataGridRow> _rows2 = [];
+  final List<DataGridRow> _rows2 = [];
   late MyDataGridSource _dataGridSource;
 
   late MyDataGridSource _dataGridSource2;
@@ -31,13 +35,13 @@ class _MyDataGridState extends State<MyDataGrid> {
         DataGridRow(cells: [
           DataGridCell<String>(columnName: 'Variant Name', value: variantName),
           DataGridCell<String>(columnName: 'Item Group', value: itemGroup),
-          DataGridCell<int>(columnName: 'Pcs', value: 0),
-          DataGridCell<double>(columnName: 'Wt', value: 0.0),
-          DataGridCell<double>(columnName: 'Avg Wt(Pcs)', value: 0.0),
-          DataGridCell<String>(columnName: 'Sp Char', value: ''),
-          DataGridCell<String>(columnName: 'Operation', value: ''),
-          DataGridCell<String>(columnName: 'Type', value: ''),
-          DataGridCell<Widget>(columnName: 'Actions', value: null),
+          const DataGridCell<int>(columnName: 'Pcs', value: 0),
+          const DataGridCell<double>(columnName: 'Wt', value: 0.0),
+          const DataGridCell<double>(columnName: 'Avg Wt(Pcs)', value: 0.0),
+          const DataGridCell<String>(columnName: 'Sp Char', value: ''),
+          const DataGridCell<String>(columnName: 'Operation', value: ''),
+          const DataGridCell<String>(columnName: 'Type', value: ''),
+          const DataGridCell<Widget>(columnName: 'Actions', value: null),
         ]),
       );
       _dataGridSource.updateDataGridSource();
@@ -50,16 +54,19 @@ class _MyDataGridState extends State<MyDataGrid> {
     setState(() {
       _rows2.add(
         DataGridRow(cells: [
-          DataGridCell<String>(columnName: 'Calc Bom', value: 'New Variant'),
+          const DataGridCell<String>(
+              columnName: 'Calc Bom', value: 'New Variant'),
           DataGridCell<String>(columnName: 'Operation', value: operation),
-          DataGridCell<int>(columnName: 'Calc Qty', value: 0),
-          DataGridCell<double>(columnName: 'Type', value: 0.0),
-          DataGridCell<double>(columnName: 'Calc Method', value: 0.0),
-          DataGridCell<String>(columnName: 'Calc Method Value', value: ''),
-          DataGridCell<String>(columnName: 'Depd Method', value: ''),
-          DataGridCell<String>(columnName: 'Depd Method Value', value: ''),
-          DataGridCell<Widget>(columnName: 'Depd Type', value: null),
-          DataGridCell<Widget>(columnName: 'Depd Qty', value: null),
+          const DataGridCell<int>(columnName: 'Calc Qty', value: 0),
+          const DataGridCell<double>(columnName: 'Type', value: 0.0),
+          const DataGridCell<double>(columnName: 'Calc Method', value: 0.0),
+          const DataGridCell<String>(
+              columnName: 'Calc Method Value', value: ''),
+          const DataGridCell<String>(columnName: 'Depd Method', value: ''),
+          const DataGridCell<String>(
+              columnName: 'Depd Method Value', value: ''),
+          const DataGridCell<Widget>(columnName: 'Depd Type', value: null),
+          const DataGridCell<Widget>(columnName: 'Depd Qty', value: null),
         ]),
       );
       _dataGridSource.updateDataGridSource();
@@ -71,7 +78,7 @@ class _MyDataGridState extends State<MyDataGrid> {
   void _initializeRows() {
     _rows = [
       // Summary row
-      DataGridRow(cells: [
+      const DataGridRow(cells: [
         DataGridCell<String>(columnName: 'Variant Name', value: 'New Variant'),
         DataGridCell<String>(columnName: 'Item Group', value: 'STYLE'),
         DataGridCell<int>(columnName: 'Pcs', value: 0),
@@ -106,15 +113,16 @@ class _MyDataGridState extends State<MyDataGrid> {
 
     setState(() {
       _rows[0] = DataGridRow(cells: [
-        DataGridCell<String>(columnName: 'Variant Name', value: 'Summary'),
-        DataGridCell<String>(columnName: 'Item Group', value: ''),
+        const DataGridCell<String>(
+            columnName: 'Variant Name', value: 'Summary'),
+        const DataGridCell<String>(columnName: 'Item Group', value: ''),
         DataGridCell<int>(columnName: 'Pcs', value: totalPcs),
         DataGridCell<double>(columnName: 'Wt', value: totalWt),
         DataGridCell<double>(columnName: 'Avg Wt(Pcs)', value: avgWtPcs),
-        DataGridCell<String>(columnName: 'Sp Char', value: ''),
-        DataGridCell<String>(columnName: 'Operation', value: ''),
-        DataGridCell<String>(columnName: 'Type', value: ''),
-        DataGridCell<Widget>(columnName: 'Actions', value: null),
+        const DataGridCell<String>(columnName: 'Sp Char', value: ''),
+        const DataGridCell<String>(columnName: 'Operation', value: ''),
+        const DataGridCell<String>(columnName: 'Type', value: ''),
+        const DataGridCell<Widget>(columnName: 'Actions', value: null),
       ]);
     });
   }
@@ -125,7 +133,6 @@ class _MyDataGridState extends State<MyDataGrid> {
     screenHeight = MediaQuery.of(context).size.height;
     double gridWidth =
         screenWidth * 0.6; // Set grid width to 50% of screen width
-    print("widht ${screenWidth} ${screenWidth * 0.5}");
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -133,10 +140,10 @@ class _MyDataGridState extends State<MyDataGrid> {
         children: [
           Container(
             height: screenHeight * 0.4,
-            margin: EdgeInsets.only(top: 80, left: 20),
-            padding: EdgeInsets.all(20),
+            margin: const EdgeInsets.only(top: 80, left: 20),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(15)),
+              borderRadius: const BorderRadius.all(Radius.circular(15)),
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
@@ -144,7 +151,7 @@ class _MyDataGridState extends State<MyDataGrid> {
                       .withOpacity(0.2), // Shadow color with opacity
                   spreadRadius: 2,
                   blurRadius: 6,
-                  offset: Offset(0, 4), // Offset only on the bottom
+                  offset: const Offset(0, 4), // Offset only on the bottom
                 ),
               ],
             ),
@@ -159,7 +166,7 @@ class _MyDataGridState extends State<MyDataGrid> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      const Text(
                         'BOM',
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
@@ -186,7 +193,7 @@ class _MyDataGridState extends State<MyDataGrid> {
                                         ),
                                       ));
                             },
-                            child: Text('+ Add Operation',
+                            child: const Text('+ Add Operation',
                                 style: TextStyle(color: Color(0xff28713E))),
                           ),
                           // Inside the build method, replace the "+ Add Bom" button with a PopupMenuButton:
@@ -217,23 +224,23 @@ class _MyDataGridState extends State<MyDataGrid> {
                               PopupMenuItem<String>(
                                 value: 'Metal - Gold',
                                 child: ExpansionTile(
-                                  title: Text('Metal'),
+                                  title: const Text('Metal'),
                                   children: <Widget>[
                                     ListTile(
-                                      title: Text('Gold'),
+                                      title: const Text('Gold'),
                                       onTap: () {
                                         Navigator.pop(context, 'Metal - Gold');
                                       },
                                     ),
                                     ListTile(
-                                      title: Text('Silver'),
+                                      title: const Text('Silver'),
                                       onTap: () {
                                         Navigator.pop(
                                             context, 'Metal - Silver');
                                       },
                                     ),
                                     ListTile(
-                                      title: Text('Bronze'),
+                                      title: const Text('Bronze'),
                                       onTap: () {
                                         Navigator.pop(
                                             context, 'Metal - Bronze');
@@ -245,10 +252,10 @@ class _MyDataGridState extends State<MyDataGrid> {
                               PopupMenuItem<String>(
                                 value: 'Stone - Diamond',
                                 child: ExpansionTile(
-                                  title: Text('Stone'),
+                                  title: const Text('Stone'),
                                   children: <Widget>[
                                     ListTile(
-                                      title: Text('Diamond'),
+                                      title: const Text('Diamond'),
                                       onTap: () {
                                         Navigator.pop(
                                             context, 'Stone - Diamond');
@@ -260,7 +267,7 @@ class _MyDataGridState extends State<MyDataGrid> {
                               PopupMenuItem<String>(
                                 value: 'Consumables',
                                 child: ListTile(
-                                  title: Text('Consumables'),
+                                  title: const Text('Consumables'),
                                   onTap: () {
                                     Navigator.pop(context, 'Consumables');
                                   },
@@ -269,14 +276,14 @@ class _MyDataGridState extends State<MyDataGrid> {
                               PopupMenuItem<String>(
                                 value: 'Packing Material',
                                 child: ListTile(
-                                  title: Text('Packing Material'),
+                                  title: const Text('Packing Material'),
                                   onTap: () {
                                     Navigator.pop(context, 'Packing Material');
                                   },
                                 ),
                               ),
                             ],
-                            child: TextButton(
+                            child: const TextButton(
                               onPressed: null,
                               child: Text(
                                 '+ Add Bom',
@@ -287,7 +294,7 @@ class _MyDataGridState extends State<MyDataGrid> {
 
                           TextButton(
                             onPressed: () {},
-                            child: Text('Summary',
+                            child: const Text('Summary',
                                 style: TextStyle(color: Color(0xff28713E))),
                           ),
                         ],
@@ -314,9 +321,9 @@ class _MyDataGridState extends State<MyDataGrid> {
                             width: gridWidth /
                                 5, // Adjust column width to fit 4-5 columns
                             label: Container(
-                              color: Color(0xFF003450),
+                              color: const Color(0xFF003450),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 'Variant Name',
                                 style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
@@ -327,9 +334,9 @@ class _MyDataGridState extends State<MyDataGrid> {
                             columnName: 'Item Group',
                             width: gridWidth / 5,
                             label: Container(
-                              color: Color(0xFF003450),
+                              color: const Color(0xFF003450),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 'Item Group',
                                 style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
@@ -340,9 +347,9 @@ class _MyDataGridState extends State<MyDataGrid> {
                             columnName: 'Pcs',
                             width: gridWidth / 5,
                             label: Container(
-                              color: Color(0xFF003450),
+                              color: const Color(0xFF003450),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 'Pcs',
                                 style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
@@ -353,9 +360,9 @@ class _MyDataGridState extends State<MyDataGrid> {
                             columnName: 'Wt',
                             width: gridWidth / 5,
                             label: Container(
-                              color: Color(0xFF003450),
+                              color: const Color(0xFF003450),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 'Wt',
                                 style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
@@ -366,9 +373,9 @@ class _MyDataGridState extends State<MyDataGrid> {
                             columnName: 'Avg Wt(Pcs)',
                             width: gridWidth / 5,
                             label: Container(
-                              color: Color(0xFF003450),
+                              color: const Color(0xFF003450),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 'Avg Wt(Pcs)',
                                 style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
@@ -379,9 +386,9 @@ class _MyDataGridState extends State<MyDataGrid> {
                             columnName: 'Sp Char',
                             width: gridWidth / 5,
                             label: Container(
-                              color: Color(0xFF003450),
+                              color: const Color(0xFF003450),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 'Sp Char',
                                 style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
@@ -392,9 +399,9 @@ class _MyDataGridState extends State<MyDataGrid> {
                             columnName: 'Operation',
                             width: gridWidth / 5,
                             label: Container(
-                              color: Color(0xFF003450),
+                              color: const Color(0xFF003450),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 'Operation',
                                 style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
@@ -405,9 +412,9 @@ class _MyDataGridState extends State<MyDataGrid> {
                             columnName: 'Type',
                             width: gridWidth / 5,
                             label: Container(
-                              color: Color(0xFF003450),
+                              color: const Color(0xFF003450),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 'Type',
                                 style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
@@ -418,9 +425,9 @@ class _MyDataGridState extends State<MyDataGrid> {
                             columnName: 'Actions',
                             width: gridWidth / 5,
                             label: Container(
-                              color: Color(0xFF003450),
+                              color: const Color(0xFF003450),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 '',
                                 style: TextStyle(color: Colors.white),
                               ),
@@ -438,10 +445,10 @@ class _MyDataGridState extends State<MyDataGrid> {
           ),
           Container(
             height: screenHeight * 0.4,
-            margin: EdgeInsets.only(top: 20, left: 20),
-            padding: EdgeInsets.all(20),
+            margin: const EdgeInsets.only(top: 20, left: 20),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(15)),
+              borderRadius: const BorderRadius.all(Radius.circular(15)),
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
@@ -449,7 +456,7 @@ class _MyDataGridState extends State<MyDataGrid> {
                       .withOpacity(0.2), // Shadow color with opacity
                   spreadRadius: 2,
                   blurRadius: 6,
-                  offset: Offset(0, 4), // Offset only on the bottom
+                  offset: const Offset(0, 4), // Offset only on the bottom
                 ),
               ],
             ),
@@ -459,8 +466,8 @@ class _MyDataGridState extends State<MyDataGrid> {
               children: [
 // Header Row
 
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -584,9 +591,9 @@ class _MyDataGridState extends State<MyDataGrid> {
                             width: gridWidth /
                                 5, // Adjust column width to fit 4-5 columns
                             label: Container(
-                              color: Color(0xFF003450),
+                              color: const Color(0xFF003450),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 'Calc Bom',
                                 style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
@@ -597,9 +604,9 @@ class _MyDataGridState extends State<MyDataGrid> {
                             columnName: 'Operation',
                             width: gridWidth / 5,
                             label: Container(
-                              color: Color(0xFF003450),
+                              color: const Color(0xFF003450),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 'Operation',
                                 style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
@@ -610,9 +617,9 @@ class _MyDataGridState extends State<MyDataGrid> {
                             columnName: 'Calc Qty',
                             width: gridWidth / 5,
                             label: Container(
-                              color: Color(0xFF003450),
+                              color: const Color(0xFF003450),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 'Calc Qty',
                                 style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
@@ -623,9 +630,9 @@ class _MyDataGridState extends State<MyDataGrid> {
                             columnName: 'Type',
                             width: gridWidth / 5,
                             label: Container(
-                              color: Color(0xFF003450),
+                              color: const Color(0xFF003450),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 'Type',
                                 style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
@@ -636,9 +643,9 @@ class _MyDataGridState extends State<MyDataGrid> {
                             columnName: 'Calc Method',
                             width: gridWidth / 5,
                             label: Container(
-                              color: Color(0xFF003450),
+                              color: const Color(0xFF003450),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 'Calc Method',
                                 style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
@@ -649,9 +656,9 @@ class _MyDataGridState extends State<MyDataGrid> {
                             columnName: 'Calc Method Value',
                             width: gridWidth / 5,
                             label: Container(
-                              color: Color(0xFF003450),
+                              color: const Color(0xFF003450),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 'Calc Method Value',
                                 style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
@@ -662,9 +669,9 @@ class _MyDataGridState extends State<MyDataGrid> {
                             columnName: 'Depd Method',
                             width: gridWidth / 5,
                             label: Container(
-                              color: Color(0xFF003450),
+                              color: const Color(0xFF003450),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 'Depd Method',
                                 style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
@@ -675,9 +682,9 @@ class _MyDataGridState extends State<MyDataGrid> {
                             columnName: 'Depd Method Vale',
                             width: gridWidth / 5,
                             label: Container(
-                              color: Color(0xFF003450),
+                              color: const Color(0xFF003450),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 'Depd Method Value',
                                 style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
@@ -688,9 +695,9 @@ class _MyDataGridState extends State<MyDataGrid> {
                             columnName: 'Depd Type',
                             width: gridWidth / 5,
                             label: Container(
-                              color: Color(0xFF003450),
+                              color: const Color(0xFF003450),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 'Depd Type',
                                 style: TextStyle(color: Colors.white),
                               ),
@@ -700,9 +707,9 @@ class _MyDataGridState extends State<MyDataGrid> {
                             columnName: 'Depd Qty',
                             width: gridWidth / 5,
                             label: Container(
-                              color: Color(0xFF003450),
+                              color: const Color(0xFF003450),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 'Depd Qty',
                                 style: TextStyle(color: Colors.white),
                               ),
@@ -823,7 +830,7 @@ class MyDataGridSource extends DataGridSource {
       cells: row.getCells().map<Widget>((dataCell) {
         if (dataCell.columnName == 'Actions') {
           return IconButton(
-            icon: Icon(Icons.delete),
+            icon: const Icon(Icons.delete),
             onPressed: () => onDelete(row),
           );
         }
@@ -875,7 +882,7 @@ class MyDataGridSource extends DataGridSource {
             ),
             keyboardType: TextInputType.number,
             enabled: !(isGoldRow && isPcsColumn),
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               border: InputBorder.none,
               isDense: true,
             ),

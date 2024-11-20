@@ -31,6 +31,7 @@ import 'package:jewlease/feature/vendor/screens/Bom&Operation.dart';
 import 'package:jewlease/feature/vendor/screens/new_vendor_screen.dart';
 import 'package:jewlease/feature/vendor/screens/vendor_screen.dart';
 
+import '../../feature/item_specific/screens/add_style_variant.dart';
 import '../../feature/procument/procumentScreen.dart';
 
 final goRouter = GoRouter(
@@ -101,6 +102,11 @@ final goRouter = GoRouter(
                     path: 'addStyleItemScreen',
                     builder: (context, state) {
                       return const AddStyleItemScreen();
+                    }),
+                GoRoute(
+                    path: 'addStyleVariantScreen',
+                    builder: (context, state) {
+                      return const AddStyleVariantScreen();
                     }),
                 GoRoute(
                     path: 'addMetalItemScreen',

@@ -2,6 +2,7 @@
 import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:jewlease/core/routes/constant.dart';
 import 'package:jewlease/data/model/failure.dart';
 import 'package:jewlease/data/model/item_master_metal.dart';
 import 'package:jewlease/data/model/item_master_stone.dart';
@@ -19,7 +20,7 @@ class ItemSpecificRepository {
       log(config.toJson().toString());
 
       final response = await _dio.post(
-        'http://13.239.113.142:3000/ItemMasterAndVariants/Metal/$metal/Item',
+        '$url2/ItemMasterAndVariants/Metal/$metal/Item',
         data: config.toJson(),
         options: Options(
           headers: {'Content-Type': 'application/json'},
@@ -48,7 +49,7 @@ class ItemSpecificRepository {
       log(config.toJson().toString());
 
       final response = await _dio.post(
-        'http://13.239.113.142:3000/ItemMasterAndVariants/Stone/$stone/Item',
+        '$url2/ItemMasterAndVariants/Stone/$stone/Item',
         data: config.toJson(),
         options: Options(
           headers: {'Content-Type': 'application/json'},
@@ -76,7 +77,7 @@ class ItemSpecificRepository {
     try {
       log(config.toJson().toString());
       final response = await _dio.post(
-        'http://13.239.113.142:3000/ItemMasterAndVariants/Metal/Gold/Variant',
+        '$url2/ItemMasterAndVariants/Metal/Gold/Variant',
         data: config,
         options: Options(
           headers: {'Content-Type': 'application/json'},
@@ -99,12 +100,11 @@ class ItemSpecificRepository {
     }
   }
 
-    Future<Either<Failure, String>> addStyleItem(
-      ItemMasterStyle config) async {
+  Future<Either<Failure, String>> addStyleItem(ItemMasterStyle config) async {
     try {
       log(config.toJson().toString());
       final response = await _dio.post(
-        'http://13.49.66.204:3000/ItemMasterAndVariants/Style/Style/Item',
+        '$url2/ItemMasterAndVariants/Style/Style/Item',
         data: config,
         options: Options(
           headers: {'Content-Type': 'application/json'},
