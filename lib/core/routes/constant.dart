@@ -7,4 +7,4 @@ Map<String, String> tourMap = {
 };
 
 String url = 'http://13.239.113.142:3000/';
-String url2 = 'http://65.0.173.224:3000/';
+String url2 = 'http://13.203.104.205:3000/';

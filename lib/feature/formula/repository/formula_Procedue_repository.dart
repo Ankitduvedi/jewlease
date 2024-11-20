@@ -4,6 +4,7 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:jewlease/core/routes/constant.dart';
 import 'package:jewlease/data/model/failure.dart';
 import 'package:jewlease/data/model/item_master_metal.dart';
 import 'package:jewlease/data/model/variant_master_metal.dart';
@@ -210,5 +211,50 @@ class formulaProcedureRepository {
       log('Error occurred in uploading excel: $e');
       return temData;
     }
+  }
+
+  Future<Either<Failure, String>> addFormulaExcel(
+      Map<String, dynamic> reqBody) async {
+    try {
+      final response = await _dio.post(
+        url2 + 'FormulaProcedures/FormulaProcedureMasterDetails',
+        data: jsonEncode(reqBody),
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+      print("response is ${response.data}");
+
+      if (response.statusCode == 201) {
+        // Successfully uploaded
+        log('Data uploaded successfully');
+        return right(r"Successfully signed out.");
+      } else {
+        // Error handling
+        log('Failed to upload data: ${response.statusCode}');
+        return left(Failure(message: response.toString()));
+      }
+    } catch (e) {
+      // Handle errors
+      log('Error occurred in uploading excel: $e');
+      return left(Failure(message: e.toString()));
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchFormulaExcel() async {
+    final response = await _dio
+        .get(url2 + 'FormulaProcedures/FormulaProcedureMasterDetails');
+    // print("response is $response  ${response.data}");
+    List<dynamic> data = response.data;
+    // print("rep1 is ${data[0]}");
+    // print("rep1 is ${data[1]}");
+    // print("rep1 is ${data[2]}");
+    // print("rep1 is ${data[3]}");
+    // print("rep1 is ${data[4]}");
+    print("rep1 is ${data[5]}");
+
+    print("resposne dat ais ${data[7]}");
+
+    return data[8];
   }
 }
