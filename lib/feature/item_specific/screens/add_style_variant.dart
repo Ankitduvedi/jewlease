@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/data/model/variant_master_metal.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 import 'package:jewlease/feature/vendor/screens/Bom&Operation.dart';
+import 'package:jewlease/main.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
-import 'package:jewlease/widgets/check_box.dart';
 import 'package:jewlease/widgets/drop_down_text_field.dart';
 import 'package:jewlease/widgets/icon_text_button_widget.dart';
 import 'package:jewlease/widgets/item_attribute_widget.dart';
@@ -13,6 +13,8 @@ import 'package:jewlease/widgets/number_input_text_field.dart';
 import 'package:jewlease/widgets/read_only_textfield_widget.dart';
 import 'package:jewlease/widgets/search_dailog_widget.dart';
 import 'package:jewlease/widgets/text_field_widget.dart';
+
+import '../../vendor/controller/bom_controller.dart';
 
 class AddStyleVariantScreen extends ConsumerStatefulWidget {
   const AddStyleVariantScreen({super.key});
@@ -78,6 +80,10 @@ class AddStyleVariantScreenState extends ConsumerState<AddStyleVariantScreen> {
               ref
                   .read(itemSpecificControllerProvider.notifier)
                   .submitMetalVariantConfiguration(config, context);
+            }
+            if (selectedContent == 2) {
+              final bomNotifier = ref.read(bomProvider.notifier);
+              final operationNotifier = ref.read(OperationProvider.notifier);
             }
           },
           style: ElevatedButton.styleFrom(
@@ -217,7 +223,14 @@ class AddStyleVariantScreenState extends ConsumerState<AddStyleVariantScreen> {
                             ],
                           )
                         : selectedContent == 2
-                            ? MyDataGrid()
+                            ? SingleChildScrollView(
+                                scrollDirection: Axis.vertical,
+                                child: Container(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 10),
+                                    height: screenHeight * 0.7,
+                                    child: MyDataGrid()),
+                              )
                             : Text('data'),
               )),
             ],

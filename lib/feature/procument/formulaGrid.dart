@@ -21,12 +21,13 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
   late formulaGridSource _dataGridSource;
   List<String> formulas = [];
   List<dynamic> formulaExcel = [];
+  Map<dynamic, dynamic> rangeExcelData = {};
 
   @override
   void initState() {
     super.initState();
     _dataGridSource = formulaGridSource(
-        _rows, _removeRow, _updateSummaryRow, formulaExcel, []);
+        _rows, _removeRow, _updateSummaryRow, formulaExcel, [], rangeExcelData);
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       _initializeRows();
 
@@ -54,6 +55,12 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
     Map<String, dynamic> data = await ref
         .read(formulaProcedureControllerProvider.notifier)
         .fetchFormulaExcel('a', context);
+
+    rangeExcelData = await ref
+        .read(formulaProcedureControllerProvider.notifier)
+        .fetchRangeMasterExcel('a', context);
+    print("range master excel is $rangeExcelData");
+
     // List<dynamic> headers = data["Excel Detail"]["headers"];
     // excelData.add(headers);
     formulaExcel = data["Excel Detail"]["data"];
@@ -81,8 +88,8 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
         DataGridCell<double>(columnName: 'Range', value: 0),
       ]));
     }
-    _dataGridSource = formulaGridSource(
-        _rows, _removeRow, _updateSummaryRow, formulaExcel, formulaHeaders);
+    _dataGridSource = formulaGridSource(_rows, _removeRow, _updateSummaryRow,
+        formulaExcel, formulaHeaders, rangeExcelData);
     setState(() {});
   }
 
@@ -221,7 +228,7 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
 
 class formulaGridSource extends DataGridSource {
   formulaGridSource(this.dataGridRows, this.onDelete, this.onEdit,
-      this.formulaExcel, this.formulaHeaders)
+      this.formulaExcel, this.formulaHeaders, this.rangeExcel)
       : _editingRows = dataGridRows;
 
   final List<DataGridRow> dataGridRows;
@@ -230,6 +237,7 @@ class formulaGridSource extends DataGridSource {
   final Function(List<DataGridRow>) onEdit;
   final List<dynamic> formulaExcel;
   final List<dynamic> formulaHeaders;
+  final Map<dynamic, dynamic> rangeExcel;
 
   @override
   List<DataGridRow> get rows => dataGridRows;
@@ -241,7 +249,8 @@ class formulaGridSource extends DataGridSource {
     if (cellValue.runtimeType == String) cellValue = double.parse(cellValue);
 
     String formula = formulaExcel[index][formulaColumIndex];
-    print("formula $index is $formula $formulaColumIndex");
+
+    print("current row is $index formula is $formula");
     if (formula == '') return cellValue * 1.0;
 
     String replacedFormula = formula.replaceAllMapped(
@@ -271,19 +280,78 @@ class formulaGridSource extends DataGridSource {
     }
   }
 
-  void recalculatedataGridValues(int rowIndex, cellNewValue) {
-    print("updated Cell is $cellNewValue $rowIndex");
+  double? findOutput(String accessory, double weight) {
+    List<dynamic> rows = rangeExcel["Details"]["excelData"];
+    print("range excel is$rangeExcel");
+    print("rows are $rows");
+
+    for (var row in rows) {
+      double output = double.parse(row[0]);
+      double start = double.parse(row[1]);
+      double end = double.parse(row[2]);
+      String acc = row[3];
+
+      if (acc == accessory && weight >= start && weight <= end) {
+        return output;
+      }
+    }
+
+    // If no match is found
+    return null;
+  }
+
+  void recalculatedataGridValues(int updatedRowIndex, cellNewValue) {
+    print(
+        "updated rowIndex $updatedRowIndex updated Cell value is $cellNewValue");
     for (int i = 0; i < dataGridRows.length; i++) {
+      print(
+          "<----------------------row $i update start------------------------->");
       dataGridRows[i] = DataGridRow(cells: [
         for (var cell in dataGridRows[i].getCells())
           if (cell.columnName == 'Row Value')
             DataGridCell<double>(
                 columnName: cell.columnName,
                 value: calculateFormulaVaule(
-                    i, rowIndex == i ? cellNewValue : cell.value))
+                    i, updatedRowIndex == i ? cellNewValue : cell.value))
           else
             cell
       ]);
+
+      if (i == 3) {
+        String? rangeHierarchyName =
+            formulaExcel[i][formulaHeaders.indexOf('Range Value') - 1];
+        print(
+            " ${formulaHeaders.indexOf('Range Value')}rangehierarchyName  $rangeHierarchyName currentIndex $updatedRowIndex $formulaExcel");
+        if (rangeHierarchyName != null && rangeHierarchyName != "") {
+          double metalWeight = dataGridRows[0]
+                  .getCells()
+                  .firstWhere((cell) => cell.columnName == 'Row Value')
+                  .value *
+              1.0;
+          double? rangeOutput = findOutput("18", metalWeight);
+
+          dataGridRows[i] = DataGridRow(cells: [
+            for (var cell in dataGridRows[updatedRowIndex].getCells())
+              if (cell.columnName == 'Range')
+                DataGridCell<double>(
+                    columnName: cell.columnName, value: rangeOutput)
+              else
+                cell
+          ]);
+          for (var cell in dataGridRows[updatedRowIndex].getCells()) {
+            print("updated value is ${cell.value} ${cell.columnName}");
+          }
+          print("range output is $rangeOutput ");
+        }
+
+        for (var cell in dataGridRows[i].getCells())
+          if (cell.columnName == 'Range')
+            print("updated cell value ${cell.value}");
+          else
+            print("persist value ${cell.value}");
+      }
+      print(
+          "<----------------------row $i update end------------------------->");
     }
   }
 
@@ -320,7 +388,7 @@ class formulaGridSource extends DataGridSource {
     return DataGridRowAdapter(
       cells: row.getCells().map<Widget>((dataCell) {
         int rowFormulaIndex = dataGridRows.indexOf(row);
-        // print("formularow index is $rowFormulaIndex");
+
         List<dynamic> formulaRow =
             formulaExcel[rowFormulaIndex] as List<dynamic>;
         // print("formula row is $formulaRow");
@@ -340,7 +408,7 @@ class formulaGridSource extends DataGridSource {
               int parsedValue = int.tryParse(value) ?? 0;
 
               int rowIndex = dataGridRows.indexOf(row);
-              print("row index is $rowIndex");
+              print("updated row index is $rowIndex");
               dataGridRows[rowFormulaIndex] = DataGridRow(cells: [
                 for (var cell in row.getCells())
                   if (cell == dataCell)

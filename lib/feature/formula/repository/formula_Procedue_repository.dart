@@ -6,141 +6,94 @@ import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:jewlease/core/routes/constant.dart';
 import 'package:jewlease/data/model/failure.dart';
-import 'package:jewlease/data/model/item_master_metal.dart';
-import 'package:jewlease/data/model/variant_master_metal.dart';
 
 class formulaProcedureRepository {
   final Dio _dio;
 
   formulaProcedureRepository(this._dio);
 
-  Future<Either<Failure, String>> addVendor(ItemMasterMetal config) async {
-    try {
-      final response = await _dio.post(
-        'http://13.239.113.142:3000/ItemMasterAndVariants/Metal/Gold/Item',
-        data: config.toJson(),
-        options: Options(
-          headers: {'Content-Type': 'application/json'},
-        ),
-      );
-
-      if (response.statusCode == 201) {
-        // Successfully uploaded
-        log('Data uploaded successfully');
-        return right(r"Successfully signed out.");
-      } else {
-        // Error handling
-        log('Failed to upload data: ${response.statusCode}');
-        return left(Failure(message: response.toString()));
-      }
-    } catch (e) {
-      // Handle errors
-      log('Error occurred: $e');
-      return left(Failure(message: e.toString()));
-    }
-  }
-
-  Future<Either<Failure, String>> addMetalVariant(
-      VariantMasterMetal config) async {
-    try {
-      final response = await _dio.post(
-        'http://13.239.113.142:3000/ItemMasterAndVariants/Metal/Gold/Variant',
-        data: config.toJson(),
-        options: Options(
-          headers: {'Content-Type': 'application/json'},
-        ),
-      );
-
-      if (response.statusCode == 201) {
-        // Successfully uploaded
-        log('Data uploaded successfully');
-        return right(r"Successfully signed out.");
-      } else {
-        // Error handling
-        log('Failed to upload data: ${response.statusCode}');
-        return left(Failure(message: response.toString()));
-      }
-    } catch (e) {
-      // Handle errors
-      log('Error occurred: $e');
-      return left(Failure(message: e.toString()));
-    }
-  }
-
   Future<Either<Failure, String>> addRangeMaster(
       Map<String, dynamic> requestBody) async {
     try {
       final response = await _dio.post(
-        'http://13.49.66.204:3000/FormulaProcedures/RateStructure/',
+        url2 + 'FormulaProcedures/RateStructure/',
         data: jsonEncode(requestBody),
         options: Options(
           headers: {'Content-Type': 'application/json'},
         ),
       );
-      print("response is $requestBody");
+      print("response addRangeMaster is $requestBody");
 
       if (response.statusCode == 201) {
         // Successfully uploaded
         log('Data uploaded successfully');
-        return right(r"Successfully signed out.");
+        return right("Successfully signed out.");
       } else {
         // Error handling
-        log('Failed to upload data: ${response.statusCode}');
+        print('Failed to upload data: ${response.statusCode}');
         return left(Failure(message: response.toString()));
       }
     } catch (e) {
       // Handle errors
-      log('Error occurred in rate structure: $e');
+      print('Error occurred in rate structure: $e');
       return left(Failure(message: e.toString()));
     }
   }
 
-  Future<List<Map<String, dynamic>>> fetchRangeMaster(
+  Future<List<Map<String, dynamic>>> fetchRangeMasterDepdField(
       String rangeHierarchy, String requestBody) async {
-    List<Map<String, dynamic>> temData = [
-      {
-        "rangeHierarchyName": "Anurag",
-        "rangeType": "Type A",
-        "dataType": "Field1",
-        "depdField": "DepField1"
-      },
-      {
-        "rangeHierarchyName": "Anurag",
-        "rangeType": "Type A",
-        "dataType": "Field2",
-        "depdField": "DepField2"
-      },
-      {
-        "rangeHierarchyName": "Anurag",
-        "rangeType": "Type A",
-        "dataType": "Field3",
-        "depdField": "DepField3"
-      }
-    ];
-
     try {
       final response = await _dio.post(
-        'http://13.49.66.204:3000/FormulaProcedures/RateStructure/$rangeHierarchy',
+        url2 +
+            'FormulaProcedures/RateStructure/FormulaRangeHierarchy$rangeHierarchy',
         options: Options(
           headers: {'Content-Type': 'application/json'},
         ),
       );
-      print("response is $requestBody");
+      print("response fethcRangeMaster is $requestBody");
 
       if (response.statusCode == 201) {
         // Successfully uploaded
         log('Data uploaded successfully');
 
-        return temData;
+        return response.data;
       } else {
         // Error handling
         log('Failed to upload data: ${response.statusCode}');
-        return temData;
+        return [];
       }
     } catch (e) {
       // Handle errors
       log('Error occurred in rate structure: $e');
-      return temData;
+      return [];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchRangeDialog(
+      String rangeHierarchy, String requestBody) async {
+    try {
+      final response = await _dio.post(
+        url2 + 'FormulaProcedures/RateStructure/FormulaRangeMaster',
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+      print("response fethcRangeMaster is $requestBody");
+
+      if (response.statusCode == 201) {
+        // Successfully uploaded
+        log('Data uploaded successfully');
+
+        return response.data;
+      } else {
+        // Error handling
+        log('Failed to upload data: ${response.statusCode}');
+        return [];
+      }
+    } catch (e) {
+      // Handle errors
+      log('Error occurred in rate structure: $e');
+      return [];
     }
   }
 
@@ -148,13 +101,13 @@ class formulaProcedureRepository {
       Map<String, dynamic> reqBody) async {
     try {
       final response = await _dio.post(
-        'http://13.49.66.204:3000/FormulaProcedures/RateStructure/Excel/',
+        url2 + 'FormulaProcedures/RateStructure/Excel/',
         data: jsonEncode(reqBody),
         options: Options(
           headers: {'Content-Type': 'application/json'},
         ),
       );
-      print("response is ${response.data}");
+      print("response is rangeMasterExcel ${response.data}");
 
       if (response.statusCode == 201) {
         // Successfully uploaded
@@ -162,54 +115,44 @@ class formulaProcedureRepository {
         return right(r"Successfully signed out.");
       } else {
         // Error handling
-        log('Failed to upload data: ${response.statusCode}');
+        print('Failed to upload data1: ${response.statusCode}');
         return left(Failure(message: response.toString()));
       }
     } catch (e) {
       // Handle errors
-      log('Error occurred in uploading excel: $e');
+      print('Error occurred in uploading excel1: $e');
       return left(Failure(message: e.toString()));
     }
   }
 
-  Future<List<List<dynamic>>> fetchRangeMasterExcel(
+  Future<Map<dynamic, dynamic>> fetchRangeMasterExcel(
       String hierarchyName) async {
-    List<List<dynamic>> temData = [
-      [
-        'Row',
-        'Description',
-        'Data Type',
-        'Variable Name',
-        'Range Value',
-      ],
-      [1, 2, 3, 4, 5],
-      [6, 7, 7, 8, 9, 10]
-    ];
-
     try {
-      // final response = await _dio.post(
-      //   'http://13.49.66.204:3000/FormulaProcedures/RateStructure/Excel/',
-      //   options: Options(
-      //     headers: {'Content-Type': 'application/json'},
-      //   ),
-      // );
-      // print("response is ${response.data}");
-      //
-      // if (response.statusCode == 201) {
-      //   // Successfully uploaded
-      //   log('Data uploaded successfully');
-      //
-      //   return temData;
-      // } else {
-      //   // Error handling
-      //   log('Failed to upload data: ${response.statusCode}');
-      //   return temData;
-      // }
-      return temData;
+      final response = await _dio.get(
+        url2 + 'FormulaProcedures/RateStructure/Excel/',
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+      print(
+          "response is fetchRangeMasterExcel${response.statusCode} ${response.data}  ");
+
+      if (response.statusCode == 200) {
+        // Successfully uploaded
+        log('Data uploaded successfully');
+        print("length is ${response.data.length}");
+
+        return response.data[0];
+      } else {
+        // Error handling
+        log('Failed to upload data: ${response.statusCode}');
+        return {};
+      }
+      return {};
     } catch (e) {
       // Handle errors
       log('Error occurred in uploading excel: $e');
-      return temData;
+      return {};
     }
   }
 
@@ -223,7 +166,7 @@ class formulaProcedureRepository {
           headers: {'Content-Type': 'application/json'},
         ),
       );
-      print("response is ${response.data}");
+      print("response formulaExcel is ${response.data}");
 
       if (response.statusCode == 201) {
         // Successfully uploaded
@@ -246,15 +189,8 @@ class formulaProcedureRepository {
         .get(url2 + 'FormulaProcedures/FormulaProcedureMasterDetails');
     // print("response is $response  ${response.data}");
     List<dynamic> data = response.data;
-    // print("rep1 is ${data[0]}");
-    // print("rep1 is ${data[1]}");
-    // print("rep1 is ${data[2]}");
-    // print("rep1 is ${data[3]}");
-    // print("rep1 is ${data[4]}");
-    print("rep1 is ${data[5]}");
+    print("response formula Excel $data");
 
-    print("resposne dat ais ${data[7]}");
-
-    return data[8];
+    return data[9];
   }
 }

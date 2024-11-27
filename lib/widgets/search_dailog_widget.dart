@@ -7,15 +7,15 @@ import 'package:jewlease/widgets/custom_app_bar_finder.dart';
 import '../feature/formula/controller/heirarchy_controller.dart';
 
 class ItemTypeDialogScreen extends ConsumerStatefulWidget {
-  const ItemTypeDialogScreen({
-    super.key,
-    required this.title,
-    required this.endUrl,
-    required this.value,
-    this.keyOfMap,
-    this.query,
-    this.onOptionSelectd,
-  });
+  const ItemTypeDialogScreen(
+      {super.key,
+      required this.title,
+      required this.endUrl,
+      required this.value,
+      this.keyOfMap,
+      this.query,
+      this.onOptionSelectd,
+      this.onSelectdRow});
 
   final String title;
   final String endUrl;
@@ -23,6 +23,7 @@ class ItemTypeDialogScreen extends ConsumerStatefulWidget {
   final String? query;
   final String? keyOfMap;
   final Function(String)? onOptionSelectd;
+  final Function(Map<String, dynamic>)? onSelectdRow;
 
   @override
   ItemTypeDialogScreenState createState() => ItemTypeDialogScreenState();
@@ -138,6 +139,7 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                     }).toList();
                   } else {
                     items = item;
+                    print("item list is $items");
                   }
                   if (items.isEmpty) {
                     return const Center(child: Text('No data available'));
@@ -191,20 +193,24 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                         }).toList(),
                         rows: _filteredItems.map((item) {
                           final isSelected =
-                              selectedItem[widget.keyOfMap ?? widget.title] ==
-                                  item[widget.value];
+                              selectedItem[widget.keyOfMap ?? widget.title]
+                                      .toString() ==
+                                  item[widget.value].toString();
                           print(
-                              "filetered value ${item} ${selectedItem[widget.keyOfMap ?? widget.title]}  ${item[widget.value]} ${widget.value}");
+                              "item list value ${item}->selected item lsit $selectedItem ->selecteditem   ${selectedItem[widget.keyOfMap ?? widget.title]}-> item value ${item[widget.value]}-> ${widget.value}");
                           print("seleced $isSelected");
                           return DataRow(
                             selected: isSelected,
                             onSelectChanged: (bool? selected) {
                               if (selected == true) {
+                                print(
+                                    "runtype is ${widget.value.runtimeType} $item ${item[widget.value]}");
                                 ref
                                     .read(dialogSelectionProvider.notifier)
                                     .updateSelection(
                                         widget.keyOfMap ?? widget.title,
-                                        item[widget.value]);
+                                        item[(widget.value).toString()]
+                                            .toString());
                               }
                             },
                             cells:
@@ -232,12 +238,14 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                     onPressed: () {
                       final selectedItemID = ref.read(dialogSelectionProvider)[
                           widget.keyOfMap ?? widget.title];
+
                       if (selectedItemID != null) {
                         Map<String, dynamic> selectedRow =
                             _filteredItems.firstWhere(
                           (map) {
                             print("map $map");
-                            return map["Config Id"] == selectedItemID;
+                            return map["Config Id"].toString() ==
+                                selectedItemID.toString();
                           },
                           orElse: () => {},
                         );
@@ -267,7 +275,15 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                         }
                         if (widget.onOptionSelectd != null) {
                           print("hello");
-                          widget.onOptionSelectd!(selectedItemID);
+                          if (widget.title == 'Range Type') {
+                            print("selected Row $selectedRow");
+                            widget.onOptionSelectd!(
+                                selectedRow["Range Hierarchy Name"]);
+                          } else
+                            widget.onOptionSelectd!(selectedItemID);
+                        }
+                        if (widget.onSelectdRow != null) {
+                          widget.onSelectdRow!(selectedRow);
                         }
 
                         // Save the selected item ID to the provider or perform any action you need

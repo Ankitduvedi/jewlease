@@ -65,19 +65,19 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
   void intializeExcel() async {
     print("initializing excel");
     final itemListNotifier = ref.read(itemListProvider.notifier);
-    List<List<dynamic>> excelData = await ref
-        .read(formulaProcedureControllerProvider.notifier)
-        .fetchRangeMasterExcel("", context);
-    print("excel data is $excelData");
+    // List<List<dynamic>> excelData = await ref
+    //     .read(formulaProcedureControllerProvider.notifier)
+    //     .fetchRangeMasterExcel("", context);
+    // print("excel data is $excelData");
+    //
+    // final String jsonData2 = jsonEncode(excelData);
 
-    final String jsonData2 = jsonEncode(excelData);
-
-    Future.delayed(Duration(seconds: 2), () {
-      print("updating excel");
-      webViewController?.evaluateJavascript(
-        source: "updateHandsontableData('$jsonData2');",
-      );
-    });
+    // Future.delayed(Duration(seconds: 2), () {
+    //   print("updating excel");
+    //   webViewController?.evaluateJavascript(
+    //     source: "updateHandsontableData('$jsonData2');",
+    //   );
+    // });
   }
 
   String _getColumnName(int index) {
@@ -567,6 +567,7 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
                                           'Attribute Type'],
                                   "details": dataList,
                                 };
+                                print("add range mamster body $reqBody");
                                 ref
                                     .read(formulaProcedureControllerProvider
                                         .notifier)
@@ -581,8 +582,6 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
                                 for (int i = 0; i < data.length; i++) {
                                   List<dynamic> row = [];
                                   for (int j = 0; j < data[i].length; j++) {
-                                    // print(
-                                    //     "row $i col is $j ${data[i][j]} datata is-->${data[i][j]}<--}");
                                     if (data[i][j] == null ||
                                         data[i][j] == '' ||
                                         data[i][j] == "") {
@@ -595,10 +594,19 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
                                   if (!row.isEmpty) excelData.add(row);
                                 }
                                 print("excel data is $excelData");
-
+                                final headerValues = itemMap.entries
+                                    .expand((entry) => entry.key == 'Number'
+                                        ? entry.value.expand((value) =>
+                                            ['$value start', '$value end'])
+                                        : entry.value.map((value) => value))
+                                    .toList();
+                                headerValues.insert(0, "Output");
                                 Map<String, dynamic> excelReqBody = {
                                   "rangeHierarchyName": rangeHierarchy.text,
-                                  "details": {"excelData": excelData},
+                                  "details": {
+                                    "excelData": excelData,
+                                    "Headers": headerValues
+                                  },
                                 };
                                 print(
                                     "excel body is ${jsonEncode(excelReqBody)}");
