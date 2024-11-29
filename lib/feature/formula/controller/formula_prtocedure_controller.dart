@@ -44,6 +44,7 @@ class formulaProcedureController extends StateNotifier<bool> {
       });
       // Optionally update the state if necessary after submission
     } catch (e) {
+      print("error range name $e");
       state = false;
     }
   }
@@ -52,8 +53,8 @@ class formulaProcedureController extends StateNotifier<bool> {
       String heirarchyName, String rangeType) async {
     try {
       state = true;
-      final response =
-          await _formulaProcedureRepository.fetchRangeMaster(heirarchyName, '');
+      final response = await _formulaProcedureRepository
+          .fetchRangeMasterDepdField(heirarchyName, '');
       state = false;
       return response;
     } catch (e) {
@@ -77,18 +78,19 @@ class formulaProcedureController extends StateNotifier<bool> {
       });
       // Optionally update the state if necessary after submission
     } catch (e) {
+      print("error range excel $e");
       state = false;
     }
   }
 
-  Future<List<List<dynamic>>> fetchRangeMasterExcel(
+  Future<Map<dynamic, dynamic>> fetchRangeMasterExcel(
       String hierarchyName, BuildContext context) async {
     try {
       state = true;
       final response = await _formulaProcedureRepository
           .fetchRangeMasterExcel(hierarchyName);
       state = false;
-      print("excel response is $response");
+      print("fetchRangeMasterexcel response is $response");
       return response;
 
       // Optionally update the state if necessary after submission
@@ -96,7 +98,7 @@ class formulaProcedureController extends StateNotifier<bool> {
       print("erro in fetching ");
       state = false;
     }
-    return [];
+    return {};
   }
 
   Future<void> addFormulaExcel(
@@ -130,6 +132,24 @@ class formulaProcedureController extends StateNotifier<bool> {
       // Optionally update the state if necessary after submission
     } catch (e) {
       print("erro in fetching $e ");
+      state = false;
+    }
+    return {};
+  }
+
+  Future<Map<dynamic, dynamic>> fetchRangeExcel(
+      String rangehHierarchyName, BuildContext context) async {
+    try {
+      state = true;
+      final response = await _formulaProcedureRepository
+          .fetchRangeMasterExcel(rangehHierarchyName);
+      state = false;
+      print(" range excel response is $response");
+      return response;
+
+      // Optionally update the state if necessary after submission
+    } catch (e) {
+      print("error in fetching $e ");
       state = false;
     }
     return {};

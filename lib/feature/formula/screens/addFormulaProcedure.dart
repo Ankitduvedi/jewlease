@@ -188,28 +188,6 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
     String columnName = _getColumnName(col);
     List<String> options = [];
 
-    switch (columnName) {
-      case 'C': // Column 'C'
-        options = [
-          'Range',
-          'Calculation',
-          'Amount',
-          'Total',
-          'Variable',
-          'Column'
-        ];
-        break;
-      case 'F':
-        options = ['GST TAX', 'HST TAX', 'QST TAX', 'AMOUNT BEFORE TAX'];
-      case 'G': // Column 'G'
-        options = ['GST TAX', 'HST TAX', 'QST TAX', 'AMOUNT BEFORE TAX'];
-        break;
-      default:
-        // Handle other columns or ignore
-        print('No dialog defined for column: $columnName');
-        return;
-    }
-
     // Show the dialog with the options
     _showOptionsDialog(context, columnName, options, (selectedOption) {
       // Handle the selected option
@@ -227,8 +205,8 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
     showDialog(
       context: context,
       builder: (context) => ItemTypeDialogScreen(
-        title: 'Attribute Type',
-        endUrl: 'FormulaProcedures/RateStructure/RangeType/',
+        title: 'Range Type',
+        endUrl: 'FormulaProcedures/RateStructure/FormulaRangeMaster',
         value: 'Config Id',
         onOptionSelectd: (selectedValue) {
           onOptionSelected(selectedValue);
