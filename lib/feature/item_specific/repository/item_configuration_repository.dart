@@ -7,6 +7,7 @@ import 'package:jewlease/data/model/failure.dart';
 import 'package:jewlease/data/model/item_master_metal.dart';
 import 'package:jewlease/data/model/item_master_stone.dart';
 import 'package:jewlease/data/model/style_item_model.dart';
+import 'package:jewlease/data/model/style_variant_model.dart';
 import 'package:jewlease/data/model/variant_master_metal.dart';
 
 class ItemSpecificRepository {
@@ -114,7 +115,35 @@ class ItemSpecificRepository {
       if (response.statusCode == 201) {
         // Successfully uploaded
         log('Data uploaded successfully');
-        return right(r"Successfully signed out.");
+        return right(response.statusCode.toString());
+      } else {
+        // Error handling
+        log('Failed to upload data: ${response.statusCode}');
+        return left(Failure(message: response.toString()));
+      }
+    } catch (e) {
+      // Handle errors
+      log('Error occurred: $e');
+      return left(Failure(message: e.toString()));
+    }
+  }
+
+  Future<Either<Failure, String>> addStyleVariant(
+      ItemMasterVariant config) async {
+    try {
+      log(config.toJson().toString());
+      final response = await _dio.post(
+        '$url2/ItemMasterAndVariants/Style/Style/Varient',
+        data: config,
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+
+      if (response.statusCode == 201) {
+        // Successfully uploaded
+        log('Data uploaded successfully');
+        return right(response.statusCode.toString());
       } else {
         // Error handling
         log('Failed to upload data: ${response.statusCode}');

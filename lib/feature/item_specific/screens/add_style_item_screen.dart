@@ -1,7 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jewlease/data/model/item_master_metal.dart';
 import 'package:jewlease/data/model/style_item_model.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 import 'package:jewlease/providers/image_provider.dart';
@@ -40,7 +39,6 @@ class AddStyleItemScreenState extends ConsumerState<AddStyleItemScreen> {
   @override
   Widget build(BuildContext context) {
     final isChecked = ref.watch(chechkBoxSelectionProvider);
-    final textFieldvalues = ref.watch(dialogSelectionProvider);
     final dropDownValue = ref.watch(dropDownProvider);
     final masterType = ref.watch(masterTypeProvider);
     final images = ref.watch(imageProvider);
@@ -49,13 +47,25 @@ class AddStyleItemScreenState extends ConsumerState<AddStyleItemScreen> {
       persistentFooterButtons: [
         ElevatedButton(
           onPressed: () {
-            final config = ItemMasterStyle(styleName: styleName.text, exclusiveIndicator: isChecked['Exclusive Indicator'] ?? false, holdIndicator: isChecked['Hold Indicator'] ?? false, reworkIndicator: isChecked['Rework Indicator'] ?? false, rejectIndicator: isChecked['Reject Indicator'] ?? false, protoRequiredIndicator: isChecked['Proto Required Indicator'] ?? false, autoVarientCodeGenIndicator: isChecked['Auto Variant Code Gen Indicator'] ?? false, remark: remark.text, rowStatus: dropDownValue['Row Status'] ?? 'Active', imageDetails: [],);
+            final config = ItemMasterStyle(
+              styleName: styleName.text,
+              exclusiveIndicator: isChecked['Exclusive Indicator'] ?? false,
+              holdIndicator: isChecked['Hold Indicator'] ?? false,
+              reworkIndicator: isChecked['Rework Indicator'] ?? false,
+              rejectIndicator: isChecked['Reject Indicator'] ?? false,
+              protoRequiredIndicator:
+                  isChecked['Proto Required Indicator'] ?? false,
+              autoVarientCodeGenIndicator:
+                  isChecked['Auto Variant Code Gen Indicator'] ?? false,
+              remark: remark.text,
+              rowStatus: dropDownValue['Row Status'] ?? 'Active',
+              imageDetails: [],
+            );
             log(config.toJson().toString());
             log('save button pressed');
-              ref
+            ref
                 .read(itemSpecificControllerProvider.notifier)
-                .submitStyleItemConfiguration(config,context,ref);
-
+                .submitStyleItemConfiguration(config, context, ref);
           },
           style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.fromLTRB(50, 20, 50, 20),
@@ -122,7 +132,7 @@ class AddStyleItemScreenState extends ConsumerState<AddStyleItemScreen> {
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
                     children: [
-                      Expanded(child: parentForm(images)),
+                      Expanded(child: parentForm()),
                       Container(
                         decoration: BoxDecoration(
                           color:
@@ -146,7 +156,7 @@ class AddStyleItemScreenState extends ConsumerState<AddStyleItemScreen> {
                           ),
                         ),
                         child: TextButton(
-                          child: const Text('Upload Imae'),
+                          child: const Text('Upload Image'),
                           onPressed: () {
                             showDialog(
                                 context: context,
@@ -168,7 +178,7 @@ class AddStyleItemScreenState extends ConsumerState<AddStyleItemScreen> {
     );
   }
 
-  Widget parentForm(List<ImageModel> images) {
+  Widget parentForm() {
     return GridView.count(
       crossAxisCount: 6,
       crossAxisSpacing: 10,

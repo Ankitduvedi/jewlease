@@ -13,27 +13,27 @@ class ItemRepository {
   ItemRepository(this._dio);
 
   Future<List<Map<String, dynamic>>> fetchItemType(String endUrl) async {
-    log('$url$endUrl');
+    log('$url2$endUrl');
     if (endUrl.contains("FormulaProcedure") || endUrl.contains('operations')) {
-      final response = await _dio.get('$url2$endUrl');
-      print("response is2 $url2 $response  ${response.data}");
+      final response = await _dio.get('$url2/$endUrl');
+      log("response is2 $url2 $response  ${response.data}");
       return List<Map<String, dynamic>>.from(response.data);
     }
-    final response = await _dio.get('$url$endUrl');
-    print("response is $response  ${response.data}");
+    final response = await _dio.get('$url2/$endUrl');
+    log("response is $response  ${response.data}");
     return List<Map<String, dynamic>>.from(response.data);
   }
 
   void downloadAsExcel(String endUrl) async {
-    log('$url$endUrl');
-    await _dio.get('$url$endUrl');
+    log('$url2$endUrl');
+    await _dio.get('$url2$endUrl');
   }
 
   Future<Either<Failure, String>> submitItemConfiguration(
       ItemConfiguration config) async {
     try {
       final response = await _dio.post(
-        'http://13.239.113.142:3000/ItemConfiguration/',
+        '$url2/ItemConfiguration/',
         data: config.toJson(),
         options: Options(
           headers: {'Content-Type': 'application/json'},

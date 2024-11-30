@@ -20,7 +20,7 @@ class AllAttributeController extends StateNotifier<bool> {
       final response = await _allAttributeRepository.addAttribute(config);
       state = false;
       response.fold((l) => Utils.snackBar(l.message, context), (r) {
-        Utils.snackBar('New Item Configuration Created', context);
+        Utils.snackBar('New Attribute Value Created', context);
         context.pop();
         null;
       });

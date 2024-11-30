@@ -231,7 +231,7 @@ class AddMetalVariantScreenState extends ConsumerState<AddMetalVariantScreen> {
               context: context,
               builder: (context) => const ItemTypeDialogScreen(
                 title: 'Vendor Name',
-                endUrl: 'ItemMasterAndVariants/Metal/Gold/Item/',
+                endUrl: 'Master/PartySpecific/vendors/',
                 value: 'Vendor Name',
               ),
             );

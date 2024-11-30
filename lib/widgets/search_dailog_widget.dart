@@ -1,3 +1,5 @@
+// import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
@@ -139,7 +141,7 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                     }).toList();
                   } else {
                     items = item;
-                    print("item list is $items");
+                    //log("item list is $items");
                   }
                   if (items.isEmpty) {
                     return const Center(child: Text('No data available'));
@@ -196,15 +198,13 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                               selectedItem[widget.keyOfMap ?? widget.title]
                                       .toString() ==
                                   item[widget.value].toString();
-                          print(
-                              "item list value ${item}->selected item lsit $selectedItem ->selecteditem   ${selectedItem[widget.keyOfMap ?? widget.title]}-> item value ${item[widget.value]}-> ${widget.value}");
-                          print("seleced $isSelected");
+                          //log("item list value $item->selected item lsit $selectedItem ->selecteditem   ${selectedItem[widget.keyOfMap ?? widget.title]}-> item value ${item[widget.value]}-> ${widget.value}");
+                          //log("seleced $isSelected");
                           return DataRow(
                             selected: isSelected,
                             onSelectChanged: (bool? selected) {
                               if (selected == true) {
-                                print(
-                                    "runtype is ${widget.value.runtimeType} $item ${item[widget.value]}");
+                                //log("runtype is ${widget.value.runtimeType} $item ${item[widget.value]}");
                                 ref
                                     .read(dialogSelectionProvider.notifier)
                                     .updateSelection(
@@ -243,15 +243,15 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                         Map<String, dynamic> selectedRow =
                             _filteredItems.firstWhere(
                           (map) {
-                            print("map $map");
+                            //log("map $map");
                             return map["Config Id"].toString() ==
                                 selectedItemID.toString();
                           },
                           orElse: () => {},
                         );
-                        print("selected id $selectedItemID");
+                        // log("selected id $selectedItemID");
                         if (widget.title == "Depd Field") {
-                          print("depd field selected $selectedItemID");
+                          // log("depd field selected $selectedItemID");
                           if (widget.value == 'ConfigValue') {
                             ref
                                 .read(valueProvider.notifier)
@@ -263,24 +263,24 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                           }
                         }
                         if (widget.title == "Data Type") {
-                          print("data type selected $selectedItemID");
+                          //log("data type selected $selectedItemID");
 
-                          print("selected row $selectedRow");
-                          print(
-                              "selected item is ${selectedRow["Config value"]} ");
+                          // log("selected row $selectedRow");
+                          // log("selected item is ${selectedRow["Config value"]} ");
 
                           ref
                               .read(itemProvider.notifier)
                               .setItem(selectedRow["Config value"]);
                         }
                         if (widget.onOptionSelectd != null) {
-                          print("hello");
+                          // log("hello");
                           if (widget.title == 'Range Type') {
-                            print("selected Row $selectedRow");
+                            // log("selected Row $selectedRow");
                             widget.onOptionSelectd!(
                                 selectedRow["Range Hierarchy Name"]);
-                          } else
+                          } else {
                             widget.onOptionSelectd!(selectedItemID);
+                          }
                         }
                         if (widget.onSelectdRow != null) {
                           widget.onSelectdRow!(selectedRow);

@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:jewlease/core/routes/constant.dart';
 import 'package:jewlease/data/model/failure.dart';
 import 'package:jewlease/data/model/vendor_model.dart';
 
@@ -14,7 +15,7 @@ class VendorRepository {
   Future<Either<Failure, String>> addVendor(Vendor config) async {
     try {
       final response = await _dio.post(
-        'http://13.49.66.204:3000/Master/PartySpecific/vendors/',
+        '$url2/Master/PartySpecific/vendors/',
         data: config.toJson(),
         options: Options(
           headers: {'Content-Type': 'application/json'},

@@ -110,10 +110,10 @@ class TableRowItem extends ConsumerWidget {
               labelText: attributeType,
               icon: Icons.search,
               onIconPressed: () {
-                print("value is ${attributeData['value']!}");
-                print("title is ${attributeData["title"]}");
-                print("end url  is ${attributeData['endUrl']!}");
-                print("query is ${attributeData['query']!}");
+                // log("value is ${attributeData['value']!}");
+                // log("title is ${attributeData["title"]}");
+                // log("end url  is ${attributeData['endUrl']!}");
+                // log("query is ${attributeData['query']!}");
 
                 showDialog(
                   context: context,

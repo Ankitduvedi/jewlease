@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/core/routes/constant.dart';
 import 'package:jewlease/data/model/failure.dart';
 import 'package:jewlease/widgets/image_data.dart';
 
@@ -53,8 +54,7 @@ class ImageNotifier extends StateNotifier<List<ImageModel>> {
   }
 
   Future<Either<Failure, String>> uploadImage(ImageModel image) async {
-    final uri =
-        Uri.parse('http://13.49.66.204:3000/ItemMasterAndVariants/upload/');
+    final uri = Uri.parse('$url2/ItemMasterAndVariants/upload/');
 
     var request = http.MultipartRequest('POST', uri)
       ..files.add(http.MultipartFile.fromBytes('image', image.imageData,

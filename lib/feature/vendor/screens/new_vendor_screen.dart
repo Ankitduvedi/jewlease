@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jewlease/data/model/item_master_metal.dart';
 import 'package:jewlease/data/model/vendor_model.dart';
-import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 import 'package:jewlease/feature/vendor/controller/vendor_controller.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
@@ -10,7 +8,6 @@ import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/widgets/check_box.dart';
 import 'package:jewlease/widgets/drop_down_text_field.dart';
 import 'package:jewlease/widgets/icon_text_button_widget.dart';
-import 'package:jewlease/widgets/item_attribute_widget.dart';
 import 'package:jewlease/widgets/number_input_text_field.dart';
 import 'package:jewlease/widgets/read_only_textfield_widget.dart';
 import 'package:jewlease/widgets/text_field_widget.dart';
@@ -135,7 +132,6 @@ class AddMetalItemScreenState extends ConsumerState<AddVendor> {
                 udyogAdharNo: udyogAdharNumber.text,
                 exchangeTerms: dropDownValue['Exchange Terms'] ?? 'No Exchange',
                 tds194Q: dropDownValue['TDS194Q'] ?? 'No');
-            
 
             ref
                 .read(vendorControllerProvider.notifier)
@@ -148,9 +144,9 @@ class AddMetalItemScreenState extends ConsumerState<AddVendor> {
                   borderRadius: BorderRadius.circular(10)),
               backgroundColor: const Color.fromARGB(255, 40, 112, 62)),
           child: !ref.watch(vendorControllerProvider)
-              ? Text(
+              ? const Text(
                   'Save',
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: Colors.white),
                 )
               : const CircularProgressIndicator(
                   color: Colors.white,
@@ -257,7 +253,6 @@ class AddMetalItemScreenState extends ConsumerState<AddVendor> {
             );
           },
         ),
-       
         TextFieldWidget(
           controller: initial,
           labelText: 'Initials',
@@ -376,11 +371,11 @@ class AddMetalItemScreenState extends ConsumerState<AddVendor> {
           items: ['Automatic', 'None', 'Manual'],
           labelText: 'Allow Labour',
         ),
-        ReadOnlyTextFieldWidget(
+        const ReadOnlyTextFieldWidget(
             labelText: 'Corresponding',
             hintText: 'Corresponding',
             icon: Icons.search),
-        CheckBoxWidget(labelText: 'Nominated Agency'),
+        const CheckBoxWidget(labelText: 'Nominated Agency'),
         NumberTextFieldWidget(
             labelText: 'Exchange %', controller: exchangePercentage),
         TextFieldWidget(labelText: 'Return Terms', controller: returnTerms),

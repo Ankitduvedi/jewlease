@@ -1,13 +1,19 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/data/model/style_variant_model.dart';
 import 'package:jewlease/data/model/variant_master_metal.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 import 'package:jewlease/feature/vendor/screens/Bom&Operation.dart';
 import 'package:jewlease/main.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
+import 'package:jewlease/providers/image_provider.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/widgets/drop_down_text_field.dart';
 import 'package:jewlease/widgets/icon_text_button_widget.dart';
+import 'package:jewlease/widgets/image_list.dart';
+import 'package:jewlease/widgets/image_upload_dailog_box.dart';
 import 'package:jewlease/widgets/item_attribute_widget.dart';
 import 'package:jewlease/widgets/number_input_text_field.dart';
 import 'package:jewlease/widgets/read_only_textfield_widget.dart';
@@ -31,6 +37,8 @@ class AddStyleVariantScreenState extends ConsumerState<AddStyleVariantScreen> {
   final TextEditingController stdBuyingRate = TextEditingController();
   final TextEditingController stdSellingRate = TextEditingController();
   final TextEditingController variantName = TextEditingController();
+  final TextEditingController stoneMaxWt = TextEditingController();
+  final TextEditingController stoneMinWt = TextEditingController();
 
   @override
   void dispose() {
@@ -43,7 +51,6 @@ class AddStyleVariantScreenState extends ConsumerState<AddStyleVariantScreen> {
     'Parent Form',
     'Item Attribute',
     'BOM & Operation',
-    'Attachment'
   ];
   @override
   Widget build(BuildContext context) {
@@ -59,32 +66,65 @@ class AddStyleVariantScreenState extends ConsumerState<AddStyleVariantScreen> {
           onPressed: () {
             if (selectedContent == 0) {
               ref.read(formSequenceProvider.notifier).state = 1;
-            }
-            if (selectedContent == 1) {
-              final config = VariantMasterMetal(
+            } else if (selectedContent == 1) {
+              ref.read(formSequenceProvider.notifier).state = 2;
+            } else if (selectedContent == 2) {
+              final bomNotifier = ref.watch(bomProvider);
+              final operationNotifier = ref.watch(OperationProvider);
+              final config = ItemMasterVariant(
+                  style: textFieldvalues['Style Name'] ?? 'Style',
+                  varientName: variantName.text,
+                  oldVarient: 'oldVarient',
+                  customerVarient: 'customerVarient',
+                  baseVarient: 'baseVarient',
+                  vendor: textFieldvalues['Vendor Name'] ?? 'Vendor',
+                  remark1: 'remark1',
+                  vendorVarient: 'vendorVarient',
+                  remark2: 'remark2',
+                  createdBy: 'createdBy',
+                  stdBuyingRate: stdBuyingRate.text,
+                  stoneMaxWt: stoneMaxWt.text,
+                  remark: 'remark',
+                  stoneMinWt: stoneMinWt.text,
+                  karatColor: 'karatColor',
+                  deliveryDays: 0,
+                  forWeb: 'forWeb',
                   rowStatus: dropDownValue['Row Status'] ?? 'Active',
-                  createdDate: DateTime.timestamp(),
-                  updateDate: DateTime.timestamp(),
-                  metalName: textFieldvalues['Metal code']!,
-                  variantType: dropDownValue['Variant Type'] ?? 'STYLE',
-                  baseMetalVariant: '24Kt',
-                  stdSellingRate: double.parse(stdSellingRate.text),
-                  stdBuyingRate: double.parse(stdBuyingRate.text),
-                  reorderQty: int.parse(reorderQty.text),
-                  usedInBom: dropDownValue['Used As BOM'] ?? 'Yes',
-                  canReturnInMelting:
-                      isChecked['Can Return In Melting'] ?? false,
-                  metalColor: textFieldvalues['METAL COLOR']!,
-                  karat: textFieldvalues['KARAT']!);
+                  verifiedStatus: 'verifiedStatus',
+                  length: 0,
+                  codegenSrNo: 'codegenSrNo',
+                  category: textFieldvalues['CATEGORY'] ?? "category",
+                  subCategory: textFieldvalues['SUB CATEGORY'] ?? "sub karat",
+                  styleKarat: textFieldvalues['STYLE KARAT'] ?? "karat",
+                  varient: textFieldvalues['VARIETY'] ?? " variety",
+                  hsnSacCode: textFieldvalues['HSN - SAC CODE'] ?? "",
+                  lineOfBusiness: textFieldvalues['LINE OF BUSINESS'] ?? "lob",
+                  bom: bomNotifier,
+                  operation: operationNotifier,
+                  imageDetails: []);
 
+              // final configs = VariantMasterMetal(
+              //     rowStatus: dropDownValue['Row Status'] ?? 'Active',
+              //     createdDate: DateTime.timestamp(),
+              //     updateDate: DateTime.timestamp(),
+              //     metalName: textFieldvalues['Metal code']!,
+              //     variantType: dropDownValue['Variant Type'] ?? 'STYLE',
+              //     baseMetalVariant: '24Kt',
+              //     stdSellingRate: double.parse(stdSellingRate.text),
+              //     stdBuyingRate: double.parse(stdBuyingRate.text),
+              //     reorderQty: int.parse(reorderQty.text),
+              //     usedInBom: dropDownValue['Used As BOM'] ?? 'Yes',
+              //     canReturnInMelting:
+              //         isChecked['Can Return In Melting'] ?? false,
+              //     metalColor: textFieldvalues['METAL COLOR']!,
+              //     karat: textFieldvalues['KARAT']!);
+              log(config.toJson().toString());
+              log('save button pressed');
               ref
                   .read(itemSpecificControllerProvider.notifier)
-                  .submitMetalVariantConfiguration(config, context);
+                  .submitStyleVariantConfiguration(config, context, ref);
             }
-            if (selectedContent == 2) {
-              final bomNotifier = ref.read(bomProvider.notifier);
-              final operationNotifier = ref.read(OperationProvider.notifier);
-            }
+            if (selectedContent == 2) {}
           },
           style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.fromLTRB(50, 20, 50, 20),
@@ -94,7 +134,7 @@ class AddStyleVariantScreenState extends ConsumerState<AddStyleVariantScreen> {
               backgroundColor: const Color.fromARGB(255, 40, 112, 62)),
           child: !ref.watch(itemSpecificControllerProvider)
               ? Text(
-                  selectedContent == 0 ? 'Next' : 'Save',
+                  selectedContent == 2 ? 'Save' : 'Next',
                   style: const TextStyle(color: Colors.white),
                 )
               : const CircularProgressIndicator(
@@ -207,11 +247,11 @@ class AddStyleVariantScreenState extends ConsumerState<AddStyleVariantScreen> {
                                 'query': 'VARIETY'
                               },
                               {
-                                'title': 'HSN-SAC CODE',
-                                'key': 'HSN-SAC CODE',
+                                'title': 'HSN - SAC CODE',
+                                'key': 'HSN - SAC CODE',
                                 'value': 'AttributeCode',
                                 'endUrl': 'AllAttribute',
-                                'query': 'HSN-SAC CODE'
+                                'query': 'HSN'
                               },
                               {
                                 'title': 'LINE OF BUSINESS',
@@ -222,16 +262,9 @@ class AddStyleVariantScreenState extends ConsumerState<AddStyleVariantScreen> {
                               },
                             ],
                           )
-                        : selectedContent == 2
-                            ? SingleChildScrollView(
-                                scrollDirection: Axis.vertical,
-                                child: Container(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 10),
-                                    height: screenHeight * 0.7,
-                                    child: MyDataGrid()),
-                              )
-                            : Text('data'),
+                        : const SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: MyDataGrid()),
               )),
             ],
           ),
@@ -241,143 +274,168 @@ class AddStyleVariantScreenState extends ConsumerState<AddStyleVariantScreen> {
   }
 
   Widget parentForm() {
+    final images = ref.watch(imageProvider);
     final textFieldvalues = ref.watch(dialogSelectionProvider);
-    return GridView.count(
-      crossAxisCount: 6,
-      crossAxisSpacing: 10,
-      mainAxisSpacing: 20,
-      childAspectRatio: 4.5,
+    return Column(
       children: [
-        ReadOnlyTextFieldWidget(
-          hintText: textFieldvalues['Style'] ?? 'Style',
-          labelText: 'Style',
-          icon: Icons.search,
-          onIconPressed: () {
-            showDialog(
-              context: context,
-              builder: (context) => const ItemTypeDialogScreen(
-                title: 'Style',
-                endUrl: 'ItemMasterAndVariants/Metal/Gold/Item/',
-                value: 'Style',
+        Expanded(
+          flex: 2,
+          child: GridView.count(
+            crossAxisCount: 6,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 20,
+            childAspectRatio: 4.5,
+            children: [
+              ReadOnlyTextFieldWidget(
+                hintText: textFieldvalues['Style Name'] ?? 'Style',
+                labelText: 'Style',
+                icon: Icons.search,
+                onIconPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => const ItemTypeDialogScreen(
+                      title: 'Style Name',
+                      endUrl: 'ItemMasterAndVariants/Style/Style/Item/',
+                      value: 'Style Name',
+                    ),
+                  );
+                },
               ),
-            );
-          },
-        ),
-        TextFieldWidget(
-          controller: variantName,
-          labelText: 'Variant Name',
-        ),
-        TextFieldWidget(
-          controller: variantName,
-          labelText: 'Old Variant',
-        ),
-        TextFieldWidget(
-          controller: variantName,
-          labelText: 'Customer Variant',
-        ),
-        ReadOnlyTextFieldWidget(
-          hintText: textFieldvalues['Vendor'] ?? 'Vendor',
-          labelText: 'Vendor',
-          icon: Icons.search,
-          onIconPressed: () {
-            showDialog(
-              context: context,
-              builder: (context) => const ItemTypeDialogScreen(
-                title: 'Vendor',
-                endUrl: 'ItemMasterAndVariants/Metal/Gold/Item/',
-                value: 'Vendor',
+              TextFieldWidget(
+                controller: variantName,
+                labelText: 'Variant Name',
               ),
-            );
-          },
-        ),
-        ReadOnlyTextFieldWidget(
-          hintText: textFieldvalues['Base Variant'] ?? 'Base Variant',
-          labelText: 'Base Variant',
-          icon: Icons.search,
-          onIconPressed: () {
-            showDialog(
-              context: context,
-              builder: (context) => const ItemTypeDialogScreen(
-                title: 'Base Variant',
-                endUrl: 'ItemMasterAndVariants/Metal/Gold/Item/',
-                value: 'Base Variant',
+              TextFieldWidget(
+                controller: variantName,
+                labelText: 'Old Variant',
               ),
-            );
-          },
-        ),
-        TextFieldWidget(
-          controller: variantName,
-          labelText: 'Remark 1',
-        ),
-        TextFieldWidget(
-          controller: variantName,
-          labelText: 'Vendor Variant',
-        ),
-        TextFieldWidget(
-          controller: variantName,
-          labelText: 'Remark 2',
-        ),
-        ReadOnlyTextFieldWidget(
-          hintText: textFieldvalues['Created By'] ?? 'Created By',
-          labelText: 'Created By',
-          icon: Icons.search,
-          onIconPressed: () {
-            showDialog(
-              context: context,
-              builder: (context) => const ItemTypeDialogScreen(
-                title: 'Created By',
-                endUrl: 'ItemMasterAndVariants/Metal/Gold/Item/',
-                value: 'Created By',
+              TextFieldWidget(
+                controller: variantName,
+                labelText: 'Customer Variant',
               ),
-            );
-          },
+              ReadOnlyTextFieldWidget(
+                hintText: textFieldvalues['Vendor Name'] ?? 'Vendor',
+                labelText: 'Vendor',
+                icon: Icons.search,
+                onIconPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => const ItemTypeDialogScreen(
+                      title: 'Vendor Name',
+                      endUrl: 'Master/PartySpecific/vendors/',
+                      value: 'Vendor Name',
+                    ),
+                  );
+                },
+              ),
+              ReadOnlyTextFieldWidget(
+                hintText: textFieldvalues['Base Variant'] ?? 'Base Variant',
+                labelText: 'Base Variant',
+                icon: Icons.search,
+                onIconPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => const ItemTypeDialogScreen(
+                      title: 'Base Variant',
+                      endUrl: 'ItemMasterAndVariants/Metal/Gold/Item/',
+                      value: 'Base Variant',
+                    ),
+                  );
+                },
+              ),
+              TextFieldWidget(
+                controller: variantName,
+                labelText: 'Remark 1',
+              ),
+              TextFieldWidget(
+                controller: variantName,
+                labelText: 'Vendor Variant',
+              ),
+              TextFieldWidget(
+                controller: variantName,
+                labelText: 'Remark 2',
+              ),
+              ReadOnlyTextFieldWidget(
+                hintText: textFieldvalues['Created By'] ?? 'Created By',
+                labelText: 'Created By',
+                icon: Icons.search,
+                onIconPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => const ItemTypeDialogScreen(
+                      title: 'Created By',
+                      endUrl: 'ItemMasterAndVariants/Metal/Gold/Item/',
+                      value: 'Created By',
+                    ),
+                  );
+                },
+              ),
+              NumberTextFieldWidget(
+                controller: stdBuyingRate,
+                labelText: 'Std.Buying Rate',
+              ),
+              TextFieldWidget(
+                controller: stoneMaxWt,
+                labelText: 'Stone Max wt',
+              ),
+              TextFieldWidget(
+                controller: variantName,
+                labelText: 'Remark',
+              ),
+              TextFieldWidget(
+                controller: stoneMinWt,
+                labelText: 'Stone Min wt',
+              ),
+              TextFieldWidget(
+                controller: variantName,
+                labelText: 'Karat color',
+              ),
+              NumberTextFieldWidget(
+                controller: stdBuyingRate,
+                labelText: 'Delivery Days',
+              ),
+              const DropDownTextFieldWidget(
+                initialValue: 'No',
+                items: ['Yes', 'No'],
+                labelText: 'For Web',
+              ),
+              const DropDownTextFieldWidget(
+                initialValue: 'Active',
+                items: ['InActive', 'Active'],
+                labelText: 'Row Status',
+              ),
+              TextFieldWidget(
+                controller: variantName,
+                labelText: 'Verified Status',
+              ),
+              NumberTextFieldWidget(
+                controller: stdSellingRate,
+                labelText: 'Length',
+              ),
+              TextFieldWidget(
+                controller: variantName,
+                labelText: 'Codegen Sr no',
+              ),
+            ],
+          ),
         ),
-        NumberTextFieldWidget(
-          controller: stdBuyingRate,
-          labelText: 'Std.Buying Rate',
+        Flexible(
+          flex: 1,
+          child: OutlinedButton(
+            child: const Text('Add Image'),
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (context) => const ImageUploadDialog());
+            },
+          ),
         ),
-        TextFieldWidget(
-          controller: variantName,
-          labelText: 'Stone Max wt',
-        ),
-        TextFieldWidget(
-          controller: variantName,
-          labelText: 'Remark',
-        ),
-        TextFieldWidget(
-          controller: variantName,
-          labelText: 'Stone Min wt',
-        ),
-        TextFieldWidget(
-          controller: variantName,
-          labelText: 'Karat color',
-        ),
-        NumberTextFieldWidget(
-          controller: stdBuyingRate,
-          labelText: 'Delivery Days',
-        ),
-        const DropDownTextFieldWidget(
-          initialValue: 'No',
-          items: ['Yes', 'No'],
-          labelText: 'For Web',
-        ),
-        const DropDownTextFieldWidget(
-          initialValue: 'Active',
-          items: ['InActive', 'Active'],
-          labelText: 'Row Status',
-        ),
-        TextFieldWidget(
-          controller: variantName,
-          labelText: 'Verified Status',
-        ),
-        NumberTextFieldWidget(
-          controller: stdSellingRate,
-          labelText: 'Length',
-        ),
-        TextFieldWidget(
-          controller: variantName,
-          labelText: 'Codegen Sr no',
-        ),
+        Flexible(
+          flex: 2,
+          child: ImageList(
+            images: images,
+          ),
+        )
       ],
     );
   }

@@ -1,3 +1,7 @@
+// ignore_for_file: curly_braces_in_flow_control_structures
+
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,8 +36,7 @@ class _MyDataGridState extends ConsumerState<MyDataGrid> {
     _dataGridSource2 = MyDataGridSource2(
         _rows2, _removeRow, _updateOperationSummaryRow, context);
     _dataGridController2.addListener(() {
-      print(
-          'Current cell: ${_dataGridController2.currentCell?.rowIndex}, ${_dataGridController2.currentCell?.columnIndex}');
+      log('Current cell: ${_dataGridController2.currentCell?.rowIndex}, ${_dataGridController2.currentCell?.columnIndex}');
     });
   }
 
@@ -131,7 +134,7 @@ class _MyDataGridState extends ConsumerState<MyDataGrid> {
 
     oprNotifier.store(operationMap);
     oprNotifier.update(operationMap);
-    print('operationMap: ${oprNotifier.fetch()}');
+    log('operationMap: ${oprNotifier.fetch()}');
   }
 
   void _updateBomSummaryRow() {
@@ -183,7 +186,7 @@ class _MyDataGridState extends ConsumerState<MyDataGrid> {
 
     bomNotifier.store(bomReqBody);
     bomNotifier.update(bomReqBody);
-    print('Bom Data1: ${bomNotifier.fetch()}');
+    log('Bom Data1: ${bomNotifier.fetch()}');
   }
 
   int? _selectedRowIndex;
@@ -198,7 +201,7 @@ class _MyDataGridState extends ConsumerState<MyDataGrid> {
                 endUrl: endUrl,
                 canGo: true,
                 onDoubleClick: (Map<String, dynamic> intialData) {
-                  print("intial data is $intialData");
+                  log("intial data is $intialData");
                   _addNewRowWithItemGroup(
                       intialData["OPERATION_NAME"] ?? "", value);
                   Navigator.pop(context);
@@ -271,8 +274,7 @@ class _MyDataGridState extends ConsumerState<MyDataGrid> {
                                               onDoubleClick:
                                                   (Map<String, dynamic>
                                                       intialData) {
-                                                print(
-                                                    "intial data is: $intialData");
+                                                log("intial data is: $intialData");
                                                 _addNewRowWithOperation(
                                                     intialData[
                                                             "OPERATION_NAME"] ??
@@ -289,13 +291,13 @@ class _MyDataGridState extends ConsumerState<MyDataGrid> {
                               PopupMenuButton<String>(
                                 onSelected: (String value) {
                                   // When an item is selected, add a new row with the item group
-                                  print("choosen Item $value");
+                                  log("choosen Item $value");
 
-                                  if (value.contains('Gold'))
+                                  if (value.contains('Gold')) {
                                     showProcumentdialog(
                                         "ItemMasterAndVariants/Metal/Gold/Variant/",
                                         value);
-                                  else if (value.contains('Silver'))
+                                  } else if (value.contains('Silver'))
                                     showProcumentdialog(
                                         "ItemMasterAndVariants/Metal/Silver/Variant/",
                                         value);
@@ -589,16 +591,13 @@ class _MyDataGridState extends ConsumerState<MyDataGrid> {
                               controller: _dataGridController2,
                               footerFrozenColumnsCount: 1,
                               onCellTap: (details) {
-                                print("device type ins${details.kind}");
+                                log("device type ins${details.kind}");
                               },
                               onCellDoubleTap:
                                   (DataGridCellDoubleTapDetails details) {
-                                print(
-                                    "Column Index: ${details.rowColumnIndex.columnIndex}");
-                                print(
-                                    "Row Index: ${details.rowColumnIndex.rowIndex}");
-                                print(
-                                    "Column Name: ${details.column.columnName}");
+                                log("Column Index: ${details.rowColumnIndex.columnIndex}");
+                                log("Row Index: ${details.rowColumnIndex.rowIndex}");
+                                log("Column Name: ${details.column.columnName}");
                                 setState(() {
                                   _selectedRowIndex =
                                       details.rowColumnIndex.rowIndex;
@@ -1083,7 +1082,7 @@ class MyDataGridSource2 extends DataGridSource {
                     );
                   }
 
-                  print("column name is ${dataCell.columnName}");
+                  log("column name is ${dataCell.columnName}");
                 }
               }
             },

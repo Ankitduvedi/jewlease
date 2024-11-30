@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:jewlease/core/routes/constant.dart';
 import 'package:jewlease/data/model/all_attribute_model.dart';
 import 'package:jewlease/data/model/failure.dart';
 
@@ -14,7 +15,7 @@ class AllAttributeRepository {
   Future<Either<Failure, String>> addAttribute(AllAttribute config) async {
     try {
       final response = await _dio.post(
-        'http://13.239.113.142:3000/AllAttribute/',
+        '$url2/AllAttribute/',
         data: config.toJson(),
         options: Options(
           headers: {'Content-Type': 'application/json'},
