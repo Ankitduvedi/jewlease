@@ -71,9 +71,48 @@ class AddStyleVariantScreenState extends ConsumerState<AddStyleVariantScreen> {
             } else if (selectedContent == 2) {
               final bomNotifier = ref.watch(bomProvider);
               final operationNotifier = ref.watch(OperationProvider);
+              String generateVariantName() {
+                // Extract initials from the fields
+                String initials = (textFieldvalues['LINE OF BUSINESS'] ?? "lob")
+                    .split(' ')
+                    .map((word) => word.isNotEmpty ? word[0] : '')
+                    .join()
+                    .toUpperCase();
+
+                initials += (textFieldvalues['CATEGORY'] ?? "category")
+                    .split(' ')
+                    .map((word) => word.isNotEmpty ? word[0] : '')
+                    .join()
+                    .toUpperCase();
+
+                initials += (textFieldvalues['SUB CATEGORY'] ?? "sub karat")
+                    .split(' ')
+                    .map((word) => word.isNotEmpty ? word[0] : '')
+                    .join()
+                    .toUpperCase();
+
+                initials += (textFieldvalues['VARIETY'] ?? "variety")
+                    .split(' ')
+                    .map((word) => word.isNotEmpty ? word[0] : '')
+                    .join()
+                    .toUpperCase();
+
+                initials += (textFieldvalues['STYLE KARAT'] ?? "karat")
+                    .split(' ')
+                    .map((word) => word.isNotEmpty ? word[0] : '')
+                    .join()
+                    .toUpperCase();
+
+                // Add a unique number (e.g., using current timestamp or an auto-increment logic)
+                String uniqueNumber =
+                    DateTime.now().millisecondsSinceEpoch.toString();
+
+                return '$initials$uniqueNumber';
+              }
+
               final config = ItemMasterVariant(
                   style: textFieldvalues['Style Name'] ?? 'Style',
-                  varientName: variantName.text,
+                  varientName: generateVariantName(),
                   oldVarient: 'oldVarient',
                   customerVarient: 'customerVarient',
                   baseVarient: 'baseVarient',
@@ -103,21 +142,6 @@ class AddStyleVariantScreenState extends ConsumerState<AddStyleVariantScreen> {
                   operation: operationNotifier,
                   imageDetails: []);
 
-              // final configs = VariantMasterMetal(
-              //     rowStatus: dropDownValue['Row Status'] ?? 'Active',
-              //     createdDate: DateTime.timestamp(),
-              //     updateDate: DateTime.timestamp(),
-              //     metalName: textFieldvalues['Metal code']!,
-              //     variantType: dropDownValue['Variant Type'] ?? 'STYLE',
-              //     baseMetalVariant: '24Kt',
-              //     stdSellingRate: double.parse(stdSellingRate.text),
-              //     stdBuyingRate: double.parse(stdBuyingRate.text),
-              //     reorderQty: int.parse(reorderQty.text),
-              //     usedInBom: dropDownValue['Used As BOM'] ?? 'Yes',
-              //     canReturnInMelting:
-              //         isChecked['Can Return In Melting'] ?? false,
-              //     metalColor: textFieldvalues['METAL COLOR']!,
-              //     karat: textFieldvalues['KARAT']!);
               log(config.toJson().toString());
               log('save button pressed');
               ref
