@@ -72,7 +72,8 @@ class AddMetalVariantScreenState extends ConsumerState<AddMetalVariantScreen> {
 
               ref
                   .read(itemSpecificControllerProvider.notifier)
-                  .submitMetalVariantConfiguration(config, context);
+                  .submitMetalVariantConfiguration(
+                      config, context, masterType[1]!);
             }
           },
           style: ElevatedButton.styleFrom(

@@ -74,11 +74,11 @@ class ItemSpecificRepository {
   }
 
   Future<Either<Failure, String>> addMetalVariant(
-      VariantMasterMetal config) async {
+      VariantMasterMetal config, String metal) async {
     try {
       log(config.toJson().toString());
       final response = await _dio.post(
-        '$url2/ItemMasterAndVariants/Metal/Gold/Variant',
+        '$url2/ItemMasterAndVariants/Metal/$metal/Variant',
         data: config,
         options: Options(
           headers: {'Content-Type': 'application/json'},

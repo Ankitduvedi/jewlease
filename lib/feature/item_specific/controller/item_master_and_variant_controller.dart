@@ -93,10 +93,11 @@ class ItemSpecificController extends StateNotifier<bool> {
   }
 
   Future<void> submitMetalVariantConfiguration(
-      VariantMasterMetal config, BuildContext context) async {
+      VariantMasterMetal config, BuildContext context, String metal) async {
     try {
       state = true;
-      final response = await _itemSpecificRepository.addMetalVariant(config);
+      final response =
+          await _itemSpecificRepository.addMetalVariant(config, metal);
       state = false;
       response.fold((l) => Utils.snackBar(l.message, context), (r) {
         Utils.snackBar('New Metal Variant Created', context);
