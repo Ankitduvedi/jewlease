@@ -21,6 +21,7 @@ import 'package:jewlease/feature/item_specific/screens/add_metal_variant_screen.
 import 'package:jewlease/feature/item_specific/screens/add_packing_material_item_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/add_set_item_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/add_stone_item_screen.dart';
+import 'package:jewlease/feature/item_specific/screens/add_stone_variant_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/add_style_item_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/load_data_of_item_master_metal.dart';
 import 'package:jewlease/feature/item_specific/screens/load_data_of_item_master_stone.dart';
@@ -30,7 +31,6 @@ import 'package:jewlease/feature/splas_screen/splash_view.dart';
 import 'package:jewlease/feature/vendor/screens/Bom&Operation.dart';
 import 'package:jewlease/feature/vendor/screens/new_vendor_screen.dart';
 import 'package:jewlease/feature/vendor/screens/vendor_screen.dart';
-
 import '../../feature/item_specific/screens/add_style_variant.dart';
 import '../../feature/procument/procumentScreen.dart';
 
@@ -144,6 +144,11 @@ final goRouter = GoRouter(
                       return const AddMetalVariantScreen();
                     }),
                 GoRoute(
+                    path: 'addStoneVariantScreen',
+                    builder: (context, state) {
+                      return const AddStoneVariantScreen();
+                    }),
+                GoRoute(
                     path: 'itemMasterGoldScreen',
                     builder: (context, state) {
                       return const ItemMasterGoldScreen(
@@ -220,7 +225,7 @@ final goRouter = GoRouter(
           GoRoute(
               path: '/excelScreen',
               builder: (context, state) {
-                return ExcelSheet();
+                return const ExcelSheet();
               }),
           GoRoute(
               path: '/procumentScreen',
@@ -230,7 +235,7 @@ final goRouter = GoRouter(
           GoRoute(
               path: '/DataGrid',
               builder: (context, state) {
-                return MyDataGrid();
+                return const MyDataGrid();
               }),
         ]),
   ],
