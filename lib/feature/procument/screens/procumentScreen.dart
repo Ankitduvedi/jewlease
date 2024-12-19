@@ -4,29 +4,48 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jewlease/feature/formula/controller/formula_prtocedure_controller.dart';
-import 'package:jewlease/feature/formula/screens/newRangeDialog.dart';
 import 'package:jewlease/main.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
-import 'package:jewlease/widgets/data_widget.dart';
 
-import 'addFormulaProcedure.dart';
+import 'dialog.dart';
+import 'procumentSummeryScreen.dart';
 
-final tabIndexProvider = StateProvider<int>((ref) => 1);
+final tabIndexProvider = StateProvider<int>((ref) => 0);
 
-class FormulaProcdedureScreen extends ConsumerWidget {
-  FormulaProcdedureScreen({super.key});
+class procumentScreen extends ConsumerStatefulWidget {
+  @override
+  _procumentScreenState createState() => _procumentScreenState();
+}
 
-  final List<String> _tabs = [
-    'Formula Mapping',
-    'Rate Structure',
-    'Rate Mapping',
-    'Fomula Procedure'
+class _procumentScreenState extends ConsumerState<procumentScreen> {
+  List<String> _tabs = [
+    'Goods Reciept Note',
+    'Purchase Order',
+    'Purchase Return',
   ];
+  late Function(Map<String, dynamic>) addRowToGrid;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    screenWidth = MediaQuery.of(context).size.width;
+  void initState() {
+    // TODO: implement initState
+    Future.delayed(
+        Duration(seconds: 2),
+        () => showDialog(
+            context: context,
+            builder: (context) => Dialog(child: procumentDialog())));
+    // showDialog(context: context, builder: (context) => procumentDialog());
+    super.initState();
+  }
+
+  String? selectedValue = 'Variant';
+
+  @override
+  Widget build(
+    BuildContext context,
+  ) {
     final selectedIndex = ref.watch(tabIndexProvider);
+    screenWidth = MediaQuery.of(context).size.width;
+    screenHeight = MediaQuery.of(context).size.height;
     return Column(
       children: [
         Container(
@@ -47,12 +66,12 @@ class FormulaProcdedureScreen extends ConsumerWidget {
                 ),
               ],
             ),
-            child: SizedBox(
+            child: Container(
                 height: double.infinity,
                 width: double.infinity,
                 child: Row(
                     children: List.generate(
-                  4,
+                  3,
                   (index) {
                     return GestureDetector(
                       onTap: () {
@@ -94,68 +113,42 @@ class FormulaProcdedureScreen extends ConsumerWidget {
           height: 10,
         ),
         Expanded(
-            child: Scaffold(
-          appBar: AppBar(
-            title: const Text('Formula Procedure Master details'),
-            actions: [
-              AppBarButtons(
-                ontap: [
-                  () {
-                    if (selectedIndex == 1) {
-                      showDialog(
-                          context: context,
-                          builder: (context) => rangeDialog());
-                    }
-                    log('new pressed');
-                    if (selectedIndex == 3) {
-                      context.go('/addFormulaProcedureScreen');
-                    }
-                  },
-                  () {},
-                  () {
-                    // Reset the provider value to null on refresh
-                    ref.watch(formulaProcedureProvider.notifier).state = [
-                      'Style',
-                      null,
-                      null
-                    ];
-                  },
-                  () {}
+          child: Scaffold(
+
+              // Container(
+              //   width: double.infinity,
+              //   height: 50,
+              //   color: Colors.green,
+              // ),
+              appBar: AppBar(
+                actions: [
+                  AppBarButtons(
+                    ontap: [
+                      () {
+                        if (selectedIndex == 1)
+                          showDialog(
+                              context: context,
+                              builder: (context) => procumentScreen());
+                        log('new pressed');
+                        if (selectedIndex == 3)
+                          context.go('/addFormulaProcedureScreen');
+                      },
+                      () {},
+                      () {
+                        // Reset the provider value to null on refresh
+                        ref.watch(formulaProcedureProvider.notifier).state = [
+                          'Style',
+                          null,
+                          null
+                        ];
+                      },
+                      () {}
+                    ],
+                  )
                 ],
-              )
-            ],
-          ),
-          body: selectedIndex == 1
-              ? SizedBox(
-                  width: screenWidth,
-                  child: ItemDataScreen(
-                    title: '',
-                    endUrl:
-                        'FormulaProcedures/RateStructure/FormulaRangeMaster/',
-                    canGo: true,
-                    onDoubleClick: (Map<String, dynamic> intialData) {
-                      showDialog(
-                          context: context,
-                          builder: (context) => rangeDialog(
-                                intialData: intialData,
-                              ));
-                    },
-                  ),
-                )
-              : ItemDataScreen(
-                  title: '',
-                  endUrl: 'FormulaProcedures/FormulaProcedureMasterDetails',
-                  canGo: true,
-                  onDoubleClick: (Map<String, dynamic> intialData) {
-                    print("intialData fromula procedure is$intialData ");
-                    showDialog(
-                      context: context,
-                      builder: (context) => AddFormulaProcedure(
-                          FormulaProcedureName: '', ProcedureType: ''),
-                    );
-                  },
-                ),
-        )),
+              ),
+              body: ProcumentSummaryScreen()),
+        ),
       ],
     );
   }

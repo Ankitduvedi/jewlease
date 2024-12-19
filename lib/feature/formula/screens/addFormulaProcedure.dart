@@ -18,7 +18,13 @@ import '../../../widgets/search_dailog_widget.dart';
 import '../controller/formula_prtocedure_controller.dart';
 
 class AddFormulaProcedure extends ConsumerStatefulWidget {
-  const AddFormulaProcedure({super.key});
+  const AddFormulaProcedure({
+    super.key,
+    required this.FormulaProcedureName,
+    required this.ProcedureType,
+  });
+  final String FormulaProcedureName;
+  final String ProcedureType;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() {

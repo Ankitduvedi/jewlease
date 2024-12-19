@@ -91,11 +91,15 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
         icon: Icons.people,
         color: Colors.amberAccent,
         key: ValueKey('Sub Contracting')),
-    const _buildTile(
-        title: 'Scheme',
-        icon: Icons.lightbulb,
-        color: Colors.blueAccent,
-        key: ValueKey('Scheme')),
+    _buildTile(
+      title: 'Inventory Management',
+      icon: Icons.lightbulb,
+      color: Colors.blueAccent,
+      key: ValueKey('Scheme'),
+      onTap: () {
+        goRouter.go('/barcodingScreen');
+      },
+    ),
     const _buildTile(
         title: 'Loyalty',
         icon: Icons.emoji_events,
@@ -172,7 +176,7 @@ class _buildTile extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(4.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -194,5 +198,3 @@ class _buildTile extends StatelessWidget {
     );
   }
 }
-
-void main() => runApp(const MaterialApp(home: ReorderableTilesScreen()));

@@ -29,12 +29,12 @@ class formulaProcedureController extends StateNotifier<bool> {
 
   formulaProcedureController(this._formulaProcedureRepository) : super(false);
 
-  Future<void> addRangeMaster(
+  Future<void> addRangeMasterDepdField(
       Map<String, dynamic> requestBody, BuildContext context) async {
     try {
       state = true;
-      final response =
-          await _formulaProcedureRepository.addRangeMaster(requestBody);
+      final response = await _formulaProcedureRepository
+          .addRangeMasterDepdField(requestBody);
       state = false;
 
       response.fold((l) => Utils.snackBar(l.message, context), (r) {
@@ -56,7 +56,12 @@ class formulaProcedureController extends StateNotifier<bool> {
       final response = await _formulaProcedureRepository
           .fetchRangeMasterDepdField(heirarchyName, '');
       state = false;
-      return response;
+      List<Map<String, dynamic>> responseList = [];
+      response.forEach((element) {
+        responseList.add(element);
+      });
+      print("fetchRangeMasterList response is $response");
+      return responseList;
     } catch (e) {
       state = false;
     }

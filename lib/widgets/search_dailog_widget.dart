@@ -249,6 +249,16 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                           },
                           orElse: () => {},
                         );
+                        if (widget.title == "Add Varient") {
+                          selectedRow = _filteredItems.firstWhere(
+                            (map) {
+                              print("map $map");
+                              return map["Varient Name"].toString() ==
+                                  selectedItemID.toString();
+                            },
+                            orElse: () => {},
+                          );
+                        }
                         // log("selected id $selectedItemID");
                         if (widget.title == "Depd Field") {
                           // log("depd field selected $selectedItemID");
@@ -283,6 +293,7 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                           }
                         }
                         if (widget.onSelectdRow != null) {
+                          print("selected row $selectedRow");
                           widget.onSelectdRow!(selectedRow);
                         }
 
