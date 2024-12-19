@@ -5,9 +5,13 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 import '../../main.dart';
 import '../formula/controller/formula_prtocedure_controller.dart';
+import 'controller/procumentFormualaBomController.dart';
 
 class FormulaDataGrid extends ConsumerStatefulWidget {
-  const FormulaDataGrid({super.key});
+  const FormulaDataGrid(this.varientName, this.varientIndex, {super.key});
+
+  final String varientName;
+  final int varientIndex;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() {
@@ -48,6 +52,19 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
     setState(() {
       _rows = newRows;
     });
+    double updatedMetalRate = _rows[0]
+        .getCells()
+        .where((cell) => cell.columnName == 'Row Value')
+        .first
+        .value;
+
+    ref.read(formulaBomOprProvider.notifier).updateAction({
+      "data": {
+        "Rate": updatedMetalRate,
+        "varientName": "${widget.varientName}",
+        "varientIndex": "${widget.varientIndex}"
+      }
+    }, true);
   }
 
   void _initializeRows() async {
@@ -60,11 +77,7 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
         .read(formulaProcedureControllerProvider.notifier)
         .fetchRangeMasterExcel('a', context);
     print("range master excel is $rangeExcelData");
-
-    // List<dynamic> headers = data["Excel Detail"]["headers"];
-    // excelData.add(headers);
     formulaExcel = data["Excel Detail"]["data"];
-    List<dynamic> formulaHeaders = data["Excel Detail"]["headers"];
     for (int i = 0; i < formulaExcel.length; i++) {
       excelData.add(formulaExcel[i]);
     }
@@ -89,7 +102,7 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
       ]));
     }
     _dataGridSource = formulaGridSource(_rows, _removeRow, _updateSummaryRow,
-        formulaExcel, formulaHeaders, rangeExcelData);
+        formulaExcel, excelHeader, rangeExcelData);
     setState(() {});
   }
 
@@ -106,8 +119,6 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
         borderRadius: BorderRadius.all(Radius.circular(10)),
         color: Colors.white,
       ),
-      // height: screenHeight * 0.5,
-      // width: screenWidth * 0.,
       child: Column(
         children: [
           // Header Row
