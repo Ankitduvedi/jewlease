@@ -37,14 +37,23 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
   @override
   void initState() {
     // TODO: implement initState
+    // ref.read(itemListProvider.notifier).resetDepdList();
     print("intial data is ${widget.intialData}");
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(itemListProvider.notifier).resetDepdList();
       intializeExcel();
       initializeItemList();
     });
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+
+    super.dispose();
   }
 
   void initializeItemList() async {
@@ -56,39 +65,43 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
       print("item list is $itemList");
 
       for (var item in itemList) {
-        final currentItem = item["dataType"];
-        final currentVal = item["depdField"];
+        final currentItem = item["Data Type"];
+        final currentVal = item["Depd Field"];
 
         if (currentItem != null && currentVal != null) {
           itemListNotifier.addItemToList(currentItem, currentVal);
         }
       }
+      setState(() {});
     }
   }
 
   void intializeExcel() async {
-    ref.read(boolProvider.notifier).state = true;
-    print("initializing excel");
     if (widget.intialData["Range Hierarchy Name"] != null) {
+      ref.read(excelLoadingProvider.notifier).state = true;
+      // setState(() {
+      ref.read(boolProvider.notifier).state = true;
+      // });
       final itemListNotifier = ref.read(itemListProvider.notifier);
-      // List<List<dynamic>> excelData =
       Map<dynamic, dynamic> excel = await ref
           .read(formulaProcedureControllerProvider.notifier)
           .fetchRangeMasterExcel(
               widget.intialData["Range Hierarchy Name"], context);
 
       final String jsonData2 = jsonEncode(excel["Details"]["excelData"]);
-      print("json2 is $jsonData2");
-      ref.read(excelLoadingProvider.notifier).state = true;
-      Future.delayed(Duration(seconds: 2), () {
-        print("updating excel");
+      Future.delayed(Duration(seconds: 1), () {
         webViewController?.evaluateJavascript(
           source: "updateHandsontableData('$jsonData2');",
         );
-
-        ref.read(excelLoadingProvider.notifier).state = false;
-        setState(() {});
       });
+      ref.read(excelLoadingProvider.notifier).state = false;
+      // Future.delayed(Duration(seconds: 2), () {
+      //   setState(() {});
+
+      //   setState(() {});
+      // });
+      ref.read(excelLoadingProvider.notifier).state = false;
+      setState(() {});
     }
   }
 
@@ -414,9 +427,8 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
                                   print(
                                       "cuurent item is $currentItem and value is $currentVal");
 
-                                  String jsCode = """
-                            addCustomHeaderRow("$currentVal");
-                          """;
+                                  String jsCode =
+                                      """addCustomHeaderRow("$currentVal");""";
                                   if (webViewController != null) {
                                     await webViewController!
                                         .evaluateJavascript(source: jsCode);
@@ -448,7 +460,10 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
                                   ref
                                       .read(excelLoadingProvider.notifier)
                                       .state = true;
-                                  Future.delayed(Duration(seconds: 0), () {
+                                  ref.read(boolProvider.notifier).state =
+                                      !isToggled;
+
+                                  Future.delayed(Duration(seconds: 2), () {
                                     final headerValues = itemMap.entries
                                         .expand((entry) => entry.key == 'Number'
                                             ? entry.value.expand((value) =>
@@ -458,13 +473,11 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
                                     print("header values is $headerValues");
                                     headerValues.insert(0, "Output");
                                     _callAddHeaderRow(headerValues);
-                                    Future.delayed(Duration(seconds: 1), () {
-                                      ref.read(boolProvider.notifier).state =
-                                          !isToggled;
-                                      ref
-                                          .read(excelLoadingProvider.notifier)
-                                          .state = false;
-                                    });
+                                  });
+                                  Future.delayed(Duration(seconds: 1), () {
+                                    ref
+                                        .read(excelLoadingProvider.notifier)
+                                        .state = false;
                                   });
                                 },
                                 child: Container(
@@ -513,7 +526,7 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
                                         child: HierarchyDetailsList()),
                                     if (ref.watch(excelLoadingProvider))
                                       SizedBox(
-                                        height: 400,
+                                        height: 50,
                                         width: 600,
                                         child: Center(
                                           child: CircularProgressIndicator(
@@ -537,6 +550,34 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
                                                 javaScriptEnabled: true,
                                               ),
                                             ),
+                                            onLoadStop:
+                                                (controller, url) async {
+                                              // webViewController = controller;
+                                              setState(() {});
+                                              // intializeExcel();
+                                              final itemListNotifier = ref.read(
+                                                  itemListProvider.notifier);
+                                              Map<dynamic, dynamic> excel = await ref
+                                                  .read(
+                                                      formulaProcedureControllerProvider
+                                                          .notifier)
+                                                  .fetchRangeMasterExcel(
+                                                      widget.intialData[
+                                                          "Range Hierarchy Name"],
+                                                      context);
+
+                                              final String jsonData2 =
+                                                  jsonEncode(excel["Details"]
+                                                      ["excelData"]);
+                                              Future.delayed(
+                                                  Duration(seconds: 1), () {
+                                                webViewController
+                                                    ?.evaluateJavascript(
+                                                  source:
+                                                      "updateHandsontableData('$jsonData2');",
+                                                );
+                                              });
+                                            },
                                             onWebViewCreated: (controller) {
                                               webViewController = controller;
 
@@ -693,10 +734,11 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
 
   // Function to call the JavaScript function and pass header values
   void _callAddHeaderRow(List<String> headerValues) async {
-    String jsCode = """
-    addCustomHeaderRow(${headerValues.map((e) => '"$e"').toList()});
-  """;
+    print("header values $headerValues");
+    String jsCode =
+        """addCustomHeaderRow(${headerValues.map((e) => '"$e"').toList()});""";
     if (webViewController != null) {
+      print("js code is $jsCode");
       await webViewController!.evaluateJavascript(source: jsCode);
     }
   }

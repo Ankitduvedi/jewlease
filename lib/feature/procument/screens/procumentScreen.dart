@@ -7,8 +7,8 @@ import 'package:jewlease/feature/formula/controller/formula_prtocedure_controlle
 import 'package:jewlease/main.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 
-import '../vendor/screens/procumentDataGrid.dart';
 import 'dialog.dart';
+import 'procumentSummeryScreen.dart';
 
 final tabIndexProvider = StateProvider<int>((ref) => 0);
 
@@ -113,35 +113,42 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
           height: 10,
         ),
         Expanded(
-            child: Scaffold(
-                appBar: AppBar(
-                  actions: [
-                    AppBarButtons(
-                      ontap: [
-                        () {
-                          if (selectedIndex == 1)
-                            showDialog(
-                                context: context,
-                                builder: (context) => procumentScreen());
-                          log('new pressed');
-                          if (selectedIndex == 3)
-                            context.go('/addFormulaProcedureScreen');
-                        },
-                        () {},
-                        () {
-                          // Reset the provider value to null on refresh
-                          ref.watch(formulaProcedureProvider.notifier).state = [
-                            'Style',
-                            null,
-                            null
-                          ];
-                        },
-                        () {}
-                      ],
-                    )
-                  ],
-                ),
-                body: ProcumentSummaryScreen())),
+          child: Scaffold(
+
+              // Container(
+              //   width: double.infinity,
+              //   height: 50,
+              //   color: Colors.green,
+              // ),
+              appBar: AppBar(
+                actions: [
+                  AppBarButtons(
+                    ontap: [
+                      () {
+                        if (selectedIndex == 1)
+                          showDialog(
+                              context: context,
+                              builder: (context) => procumentScreen());
+                        log('new pressed');
+                        if (selectedIndex == 3)
+                          context.go('/addFormulaProcedureScreen');
+                      },
+                      () {},
+                      () {
+                        // Reset the provider value to null on refresh
+                        ref.watch(formulaProcedureProvider.notifier).state = [
+                          'Style',
+                          null,
+                          null
+                        ];
+                      },
+                      () {}
+                    ],
+                  )
+                ],
+              ),
+              body: ProcumentSummaryScreen()),
+        ),
       ],
     );
   }

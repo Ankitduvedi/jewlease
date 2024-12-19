@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jewlease/feature/formula/controller/formula_prtocedure_controller.dart';
-import 'package:jewlease/feature/formula/screens/rangeDialog.dart';
+import 'package:jewlease/feature/formula/screens/newRangeDialog.dart';
 import 'package:jewlease/main.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/widgets/data_widget.dart';
+
+import 'addFormulaProcedure.dart';
 
 final tabIndexProvider = StateProvider<int>((ref) => 1);
 
@@ -92,53 +94,68 @@ class FormulaProcdedureScreen extends ConsumerWidget {
           height: 10,
         ),
         Expanded(
-          child: Scaffold(
-              appBar: AppBar(
-                title: const Text('Formula Procedure Master details'),
-                actions: [
-                  AppBarButtons(
-                    ontap: [
-                      () {
-                        if (selectedIndex == 1) {
-                          showDialog(
-                              context: context,
-                              builder: (context) => rangeDialog());
-                        }
-                        log('new pressed');
-                        if (selectedIndex == 3) {
-                          context.go('/addFormulaProcedureScreen');
-                        }
-                      },
-                      () {},
-                      () {
-                        // Reset the provider value to null on refresh
-                        ref.watch(formulaProcedureProvider.notifier).state = [
-                          'Style',
-                          null,
-                          null
-                        ];
-                      },
-                      () {}
-                    ],
-                  )
+            child: Scaffold(
+          appBar: AppBar(
+            title: const Text('Formula Procedure Master details'),
+            actions: [
+              AppBarButtons(
+                ontap: [
+                  () {
+                    if (selectedIndex == 1) {
+                      showDialog(
+                          context: context,
+                          builder: (context) => rangeDialog());
+                    }
+                    log('new pressed');
+                    if (selectedIndex == 3) {
+                      context.go('/addFormulaProcedureScreen');
+                    }
+                  },
+                  () {},
+                  () {
+                    // Reset the provider value to null on refresh
+                    ref.watch(formulaProcedureProvider.notifier).state = [
+                      'Style',
+                      null,
+                      null
+                    ];
+                  },
+                  () {}
                 ],
-              ),
-              body: SizedBox(
-                width: screenWidth,
-                child: ItemDataScreen(
+              )
+            ],
+          ),
+          body: selectedIndex == 1
+              ? SizedBox(
+                  width: screenWidth,
+                  child: ItemDataScreen(
+                    title: '',
+                    endUrl:
+                        'FormulaProcedures/RateStructure/FormulaRangeMaster/',
+                    canGo: true,
+                    onDoubleClick: (Map<String, dynamic> intialData) {
+                      showDialog(
+                          context: context,
+                          builder: (context) => rangeDialog(
+                                intialData: intialData,
+                              ));
+                    },
+                  ),
+                )
+              : ItemDataScreen(
                   title: '',
-                  endUrl: 'FormulaProcedures/RateStructure/FormulaRangeMaster/',
+                  endUrl: 'FormulaProcedures/FormulaProcedureMasterDetails',
                   canGo: true,
                   onDoubleClick: (Map<String, dynamic> intialData) {
+                    print("intialData fromula procedure is$intialData ");
                     showDialog(
-                        context: context,
-                        builder: (context) => rangeDialog(
-                              intialData: intialData,
-                            ));
+                      context: context,
+                      builder: (context) => AddFormulaProcedure(
+                          FormulaProcedureName: '', ProcedureType: ''),
+                    );
                   },
                 ),
-              )),
-        ),
+        )),
       ],
     );
   }

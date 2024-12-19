@@ -17,6 +17,10 @@ class ItemListNotifier extends StateNotifier<Map<String, List<String>>> {
       key: [...(state[key] ?? []), value],
     };
   }
+
+  void resetDepdList() {
+    state = {};
+  }
 }
 
 // Fetch function to retrieve the map

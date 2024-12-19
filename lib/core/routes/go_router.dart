@@ -4,6 +4,7 @@ import 'package:jewlease/feature/all_attributes/screen/all_attribute_screen.dart
 import 'package:jewlease/feature/all_attributes/screen/new_attribute_screen.dart';
 import 'package:jewlease/feature/auth/screens/login_screen_owner.dart';
 import 'package:jewlease/feature/auth/screens/login_screen_staff.dart';
+import 'package:jewlease/feature/barcoding/screens/barCodeGeneration.dart';
 import 'package:jewlease/feature/formula/screens/addFormulaProcedure.dart';
 import 'package:jewlease/feature/formula/screens/excelScreen.dart';
 import 'package:jewlease/feature/formula/screens/formula_procedure.dart';
@@ -31,8 +32,9 @@ import 'package:jewlease/feature/vendor/screens/Bom&Operation.dart';
 import 'package:jewlease/feature/vendor/screens/new_vendor_screen.dart';
 import 'package:jewlease/feature/vendor/screens/vendor_screen.dart';
 
+import '../../feature/barcoding/screens/barcoding_screen.dart';
 import '../../feature/item_specific/screens/add_style_variant.dart';
-import '../../feature/procument/procumentScreen.dart';
+import '../../feature/procument/screens/procumentScreen.dart';
 
 final goRouter = GoRouter(
   debugLogDiagnostics: true,
@@ -215,7 +217,10 @@ final goRouter = GoRouter(
           GoRoute(
               path: '/addformulaProcedureScreen',
               builder: (context, state) {
-                return const AddFormulaProcedure();
+                return const AddFormulaProcedure(
+                  ProcedureType: '',
+                  FormulaProcedureName: '',
+                );
               }),
           GoRoute(
               path: '/excelScreen',
@@ -231,6 +236,16 @@ final goRouter = GoRouter(
               path: '/DataGrid',
               builder: (context, state) {
                 return MyDataGrid();
+              }),
+          GoRoute(
+              path: '/barcodingScreen',
+              builder: (context, state) {
+                return const BarcodingScreen();
+              }),
+          GoRoute(
+              path: '/barcodeGeneration',
+              builder: (context, state) {
+                return const BarCodeGeneration();
               }),
         ]),
   ],

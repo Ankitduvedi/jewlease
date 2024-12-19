@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:math_expressions/math_expressions.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
-import '../../main.dart';
-import '../formula/controller/formula_prtocedure_controller.dart';
-import 'controller/procumentFormualaBomController.dart';
+import '../../../main.dart';
+import '../../formula/controller/formula_prtocedure_controller.dart';
+import '../../vendor/controller/procumentVendor_controller.dart';
+import '../controller/procumentFormualaBomController.dart';
+import '../controller/procumentFormulaController.dart';
+import 'formulaGridSource.dart';
 
 class FormulaDataGrid extends ConsumerStatefulWidget {
   const FormulaDataGrid(this.varientName, this.varientIndex, {super.key});
@@ -26,17 +28,45 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
   List<String> formulas = [];
   List<dynamic> formulaExcel = [];
   Map<dynamic, dynamic> rangeExcelData = {};
+  List<String> formulaGridHeaders = [
+    'Row No',
+    'Description',
+    'Row Type',
+    'Row Value',
+    'Range'
+  ];
+  Map<String, dynamic> varientAttribute = {};
 
   @override
   void initState() {
+    fetchVarientAttributes();
     super.initState();
-    _dataGridSource = formulaGridSource(
-        _rows, _removeRow, _updateSummaryRow, formulaExcel, [], rangeExcelData);
+    _dataGridSource = formulaGridSource(_rows, _removeRow, _updateSummaryRow,
+        formulaExcel, [], rangeExcelData, varientAttribute);
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       _initializeRows();
 
       // executes after build
     });
+  }
+
+  fetchVarientAttributes() {
+    Map<String, dynamic>? varient = ref
+        .read(procurementVariantProvider.notifier)
+        .getItemByVariant(widget.varientName);
+    varientAttribute["KARAT"] = "22";
+    varientAttribute["CATEGORY"] = varient!["Category"];
+    varientAttribute["Sub-Category"] = varient["Sub-Category"];
+    varientAttribute["STYLE KARAT"] = varient["Style Karat"];
+    varientAttribute["Varient"] = varient["Varient"];
+    varientAttribute["HSN - SAC CODE"] = varient["HSN-SAC Code"];
+    varientAttribute["LINE OF BUSINESS"] = varient["Line of Business"];
+    List<dynamic> selectedBomRow =
+        varient["BOM"]["data"][ref.read(showFormulaProvider)];
+    varientAttribute["Pieces"] = selectedBomRow[2];
+    varientAttribute["Weight"] = selectedBomRow[3];
+    varientAttribute["Rate"] = selectedBomRow[4];
+    varientAttribute["Avg Wt(Pcs)"] = selectedBomRow[5];
   }
 
   void _removeRow(DataGridRow row) {
@@ -49,9 +79,9 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
 
   void _updateSummaryRow(List<DataGridRow> newRows) {
     print("updating summary row");
-    setState(() {
-      _rows = newRows;
-    });
+
+    _rows = newRows;
+
     double updatedMetalRate = _rows[0]
         .getCells()
         .where((cell) => cell.columnName == 'Row Value')
@@ -65,6 +95,13 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
         "varientIndex": "${widget.varientIndex}"
       }
     }, true);
+    // ref.read(formulaBomOprProvider.notifier).updateAction({
+    //   "data": {
+    //     "Rate": updatedMetalRate,
+    //     "varientName": "${widget.varientName}",
+    //     "varientIndex": "${widget.varientIndex}"
+    //   }
+    // }, false);
   }
 
   void _initializeRows() async {
@@ -75,7 +112,7 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
 
     rangeExcelData = await ref
         .read(formulaProcedureControllerProvider.notifier)
-        .fetchRangeMasterExcel('a', context);
+        .fetchRangeMasterExcel('13 Dec', context);
     print("range master excel is $rangeExcelData");
     formulaExcel = data["Excel Detail"]["data"];
     for (int i = 0; i < formulaExcel.length; i++) {
@@ -102,7 +139,7 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
       ]));
     }
     _dataGridSource = formulaGridSource(_rows, _removeRow, _updateSummaryRow,
-        formulaExcel, excelHeader, rangeExcelData);
+        formulaExcel, excelHeader, rangeExcelData, varientAttribute);
     setState(() {});
   }
 
@@ -155,9 +192,9 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
                         controller: _dataGridController,
                         footerFrozenColumnsCount: 1,
                         // Freeze the last column
-                        columns: <GridColumn>[
-                          GridColumn(
-                            columnName: 'Row No',
+                        columns: formulaGridHeaders.map((columnName) {
+                          return GridColumn(
+                            columnName: columnName,
                             width: gridWidth /
                                 5, // Adjust column width to fit 4-5 columns
                             label: Container(
@@ -167,65 +204,13 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
                                       topLeft: Radius.circular(10))),
                               alignment: Alignment.center,
                               child: Text(
-                                'Row No',
+                                columnName,
                                 style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                          ),
-                          GridColumn(
-                            columnName: 'Description',
-                            width: gridWidth / 5,
-                            label: Container(
-                              color: Color(0xFF003450),
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Description',
-                                style: TextStyle(color: Colors.white),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
-                          GridColumn(
-                            columnName: 'Row Type',
-                            width: gridWidth / 5,
-                            label: Container(
-                              color: Color(0xFF003450),
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Row Type',
-                                style: TextStyle(color: Colors.white),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
-                          GridColumn(
-                            columnName: 'Row Value',
-                            width: gridWidth / 5,
-                            label: Container(
-                              color: Color(0xFF003450),
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Row Value',
-                                style: TextStyle(color: Colors.white),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
-                          GridColumn(
-                            columnName: 'Range',
-                            width: gridWidth / 5,
-                            label: Container(
-                              color: Color(0xFF003450),
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Range',
-                                style: TextStyle(color: Colors.white),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
-                        ],
+                          );
+                        }).toList(),
                         gridLinesVisibility: GridLinesVisibility.both,
                         headerGridLinesVisibility: GridLinesVisibility.both,
                       ))),
@@ -233,219 +218,6 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
           ),
         ],
       ),
-    );
-  }
-}
-
-class formulaGridSource extends DataGridSource {
-  formulaGridSource(this.dataGridRows, this.onDelete, this.onEdit,
-      this.formulaExcel, this.formulaHeaders, this.rangeExcel)
-      : _editingRows = dataGridRows;
-
-  final List<DataGridRow> dataGridRows;
-  final List<DataGridRow> _editingRows;
-  final Function(DataGridRow) onDelete;
-  final Function(List<DataGridRow>) onEdit;
-  final List<dynamic> formulaExcel;
-  final List<dynamic> formulaHeaders;
-  final Map<dynamic, dynamic> rangeExcel;
-
-  @override
-  List<DataGridRow> get rows => dataGridRows;
-
-  double calculateFormulaVaule(int index, dynamic cellValue) {
-    int formulaColumIndex = formulaHeaders.indexOf('Formula');
-    print("cellValue is ${cellValue.runtimeType} $cellValue");
-
-    if (cellValue.runtimeType == String) cellValue = double.parse(cellValue);
-
-    String formula = formulaExcel[index][formulaColumIndex];
-
-    print("current row is $index formula is $formula");
-    if (formula == '') return cellValue * 1.0;
-
-    String replacedFormula = formula.replaceAllMapped(
-      RegExp(r'\[R(\d+)\]'),
-      (match) {
-        int rowNo = int.parse(match.group(1)!);
-        // Fetch value for the row number
-        dynamic value = dataGridRows[rowNo - 1]
-            .getCells()
-            .firstWhere((cell) => cell.columnName == 'Row Value')
-            .value;
-        return value.toString();
-      },
-    );
-    print("replace formula is $replacedFormula");
-
-    try {
-      Parser parser = Parser();
-      Expression exp = parser.parse(replacedFormula);
-      ContextModel context = ContextModel();
-      print(
-          "final calculated value ${exp.evaluate(EvaluationType.REAL, context)}");
-      return exp.evaluate(EvaluationType.REAL, context);
-    } catch (e) {
-      throw Exception(
-          'Error evaluating expression: $replacedFormula. Details: $e');
-    }
-  }
-
-  double? findOutput(String accessory, double weight) {
-    List<dynamic> rows = rangeExcel["Details"]["excelData"];
-    print("range excel is$rangeExcel");
-    print("rows are $rows");
-
-    for (var row in rows) {
-      double output = double.parse(row[0]);
-      double start = double.parse(row[1]);
-      double end = double.parse(row[2]);
-      String acc = row[3];
-
-      if (acc == accessory && weight >= start && weight <= end) {
-        return output;
-      }
-    }
-
-    // If no match is found
-    return null;
-  }
-
-  void recalculatedataGridValues(int updatedRowIndex, cellNewValue) {
-    print(
-        "updated rowIndex $updatedRowIndex updated Cell value is $cellNewValue");
-    for (int i = 0; i < dataGridRows.length; i++) {
-      print(
-          "<----------------------row $i update start------------------------->");
-      dataGridRows[i] = DataGridRow(cells: [
-        for (var cell in dataGridRows[i].getCells())
-          if (cell.columnName == 'Row Value')
-            DataGridCell<double>(
-                columnName: cell.columnName,
-                value: calculateFormulaVaule(
-                    i, updatedRowIndex == i ? cellNewValue : cell.value))
-          else
-            cell
-      ]);
-
-      if (i == 3) {
-        String? rangeHierarchyName =
-            formulaExcel[i][formulaHeaders.indexOf('Range Value') - 1];
-        print(
-            " ${formulaHeaders.indexOf('Range Value')}rangehierarchyName  $rangeHierarchyName currentIndex $updatedRowIndex $formulaExcel");
-        if (rangeHierarchyName != null && rangeHierarchyName != "") {
-          double metalWeight = dataGridRows[0]
-                  .getCells()
-                  .firstWhere((cell) => cell.columnName == 'Row Value')
-                  .value *
-              1.0;
-          double? rangeOutput = findOutput("18", metalWeight);
-
-          dataGridRows[i] = DataGridRow(cells: [
-            for (var cell in dataGridRows[updatedRowIndex].getCells())
-              if (cell.columnName == 'Range')
-                DataGridCell<double>(
-                    columnName: cell.columnName, value: rangeOutput)
-              else
-                cell
-          ]);
-          for (var cell in dataGridRows[updatedRowIndex].getCells()) {
-            print("updated value is ${cell.value} ${cell.columnName}");
-          }
-          print("range output is $rangeOutput ");
-        }
-
-        for (var cell in dataGridRows[i].getCells())
-          if (cell.columnName == 'Range')
-            print("updated cell value ${cell.value}");
-          else
-            print("persist value ${cell.value}");
-      }
-      print(
-          "<----------------------row $i update end------------------------->");
-    }
-  }
-
-  // Method to calculate column summation for a summary row
-  DataGridRow getSummaryRow() {
-    final Map<String, double> columnTotals = {};
-
-    for (final row in dataGridRows) {
-      for (final cell in row.getCells()) {
-        if (cell.value is num) {
-          columnTotals[cell.columnName] =
-              (columnTotals[cell.columnName] ?? 0) + cell.value;
-        }
-      }
-    }
-
-    return DataGridRow(
-      cells: [
-        for (var entry in columnTotals.entries)
-          DataGridCell<double>(
-            columnName: entry.key,
-            value: entry.value,
-          ),
-      ],
-    );
-  }
-
-  void updateDataGridSource() {
-    notifyListeners();
-  }
-
-  @override
-  DataGridRowAdapter buildRow(DataGridRow row) {
-    return DataGridRowAdapter(
-      cells: row.getCells().map<Widget>((dataCell) {
-        int rowFormulaIndex = dataGridRows.indexOf(row);
-
-        List<dynamic> formulaRow =
-            formulaExcel[rowFormulaIndex] as List<dynamic>;
-        // print("formula row is $formulaRow");
-        bool isEditable = formulaExcel[rowFormulaIndex]
-                [formulaHeaders.indexOf('Editable')] ==
-            '1';
-        if (dataCell.columnName == 'Row Value' &&
-            !isEditable &&
-            dataCell.value == "0") {
-          return Text("0");
-        }
-
-        return Container(
-          alignment: Alignment.center,
-          child: TextField(
-            onSubmitted: (value) {
-              int parsedValue = int.tryParse(value) ?? 0;
-
-              int rowIndex = dataGridRows.indexOf(row);
-              print("updated row index is $rowIndex");
-              dataGridRows[rowFormulaIndex] = DataGridRow(cells: [
-                for (var cell in row.getCells())
-                  if (cell == dataCell)
-                    DataGridCell<int>(
-                      columnName: cell.columnName,
-                      value: parsedValue,
-                    )
-                  else
-                    cell,
-              ]);
-
-              recalculatedataGridValues(rowIndex, parsedValue);
-
-              onEdit(dataGridRows);
-            },
-            controller: TextEditingController(
-              text: dataCell.value.toString(),
-            ),
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              isDense: true,
-            ),
-          ),
-        );
-      }).toList(),
     );
   }
 }

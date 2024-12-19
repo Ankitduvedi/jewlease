@@ -12,11 +12,11 @@ class formulaProcedureRepository {
 
   formulaProcedureRepository(this._dio);
 
-  Future<Either<Failure, String>> addRangeMaster(
+  Future<Either<Failure, String>> addRangeMasterDepdField(
       Map<String, dynamic> requestBody) async {
     try {
       final response = await _dio.post(
-        url2 + 'FormulaProcedures/RateStructure/',
+        url2 + '/FormulaProcedures/RateStructure/',
         data: jsonEncode(requestBody),
         options: Options(
           headers: {'Content-Type': 'application/json'},
@@ -40,21 +40,22 @@ class formulaProcedureRepository {
     }
   }
 
-  Future<List<Map<String, dynamic>>> fetchRangeMasterDepdField(
+  Future<List<dynamic>> fetchRangeMasterDepdField(
       String rangeHierarchy, String requestBody) async {
     try {
-      final response = await _dio.post(
+      print("range hierarchy is $rangeHierarchy");
+      final response = await _dio.get(
         url2 +
-            'FormulaProcedures/RateStructure/FormulaRangeHierarchy$rangeHierarchy',
+            '/FormulaProcedures/RateStructure/FormulaRangeHierarchy/$rangeHierarchy',
         options: Options(
           headers: {'Content-Type': 'application/json'},
         ),
       );
-      print("response fethcRangeMaster is $requestBody");
+      print("response fethcRangeMaster is ${response.statusCode}");
 
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         // Successfully uploaded
-        log('Data uploaded successfully');
+        log('fetching depd field list success ');
 
         return response.data;
       } else {
@@ -101,7 +102,7 @@ class formulaProcedureRepository {
       Map<String, dynamic> reqBody) async {
     try {
       final response = await _dio.post(
-        url2 + 'FormulaProcedures/RateStructure/Excel/',
+        url2 + '/FormulaProcedures/RateStructure/Excel/',
         data: jsonEncode(reqBody),
         options: Options(
           headers: {'Content-Type': 'application/json'},
@@ -129,7 +130,7 @@ class formulaProcedureRepository {
       String hierarchyName) async {
     try {
       final response = await _dio.get(
-        url2 + 'FormulaProcedures/RateStructure/Excel/',
+        url2 + '/FormulaProcedures/RateStructure/Excel/$hierarchyName',
         options: Options(
           headers: {'Content-Type': 'application/json'},
         ),
@@ -160,7 +161,7 @@ class formulaProcedureRepository {
       Map<String, dynamic> reqBody) async {
     try {
       final response = await _dio.post(
-        url2 + 'FormulaProcedures/FormulaProcedureMasterDetails',
+        url2 + '/FormulaProcedures/FormulaProcedureMasterDetails',
         data: jsonEncode(reqBody),
         options: Options(
           headers: {'Content-Type': 'application/json'},
@@ -186,11 +187,11 @@ class formulaProcedureRepository {
 
   Future<Map<String, dynamic>> fetchFormulaExcel() async {
     final response = await _dio
-        .get(url2 + 'FormulaProcedures/FormulaProcedureMasterDetails');
+        .get(url2 + '/FormulaProcedures/FormulaProcedureMasterDetails');
     // print("response is $response  ${response.data}");
     List<dynamic> data = response.data;
-    print("response formula Excel $data");
+    print("response formula Excel ${data.length}");
 
-    return data[9];
+    return data[11];
   }
 }

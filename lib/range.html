@@ -68,13 +68,7 @@
                 },
                 cells: function (row, col) {
                     var cellProperties = {};
-                    if (col === 5) {
-                        var dataType = this.instance.getDataAtCell(row, 2);
-                        if (dataType !== 'Calculation') {
-                            cellProperties.readOnly = true;
-                            cellProperties.className = 'htNonEditable';
-                        }
-                    }
+
                     return cellProperties;
                 },
             });

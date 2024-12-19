@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:jewlease/main.dart';
 
-import '../../widgets/read_only_textfield_widget.dart';
-import '../../widgets/search_dailog_widget.dart';
+import '../../../widgets/read_only_textfield_widget.dart';
+import '../../../widgets/search_dailog_widget.dart';
 
 class procumentDialog extends ConsumerStatefulWidget {
   @override

@@ -26,18 +26,50 @@ class _MyDataGridState extends ConsumerState<MyDataGrid> {
   final List<DataGridRow> _rows2 = [];
   late MyDataGridSource _dataGridSource;
 
-  late MyDataGridSource2 _dataGridSource2;
+  late OperationGridSource _dataGridSource2;
+
+  List<String> bomColumn = [
+    'Variant Name',
+    'Item Group',
+    'Pieces',
+    'Weight',
+    'Rate',
+    'Avg Wt(Pcs)',
+    'Amount',
+    'Sp Char',
+    'Operation',
+    'Type',
+    'Actions'
+  ];
+
+  List<String> oprColumns = [
+    'Calc Bom',
+    'Operation',
+    'Calc Qty',
+    'Type',
+    'Calc Method',
+    'Calc Method Value',
+    'Depd Method',
+    'Depd Method Value',
+    'Depd Type',
+    'Depd Qty'
+  ];
 
   @override
   void initState() {
     super.initState();
     _initializeRows();
     _dataGridSource = MyDataGridSource(_rows, _removeRow, _updateBomSummaryRow);
-    _dataGridSource2 = MyDataGridSource2(
-        _rows2, _removeRow, _updateOperationSummaryRow, context);
+    _dataGridSource2 =
+        OperationGridSource(_rows2, _removeRow, onEditOperation, context);
     _dataGridController2.addListener(() {
       log('Current cell: ${_dataGridController2.currentCell?.rowIndex}, ${_dataGridController2.currentCell?.columnIndex}');
     });
+  }
+
+  void onEditOperation() {
+    _updateOperationSummaryRow();
+    setState(() {});
   }
 
   void _addNewRowWithItemGroup(String variantName, String itemGroup) {
@@ -46,9 +78,11 @@ class _MyDataGridState extends ConsumerState<MyDataGrid> {
         DataGridRow(cells: [
           DataGridCell<String>(columnName: 'Variant Name', value: variantName),
           DataGridCell<String>(columnName: 'Item Group', value: itemGroup),
-          const DataGridCell<int>(columnName: 'Pcs', value: 0),
-          const DataGridCell<double>(columnName: 'Wt', value: 0.0),
+          const DataGridCell<int>(columnName: 'Pieces', value: 0),
+          const DataGridCell<double>(columnName: 'Weight', value: 0.0),
+          const DataGridCell(columnName: 'Rate', value: 0.0),
           const DataGridCell<double>(columnName: 'Avg Wt(Pcs)', value: 0.0),
+          const DataGridCell(columnName: 'Amount', value: 0.0),
           const DataGridCell<String>(columnName: 'Sp Char', value: ''),
           const DataGridCell<String>(columnName: 'Operation', value: ''),
           const DataGridCell<String>(columnName: 'Type', value: ''),
@@ -90,9 +124,11 @@ class _MyDataGridState extends ConsumerState<MyDataGrid> {
       const DataGridRow(cells: [
         DataGridCell<String>(columnName: 'Variant Name', value: 'New Variant'),
         DataGridCell<String>(columnName: 'Item Group', value: 'STYLE'),
-        DataGridCell<int>(columnName: 'Pcs', value: 0),
-        DataGridCell<double>(columnName: 'Wt', value: 0.0),
-        DataGridCell<double>(columnName: 'Avg Wt(Pcs)', value: 0.0),
+        DataGridCell<int>(columnName: 'Pieces', value: 0),
+        DataGridCell<double>(columnName: 'Weight', value: 0.0),
+        const DataGridCell(columnName: 'Rate', value: 0.0),
+        const DataGridCell<double>(columnName: 'Avg Wt(Pcs)', value: 0.0),
+        const DataGridCell(columnName: 'Amount', value: 0.0),
         DataGridCell<String>(columnName: 'Sp Char', value: ''),
         DataGridCell<String>(columnName: 'Operation', value: ''),
         DataGridCell<String>(columnName: 'Type', value: ''),
@@ -113,24 +149,28 @@ class _MyDataGridState extends ConsumerState<MyDataGrid> {
     final oprNotifier = ref.read(OperationProvider.notifier);
 
     final List<String> headers = [
-      'Variant Name',
-      'Item Group',
-      'Pcs',
-      'Wt',
-      'Avg Wt(Pcs)',
-      'Sp Char',
+      'Calc Bom',
       'Operation',
-      'Type'
+      'Calc Qty',
+      'Type',
+      'Calc Method',
+      'Calc Method Value',
+      'Depd Method',
+      'Depd Method Value',
+      'Depd Type',
     ];
-    final List<List<dynamic>> bomExcel = [];
-    for (int i = 0; i < _rows.length; i++) {
+    final List<List<dynamic>> operationExcel = [];
+    for (int i = 0; i < _rows2.length; i++) {
       final List<dynamic> row = [];
       for (int j = 0; j < headers.length; j++) {
-        row.add(_rows[i].getCells()[j].value);
+        row.add(_rows2[i].getCells()[j].value);
       }
-      bomExcel.add(row);
+      operationExcel.add(row);
     }
-    Map<String, dynamic> operationMap = {"Headers": headers, "data": bomExcel};
+    Map<String, dynamic> operationMap = {
+      "Headers": headers,
+      "data": operationExcel
+    };
 
     oprNotifier.store(operationMap);
     oprNotifier.update(operationMap);
@@ -140,6 +180,8 @@ class _MyDataGridState extends ConsumerState<MyDataGrid> {
   void _updateBomSummaryRow() {
     int totalPcs = 0;
     double totalWt = 0.0;
+    double totalRate = 0.0;
+    double totalAmount = 0.0;
 
     for (var i = 1; i < _rows.length; i++) {
       totalPcs += _rows[i].getCells()[2].value as int;
@@ -153,9 +195,11 @@ class _MyDataGridState extends ConsumerState<MyDataGrid> {
         const DataGridCell<String>(
             columnName: 'Variant Name', value: 'Summary'),
         const DataGridCell<String>(columnName: 'Item Group', value: ''),
-        DataGridCell<int>(columnName: 'Pcs', value: totalPcs),
-        DataGridCell<double>(columnName: 'Wt', value: totalWt),
+        DataGridCell<int>(columnName: 'Pieces', value: totalPcs),
+        DataGridCell<double>(columnName: 'Weight', value: totalWt),
+        DataGridCell(columnName: 'Rate', value: totalRate),
         DataGridCell<double>(columnName: 'Avg Wt(Pcs)', value: avgWtPcs),
+        DataGridCell(columnName: 'Amount', value: totalAmount),
         const DataGridCell<String>(columnName: 'Sp Char', value: ''),
         const DataGridCell<String>(columnName: 'Operation', value: ''),
         const DataGridCell<String>(columnName: 'Type', value: ''),
@@ -167,9 +211,11 @@ class _MyDataGridState extends ConsumerState<MyDataGrid> {
     final List<String> headers = [
       'Variant Name',
       'Item Group',
-      'Pcs',
-      'Wt',
+      'Pieces',
+      'Weight',
+      'Rate',
       'Avg Wt(Pcs)',
+      'Amount',
       'Sp Char',
       'Operation',
       'Type'
@@ -408,125 +454,35 @@ class _MyDataGridState extends ConsumerState<MyDataGrid> {
                             controller: _dataGridController,
                             footerFrozenColumnsCount: 1,
                             // Freeze the last column
-                            columns: <GridColumn>[
-                              GridColumn(
-                                columnName: 'Variant Name',
-                                width: gridWidth /
-                                    5, // Adjust column width to fit 4-5 columns
-                                label: Container(
-                                  color: const Color(0xFF003450),
-                                  alignment: Alignment.center,
-                                  child: const Text(
-                                    'Variant Name',
-                                    style: TextStyle(color: Colors.white),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ),
-                              GridColumn(
-                                columnName: 'Item Group',
-                                width: gridWidth / 5,
-                                label: Container(
-                                  color: const Color(0xFF003450),
-                                  alignment: Alignment.center,
-                                  child: const Text(
-                                    'Item Group',
-                                    style: TextStyle(color: Colors.white),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ),
-                              GridColumn(
-                                columnName: 'Pcs',
-                                width: gridWidth / 5,
-                                label: Container(
-                                  color: const Color(0xFF003450),
-                                  alignment: Alignment.center,
-                                  child: const Text(
-                                    'Pcs',
-                                    style: TextStyle(color: Colors.white),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ),
-                              GridColumn(
-                                columnName: 'Wt',
-                                width: gridWidth / 5,
-                                label: Container(
-                                  color: const Color(0xFF003450),
-                                  alignment: Alignment.center,
-                                  child: const Text(
-                                    'Wt',
-                                    style: TextStyle(color: Colors.white),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ),
-                              GridColumn(
-                                columnName: 'Avg Wt(Pcs)',
-                                width: gridWidth / 5,
-                                label: Container(
-                                  color: const Color(0xFF003450),
-                                  alignment: Alignment.center,
-                                  child: const Text(
-                                    'Avg Wt(Pcs)',
-                                    style: TextStyle(color: Colors.white),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ),
-                              GridColumn(
-                                columnName: 'Sp Char',
-                                width: gridWidth / 5,
-                                label: Container(
-                                  color: const Color(0xFF003450),
-                                  alignment: Alignment.center,
-                                  child: const Text(
-                                    'Sp Char',
-                                    style: TextStyle(color: Colors.white),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ),
-                              GridColumn(
-                                columnName: 'Operation',
-                                width: gridWidth / 5,
-                                label: Container(
-                                  color: const Color(0xFF003450),
-                                  alignment: Alignment.center,
-                                  child: const Text(
-                                    'Operation',
-                                    style: TextStyle(color: Colors.white),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ),
-                              GridColumn(
-                                columnName: 'Type',
-                                width: gridWidth / 5,
-                                label: Container(
-                                  color: const Color(0xFF003450),
-                                  alignment: Alignment.center,
-                                  child: const Text(
-                                    'Type',
-                                    style: TextStyle(color: Colors.white),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ),
-                              GridColumn(
-                                columnName: 'Actions',
-                                width: gridWidth / 5,
-                                label: Container(
-                                  color: const Color(0xFF003450),
-                                  alignment: Alignment.center,
-                                  child: const Text(
-                                    '',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ),
-                              ),
-                            ],
+                            columns: bomColumn
+                                .map((columnName) => GridColumn(
+                                      columnName: columnName,
+                                      width: gridWidth / 5,
+                                      label: Container(
+                                        decoration: BoxDecoration(
+                                          color: Color(0xFF003450),
+                                          borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(
+                                                  bomColumn.indexOf(
+                                                              columnName) ==
+                                                          0
+                                                      ? 10
+                                                      : 0),
+                                              topRight: Radius.circular(
+                                                  bomColumn.indexOf(
+                                                              columnName) ==
+                                                          bomColumn.length - 1
+                                                      ? 10
+                                                      : 0)),
+                                        ),
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          columnName,
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ),
+                                    ))
+                                .toList(),
                             gridLinesVisibility: GridLinesVisibility.both,
                             headerGridLinesVisibility: GridLinesVisibility.both,
                           ),
@@ -607,137 +563,24 @@ class _MyDataGridState extends ConsumerState<MyDataGrid> {
                               },
 
                               // Freeze the last column
-                              columns: <GridColumn>[
-                                GridColumn(
-                                  columnName: 'Calc Bom',
-                                  width: gridWidth /
-                                      5, // Adjust column width to fit 4-5 columns
-                                  label: Container(
-                                    color: const Color(0xFF003450),
-                                    alignment: Alignment.center,
-                                    child: const Text(
-                                      'Calc Bom',
-                                      style: TextStyle(color: Colors.white),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ),
-                                GridColumn(
-                                  columnName: 'Operation',
-                                  width: gridWidth / 5,
-                                  label: Container(
-                                    color: const Color(0xFF003450),
-                                    alignment: Alignment.center,
-                                    child: const Text(
-                                      'Operation',
-                                      style: TextStyle(color: Colors.white),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ),
-                                GridColumn(
-                                  columnName: 'Calc Qty',
-                                  width: gridWidth / 5,
-                                  label: Container(
-                                    color: const Color(0xFF003450),
-                                    alignment: Alignment.center,
-                                    child: const Text(
-                                      'Calc Qty',
-                                      style: TextStyle(color: Colors.white),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ),
-                                GridColumn(
-                                  columnName: 'Type',
-                                  width: gridWidth / 5,
-                                  label: Container(
-                                    color: const Color(0xFF003450),
-                                    alignment: Alignment.center,
-                                    child: const Text(
-                                      'Type',
-                                      style: TextStyle(color: Colors.white),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ),
-                                GridColumn(
-                                  columnName: 'Calc Method',
-                                  width: gridWidth / 5,
-                                  label: Container(
-                                    color: const Color(0xFF003450),
-                                    alignment: Alignment.center,
-                                    child: const Text(
-                                      'Calc Method',
-                                      style: TextStyle(color: Colors.white),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ),
-                                GridColumn(
-                                  columnName: 'Calc Method Value',
-                                  width: gridWidth / 5,
-                                  label: Container(
-                                    color: const Color(0xFF003450),
-                                    alignment: Alignment.center,
-                                    child: const Text(
-                                      'Calc Method Value',
-                                      style: TextStyle(color: Colors.white),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ),
-                                GridColumn(
-                                  columnName: 'Depd Method',
-                                  width: gridWidth / 5,
-                                  label: Container(
-                                    color: const Color(0xFF003450),
-                                    alignment: Alignment.center,
-                                    child: const Text(
-                                      'Depd Method',
-                                      style: TextStyle(color: Colors.white),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ),
-                                GridColumn(
-                                  columnName: 'Depd Method Vale',
-                                  width: gridWidth / 5,
-                                  label: Container(
-                                    color: const Color(0xFF003450),
-                                    alignment: Alignment.center,
-                                    child: const Text(
-                                      'Depd Method Value',
-                                      style: TextStyle(color: Colors.white),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ),
-                                GridColumn(
-                                  columnName: 'Depd Type',
-                                  width: gridWidth / 5,
-                                  label: Container(
-                                    color: const Color(0xFF003450),
-                                    alignment: Alignment.center,
-                                    child: const Text(
-                                      'Depd Type',
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  ),
-                                ),
-                                GridColumn(
-                                  columnName: 'Depd Qty',
-                                  width: gridWidth / 5,
-                                  label: Container(
-                                    color: const Color(0xFF003450),
-                                    alignment: Alignment.center,
-                                    child: const Text(
-                                      'Depd Qty',
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  ),
-                                ),
-                              ],
+                              columns: oprColumns
+                                  .map((columnName) => GridColumn(
+                                        columnName: columnName,
+                                        width: gridWidth /
+                                            5, // Adjust column width to fit 4-5 columns
+                                        label: Container(
+                                          color: const Color(0xFF003450),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            columnName,
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ))
+                                  .toList(),
+
                               gridLinesVisibility: GridLinesVisibility.both,
                               headerGridLinesVisibility:
                                   GridLinesVisibility.both,
@@ -767,12 +610,12 @@ class MyDataGridSource extends DataGridSource {
   @override
   List<DataGridRow> get rows => dataGridRows;
 
-  // Method to recalculate all 'Wt' values
+  // Method to recalculate all 'Weight' values
   void recalculateWt() {
     for (int rowIndex = 0; rowIndex < dataGridRows.length; rowIndex++) {
       final row = dataGridRows[rowIndex];
       int pcsValue =
-          row.getCells().firstWhere((c) => c.columnName == "Pcs").value ?? 0;
+          row.getCells().firstWhere((c) => c.columnName == "Pieces").value ?? 0;
       String groupName = row
           .getCells()
           .firstWhere((c) => c.columnName == "Item Group")
@@ -790,7 +633,8 @@ class MyDataGridSource extends DataGridSource {
               1.0 ??
           0;
       double Wt =
-          row.getCells().firstWhere((c) => c.columnName == "Wt").value * 1.0 ??
+          row.getCells().firstWhere((c) => c.columnName == "Weight").value *
+                  1.0 ??
               0;
 
       // Recalculate Wt
@@ -863,7 +707,7 @@ class MyDataGridSource extends DataGridSource {
             (cell) => cell.columnName == 'Item Group' && cell.value == 'Metal');
         bool isGoldRow = row.getCells().any((cell) =>
             cell.columnName == 'Item Group' && cell.value == 'Metal - Gold');
-        bool isPcsColumn = dataCell.columnName == 'Pcs';
+        bool isPcsColumn = dataCell.columnName == 'Pieces';
 
         return Container(
           alignment: Alignment.center,
@@ -917,8 +761,9 @@ class MyDataGridSource extends DataGridSource {
   }
 }
 
-class MyDataGridSource2 extends DataGridSource {
-  MyDataGridSource2(this.dataGridRows, this.onDelete, this.onEdit, this.context)
+class OperationGridSource extends DataGridSource {
+  OperationGridSource(
+      this.dataGridRows, this.onDelete, this.onEdit, this.context)
       : _editingRows = dataGridRows;
 
   final List<DataGridRow> dataGridRows;
@@ -930,7 +775,7 @@ class MyDataGridSource2 extends DataGridSource {
   @override
   List<DataGridRow> get rows => dataGridRows;
 
-  // Method to recalculate all 'Wt' values
+  // Method to recalculate all 'Weight' values
   void recalculateWt() {
     for (int rowIndex = 0; rowIndex < dataGridRows.length; rowIndex++) {
       final row = dataGridRows[rowIndex];
@@ -1026,7 +871,7 @@ class MyDataGridSource2 extends DataGridSource {
             (cell) => cell.columnName == 'Item Group' && cell.value == 'Metal');
         bool isGoldRow = row.getCells().any((cell) =>
             cell.columnName == 'Item Group' && cell.value == 'Metal - Gold');
-        bool isPcsColumn = dataCell.columnName == 'Pcs';
+        bool isPcsColumn = dataCell.columnName == 'Pieces';
 
         return RawKeyboardListener(
             focusNode: FocusNode(),
@@ -1037,9 +882,7 @@ class MyDataGridSource2 extends DataGridSource {
                 bool isOKeyPressed =
                     event.logicalKey == LogicalKeyboardKey.keyO;
 
-                if (isAltPressed &&
-                    isOKeyPressed &&
-                    dataCell.columnName == 'Type') {
+                if (isAltPressed && isOKeyPressed) {
                   if (dataCell.columnName == 'Type') {
                     showDialog(
                       context: context,
@@ -1047,6 +890,23 @@ class MyDataGridSource2 extends DataGridSource {
                         title: 'Type',
                         endUrl: 'Global/Type',
                         value: 'Config Id',
+                        onSelectdRow: (selectedRow) {
+                          print('selected row  is $selectedRow');
+                          int rowIndex = dataGridRows.indexOf(row);
+                          print(
+                              "row index is $rowIndex ${selectedRow['Config value']}");
+                          rows[rowIndex] = DataGridRow(cells: [
+                            for (var cell in row.getCells())
+                              if (cell.columnName == 'Type')
+                                DataGridCell<String>(
+                                  columnName: cell.columnName,
+                                  value: selectedRow['Config value'],
+                                )
+                              else
+                                cell,
+                          ]);
+                          onEdit();
+                        },
                         onOptionSelectd: (selectedValue) {},
                       ),
                     );
@@ -1057,6 +917,23 @@ class MyDataGridSource2 extends DataGridSource {
                         title: 'Calc Method',
                         endUrl: 'Global/CalcMethod',
                         value: 'Config Id',
+                        onSelectdRow: (selectedRow) {
+                          print('selected row  is $selectedRow');
+                          int rowIndex = dataGridRows.indexOf(row);
+                          print(
+                              "row index is $rowIndex ${selectedRow['Config value']}");
+                          rows[rowIndex] = DataGridRow(cells: [
+                            for (var cell in row.getCells())
+                              if (cell.columnName == 'Calc Method')
+                                DataGridCell<String>(
+                                  columnName: cell.columnName,
+                                  value: selectedRow['Config value'],
+                                )
+                              else
+                                cell,
+                          ]);
+                          onEdit();
+                        },
                         onOptionSelectd: (selectedValue) {},
                       ),
                     );
@@ -1067,6 +944,23 @@ class MyDataGridSource2 extends DataGridSource {
                         title: 'Calc Method Value',
                         endUrl: 'Global/CalcMethodValue',
                         value: 'Config Id',
+                        onSelectdRow: (selectedRow) {
+                          print('selected row  is $selectedRow');
+                          int rowIndex = dataGridRows.indexOf(row);
+                          print(
+                              "row index is $rowIndex ${selectedRow['Config value']}");
+                          rows[rowIndex] = DataGridRow(cells: [
+                            for (var cell in row.getCells())
+                              if (cell.columnName == 'Calc Method Value')
+                                DataGridCell<String>(
+                                  columnName: cell.columnName,
+                                  value: selectedRow['Config value'],
+                                )
+                              else
+                                cell,
+                          ]);
+                          onEdit();
+                        },
                         onOptionSelectd: (selectedValue) {},
                       ),
                     );
@@ -1077,6 +971,23 @@ class MyDataGridSource2 extends DataGridSource {
                         title: 'Depd Methd',
                         endUrl: 'Global/DepdMethod',
                         value: 'Config Id',
+                        onSelectdRow: (selectedRow) {
+                          print('selected row  is $selectedRow');
+                          int rowIndex = dataGridRows.indexOf(row);
+                          print(
+                              "row index is $rowIndex ${selectedRow['Config value']}");
+                          rows[rowIndex] = DataGridRow(cells: [
+                            for (var cell in row.getCells())
+                              if (cell.columnName == 'Depd Method')
+                                DataGridCell<String>(
+                                  columnName: cell.columnName,
+                                  value: selectedRow['Config value'],
+                                )
+                              else
+                                cell,
+                          ]);
+                          onEdit();
+                        },
                         onOptionSelectd: (selectedValue) {},
                       ),
                     );

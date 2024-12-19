@@ -2,17 +2,17 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jewlease/feature/procument/controller/procumentBomProcController.dart';
-import 'package:jewlease/feature/procument/procumenOprGrid.dart';
-import 'package:jewlease/feature/procument/procumentBomGrid.dart';
-import 'package:jewlease/feature/procument/procumentGridSource.dart';
+import 'package:jewlease/feature/procument/screens/procumenOprGrid.dart';
+import 'package:jewlease/feature/procument/screens/procumentBomGrid.dart';
+import 'package:jewlease/feature/procument/screens/procumentGridSource.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
-import '../../main.dart';
-import '../../widgets/data_widget.dart';
-import '../vendor/controller/procumentVendor_controller.dart';
-import 'controller/procumentFormualaBomController.dart';
-import 'controller/procumentFormulaController.dart';
+import '../../../main.dart';
+import '../../../widgets/data_widget.dart';
+import '../../vendor/controller/procumentVendor_controller.dart';
+import '../controller/procumentBomProcController.dart';
+import '../controller/procumentFormualaBomController.dart';
+import '../controller/procumentFormulaController.dart';
 import 'formulaGrid.dart';
 
 class procumentBomOprDialog extends ConsumerStatefulWidget {
@@ -32,6 +32,7 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
   late procumentGridSource _bomDataGridSource;
   late procumentGridSource _oprDataGridSource;
   bool isShowFormula = false;
+  int selectedBomForRow = -1;
 
   @override
   void initState() {
@@ -51,8 +52,11 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
         screenWidth * 0.4; // Set grid width to 50% of screen width
     final gridAction = ref.watch(formulaBomOprProvider);
     if (gridAction['trigger'] == true) {
-      print("gridactions ${gridAction}");
+      print("start updating bom from formula1");
+      // print("gridactions ${gridAction}");
       updateBomFromFormula(gridAction["data"]);
+
+      print("end updating bom from formula1");
     }
     return Container(
       child: Row(
@@ -227,6 +231,7 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
             FormulaDataGrid(widget.VarientName, widget.VairentIndex),
           if (!isShowFormula)
             ProcumentOperationGrid(
+                operationType: 'Operation',
                 gridWidth: gridWidth,
                 dataGridController: _dataGridController,
                 oprDataGridSource: _oprDataGridSource)
@@ -250,19 +255,38 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
   //<-------------------------Function To Update Bom From Formula -------------->
 
   void updateBomFromFormula(Map<dynamic, dynamic> data) {
+    print("start updating bom from formula");
     int updatedRowIndex = ref.read(showFormulaProvider);
-
-    final gridAction = ref.watch(formulaBomOprProvider);
-
+    double rate = _bomRows[updatedRowIndex]
+            .getCells()
+            .where((cell) => cell.columnName == 'Rate')
+            .first
+            .value *
+        1.0;
+    double weight = _bomRows[updatedRowIndex]
+            .getCells()
+            .where((cell) => cell.columnName == 'Weight')
+            .first
+            .value *
+        1.0;
+    print("updated Amount ${rate * weight}");
     _bomRows[updatedRowIndex] = DataGridRow(
         cells: _bomRows[updatedRowIndex].getCells().map((cell) {
       if (cell.columnName == 'Rate')
         return DataGridCell(
             columnName: 'Rate'.toString(), value: data["data"]["Rate"]);
-      else
+      else if (cell.columnName == 'Amount') {
+        return DataGridCell(
+            columnName: 'Amount'.toString(),
+            value: data["data"]["Rate"] * weight);
+      } else
         return cell;
     }).toList());
-    _updateBomSummaryRow();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateBomSummaryRow();
+    });
+    print("end updating bom from formula");
   }
 
   //<------------------------- Function To Add New Bom ----------- -------------->
@@ -346,16 +370,16 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
     }).toList();
     List<dynamic> listOfOperation = varientData!["Operation"]["data"];
     print("operation is $listOfOperation");
-    _OpeationRows = listOfOperation.map((bom) {
+    _OpeationRows = listOfOperation.map((opr) {
       return DataGridRow(cells: [
-        DataGridCell<String>(columnName: 'Calc Bom', value: bom[0]),
-        DataGridCell<String>(columnName: 'Operation', value: bom[1]),
-        DataGridCell<int>(columnName: 'Calc Qty', value: bom[2]),
-        DataGridCell<double>(columnName: 'Type', value: bom[3] * 1.0),
-        DataGridCell<double>(columnName: 'Calc Method', value: bom[4] * 1.0),
-        DataGridCell<String>(columnName: 'Calc Method Value', value: bom[5]),
-        DataGridCell<String>(columnName: 'Depd Method', value: bom[6]),
-        DataGridCell<String>(columnName: 'Depd Method Value', value: bom[7]),
+        DataGridCell<String>(columnName: 'Calc Bom', value: opr[0]),
+        DataGridCell<String>(columnName: 'Operation', value: opr[1]),
+        DataGridCell<int>(columnName: 'Calc Qty', value: opr[2]),
+        DataGridCell<dynamic>(columnName: 'Type', value: opr[3]),
+        DataGridCell<dynamic>(columnName: 'Calc Method', value: opr[4]),
+        DataGridCell<dynamic>(columnName: 'Calc Method Value', value: opr[5]),
+        DataGridCell<dynamic>(columnName: 'Depd Method', value: opr[6]),
+        DataGridCell<dynamic>(columnName: 'Depd Method Value', value: opr[7]),
         DataGridCell<Widget>(columnName: 'Depd Type', value: null),
         DataGridCell<Widget>(columnName: 'Depd Qty', value: null),
       ]);
@@ -375,6 +399,7 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
   //<------------------------- Function To Update Bom Summary Row  ----------- -------------->
 
   void _updateBomSummaryRow() {
+    print("start updating bom summary row");
     int totalPcs = 0;
     double totalWt = 0.0;
     double totalRate = 0.0;
@@ -404,31 +429,37 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
         DataGridCell<Widget>(columnName: 'Actions', value: null),
       ]);
     });
-    Map<String, dynamic> updatedVarient = Map.fromIterable(
-      _bomRows[0].getCells(),
-      key: (cell) => "${cell.columnName}",
-      value: (cell) => cell.value,
-    );
+    ref.read(formulaBomOprProvider.notifier).updateAction({}, false);
+
+    //<------------------update procumentBom------------------>
+    List<String> bomHeader = [];
+    _bomRows[0].getCells().forEach((element) {
+      bomHeader.add(element.columnName);
+    });
     List<List<dynamic>> updatedBom = [];
     for (var i = 0; i < _bomRows.length; i++) {
       updatedBom.add(_bomRows[i].getCells().map((cell) {
         return cell.value;
       }).toList());
     }
+
+    //<------------------update procument operation------------------>
+    List<String> operationHeader = [];
+    _OpeationRows[0].getCells().forEach((element) {
+      operationHeader.add(element.columnName);
+    });
     List<List<dynamic>> updatedOperation = [];
     for (var i = 0; i < _OpeationRows.length; i++) {
       updatedOperation.add(_OpeationRows[i].getCells().map((cell) {
         return cell.value;
       }).toList());
     }
-    List<String> bomHeader = [];
-    _bomRows[0].getCells().forEach((element) {
-      bomHeader.add(element.columnName);
-    });
-    List<String> operationHeader = [];
-    _OpeationRows[0].getCells().forEach((element) {
-      operationHeader.add(element.columnName);
-    });
+    //<------------------updatin the varient after updating bom summery row------------------>
+    Map<String, dynamic> updatedVarient = Map.fromIterable(
+      _bomRows[0].getCells(),
+      key: (cell) => "${cell.columnName}",
+      value: (cell) => cell.value,
+    );
     updatedVarient["varientIndex"] = widget.VairentIndex;
     updatedVarient["Variant Name"] = widget.VarientName;
     updatedVarient["BOM"] = {"data": updatedBom, "Headers": bomHeader};
@@ -438,10 +469,21 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
     };
 
     print("updatedVarient map is $updatedVarient ${widget.VarientName}");
+
+    //<----update ui updates the procum varient with new values---->
+    print("start ui updates the procum varient with new values");
+
     ref.read(BomProcProvider.notifier).updateAction(updatedVarient, true);
+
+    //<----update the procument varient with new values---->
+    print("start update the procument varient with new values");
+    // Future.delayed(Duration(seconds: 3), () {
     ref
         .read(procurementVariantProvider.notifier)
         .updateVariant(widget.VarientName, updatedVarient);
+    // });
+
+    print("end updating bom summary row");
   }
 
   //<------------------------- Function To Show Dialog Bom & Opr ----------- -------------->
