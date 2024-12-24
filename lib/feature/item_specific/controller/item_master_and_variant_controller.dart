@@ -10,6 +10,7 @@ import 'package:jewlease/data/model/item_master_stone.dart';
 import 'package:jewlease/data/model/style_item_model.dart';
 import 'package:jewlease/data/model/style_variant_model.dart';
 import 'package:jewlease/data/model/variant_master_metal.dart';
+import 'package:jewlease/data/model/variant_master_stone.dart';
 import 'package:jewlease/feature/item_specific/repository/item_configuration_repository.dart';
 import 'package:jewlease/providers/image_provider.dart';
 import 'package:jewlease/widgets/image_data.dart';
@@ -81,6 +82,27 @@ class ItemSpecificController extends StateNotifier<bool> {
       state = false;
       response.fold((l) => Utils.snackBar(l.message, context), (r) {
         Utils.snackBar('New Stone ($stone) Item Created', context);
+        context.pop();
+        null;
+      });
+      // Optionally update the state if necessary after submission
+    } catch (e) {
+      log('error');
+      Utils.snackBar(e.toString(), context);
+      state = false;
+    }
+  }
+
+  Future<void> submitStoneVariantConfiguration(
+      VariantMasterStone config, BuildContext context, String stone) async {
+    try {
+      log('in controller');
+      state = true;
+      final response =
+          await _itemSpecificRepository.addStoneVariant(config, stone);
+      state = false;
+      response.fold((l) => Utils.snackBar(l.message, context), (r) {
+        Utils.snackBar('New Stone ($stone) Variant Created', context);
         context.pop();
         null;
       });

@@ -6,6 +6,7 @@ import 'package:jewlease/feature/auth/screens/login_screen_owner.dart';
 import 'package:jewlease/feature/auth/screens/login_screen_staff.dart';
 import 'package:jewlease/feature/barcoding/screens/barCodeGeneration.dart';
 import 'package:jewlease/feature/formula/screens/addFormulaProcedure.dart';
+import 'package:jewlease/feature/formula/screens/add_formula_mapping.dart';
 import 'package:jewlease/feature/formula/screens/excelScreen.dart';
 import 'package:jewlease/feature/formula/screens/formula_procedure.dart';
 import 'package:jewlease/feature/home/screens/home_screen.dart';
@@ -228,6 +229,11 @@ final goRouter = GoRouter(
                   ProcedureType: '',
                   FormulaProcedureName: '',
                 );
+              }),
+          GoRoute(
+              path: '/addformulaMapping',
+              builder: (context, state) {
+                return const AddFormulaMappingScreen();
               }),
           GoRoute(
               path: '/excelScreen',

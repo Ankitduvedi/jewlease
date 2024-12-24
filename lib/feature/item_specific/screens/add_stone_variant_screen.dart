@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jewlease/data/model/variant_master_metal.dart';
+import 'package:jewlease/data/model/variant_master_stone.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
-import 'package:jewlease/widgets/check_box.dart';
 import 'package:jewlease/widgets/drop_down_text_field.dart';
 import 'package:jewlease/widgets/icon_text_button_widget.dart';
 import 'package:jewlease/widgets/item_attribute_widget.dart';
@@ -41,7 +40,7 @@ class AddStoneVariantScreenState extends ConsumerState<AddStoneVariantScreen> {
   @override
   Widget build(BuildContext context) {
     final selectedContent = ref.watch(formSequenceProvider);
-    final isChecked = ref.watch(chechkBoxSelectionProvider);
+    //final isChecked = ref.watch(chechkBoxSelectionProvider);
     final textFieldvalues = ref.watch(dialogSelectionProvider);
     final dropDownValue = ref.watch(dropDownProvider);
     final masterType = ref.watch(masterTypeProvider);
@@ -54,25 +53,30 @@ class AddStoneVariantScreenState extends ConsumerState<AddStoneVariantScreen> {
               ref.read(formSequenceProvider.notifier).state = 1;
             }
             if (selectedContent == 1) {
-              final config = VariantMasterMetal(
-                  rowStatus: dropDownValue['Row Status'] ?? 'Active',
-                  createdDate: DateTime.timestamp(),
-                  updateDate: DateTime.timestamp(),
-                  metalName: textFieldvalues['Metal code']!,
-                  variantType: dropDownValue['Variant Type'] ?? 'STYLE',
-                  baseMetalVariant: '24Kt',
-                  stdSellingRate: double.parse(stdSellingRate.text),
-                  stdBuyingRate: double.parse(stdBuyingRate.text),
-                  reorderQty: int.parse(averageWeight.text),
-                  usedInBom: dropDownValue['Used As BOM'] ?? 'Yes',
-                  canReturnInMelting:
-                      isChecked['Can Return In Melting'] ?? false,
-                  metalColor: textFieldvalues['METAL COLOR']!,
-                  karat: textFieldvalues['KARAT']!);
+              final config = VariantMasterStone(
+                  stoneVariantName: '',
+                  stoneName: textFieldvalues['Stone code'] ?? 'Stone code',
+                  manualCodeGen: '',
+                  variantTypeName: dropDownValue['Variant Type'] ?? 'STYLE',
+                  oldVariant: '',
+                  customerVariantName: '',
+                  vendorName: textFieldvalues['Vendor Name'] ?? '',
+                  tagRemark: '',
+                  stdSellingRate: stdSellingRate.text,
+                  stdBuyingRate: stdBuyingRate.text,
+                  averageWeight: int.parse(averageWeight.text),
+                  usedAsBom: dropDownValue['Used As BOM'] ?? 'Yes',
+                  mixVariant: dropDownValue['Mix Variant'] ?? 'Yes',
+                  rowStatus: dropDownValue['Variant Type'] ?? 'STYLE',
+                  verifiedStatus: '',
+                  shape: textFieldvalues['SHAPE']!,
+                  quality: textFieldvalues['QUALITY']!,
+                  range: textFieldvalues['RANGE'] ?? "",
+                  stoneColor: textFieldvalues['STONE COLOR']!);
 
               ref
                   .read(itemSpecificControllerProvider.notifier)
-                  .submitMetalVariantConfiguration(
+                  .submitStoneVariantConfiguration(
                       config, context, masterType[1]!);
             }
           },
@@ -168,18 +172,32 @@ class AddStoneVariantScreenState extends ConsumerState<AddStoneVariantScreen> {
                     : const ItemAttributesScreen(
                         attributeTypes: [
                           {
-                            'title': 'METAL COLOR',
-                            'key': 'METAL COLOR',
+                            'title': 'SHAPE',
+                            'key': 'SHAPE',
                             'value': 'AttributeCode',
                             'endUrl': 'AllAttribute',
-                            'query': 'METAL COLOR'
+                            'query': 'SHAPE'
                           },
                           {
-                            'title': 'KARAT',
-                            'key': 'KARAT',
+                            'title': 'QUALITY',
+                            'key': 'QUALITY',
                             'value': 'AttributeCode',
                             'endUrl': 'AllAttribute',
-                            'query': 'KARAT'
+                            'query': 'QUALITY'
+                          },
+                          {
+                            'title': 'RANGE',
+                            'key': 'RANGE',
+                            'value': 'AttributeCode',
+                            'endUrl': 'AllAttribute',
+                            'query': 'RANGE'
+                          },
+                          {
+                            'title': 'STONE COLOR',
+                            'key': 'STONE COLOR',
+                            'value': 'AttributeCode',
+                            'endUrl': 'AllAttribute',
+                            'query': 'STONE COLOR'
                           }
                         ],
                       ),
@@ -219,10 +237,10 @@ class AddStoneVariantScreenState extends ConsumerState<AddStoneVariantScreen> {
           items: ['STYLE', 'STYLEDESIGN'],
           labelText: 'Variant Type',
         ),
-        const ReadOnlyTextFieldWidget(
-          hintText: '24Kt',
-          labelText: 'Base Metal Variant',
-        ),
+        // const ReadOnlyTextFieldWidget(
+        //   hintText: '24Kt',
+        //   labelText: 'Base Metal Variant',
+        // ),
         ReadOnlyTextFieldWidget(
           hintText: textFieldvalues['Vendor Name'] ?? 'Vendor Name',
           labelText: 'Vendor Name',
@@ -255,9 +273,14 @@ class AddStoneVariantScreenState extends ConsumerState<AddStoneVariantScreen> {
           items: ['No', 'Yes'],
           labelText: 'Used As BOM',
         ),
-        const CheckBoxWidget(
-          labelText: 'Can Return In Melting',
+        const DropDownTextFieldWidget(
+          initialValue: 'Yes',
+          items: ['No', 'Yes'],
+          labelText: 'Mix Variant',
         ),
+        // const CheckBoxWidget(
+        //   labelText: 'Can Return In Melting',
+        // ),
         const DropDownTextFieldWidget(
           initialValue: 'Active',
           items: ['InActive', 'Active'],
