@@ -1,8 +1,10 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jewlease/feature/splas_screen/animation/splash_animation.dart';
-import 'package:jewlease/feature/splas_screen/controller/splash_controller.dart';
+
+import 'animation/splash_animation.dart';
+import 'controller/splash_controller.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});

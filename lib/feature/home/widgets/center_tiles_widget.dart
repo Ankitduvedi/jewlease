@@ -81,23 +81,30 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
         goRouter.go('/procumentScreen');
       },
     ),
-    const _buildTile(
-        title: 'CRM',
+    _buildTile(
+        title: 'Bar Code Generation',
         icon: Icons.person,
         color: Colors.brown,
-        key: ValueKey('CRM')),
-    const _buildTile(
-        title: 'Sub Contracting',
-        icon: Icons.people,
-        color: Colors.amberAccent,
-        key: ValueKey('Sub Contracting')),
+        onTap: () {
+          goRouter.go('/barcodeGeneration');
+        },
+        key: ValueKey('Bar Codr Gneration')),
+    _buildTile(
+      title: 'Bar Coding',
+      icon: Icons.people,
+      color: Colors.amberAccent,
+      onTap: () {
+        goRouter.go('/barcodingScreen');
+      },
+      key: ValueKey('Sub Contracting'),
+    ),
     _buildTile(
       title: 'Inventory Management',
       icon: Icons.lightbulb,
       color: Colors.blueAccent,
       key: ValueKey('Scheme'),
       onTap: () {
-        goRouter.go('/barcodingScreen');
+        goRouter.go('/inventoryScreen');
       },
     ),
     const _buildTile(

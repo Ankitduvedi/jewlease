@@ -185,13 +185,17 @@ class formulaProcedureRepository {
     }
   }
 
-  Future<Map<String, dynamic>> fetchFormulaExcel() async {
-    final response = await _dio
-        .get(url2 + '/FormulaProcedures/FormulaProcedureMasterDetails');
-    // print("response is $response  ${response.data}");
-    List<dynamic> data = response.data;
-    print("response formula Excel ${data.length}");
-
-    return data[11];
+  Future<Map<String, dynamic>> fetchFormulaExcel(
+      String FormulaProcedureName) async {
+    print("fomula procedure is $FormulaProcedureName");
+    try {
+      final response = await _dio.get(url2 +
+          '/FormulaProcedures/FormulaProcedureMasterDetails/$FormulaProcedureName');
+      return response.data;
+      print("response formula Excel ${response.data}");
+    } catch (e) {
+      print("err response formula Excel ${e}");
+    }
+    return {};
   }
 }

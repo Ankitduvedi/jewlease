@@ -52,7 +52,7 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
     // TODO: implement initState
     _focusNode.requestFocus();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      fetchApiUpdatedData('');
+      fetchApiUpdatedData();
     });
     super.initState();
   }
@@ -105,7 +105,7 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
     for (int i = 0; i < lastEditedRow + 1; i++) {
       List<dynamic> row = [];
       for (int j = 0; j < lastEditedColumn + 1; j++) {
-        row.add(data[i][j]);
+        row.add(data[i][j] ?? "");
       }
       if (row.length != 0) {
         newlist.add(row);
@@ -117,8 +117,8 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
       "calculateOn": calculateOne.text,
       "minimumValueBasedOn": minimumValue.text,
       "minRangeType": minimumValue.text,
-      "maximumValueBasedOn": minimumValue.text,
-      "maxRangeType": minimumValue.text,
+      "maximumValueBasedOn": maxValue.text,
+      "maxRangeType": maxRangeTy.text,
       "excelDetail": {
         "sheetName": formulaProcdureNa.text,
         "headers": [
@@ -142,22 +142,20 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
         .read(formulaProcedureControllerProvider.notifier)
         .addFormulaExcel(excelReqBody, context);
 
-    print("data is $newlist");
+    print("data is3 $newlist");
   }
 
-  final List<List<dynamic>> spreadsheetData = [
-    ["Name", "Age", "City"],
-    ["Alice", 30, "New York"],
-    ["Bob", 25, "Los Angeles"],
-    ["Charlie", 28, "Chicago"],
-  ];
-
-  void fetchApiUpdatedData(dynamic spreadsheetData) async {
-    print("data is $spreadsheetData");
+  void fetchApiUpdatedData() async {
+    if (widget.FormulaProcedureName == '') return;
     List<List<dynamic>> excelData = [];
     Map<String, dynamic> data = await ref
         .read(formulaProcedureControllerProvider.notifier)
-        .fetchFormulaExcel('a', context);
+        .fetchFormulaExcel(widget.FormulaProcedureName, context);
+    procedureTy.text = data["Procedure Type"];
+    formulaProcdureNa.text = data["Formula Procedure Name"];
+    minimumValue.text = data["Min RANGE Type"];
+    maxValue.text = data["Maximum Value Based On"];
+    maxRangeTy.text = data["Max RANGE Type"];
     // List<dynamic> headers = data["Excel Detail"]["headers"];
     // excelData.add(headers);
     List<dynamic> temList = data["Excel Detail"]["data"];
@@ -167,7 +165,7 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
     }
     print("type is ${temList[0].runtimeType}");
     // excelData.addAll(temList);
-    print("final excel Data is $excelData");
+    print("final excel Data is1 $excelData");
     final String jsonData2 = jsonEncode(excelData);
     Future.delayed(Duration(seconds: 1), () {
       webViewController?.evaluateJavascript(
@@ -439,6 +437,9 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
                       javaScriptEnabled: true,
                     ),
                   ),
+                  onLoadStop: (controller, url) {
+                    fetchApiUpdatedData();
+                  },
                   onWebViewCreated: (controller) {
                     webViewController = controller;
 
@@ -472,16 +473,23 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
       childAspectRatio: 4.5,
       children: [
         ReadOnlyTextFieldWidget(
-          hintText: 'Procedure Type',
+          hintText:
+              procedureTy.text == '' ? 'Procedure Type' : procedureTy.text,
           labelText: 'Procedure Type',
           icon: Icons.search,
           onIconPressed: () {
             showDialog(
               context: context,
-              builder: (context) => const ItemTypeDialogScreen(
+              builder: (context) => ItemTypeDialogScreen(
                 title: 'Attribute Type',
                 endUrl: 'AllAttribute/AttributeType',
                 value: 'ConfigValue',
+                onOptionSelectd: (selectedOption) {
+                  setState(() {
+                    procedureTy.text = selectedOption;
+                  });
+                  print("selectedOption is $selectedOption");
+                },
               ),
             );
           },
@@ -593,21 +601,6 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
                   "Save",
                   style: TextStyle(color: Colors.white),
                 )))),
-        InkWell(
-            onTap: () {
-              // _uploadData();
-              fetchApiUpdatedData(datalist);
-              // _validateFormulas();
-            },
-            child: Container(
-                decoration: BoxDecoration(
-                    color: Color(0xff003450),
-                    borderRadius: BorderRadius.circular(8)),
-                child: Center(
-                    child: Text(
-                  "Fetch",
-                  style: TextStyle(color: Colors.white),
-                ))))
       ],
     );
   }

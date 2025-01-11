@@ -9,8 +9,6 @@ import 'package:jewlease/main.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/widgets/data_widget.dart';
 
-import 'addFormulaProcedure.dart';
-
 final tabIndexProvider = StateProvider<int>((ref) => 1);
 
 class FormulaProcdedureScreen extends ConsumerWidget {
@@ -144,15 +142,19 @@ class FormulaProcdedureScreen extends ConsumerWidget {
                 )
               : ItemDataScreen(
                   title: '',
-                  endUrl: 'FormulaProcedures/FormulaProcedureMasterDetails',
+                  endUrl: 'FormulaProcedures/table',
                   canGo: true,
-                  onDoubleClick: (Map<String, dynamic> intialData) {
+                  onDoubleClick: (Map<dynamic, dynamic> intialData) {
                     print("intialData fromula procedure is$intialData ");
-                    showDialog(
-                      context: context,
-                      builder: (context) => AddFormulaProcedure(
-                          FormulaProcedureName: '', ProcedureType: ''),
-                    );
+                    context.go('/addFormulaProcedureScreen', extra: intialData);
+                    // showDialog(
+                    //   context: context,
+                    //   builder: (context) => AddFormulaProcedure(
+                    //     FormulaProcedureName:
+                    //         intialData['Formula Procedure Name'],
+                    //     ProcedureType: intialData['Procedure Type'],
+                    //   ),
+                    // );
                   },
                 ),
         )),

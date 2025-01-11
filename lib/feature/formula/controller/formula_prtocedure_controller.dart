@@ -129,14 +129,15 @@ class formulaProcedureController extends StateNotifier<bool> {
       String formulaProcedureName, BuildContext context) async {
     try {
       state = true;
-      final response = await _formulaProcedureRepository.fetchFormulaExcel();
+      final response = await _formulaProcedureRepository
+          .fetchFormulaExcel(formulaProcedureName);
       state = false;
       print(" formula excel response is $response");
       return response;
 
       // Optionally update the state if necessary after submission
     } catch (e) {
-      print("erro in fetching $e ");
+      print("erro in fetching formula excel $e ");
       state = false;
     }
     return {};

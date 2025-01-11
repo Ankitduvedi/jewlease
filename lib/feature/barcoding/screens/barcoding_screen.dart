@@ -228,6 +228,7 @@ class _BarcodingScreenState extends State<BarcodingScreen> {
                               ),
                               VariantDetailsGrid(
                                 variants: [],
+                                operations: [],
                               )
                             ],
                           ),

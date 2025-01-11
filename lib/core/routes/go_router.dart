@@ -27,14 +27,15 @@ import 'package:jewlease/feature/item_specific/screens/load_data_of_item_master_
 import 'package:jewlease/feature/item_specific/screens/load_data_of_item_master_stone.dart';
 import 'package:jewlease/feature/item_specific/screens/load_data_of_variant_master_gold.dart';
 import 'package:jewlease/feature/item_specific/screens/master_screen.dart';
-import 'package:jewlease/feature/splas_screen/splash_view.dart';
 import 'package:jewlease/feature/vendor/screens/Bom&Operation.dart';
 import 'package:jewlease/feature/vendor/screens/new_vendor_screen.dart';
 import 'package:jewlease/feature/vendor/screens/vendor_screen.dart';
 
 import '../../feature/barcoding/screens/barcoding_screen.dart';
+import '../../feature/inventoryManagement/screens/inventoryScreen.dart';
 import '../../feature/item_specific/screens/add_style_variant.dart';
 import '../../feature/procument/screens/procumentScreen.dart';
+import '../../feature/splash_screen/splash_view.dart';
 
 final goRouter = GoRouter(
   debugLogDiagnostics: true,
@@ -217,9 +218,18 @@ final goRouter = GoRouter(
           GoRoute(
               path: '/addformulaProcedureScreen',
               builder: (context, state) {
-                return const AddFormulaProcedure(
-                  ProcedureType: '',
-                  FormulaProcedureName: '',
+                print("going through route");
+                print("stat is ${state.extra}");
+                final extraData = state.extra as Map<String, dynamic>;
+                // as Map<String, dynamic>; // Cast to the expected type
+                print("print extra data $extraData");
+                return AddFormulaProcedure(
+                  ProcedureType: extraData != null
+                      ? extraData['Procedure Type'] ?? ''
+                      : '',
+                  FormulaProcedureName: extraData != null
+                      ? extraData['Formula Procedure Name'] ?? ''
+                      : '',
                 );
               }),
           GoRoute(
@@ -241,6 +251,11 @@ final goRouter = GoRouter(
               path: '/barcodingScreen',
               builder: (context, state) {
                 return const BarcodingScreen();
+              }),
+          GoRoute(
+              path: '/inventoryScreen',
+              builder: (context, state) {
+                return const InventoryManagementScreen();
               }),
           GoRoute(
               path: '/barcodeGeneration',

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jewlease/core/utils/utils.dart';
-import 'package:jewlease/feature/splas_screen/repository/splash_repository.dart';
+
+import '../repository/splash_repository.dart';
 
 final splashControllerProvider = Provider<SplashController>((ref) {
   return SplashController(

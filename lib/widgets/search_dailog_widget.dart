@@ -244,7 +244,7 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                             _filteredItems.firstWhere(
                           (map) {
                             //log("map $map");
-                            return map["Config Id"].toString() ==
+                            return map[widget.value].toString() ==
                                 selectedItemID.toString();
                           },
                           orElse: () => {},

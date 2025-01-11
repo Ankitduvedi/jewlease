@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:jewlease/main.dart';
 
+import '../../../providers/dailog_selection_provider.dart';
 import '../../../widgets/read_only_textfield_widget.dart';
 import '../../../widgets/search_dailog_widget.dart';
+import '../controller/procumentVendorDailog.dart';
 
 class procumentDialog extends ConsumerStatefulWidget {
   @override
@@ -18,6 +20,8 @@ class _procumentDialogState extends ConsumerState<procumentDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final textFieldvalues = ref.watch(dialogSelectionProvider);
+    print("txtfld $textFieldvalues");
     return Container(
       height: screenHeight * 0.3,
       width: screenWidth * 0.9,
@@ -112,17 +116,28 @@ class _procumentDialogState extends ConsumerState<procumentDialog> {
                       width: screenWidth * 0.1,
                       child: ReadOnlyTextFieldWidget(
                         labelText: 'Vendor',
-                        hintText: 'Vendor',
+                        hintText:
+                            textFieldvalues['Vendor Name'] ?? 'Choose Vendor',
                         icon: Icons.search,
                         onIconPressed: () {
                           showDialog(
                             context: context,
-                            builder: (context) => const ItemTypeDialogScreen(
-                              title: 'Data Type',
-                              endUrl:
-                                  'FormulaProcedures/RateStructure/DataType',
-                              value: 'Config Id',
-                              keyOfMap: 'ConfigValue',
+                            builder: (context) => ItemTypeDialogScreen(
+                              title: 'Choose Vendor',
+                              endUrl: 'Master/PartySpecific/vendors/',
+                              value: 'Vendor Name',
+                              keyOfMap: 'Vendor Name',
+                              onSelectdRow: (selectedRow) {
+                                print("selected Row $selectedRow");
+                                ref
+                                    .read(pocVendorProvider.notifier)
+                                    .updateEntry("Vendor Name",
+                                        selectedRow["Vendor Name"]);
+                                ref
+                                    .read(pocVendorProvider.notifier)
+                                    .updateEntry("Vendor Code",
+                                        selectedRow["Vendor Code"]);
+                              },
                             ),
                           );
                         },
@@ -148,18 +163,23 @@ class _procumentDialogState extends ConsumerState<procumentDialog> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Container(
-                  width: screenWidth * 0.07,
-                  padding: EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    color: Colors.green,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Container(
+                    width: screenWidth * 0.07,
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      color: Colors.green,
+                    ),
+                    child: Center(
+                        child: Text(
+                      'Done',
+                      style: TextStyle(fontSize: 12),
+                    )),
                   ),
-                  child: Center(
-                      child: Text(
-                    'Done',
-                    style: TextStyle(fontSize: 12),
-                  )),
                 ),
               ],
             ),

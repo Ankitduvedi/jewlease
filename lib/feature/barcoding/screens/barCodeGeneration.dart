@@ -1,27 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/data/model/inventoryItem.dart';
+import 'package:jewlease/feature/barcoding/screens/widgets/barcode_generator_header.dart';
+import 'package:jewlease/feature/barcoding/screens/widgets/tag_data_grid.dart';
+import 'package:jewlease/feature/barcoding/screens/widgets/tag_mrp.dart';
+import 'package:jewlease/feature/barcoding/screens/widgets/tag_wt_summery.dart';
 import 'package:jewlease/main.dart';
-import 'package:jewlease/widgets/read_only_textfield_widget.dart';
-import 'package:jewlease/widgets/text_field_widget.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
+import '../../inventoryManagement/controllers/inventoryController.dart';
 import '../../procument/screens/procumenOprGrid.dart';
 import '../../procument/screens/procumentBomGrid.dart';
 import '../../procument/screens/procumentGridSource.dart';
+import '../controllers/stockController.dart';
 
-class BarCodeGeneration extends StatefulWidget {
+class BarCodeGeneration extends ConsumerStatefulWidget {
   const BarCodeGeneration({super.key});
 
   @override
-  State<BarCodeGeneration> createState() => _BarCodeGenerationState();
+  ConsumerState<BarCodeGeneration> createState() => _BarCodeGenerationState();
 }
 
-class _BarCodeGenerationState extends State<BarCodeGeneration> {
+class _BarCodeGenerationState extends ConsumerState<BarCodeGeneration> {
   @override
   final DataGridController _dataGridController = DataGridController();
   late procumentGridSource _bomDataGridSource;
   late procumentGridSource _oprDataGridSource;
   List<DataGridRow> _bomRows = [];
   List<DataGridRow> _OpeationRows = [];
+
   //<------------------------- Function To Remove Bom Row ----------- -------------->
 
   void _removeRow(DataGridRow row) {
@@ -34,71 +41,192 @@ class _BarCodeGenerationState extends State<BarCodeGeneration> {
 
   //<------------------------- Function To Update Bom Summary Row  ----------- -------------->
 
-  void _updateBomSummaryRow() {}
+  void _updateBomSummaryRow() {
+    print("fun call");
+    int totalPcs = 0;
+    double totalWt = 0.0;
+    double totalRate = 0.0;
+    double totalAmount = 0.0;
+
+    double prevTotalAmount = _bomRows[0].getCells()[6].value * 1.0;
+
+    for (var i = 1; i < _bomRows.length; i++) {
+      totalPcs += _bomRows[i].getCells()[2].value as int;
+      totalWt += _bomRows[i].getCells()[3].value ?? 0 * 1.0 as double;
+      totalRate += _bomRows[i].getCells()[4].value ?? 0 * 1.0 as double;
+      totalAmount += _bomRows[i].getCells()[6].value ?? 0.0 as double;
+    }
+
+    double avgWtPcs = totalPcs > 0 ? totalWt / totalPcs : 0.0;
+
+    setState(() {
+      _bomRows[0] = DataGridRow(cells: [
+        DataGridCell<String>(columnName: 'Variant Name', value: 'Summary'),
+        DataGridCell<String>(columnName: 'Item Group', value: ''),
+        DataGridCell<int>(columnName: 'Pieces', value: totalPcs),
+        DataGridCell<double>(columnName: 'Weight', value: totalWt),
+        DataGridCell<double>(columnName: 'Rate', value: totalRate),
+        DataGridCell<double>(columnName: 'Avg Wt(Pcs)', value: avgWtPcs),
+        DataGridCell(columnName: 'Amount', value: totalAmount),
+        DataGridCell<String>(columnName: 'Sp Char', value: ''),
+        DataGridCell<String>(columnName: 'Operation', value: ''),
+        DataGridCell<String>(columnName: 'Type', value: ''),
+        DataGridCell<Widget>(columnName: 'Actions', value: null),
+      ]);
+    });
+
+    StockDetails prevStockDetails = ref.read(stockDetailsProvider);
+    StockDetails updatedStockDetails =
+        prevStockDetails.copyWith(rate: totalAmount);
+    print("prevTotalAmount $prevTotalAmount totalAmount $totalAmount");
+    if (prevTotalAmount != totalAmount)
+      ref.read(stockDetailsProvider.notifier).update(updatedStockDetails);
+  }
+
+  //<------------------------- Function To update wt   ----------- -------------->
+  void _updateWt(String val) {
+    _bomRows[1] = DataGridRow(
+        cells: _bomRows[1].getCells().map((cell) {
+      if (cell.columnName == 'Weight') {
+        return DataGridCell<double>(
+            columnName: 'Weight', value: double.parse(val));
+      }
+      return cell;
+    }).toList());
+    _updateAmount(double.parse(val) * _bomRows[1].getCells()[4].value);
+    _updateBomSummaryRow();
+  }
+
+  void _updateAmount(double updatedAmount) {
+    print("updatedAmount $updatedAmount");
+    _bomRows[1] = DataGridRow(
+        cells: _bomRows[1].getCells().map((cell) {
+      if (cell.columnName == 'Amount') {
+        return DataGridCell<double>(columnName: 'Amount', value: updatedAmount);
+      }
+      return cell;
+    }).toList());
+  }
 
   void showFormula(String val, int index) {}
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
+    initializeBomOpr();
     _bomDataGridSource = procumentGridSource(
         _bomRows, _removeRow, _updateBomSummaryRow, showFormula);
     _oprDataGridSource = procumentGridSource(
         _OpeationRows, _removeRow, _updateBomSummaryRow, showFormula);
   }
 
+  void initializeBomOpr() {
+    InventoryItemModel currentStock =
+        ref.read(inventoryControllerProvider.notifier).getCurrentItem()!;
+
+    List<dynamic> listOfBoms = currentStock.bom["data"];
+
+    _bomRows = listOfBoms.map((bom) {
+      print("bom is $bom");
+      return DataGridRow(cells: [
+        DataGridCell<String>(columnName: 'Variant Name', value: bom[0]),
+        DataGridCell<String>(columnName: 'Item Group', value: bom[1]),
+        DataGridCell<int>(columnName: 'Pieces', value: bom[2]),
+        DataGridCell<double>(columnName: 'Weight', value: bom[3] * 1.0),
+        DataGridCell(columnName: 'Rate', value: bom[4]),
+        DataGridCell<double>(columnName: 'Avg Wt(Pcs)', value: bom[5] * 1.0),
+        DataGridCell(columnName: 'Amount', value: bom[6]),
+        DataGridCell<String>(columnName: 'Sp Char', value: bom[7]),
+        DataGridCell<String>(columnName: 'Operation', value: bom[8]),
+        DataGridCell<String>(columnName: 'Type', value: bom[9]),
+        DataGridCell<Widget>(columnName: 'Actions', value: null),
+      ]);
+    }).toList();
+    List<dynamic> listOfOperation = currentStock.operation["data"];
+    print("operation is $listOfOperation");
+    _OpeationRows = listOfOperation.map((opr) {
+      return DataGridRow(cells: [
+        DataGridCell<String>(columnName: 'Calc Bom', value: opr[0]),
+        DataGridCell<String>(columnName: 'Operation', value: opr[1]),
+        DataGridCell<int>(columnName: 'Calc Qty', value: opr[2]),
+        DataGridCell<dynamic>(columnName: 'Type', value: opr[3]),
+        DataGridCell<dynamic>(columnName: 'Calc Method', value: opr[4]),
+        DataGridCell<dynamic>(columnName: 'Calc Method Value', value: opr[5]),
+        DataGridCell<dynamic>(columnName: 'Depd Method', value: opr[6]),
+        DataGridCell<dynamic>(columnName: 'Depd Method Value', value: opr[7]),
+        DataGridCell<Widget>(columnName: 'Depd Type', value: null),
+        DataGridCell<Widget>(columnName: 'Depd Qty', value: null),
+      ]);
+    }).toList();
+  }
+
   Widget build(BuildContext context) {
+    ref.listen<StockDetails>(
+      stockDetailsProvider,
+      (previous, next) {
+        // Trigger your function here
+        if (previous != next) {
+          _updateWt(
+            next.currentWt.toString(),
+          );
+        }
+      },
+    );
     double gridWidth =
         screenWidth * 0.4; // Set grid width to 50% of screen width
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       body: Container(
+        padding: EdgeInsets.symmetric(horizontal: 20),
         margin: EdgeInsets.only(top: screenHeight * 0.1),
         child: Column(
           children: [
-            CustomUI(),
+            BarcodeHeader(),
             Row(
               children: [
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            blurRadius: 5,
-                            spreadRadius: 1)
-                      ]),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Text(
-                        '   Modify Bom',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      SizedBox(
-                        height: screenHeight * 0.32,
-                        child: ProcumentBomGrid(
-                          bomDataGridSource: _bomDataGridSource,
-                          dataGridController: _dataGridController,
-                          gridWidth: gridWidth,
+                Expanded(
+                  child: Container(
+                    margin: EdgeInsets.symmetric(vertical: 10),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              blurRadius: 5,
+                              spreadRadius: 1)
+                        ]),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            '   Modify Bom',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
                         ),
-                      ),
-                    ],
+                        SizedBox(
+                          height: screenHeight * 0.28,
+                          child: ProcumentBomGrid(
+                            bomDataGridSource: _bomDataGridSource,
+                            dataGridController: _dataGridController,
+                            gridWidth: gridWidth,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                    child: Container(
+                  margin: EdgeInsets.symmetric(vertical: 10),
                   decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
@@ -108,206 +236,33 @@ class _BarCodeGenerationState extends State<BarCodeGeneration> {
                             blurRadius: 5,
                             spreadRadius: 1)
                       ]),
-                  child: ProcumentOperationGrid(
-                      operationType: 'Modify operation',
-                      gridWidth: gridWidth,
-                      dataGridController: _dataGridController,
-                      oprDataGridSource: _oprDataGridSource),
-                )
+                  child: SizedBox(
+                    height: screenHeight * 0.33,
+                    child: ProcumentOperationGrid(
+                        operationType: 'Modify operation',
+                        gridWidth: gridWidth,
+                        dataGridController: _dataGridController,
+                        oprDataGridSource: _oprDataGridSource),
+                  ),
+                ))
               ],
-            )
+            ),
+            Row(
+              children: [
+                Expanded(child: TagWtSummery()),
+                SizedBox(
+                  width: 10,
+                ),
+                Expanded(child: TagMRP())
+              ],
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            SizedBox(height: 150, child: TagListUI())
           ],
         ),
       ),
-    );
-  }
-}
-
-class CustomUI extends StatelessWidget {
-  const CustomUI({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-                color: Colors.grey.withOpacity(0.3),
-                blurRadius: 1,
-                spreadRadius: 3)
-          ]),
-      child: Column(
-        children: [
-          // Header Section
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(10),
-                topRight: Radius.circular(10),
-              ),
-              color: Colors.blue.shade800,
-            ),
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                HeaderItemWidget(title: 'Stock Qty', value: '50'),
-                HeaderItemWidget(title: 'Tag Created', value: '0'),
-                HeaderItemWidget(title: 'Remaining', value: '0'),
-                HeaderItemWidget(title: 'Bal Pcs', value: '50'),
-                HeaderItemWidget(title: 'Bal Wt', value: '142.200'),
-                HeaderItemWidget(title: 'Bal Met Wt', value: '138.000'),
-                HeaderItemWidget(title: 'Bal Stone Pcs', value: '25'),
-                HeaderItemWidget(title: 'Bal Stone Wt', value: '21.000'),
-                HeaderItemWidget(title: 'Bal Find Pcs', value: '0'),
-                HeaderItemWidget(title: 'Bal Find Wt', value: '0.000'),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 8),
-
-          // Input Section
-          Container(
-            // elevation: 4,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(
-                    child: TextFieldWidget(
-                        labelText: 'G. Wt *',
-                        controller: TextEditingController()),
-                    height: 40,
-                    width: 120,
-                  ),
-                  const SizedBox(width: 8),
-                  SizedBox(
-                    height: 40,
-                    width: 120,
-                    child: TextFieldWidget(
-                        labelText: 'Ply Qty *',
-                        controller: TextEditingController()),
-                  ),
-                  const SizedBox(width: 8),
-                  SizedBox(
-                    height: 40,
-                    width: 120,
-                    child: ReadOnlyTextFieldWidget(
-                      labelText: 'Size',
-                      hintText: '0',
-                      icon: Icons.search,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  SizedBox(
-                    height: 40,
-                    width: 120,
-                    child: TextFieldWidget(
-                        labelText: 'Wastage',
-                        controller: TextEditingController()),
-                  ),
-                  const SizedBox(width: 8),
-                  SizedBox(
-                    height: 40,
-                    width: 150,
-                    child: TextFieldWidget(
-                        labelText: 'Making Per Gram',
-                        controller: TextEditingController()),
-                  ),
-                  const SizedBox(width: 8),
-                  SizedBox(
-                    height: 40,
-                    width: 220,
-                    child: TextFieldWidget(
-                        labelText: 'HUID', controller: TextEditingController()),
-                  ),
-                  const SizedBox(width: 8),
-                  CheckboxFieldWidget(label: 'Hallmark'),
-                  CheckboxFieldWidget(label: 'Creat New Barcode'),
-                  ButtonWidget(
-                    text: 'Details',
-                    color: Colors.black,
-                    icon: Icons.add,
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 8),
-
-          // Action Buttons
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.green,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: Row(
-                    children: [
-                      Text(
-                        'Create Tag',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      Icon(
-                        Icons.arrow_drop_down,
-                        color: Colors.white,
-                      )
-                    ],
-                  ),
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                ),
-                SizedBox(width: 8),
-                Spacer(),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class HeaderItemWidget extends StatelessWidget {
-  final String title;
-  final String value;
-
-  const HeaderItemWidget({
-    Key? key,
-    required this.title,
-    required this.value,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
-            color: Colors.white70,
-            fontSize: 12,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-        const SizedBox(width: 4),
-        Text(
-          value,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
     );
   }
 }
@@ -322,7 +277,7 @@ class CheckboxFieldWidget extends StatelessWidget {
     return Row(
       children: [
         Checkbox(
-          activeColor: Colors.green,
+          activeColor: Color(0xff28713E),
           value: true,
           onChanged: (val) {},
           checkColor: Colors.white,

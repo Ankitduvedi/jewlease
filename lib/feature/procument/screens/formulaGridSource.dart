@@ -113,8 +113,7 @@ class formulaGridSource extends DataGridSource {
     }
 
     // If no row satisfies the condition, throw an exception or return a default value
-    throw Exception(
-        "No matching row found for the given attributes. $filteredRows");
+    return 0.0;
   }
 
   void recalculatedataGridValues(int updatedRowIndex, cellNewValue) {
@@ -149,7 +148,8 @@ class formulaGridSource extends DataGridSource {
           List<dynamic> excelData = rangeExcel["Details"]["excelData"];
           List<List<dynamic>> matrixdata = List.from(excelData);
 
-          double? rangeOutput = findMatchingRowValue(
+          double? rangeOutput = 1.0;
+          findMatchingRowValue(
               varientAttributes, rangeExcel["Details"]["Headers"], matrixdata);
           // findOutput("18", metalWeight);
 

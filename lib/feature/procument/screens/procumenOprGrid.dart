@@ -21,10 +21,9 @@ class ProcumentOperationGrid extends StatelessWidget {
     screenWidth = MediaQuery.of(context).size.width;
     screenHeight = MediaQuery.of(context).size.height;
     return Container(
-      width: screenWidth * 0.45,
       height: screenHeight * 0.4,
       // margin: EdgeInsets.only(top: 20, left: 20),// fix this in procument varinet
-      padding: EdgeInsets.all(20),
+      // padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(10)),
         // color: Colors.red,
@@ -47,22 +46,20 @@ class ProcumentOperationGrid extends StatelessWidget {
           ),
 
           Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                // Adjust this for desired roundness
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              // Adjust this for desired roundness
+              child: Expanded(
                 child: Container(
-                  width: screenWidth * 0.42,
+                  // width: screenWidth * 0.42,42
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     border:
                         Border.fromBorderSide(BorderSide(color: Colors.grey)),
                   ),
-                  // Set the grid width to 50% of the screen width
                   child: SfDataGrid(
-                    rowHeight: 40,
-                    headerRowHeight: 40,
+                    rowHeight: 30,
+                    headerRowHeight: 35,
                     source: oprDataGridSource,
                     controller: dataGridController,
                     footerFrozenColumnsCount: 1,

@@ -49,21 +49,31 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
   }
 
   void _procumentSummery() {
+    procumentSummery['Wt'] = 0;
+    procumentSummery['Total Amt'] = 0;
+    procumentSummery['Pieces'] = 0;
+
     _rows.forEach((element) {
       element.getCells().forEach((cell) {
         if (cell.columnName == 'Weight') {
-          procumentSummery["Wt"] += int.parse(cell.value) * 1.0;
+          procumentSummery["Wt"] += cell.value.runtimeType == double
+              ? cell.value
+              : int.parse(cell.value.toString()) * 1.0;
         } else if (cell.columnName == 'Amount') {
-          procumentSummery["Total Amt"] += int.parse(cell.value) * 1.0;
+          procumentSummery["Total Amt"] += cell.value.runtimeType == double
+              ? cell.value
+              : int.parse(cell.value.toString()) * 1.0;
         } else if (cell.columnName == 'Pieces') {
-          procumentSummery["Pieces"] = int.parse(cell.value) * 1.0;
+          print("run type type is ${cell.value.runtimeType}");
+          procumentSummery["Pieces"] = int.parse(cell.value.toString()) * 1.0;
         }
       });
     });
   }
 
   void _addNewRowWithItemGroup(Map<dynamic, dynamic> varient) {
-    print("varient $varient ${varient["BOM"]["data"][0][3]}");
+    // print("varient $varient ${varient["BOM"]["data"][0][3]}");
+    print("varient $varient");
     setState(() {
       _rows.add(
         DataGridRow(cells: [
@@ -85,7 +95,7 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
           DataGridCell<String>(
               columnName: 'Amount',
               value: (int.parse(varient["BOM"]["data"][0][3].toString()) *
-                      int.parse(varient["Std Buying Rate"]))
+                      int.parse(varient["Std Buying Rate"] ?? 0))
                   .toString()),
           DataGridCell<String>(columnName: 'Wastage', value: "0"),
         ]),

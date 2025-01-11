@@ -7,6 +7,7 @@ import '../../formula/controller/formula_prtocedure_controller.dart';
 import '../../vendor/controller/procumentVendor_controller.dart';
 import '../controller/procumentFormualaBomController.dart';
 import '../controller/procumentFormulaController.dart';
+import '../controller/procumentVarientFormula.dart';
 import 'formulaGridSource.dart';
 
 class FormulaDataGrid extends ConsumerStatefulWidget {
@@ -95,6 +96,22 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
         "varientIndex": "${widget.varientIndex}"
       }
     }, true);
+    List<dynamic> formula_rows = [];
+    for (int i = 0; i < _rows.length; i++) {
+      List<dynamic> rowValues = [];
+      for (var cell in _rows[i].getCells()) {
+        rowValues.add(cell.value);
+      }
+      formula_rows.add(rowValues);
+    }
+    int selectedBomRow = ref.read(showFormulaProvider);
+
+    //<------------------add formula rows to the varientAllFormulaProvider---------------->
+    ref.read(varientAllFormulaProvider.notifier).update(
+        "${widget.varientIndex}${widget.varientName}${selectedBomRow}",
+        formula_rows);
+    print("all formula map ${ref.read(varientAllFormulaProvider)}");
+
     // ref.read(formulaBomOprProvider.notifier).updateAction({
     //   "data": {
     //     "Rate": updatedMetalRate,
@@ -108,12 +125,12 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
     List<List<dynamic>> excelData = [];
     Map<String, dynamic> data = await ref
         .read(formulaProcedureControllerProvider.notifier)
-        .fetchFormulaExcel('a', context);
+        .fetchFormulaExcel('Gold Final4', context);
 
     rangeExcelData = await ref
         .read(formulaProcedureControllerProvider.notifier)
-        .fetchRangeMasterExcel('13 Dec', context);
-    print("range master excel is $rangeExcelData");
+        .fetchRangeMasterExcel('12 jan', context);
+    print("range master excel is $data  $rangeExcelData");
     formulaExcel = data["Excel Detail"]["data"];
     for (int i = 0; i < formulaExcel.length; i++) {
       excelData.add(formulaExcel[i]);

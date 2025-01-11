@@ -3,10 +3,8 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/data/model/style_variant_model.dart';
-import 'package:jewlease/data/model/variant_master_metal.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 import 'package:jewlease/feature/vendor/screens/Bom&Operation.dart';
-import 'package:jewlease/main.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
 import 'package:jewlease/providers/image_provider.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
@@ -121,10 +119,10 @@ class AddStyleVariantScreenState extends ConsumerState<AddStyleVariantScreen> {
                   vendorVarient: 'vendorVarient',
                   remark2: 'remark2',
                   createdBy: 'createdBy',
-                  stdBuyingRate: stdBuyingRate.text,
-                  stoneMaxWt: stoneMaxWt.text,
+                  stdBuyingRate: stdBuyingRate.text ?? "0",
+                  stoneMaxWt: stoneMaxWt.text ?? "0",
                   remark: 'remark',
-                  stoneMinWt: stoneMinWt.text,
+                  stoneMinWt: stoneMinWt.text ?? "0",
                   karatColor: 'karatColor',
                   deliveryDays: 0,
                   forWeb: 'forWeb',
