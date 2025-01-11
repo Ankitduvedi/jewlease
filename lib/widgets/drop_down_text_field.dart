@@ -28,7 +28,7 @@ class DropDownTextFieldWidget extends ConsumerWidget {
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
           ),
-          contentPadding: EdgeInsets.symmetric(
+          contentPadding: const EdgeInsets.symmetric(
             vertical: 0.0, // Adjust the vertical padding
             horizontal: 12.0, // Adjust the horizontal padding if necessary
           ), // Ensure enough space for the content

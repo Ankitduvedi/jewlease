@@ -6,6 +6,7 @@ import 'package:jewlease/feature/auth/screens/login_screen_owner.dart';
 import 'package:jewlease/feature/auth/screens/login_screen_staff.dart';
 import 'package:jewlease/feature/barcoding/screens/barCodeGeneration.dart';
 import 'package:jewlease/feature/formula/screens/addFormulaProcedure.dart';
+import 'package:jewlease/feature/formula/screens/add_formula_mapping.dart';
 import 'package:jewlease/feature/formula/screens/excelScreen.dart';
 import 'package:jewlease/feature/formula/screens/formula_procedure.dart';
 import 'package:jewlease/feature/home/screens/home_screen.dart';
@@ -22,6 +23,7 @@ import 'package:jewlease/feature/item_specific/screens/add_metal_variant_screen.
 import 'package:jewlease/feature/item_specific/screens/add_packing_material_item_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/add_set_item_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/add_stone_item_screen.dart';
+import 'package:jewlease/feature/item_specific/screens/add_stone_variant_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/add_style_item_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/load_data_of_item_master_metal.dart';
 import 'package:jewlease/feature/item_specific/screens/load_data_of_item_master_stone.dart';
@@ -147,6 +149,11 @@ final goRouter = GoRouter(
                       return const AddMetalVariantScreen();
                     }),
                 GoRoute(
+                    path: 'addStoneVariantScreen',
+                    builder: (context, state) {
+                      return const AddStoneVariantScreen();
+                    }),
+                GoRoute(
                     path: 'itemMasterGoldScreen',
                     builder: (context, state) {
                       return const ItemMasterGoldScreen(
@@ -233,9 +240,14 @@ final goRouter = GoRouter(
                 );
               }),
           GoRoute(
+              path: '/addformulaMapping',
+              builder: (context, state) {
+                return const AddFormulaMappingScreen();
+              }),
+          GoRoute(
               path: '/excelScreen',
               builder: (context, state) {
-                return ExcelSheet();
+                return const ExcelSheet();
               }),
           GoRoute(
               path: '/procumentScreen',
@@ -245,7 +257,7 @@ final goRouter = GoRouter(
           GoRoute(
               path: '/DataGrid',
               builder: (context, state) {
-                return MyDataGrid();
+                return const MyDataGrid();
               }),
           GoRoute(
               path: '/barcodingScreen',

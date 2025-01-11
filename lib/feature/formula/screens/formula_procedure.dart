@@ -9,6 +9,8 @@ import 'package:jewlease/main.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/widgets/data_widget.dart';
 
+import 'addFormulaProcedure.dart';
+
 final tabIndexProvider = StateProvider<int>((ref) => 1);
 
 class FormulaProcdedureScreen extends ConsumerWidget {
@@ -17,7 +19,6 @@ class FormulaProcdedureScreen extends ConsumerWidget {
   final List<String> _tabs = [
     'Formula Mapping',
     'Rate Structure',
-    'Rate Mapping',
     'Fomula Procedure'
   ];
 
@@ -58,7 +59,7 @@ class FormulaProcdedureScreen extends ConsumerWidget {
                       },
                       child: Container(
                         color: index == selectedIndex
-                            ? Color(0xff28713E)
+                            ? const Color(0xff28713E)
                             : Colors.white,
                         margin: EdgeInsets.symmetric(
                             horizontal: screenWidth * 0.01),
@@ -70,8 +71,8 @@ class FormulaProcdedureScreen extends ConsumerWidget {
                               vertical: screenHeight * 0.005),
                           decoration: BoxDecoration(
                             color: index == selectedIndex
-                                ? Color(0xff28713E)
-                                : Color(0xffF0F4F8),
+                                ? const Color(0xff28713E)
+                                : const Color(0xffF0F4F8),
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: Center(
@@ -99,13 +100,16 @@ class FormulaProcdedureScreen extends ConsumerWidget {
               AppBarButtons(
                 ontap: [
                   () {
+                    if (selectedIndex == 0) {
+                      context.go('/addformulaMapping');
+                    }
                     if (selectedIndex == 1) {
                       showDialog(
                           context: context,
                           builder: (context) => rangeDialog());
                     }
                     log('new pressed');
-                    if (selectedIndex == 3) {
+                    if (selectedIndex == 2) {
                       context.go('/addFormulaProcedureScreen');
                     }
                   },
@@ -146,6 +150,7 @@ class FormulaProcdedureScreen extends ConsumerWidget {
                   canGo: true,
                   onDoubleClick: (Map<dynamic, dynamic> intialData) {
                     print("intialData fromula procedure is$intialData ");
+
                     context.go('/addFormulaProcedureScreen', extra: intialData);
                     // showDialog(
                     //   context: context,
@@ -155,6 +160,12 @@ class FormulaProcdedureScreen extends ConsumerWidget {
                     //     ProcedureType: intialData['Procedure Type'],
                     //   ),
                     // );
+
+                    showDialog(
+                      context: context,
+                      builder: (context) => const AddFormulaProcedure(
+                          FormulaProcedureName: '', ProcedureType: ''),
+                    );
                   },
                 ),
         )),
