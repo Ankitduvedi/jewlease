@@ -218,9 +218,7 @@ class InventoryItemModel {
         sellingLabour: (json['Selling Labour'] ?? 0).toDouble(),
         orderNo: json['Order No'] ?? '',
         karatColor: json['Karat Color'] ?? '',
-        imageFileName: json['Image Details'].runtimeType == String
-            ? json['Image Details']
-            : json['Image Details'][0]['url'] ?? '',
+        imageFileName: json['Image Details'].runtimeType == String ? '' : '',
         inwardDocLastTrans: json['Inward Doc Last Trans'] ?? '',
         reserveInd: json['Reserve Ind'] ?? false,
         barcodeInd: json['Barcode Ind'] ?? false,

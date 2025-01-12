@@ -19,7 +19,8 @@ class FormulaProcdedureScreen extends ConsumerWidget {
   final List<String> _tabs = [
     'Formula Mapping',
     'Rate Structure',
-    'Fomula Procedure'
+    'Fomula Procedure',
+        'Fomula Procedure'
   ];
 
   @override
