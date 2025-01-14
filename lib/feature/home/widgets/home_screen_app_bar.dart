@@ -6,13 +6,16 @@ import 'package:jewlease/core/routes/go_router.dart';
 import 'package:jewlease/feature/home/drawer/drawer_toogle_button.dart';
 
 class Appbar extends ConsumerWidget implements PreferredSizeWidget {
-  const Appbar({super.key});
+  const Appbar({super.key, required GlobalKey<ScaffoldState> scaffoldKey})
+      : _scaffoldKey = scaffoldKey;
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
+  final GlobalKey<ScaffoldState> _scaffoldKey;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    log('Appbar screen rebuild');
+    log('AppbarWithDrawer screen rebuild');
 
     return AppBar(
       backgroundColor: Colors.white,
@@ -60,7 +63,13 @@ class Appbar extends ConsumerWidget implements PreferredSizeWidget {
         IconButton(
             onPressed: () {}, icon: const Icon(Icons.dashboard_outlined)),
         IconButton(onPressed: () {}, icon: const Icon(Icons.settings)),
-        IconButton(onPressed: () {}, icon: const Icon(Icons.person_2_sharp)),
+        IconButton(
+            onPressed: () {
+              log('button pressed');
+              // Open the drawer programmatically
+              _scaffoldKey.currentState?.openEndDrawer();
+            },
+            icon: const Icon(Icons.person_2_sharp)),
       ],
     );
   }

@@ -31,9 +31,9 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     log('Home screen rebuild');
 
-    return Row(
+    return const Row(
       children: [
-        const Expanded(
+        Expanded(
           flex: 3, // Take up 3/4 of the screen
           child: Center(
             child: ReorderableTilesScreen(),
@@ -44,10 +44,10 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start, // Align to the top
             children: [
-              const SizedBox(height: 80),
+              SizedBox(height: 80),
               WorkToDoWidget(),
-              const SizedBox(height: 10),
-              const Text(
+              SizedBox(height: 10),
+              Text(
                 'Right Widget 2',
                 style: TextStyle(
                   color: Colors.black,

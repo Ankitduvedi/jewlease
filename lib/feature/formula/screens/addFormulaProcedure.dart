@@ -49,7 +49,6 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
 
   @override
   void initState() {
-    // TODO: implement initState
     _focusNode.requestFocus();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       fetchApiUpdatedData();
@@ -76,7 +75,8 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
   ];
 
   Future<void> _uploadData() async {
-    await Future.delayed(Duration(seconds: 1)); // Allow time for JS to load
+    await Future.delayed(
+        const Duration(seconds: 1)); // Allow time for JS to load
     String temdata = await webViewController?.evaluateJavascript(
       source: "getHandsontableData()",
     );
@@ -167,7 +167,7 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
     // excelData.addAll(temList);
     print("final excel Data is1 $excelData");
     final String jsonData2 = jsonEncode(excelData);
-    Future.delayed(Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 1), () {
       webViewController?.evaluateJavascript(
         source: "updateHandsontableData('$jsonData2');",
       );
@@ -239,7 +239,7 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
 
       if (isValid) {
         // All formulas are valid
-        _showSnackBar('All formulas are valid.', Color(0xff28713E));
+        _showSnackBar('All formulas are valid.', const Color(0xff28713E));
       } else {
         // Some formulas are invalid
         _showSnackBar(
@@ -255,7 +255,7 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
     final snackBar = SnackBar(
       content: Text(message),
       backgroundColor: color,
-      duration: Duration(seconds: 3),
+      duration: const Duration(seconds: 3),
     );
 
     // Use ScaffoldMessenger to show the SnackBar
@@ -275,21 +275,21 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
             children: [
               // Example options; replace with your actual options
               ListTile(
-                title: Text('Option 1'),
+                title: const Text('Option 1'),
                 onTap: () {
                   Navigator.of(context).pop();
                   _sendSelectedValueToWebView('Option 1');
                 },
               ),
               ListTile(
-                title: Text('Option 2'),
+                title: const Text('Option 2'),
                 onTap: () {
                   Navigator.of(context).pop();
                   _sendSelectedValueToWebView('Option 2');
                 },
               ),
               ListTile(
-                title: Text('Option 3'),
+                title: const Text('Option 3'),
                 onTap: () {
                   Navigator.of(context).pop();
                   _sendSelectedValueToWebView('Option 3');
@@ -299,7 +299,7 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
           ),
           actions: [
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
                 // Optionally, reset selectedCellCoords
@@ -581,9 +581,9 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
             },
             child: Container(
                 decoration: BoxDecoration(
-                    color: Color(0xff003450),
+                    color: const Color(0xff003450),
                     borderRadius: BorderRadius.circular(8)),
-                child: Center(
+                child: const Center(
                     child: Text(
                   "Validate",
                   style: TextStyle(color: Colors.white),
@@ -594,9 +594,9 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
             },
             child: Container(
                 decoration: BoxDecoration(
-                    color: Color(0xff003450),
+                    color: const Color(0xff003450),
                     borderRadius: BorderRadius.circular(8)),
-                child: Center(
+                child: const Center(
                     child: Text(
                   "Save",
                   style: TextStyle(color: Colors.white),
