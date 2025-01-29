@@ -360,7 +360,7 @@ class AddStyleVariantScreenState extends ConsumerState<AddStyleVariantScreen> {
                     builder: (context) => const ItemTypeDialogScreen(
                       title: 'Base Variant',
                       endUrl: 'ItemMasterAndVariants/Metal/Gold/Item/',
-                      value: 'Base Variant',
+                      value: 'Metal code',
                     ),
                   );
                 },

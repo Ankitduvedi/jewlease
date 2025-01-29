@@ -11,24 +11,24 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable@11.1.0/dist/handsontable.full.min.css" />
     <style>
         body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
+        font-family: Arial, sans-serif;
+        padding: 20px;
         }
         #spreadsheet {
-            width: 100vw;
-            height: 100vh;
-            visibility: visible;
+        width: 100vw;
+        height: 100vh;
+        visibility: visible;
         }
         button {
-            margin-top: 20px;
-            padding: 10px;
-            font-size: 14px;
+        margin-top: 20px;
+        padding: 10px;
+        font-size: 14px;
         }
         #dismissBtn {
-            display: none;
+        display: none;
         }
         .htInvalid {
-            background-color: #FFCCCC !important;
+        background-color: #FFCCCC !important;
         }
     </style>
 </head>
@@ -105,39 +105,41 @@
 
     // Function to add custom header row and remove default headers
     // Function to dynamically set new headers
-    function addCustomHeaderRow(newHeaders) {
-    if (!Array.isArray(newHeaders) || newHeaders.length === 0) {
-    console.error("Invalid header array. Must be a non-empty array.");
-    return;
+    function addCustomHeaderRow(newHeader) {
+     var newHeaders = JSON.parse(newHeader);
+
+        if (!Array.isArray(newHeaders) || newHeaders.length === 0) {
+         console.error("Invalid header array. Must be a non-empty array.");
+             return;
+         }
+
+    // Update column headers with the new ones
+        hotInstance.updateSettings({
+        colHeaders: newHeaders
+             });
+
+    // Adjust the number of columns in the table to match the number of headers
+    const currentData = hotInstance.getData();
+    const currentRows = hotInstance.countRows();
+    const currentCols = hotInstance.countCols();
+
+    // If the current column count is less than the new headers, add columns
+        if (newHeaders.length > currentCols) {
+        const additionalCols = newHeaders.length - currentCols;
+            for (let i = 0; i < currentRows; i++) {
+                currentData[i] = [...currentData[i], ...Array(additionalCols).fill('')];
+                 }
+         }
+    // If the current column count is more than the new headers, remove columns
+        else if (newHeaders.length < currentCols) {
+            for (let i = 0; i < currentRows; i++) {
+             currentData[i] = currentData[i].slice(0, newHeaders.length);
+              }
+        }
+
+    hotInstance.loadData(currentData);
+    console.log(`Headers updated: ${newHeaders}`);
     }
-
-  // Update column headers with the new ones
-  hotInstance.updateSettings({
-    colHeaders: newHeaders
-  });
-
-  // Adjust the number of columns in the table to match the number of headers
-  const currentData = hotInstance.getData();
-  const currentRows = hotInstance.countRows();
-  const currentCols = hotInstance.countCols();
-
-  // If the current column count is less than the new headers, add columns
-  if (newHeaders.length > currentCols) {
-    const additionalCols = newHeaders.length - currentCols;
-    for (let i = 0; i < currentRows; i++) {
-      currentData[i] = [...currentData[i], ...Array(additionalCols).fill('')];
-    }
-  }
-  // If the current column count is more than the new headers, remove columns
-  else if (newHeaders.length < currentCols) {
-    for (let i = 0; i < currentRows; i++) {
-      currentData[i] = currentData[i].slice(0, newHeaders.length);
-    }
-  }
-
-  hotInstance.loadData(currentData);
-  console.log(`Headers updated: ${newHeaders}`);
-}
 
 
     // Other utility functions

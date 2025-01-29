@@ -34,6 +34,12 @@ class StockDetailsNotifier extends Notifier<StockDetails> {
       currentWt:
           updatedDetails.currentWt != 0.0 ? updatedDetails.currentWt : null,
       rate: updatedDetails.rate != 0.0 ? updatedDetails.rate : null,
+      currentStoneWt: updatedDetails.currentStoneWt != 0.0
+          ? updatedDetails.currentStoneWt
+          : null,
+      currentNetWt: updatedDetails.currentNetWt != 0.0
+          ? updatedDetails.currentNetWt
+          : null,
     );
   }
 }
@@ -58,21 +64,24 @@ class StockDetails {
   double balFindWt;
   double currentWt = 0.0;
   double rate = 0.0;
+  double currentStoneWt = 0.0;
+  double currentNetWt = 0.0;
 
-  StockDetails({
-    this.stockQty = 0,
-    this.tagCreated = 0,
-    this.remaining = 0,
-    this.balPcs = 0,
-    this.balWt = 0.0,
-    this.balMetWt = 0.0,
-    this.balStonePcs = 0,
-    this.balStoneWt = 0.0,
-    this.balFindPcs = 0,
-    this.balFindWt = 0.0,
-    this.currentWt = 0.0,
-    this.rate = 0.0,
-  });
+  StockDetails(
+      {this.stockQty = 0,
+      this.tagCreated = 0,
+      this.remaining = 0,
+      this.balPcs = 0,
+      this.balWt = 0.0,
+      this.balMetWt = 0.0,
+      this.balStonePcs = 0,
+      this.balStoneWt = 0.0,
+      this.balFindPcs = 0,
+      this.balFindWt = 0.0,
+      this.currentWt = 0.0,
+      this.rate = 0.0,
+      this.currentStoneWt = 0.0,
+      this.currentNetWt = 0.0});
 
   // Update values from a map
   void updateFromMap(Map<String, dynamic> map) {
@@ -88,20 +97,21 @@ class StockDetails {
     balFindWt = map['balFindWt'] ?? balFindWt;
   }
 
-  StockDetails copyWith({
-    int? stockQty,
-    int? tagCreated,
-    int? remaining,
-    int? balPcs,
-    double? balWt,
-    double? balMetWt,
-    int? balStonePcs,
-    double? balStoneWt,
-    int? balFindPcs,
-    double? balFindWt,
-    double? currentWt,
-    double? rate,
-  }) {
+  StockDetails copyWith(
+      {int? stockQty,
+      int? tagCreated,
+      int? remaining,
+      int? balPcs,
+      double? balWt,
+      double? balMetWt,
+      int? balStonePcs,
+      double? balStoneWt,
+      int? balFindPcs,
+      double? balFindWt,
+      double? currentWt,
+      double? rate,
+      double? currentStoneWt,
+      double? currentNetWt}) {
     return StockDetails(
       stockQty: stockQty ?? this.stockQty,
       tagCreated: tagCreated ?? this.tagCreated,
@@ -115,6 +125,8 @@ class StockDetails {
       balFindWt: balFindWt ?? this.balFindWt,
       currentWt: currentWt ?? this.currentWt,
       rate: rate ?? this.rate,
+      currentStoneWt: currentStoneWt ?? this.currentStoneWt,
+      currentNetWt: currentNetWt ?? this.currentNetWt,
     );
   }
 }

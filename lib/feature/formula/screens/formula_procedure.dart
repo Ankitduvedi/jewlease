@@ -9,8 +9,6 @@ import 'package:jewlease/main.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/widgets/data_widget.dart';
 
-import 'addFormulaProcedure.dart';
-
 final tabIndexProvider = StateProvider<int>((ref) => 1);
 
 class FormulaProcdedureScreen extends ConsumerWidget {
@@ -20,7 +18,7 @@ class FormulaProcdedureScreen extends ConsumerWidget {
     'Formula Mapping',
     'Rate Structure',
     'Fomula Procedure',
-        'Fomula Procedure'
+    'Fomula Procedure'
   ];
 
   @override
@@ -153,20 +151,6 @@ class FormulaProcdedureScreen extends ConsumerWidget {
                     print("intialData fromula procedure is$intialData ");
 
                     context.go('/addFormulaProcedureScreen', extra: intialData);
-                    // showDialog(
-                    //   context: context,
-                    //   builder: (context) => AddFormulaProcedure(
-                    //     FormulaProcedureName:
-                    //         intialData['Formula Procedure Name'],
-                    //     ProcedureType: intialData['Procedure Type'],
-                    //   ),
-                    // );
-
-                    showDialog(
-                      context: context,
-                      builder: (context) => const AddFormulaProcedure(
-                          FormulaProcedureName: '', ProcedureType: ''),
-                    );
                   },
                 ),
         )),

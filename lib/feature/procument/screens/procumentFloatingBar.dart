@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:jewlease/main.dart';
 
 class SummaryDetails extends StatelessWidget {
-  const SummaryDetails({super.key, required this.procumentSummery});
-  final Map<String, dynamic> procumentSummery;
+  const SummaryDetails({super.key, required this.Summery});
+
+  final Map<String, dynamic> Summery;
 
   @override
   Widget build(BuildContext context) {
+    print("procument summery is $Summery ${Summery["Pieces"].runtimeType}");
     screenWidth = MediaQuery.of(context).size.width;
     return Container(
       width: screenWidth,
@@ -59,29 +61,22 @@ class SummaryDetails extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   DetailsRow(
-                      label: "Pieces", value: procumentSummery['Pieces'] * 1.0),
-                  DetailsRow(label: "Wt", value: procumentSummery['Wt']),
+                      label: "Pieces",
+                      value: Summery["Pieces"].runtimeType == String
+                          ? int.parse(Summery["Pieces"]) * 1.0
+                          : Summery["Pieces"] * 1.0),
+                  DetailsRow(label: "Wt", value: Summery['Wt'] * 1.0),
+                  DetailsRow(label: "Metal Wt", value: Summery['Metal Wt']),
+                  DetailsRow(label: "Metal Amt", value: Summery['Metal Amt']),
+                  DetailsRow(label: "Stone Wt", value: Summery['Stone Wt']),
+                  DetailsRow(label: "Stone Amt", value: Summery['Stone Amt']),
+                  DetailsRow(label: "Labour Amt", value: Summery['Labour Amt']),
+                  DetailsRow(label: "Wastage", value: Summery['Wastage']),
                   DetailsRow(
-                      label: "Metal Wt", value: procumentSummery['Metal Wt']),
+                      label: "Wastage Fine", value: Summery['Wastage Fine']),
+                  DetailsRow(label: "Total Fine", value: Summery['Total Fine']),
                   DetailsRow(
-                      label: "Metal Amt", value: procumentSummery['Metal Amt']),
-                  DetailsRow(
-                      label: "Stone Wt", value: procumentSummery['Stone Wt']),
-                  DetailsRow(
-                      label: "Stone Amt", value: procumentSummery['Stone Amt']),
-                  DetailsRow(
-                      label: "Labour Amt",
-                      value: procumentSummery['Labour Amt']),
-                  DetailsRow(
-                      label: "Wastage", value: procumentSummery['Wastage']),
-                  DetailsRow(
-                      label: "Wastage Fine",
-                      value: procumentSummery['Wastage Fine']),
-                  DetailsRow(
-                      label: "Total Fine",
-                      value: procumentSummery['Total Fine']),
-                  DetailsRow(
-                      label: "Total Amt", value: procumentSummery['Total Amt']),
+                      label: "Total Amt", value: Summery['Total Amt'] * 1.0),
                 ],
               ),
             ),

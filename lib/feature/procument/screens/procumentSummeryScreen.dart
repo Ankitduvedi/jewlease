@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/feature/procument/controller/procumentBomProcController.dart';
 import 'package:jewlease/feature/procument/screens/procumentFloatingBar.dart';
+import 'package:jewlease/feature/procument/screens/procumentSummeryGridSource.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 import '../../../main.dart';
 import '../../../widgets/search_dailog_widget.dart';
 import '../../vendor/controller/procumentVendor_controller.dart';
-import 'procumentBomOprDialog.dart';
 
 class ProcumentSummaryScreen extends ConsumerStatefulWidget {
   const ProcumentSummaryScreen({
@@ -20,8 +20,8 @@ class ProcumentSummaryScreen extends ConsumerStatefulWidget {
 
 class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
   final DataGridController _dataGridController = DataGridController();
-  List<DataGridRow> _rows = [];
-  late ProcumentDataGridSource _dataGridSource;
+  List<DataGridRow> _Procumentrows = [];
+  late ProcumentDataGridSource _procumentdataGridSource;
   Map<String, dynamic> procumentSummery = {
     "Pieces": 0,
     "Wt": 0.0,
@@ -40,42 +40,52 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
   void initState() {
     super.initState();
     _initializeRows();
-    _dataGridSource = ProcumentDataGridSource(
-      _rows,
-      _removeRow,
-      _updateSummaryRow,
-    );
+    _procumentdataGridSource = ProcumentDataGridSource(
+        _Procumentrows, _removeRow, _updateSummaryRow, true);
     setState(() {});
   }
 
-  void _procumentSummery() {
-    procumentSummery['Wt'] = 0;
-    procumentSummery['Total Amt'] = 0;
-    procumentSummery['Pieces'] = 0;
+  void _procumentSummery(Map<String, dynamic> updatedVarient) {
+    setState(() {});
+    try {
+      procumentSummery['Wt'] = 0;
+      procumentSummery['Total Amt'] = 0;
+      procumentSummery['Pieces'] = 0;
+      procumentSummery["Stone Wt"] = 0.0;
+      procumentSummery["Stone Amt"] = updatedVarient["Stone Pieces"] ?? 0.0;
+      print("updating procument summery");
 
-    _rows.forEach((element) {
-      element.getCells().forEach((cell) {
-        if (cell.columnName == 'Weight') {
-          procumentSummery["Wt"] += cell.value.runtimeType == double
-              ? cell.value
-              : int.parse(cell.value.toString()) * 1.0;
-        } else if (cell.columnName == 'Amount') {
-          procumentSummery["Total Amt"] += cell.value.runtimeType == double
-              ? cell.value
-              : int.parse(cell.value.toString()) * 1.0;
-        } else if (cell.columnName == 'Pieces') {
-          print("run type type is ${cell.value.runtimeType}");
-          procumentSummery["Pieces"] = int.parse(cell.value.toString()) * 1.0;
-        }
+      _Procumentrows.forEach((element) {
+        element.getCells().forEach((cell) {
+          if (cell.columnName == 'Weight') {
+            procumentSummery["Wt"] += cell.value.runtimeType == double
+                ? cell.value
+                : int.parse(cell.value.toString()) * 1.0;
+          } else if (cell.columnName == 'Amount') {
+            procumentSummery["Total Amt"] += cell.value.runtimeType == double
+                ? cell.value
+                : int.parse(cell.value.toString()) * 1.0;
+          } else if (cell.columnName == 'Stone Wt') {
+            print("stone wt runtype ${cell.value.runtimeType}");
+            procumentSummery["Stone Wt"] += cell.value.runtimeType == String
+                ? int.parse(cell.value)
+                : cell.value;
+          } else if (cell.columnName == 'Pieces')
+            procumentSummery['Pieces'] = cell.value;
+        });
       });
-    });
+      procumentSummery["Metal Wt"] =
+          procumentSummery["Wt"] - procumentSummery["Stone Wt"];
+    } catch (e) {
+      print("error in updating summery $e");
+    }
   }
 
   void _addNewRowWithItemGroup(Map<dynamic, dynamic> varient) {
     // print("varient $varient ${varient["BOM"]["data"][0][3]}");
     print("varient $varient");
     setState(() {
-      _rows.add(
+      _Procumentrows.add(
         DataGridRow(cells: [
           DataGridCell<String>(columnName: 'Ref Document', value: ''),
           DataGridCell<String>(columnName: 'Line No', value: ''),
@@ -86,7 +96,7 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
           DataGridCell<String>(
               columnName: 'Stone Wt', value: varient["Stone Min Wt"]),
           DataGridCell<String>(
-              columnName: 'Pieces', value: varient['Pieces'] ?? "0"),
+              columnName: 'Pieces', value: varient['Pieces'] ?? "1"),
           DataGridCell<String>(
               columnName: 'Weight',
               value: varient["BOM"]["data"][0][3].toString()),
@@ -100,58 +110,50 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
           DataGridCell<String>(columnName: 'Wastage', value: "0"),
         ]),
       );
-      _dataGridSource.updateDataGridSource();
+      _procumentdataGridSource.updateDataGridSource();
       setState(() {});
-      _procumentSummery();
+      _procumentSummery({});
       // _updateSummaryRow();
     });
   }
 
   void _initializeRows() {
     print("intilizing start");
-    _rows = [];
+    _Procumentrows = [];
   }
 
   void _removeRow(DataGridRow row) {
     setState(() {
-      _rows.remove(row);
-      _dataGridSource.updateDataGridSource();
+      _Procumentrows.remove(row);
+      _procumentdataGridSource.updateDataGridSource();
       _updateSummaryRow();
     });
   }
 
   void _updateSummaryRow() {
-    int totalPcs = 0;
-    double totalWt = 0.0;
-
-    for (var i = 1; i < _rows.length; i++) {
-      totalPcs += _rows[i].getCells()[2].value as int;
-      totalWt += _rows[i].getCells()[3].value * 1.0 as double;
+    ///first update stored preocument vairent as update from text field
+    ///
+    ///
+    ///
+    for (var row in _Procumentrows) {
+      Map<String, dynamic> updatedVarient = Map.fromIterable(
+        row.getCells(),
+        key: (cell) => "${cell.columnName}",
+        value: (cell) => cell.value,
+      );
+      String varientName = row.getCells()[3].value;
+      ref
+          .read(procurementVariantProvider.notifier)
+          .updateVariant(varientName, updatedVarient);
     }
 
-    double avgWtPcs = totalPcs > 0 ? totalWt / totalPcs : 0.0;
-
-    setState(() {
-      _rows[0] = DataGridRow(cells: [
-        DataGridCell<String>(columnName: 'Ref Document', value: ''),
-        DataGridCell<String>(columnName: 'Line No', value: ''),
-        DataGridCell<int>(columnName: 'Stock Code', value: 0),
-        DataGridCell<double>(columnName: 'Variant Name', value: 0.0),
-        DataGridCell<double>(columnName: 'Stock Status', value: 0.0),
-        DataGridCell<String>(columnName: 'Stone Wt', value: ''),
-        DataGridCell<String>(columnName: 'Pieces', value: ''),
-        DataGridCell<String>(columnName: 'Weight', value: ''),
-        DataGridCell<Widget>(columnName: 'Rate', value: null),
-        DataGridCell<Widget>(columnName: 'Amount', value: null),
-        DataGridCell<Widget>(columnName: 'Wastage', value: null),
-      ]);
-    });
+    _procumentSummery({});
   }
 
   void updateVarientRow(Map<String, dynamic> updatedVarient) {
     int varientIndex = updatedVarient["varientIndex"];
-    _rows[varientIndex] = DataGridRow(
-        cells: _rows[varientIndex].getCells().map((cell) {
+    _Procumentrows[varientIndex] = DataGridRow(
+        cells: _Procumentrows[varientIndex].getCells().map((cell) {
       if (updatedVarient[cell.columnName] != null)
         return DataGridCell(
             columnName: cell.columnName,
@@ -160,13 +162,15 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
         return cell;
     }).toList());
     setState(() {});
-    _rows[varientIndex].getCells().forEach((element) {
+    print("updated varient proc summery is $updatedVarient");
+
+    _procumentSummery(updatedVarient);
+    _Procumentrows[varientIndex].getCells().forEach((element) {
       print("updated varient row ${element.columnName} ${element.value}");
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(BomProcProvider.notifier).updateAction(updatedVarient, false);
     });
-    _procumentSummery();
   }
 
   bool showDialogBom = false;
@@ -278,7 +282,7 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                       child: SfDataGrid(
                         rowHeight: 40,
                         headerRowHeight: 40,
-                        source: _dataGridSource,
+                        source: _procumentdataGridSource,
                         controller: _dataGridController,
                         footerFrozenColumnsCount: 1,
                         // Freeze the last column
@@ -457,213 +461,11 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: _rows.length == 0
+      floatingActionButton: _Procumentrows.length == 0
           ? Container()
           : SummaryDetails(
-              procumentSummery: procumentSummery,
+              Summery: procumentSummery,
             ),
-    );
-  }
-}
-
-class ProcumentDataGridSource extends DataGridSource {
-  ProcumentDataGridSource(
-    this.dataGridRows,
-    this.onDelete,
-    this.onEdit,
-  ) : _editingRows = dataGridRows;
-
-  final List<DataGridRow> dataGridRows;
-  final List<DataGridRow> _editingRows;
-  final Function(DataGridRow) onDelete;
-  final Function() onEdit;
-
-  @override
-  List<DataGridRow> get rows => dataGridRows;
-
-  // Method to recalculate all 'Wt' values
-  void recalculateWt() {
-    for (int rowIndex = 0; rowIndex < dataGridRows.length; rowIndex++) {
-      final row = dataGridRows[rowIndex];
-      int pcsValue =
-          row.getCells().firstWhere((c) => c.columnName == "Pcs").value ?? 0;
-      String groupName = row
-          .getCells()
-          .firstWhere((c) => c.columnName == "Item Group")
-          .value as String;
-      pcsValue += groupName.contains('Gold') == true ? 1 : 0;
-      final avgWtValue = row
-              .getCells()
-              .firstWhere((c) => c.columnName == "Avg Wt(Pcs)")
-              .value ??
-          0;
-      double avgWt = row
-                  .getCells()
-                  .firstWhere((c) => c.columnName == "Avg Wt(Pcs)")
-                  .value *
-              1.0 ??
-          0;
-      double Wt =
-          row.getCells().firstWhere((c) => c.columnName == "Wt").value * 1.0 ??
-              0;
-
-      // Recalculate Wt
-      if (Wt != 0) {
-        dataGridRows[rowIndex] = DataGridRow(cells: [
-          for (var cell in row.getCells())
-            if (cell.columnName == "Avg Wt(Pcs)")
-              DataGridCell<double>(
-                columnName: cell.columnName,
-                value: Wt / (pcsValue == 0 ? 1 : pcsValue),
-              )
-            else
-              cell,
-        ]);
-      } else if (avgWt != 0) {
-        dataGridRows[rowIndex] = DataGridRow(cells: [
-          for (var cell in row.getCells())
-            if (cell.columnName == "Wt")
-              DataGridCell<double>(
-                columnName: cell.columnName,
-                value: pcsValue * avgWtValue * 1.0,
-              )
-            else
-              cell,
-        ]);
-      }
-    }
-  }
-
-  // Method to calculate column summation for a summary row
-  DataGridRow getSummaryRow() {
-    final Map<String, double> columnTotals = {};
-
-    for (final row in dataGridRows) {
-      for (final cell in row.getCells()) {
-        if (cell.value is num) {
-          columnTotals[cell.columnName] =
-              (columnTotals[cell.columnName] ?? 0) + cell.value;
-        }
-      }
-    }
-
-    return DataGridRow(
-      cells: [
-        for (var entry in columnTotals.entries)
-          DataGridCell<double>(
-            columnName: entry.key,
-            value: entry.value,
-          ),
-      ],
-    );
-  }
-
-  void updateDataGridSource() {
-    notifyListeners();
-  }
-
-  @override
-  DataGridRowAdapter buildRow(DataGridRow row) {
-    return DataGridRowAdapter(
-      cells: row.getCells().map<Widget>((dataCell) {
-        if (dataCell.columnName == 'Actions') {
-          return IconButton(
-            icon: Icon(Icons.delete),
-            onPressed: () => onDelete(row),
-          );
-        }
-
-        bool isMetalRow = row.getCells().any(
-            (cell) => cell.columnName == 'Item Group' && cell.value == 'Metal');
-        bool isGoldRow = row.getCells().any((cell) =>
-            cell.columnName == 'Item Group' && cell.value == 'Metal - Gold');
-        bool isPcsColumn = dataCell.columnName == 'Pcs';
-
-        return Builder(
-          builder: (BuildContext context) {
-            return InkWell(
-              onDoubleTap: () {
-                print("double tap");
-                if (dataCell.columnName == 'Variant Name') {
-                  print("duble tap ${dataCell.value}");
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return Dialog(
-                        alignment: Alignment.bottomCenter,
-                        backgroundColor: Colors.transparent,
-                        child: Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height * 0.5,
-                          // 45% of screen height
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius:
-                                BorderRadius.vertical(top: Radius.circular(16)),
-                          ),
-                          padding: EdgeInsets.all(16),
-                          child: procumentBomOprDialog(
-                            dataCell.value,
-                            dataGridRows.indexOf(row),
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                }
-              },
-              child: Container(
-                alignment: Alignment.center,
-                child: TextField(
-                  onSubmitted: (value) {
-                    int parsedValue = int.tryParse(value) ?? 0;
-                    int rowIndex = dataGridRows.indexOf(row);
-
-                    // Update the _rows list directly
-                    dataGridRows[rowIndex] = DataGridRow(cells: [
-                      for (var cell in row.getCells())
-                        if (cell == dataCell)
-                          DataGridCell<int>(
-                            columnName: cell.columnName,
-                            value: parsedValue,
-                          )
-                        else if (cell.columnName == "Wt")
-                          // Recalculate Wt as Pcs * Avg Wt(Pcs)
-                          DataGridCell<double>(
-                            columnName: cell.columnName,
-                            value: row
-                                    .getCells()
-                                    .firstWhere((c) => c.columnName == "Pcs")
-                                    .value *
-                                1.0 *
-                                row
-                                    .getCells()
-                                    .firstWhere(
-                                        (c) => c.columnName == "Avg Wt(Pcs)")
-                                    .value,
-                          )
-                        else
-                          cell,
-                    ]);
-
-                    recalculateWt();
-                    onEdit();
-                  },
-                  controller: TextEditingController(
-                    text: dataCell.value.toString(),
-                  ),
-                  keyboardType: TextInputType.number,
-                  enabled: !(isGoldRow && isPcsColumn),
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    isDense: true,
-                  ),
-                ),
-              ),
-            );
-          },
-        );
-      }).toList(),
     );
   }
 }

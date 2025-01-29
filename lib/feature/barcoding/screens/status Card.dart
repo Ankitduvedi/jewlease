@@ -6,6 +6,7 @@ class StatusCard extends StatelessWidget {
   final String note;
   final String status1;
   final String status2;
+  final bool isSelected;
 
   const StatusCard({
     Key? key,
@@ -14,6 +15,7 @@ class StatusCard extends StatelessWidget {
     required this.note,
     required this.status1,
     required this.status2,
+    required this.isSelected,
   }) : super(key: key);
 
   @override
@@ -21,7 +23,7 @@ class StatusCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        color: Color(0xff075184),
+        color: isSelected ? Color(0xff075184) : Colors.white,
       ),
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 7),
       child: Row(
@@ -35,7 +37,7 @@ class StatusCard extends StatelessWidget {
                 Text(
                   date,
                   style: TextStyle(
-                    color: Colors.white70,
+                    color: isSelected ? Colors.white70 : Colors.black,
                     fontSize: 10,
                   ),
                 ),
@@ -54,7 +56,7 @@ class StatusCard extends StatelessWidget {
                 Text(
                   note,
                   style: TextStyle(
-                    color: Colors.white,
+                    color: isSelected ? Colors.white : Colors.black,
                     fontWeight: FontWeight.w600,
                     fontSize: 11,
                   ),

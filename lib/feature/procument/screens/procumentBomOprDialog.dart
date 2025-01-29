@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/feature/procument/screens/procumenOprGrid.dart';
 import 'package:jewlease/feature/procument/screens/procumentBomGrid.dart';
-import 'package:jewlease/feature/procument/screens/procumentGridSource.dart';
+import 'package:jewlease/feature/procument/screens/procumentBomGridSource.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 import '../../../main.dart';
@@ -16,10 +16,12 @@ import '../controller/procumentFormulaController.dart';
 import 'formulaGrid.dart';
 
 class procumentBomOprDialog extends ConsumerStatefulWidget {
-  procumentBomOprDialog(this.VarientName, this.VairentIndex, {super.key});
+  procumentBomOprDialog(this.VarientName, this.VairentIndex, this.canEdit,
+      {super.key});
 
   final String VarientName;
   final int VairentIndex;
+  final bool canEdit;
 
   @override
   _procumentGridState createState() => _procumentGridState();
@@ -29,8 +31,8 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
   final DataGridController _dataGridController = DataGridController();
   List<DataGridRow> _bomRows = [];
   List<DataGridRow> _OpeationRows = [];
-  late procumentGridSource _bomDataGridSource;
-  late procumentGridSource _oprDataGridSource;
+  late procumentBomGridSource _bomDataGridSource;
+  late procumentBomGridSource _oprDataGridSource;
   bool isShowFormula = false;
   int selectedBomForRow = -1;
 
@@ -38,10 +40,10 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
   void initState() {
     super.initState();
     initializeBomOpr();
-    _bomDataGridSource = procumentGridSource(
-        _bomRows, _removeRow, _updateBomSummaryRow, showFormula);
-    _oprDataGridSource = procumentGridSource(
-        _OpeationRows, _removeRow, _updateBomSummaryRow, showFormula);
+    _bomDataGridSource = procumentBomGridSource(_bomRows, _removeRow,
+        _updateBomSummaryRow, showFormula, widget.canEdit);
+    _oprDataGridSource = procumentBomGridSource(_OpeationRows, _removeRow,
+        _updateBomSummaryRow, showFormula, widget.canEdit);
   }
 
   @override
@@ -92,6 +94,7 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
                         children: [
                           TextButton(
                             onPressed: () {
+                              if (widget.canEdit == false) return;
                               showDialog(
                                   context: context,
                                   builder: (context) => AlertDialog(
@@ -118,6 +121,7 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
                             onSelected: (String value) {
                               // When an item is selected, add a new row with the item group
                               log("choosen Item $value");
+                              if (widget.canEdit == false) return;
 
                               if (value.contains('Gold')) {
                                 showProcumentdialog(
@@ -129,7 +133,7 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
                                     value);
                               else if (value.contains('Diamond'))
                                 showProcumentdialog(
-                                    "ItemMasterAndVariants/Stone/Diamond/Variant/",
+                                    "ItemMasterAndVariants/Stone/Diamond/Varient/",
                                     value);
                               else if (value.contains('Bronze'))
                                 showProcumentdialog(
@@ -230,11 +234,13 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
           if (isShowFormula)
             FormulaDataGrid(widget.VarientName, widget.VairentIndex),
           if (!isShowFormula)
-            ProcumentOperationGrid(
-                operationType: 'Operation',
-                gridWidth: gridWidth,
-                dataGridController: _dataGridController,
-                oprDataGridSource: _oprDataGridSource)
+            Expanded(
+              child: ProcumentOperationGrid(
+                  operationType: 'Operation',
+                  gridWidth: gridWidth,
+                  dataGridController: _dataGridController,
+                  oprDataGridSource: _oprDataGridSource),
+            )
         ],
       ),
     );
@@ -301,7 +307,9 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
         DataGridRow(cells: [
           DataGridCell<String>(columnName: 'Variant Name', value: variantName),
           DataGridCell<String>(columnName: 'Item Group', value: itemGroup),
-          DataGridCell<int>(columnName: 'Pieces', value: 0),
+          DataGridCell<int>(
+              columnName: 'Pieces',
+              value: itemGroup.contains('Diamond') ? 1 : 0),
           DataGridCell<double>(columnName: 'Weight', value: 0.0),
           DataGridCell(columnName: 'Rate', value: 0.0),
           DataGridCell<double>(columnName: 'Avg Wt(Pcs)', value: 0.0),
@@ -353,12 +361,12 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
     List<dynamic> listOfBoms = varientData!["BOM"]["data"];
 
     _bomRows = listOfBoms.map((bom) {
-      print("bom is $bom");
+      print("bom is ${bom[2]}${bom[2].runtimeType}");
       return DataGridRow(cells: [
         DataGridCell<String>(columnName: 'Variant Name', value: bom[0]),
         DataGridCell<String>(columnName: 'Item Group', value: bom[1]),
-        DataGridCell<int>(columnName: 'Pieces', value: bom[2]),
-        DataGridCell<double>(columnName: 'Weight', value: bom[3] * 1.0),
+        DataGridCell(columnName: 'Pieces', value: bom[2]),
+        DataGridCell(columnName: 'Weight', value: bom[3] * 1.0),
         DataGridCell(columnName: 'Rate', value: bom[4]),
         DataGridCell<double>(columnName: 'Avg Wt(Pcs)', value: bom[5] * 1.0),
         DataGridCell(columnName: 'Amount', value: bom[6]),
@@ -406,7 +414,16 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
     double totalAmount = 0.0;
 
     for (var i = 1; i < _bomRows.length; i++) {
-      totalPcs += _bomRows[i].getCells()[2].value as int;
+      var tPcs = _bomRows[i].getCells()[2].value;
+
+      if (tPcs is double) {
+        totalPcs += tPcs.toInt(); // Convert to int
+      } else if (tPcs is int) {
+        totalPcs += tPcs; // Directly assign if already an int
+      } else {
+        totalPcs += 1; // Default or handle unexpected types
+      }
+
       totalWt += _bomRows[i].getCells()[3].value ?? 0 * 1.0 as double;
       totalRate += _bomRows[i].getCells()[4].value ?? 0 * 1.0 as double;
       totalAmount += _bomRows[i].getCells()[6].value ?? 0.0 as double;
@@ -418,7 +435,7 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
       _bomRows[0] = DataGridRow(cells: [
         DataGridCell<String>(columnName: 'Variant Name', value: 'Summary'),
         DataGridCell<String>(columnName: 'Item Group', value: ''),
-        DataGridCell<int>(columnName: 'Pieces', value: totalPcs),
+        DataGridCell<int>(columnName: 'Pieces', value: 1),
         DataGridCell<double>(columnName: 'Weight', value: totalWt),
         DataGridCell<double>(columnName: 'Rate', value: totalRate),
         DataGridCell<double>(columnName: 'Avg Wt(Pcs)', value: avgWtPcs),
@@ -460,6 +477,18 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
       key: (cell) => "${cell.columnName}",
       value: (cell) => cell.value,
     );
+    double stoneWeight = 0;
+    double stonePieces = 0;
+    for (var row in _bomRows) {
+      if (row.getCells()[1].value.contains('Diamond')) {
+        stoneWeight += row.getCells()[3].value;
+        stonePieces += row.getCells()[2].value * 1.0;
+      }
+      print("stone pieces ${row.getCells()[2].value}");
+    }
+    print("updated stone weight is ${stoneWeight} $stonePieces");
+    if (stoneWeight != 0) updatedVarient["Stone Wt"] = stoneWeight;
+    updatedVarient["Stone Pieces"] = stonePieces;
     updatedVarient["varientIndex"] = widget.VairentIndex;
     updatedVarient["Variant Name"] = widget.VarientName;
     updatedVarient["BOM"] = {"data": updatedBom, "Headers": bomHeader};

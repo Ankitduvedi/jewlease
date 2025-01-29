@@ -43,22 +43,22 @@ class _BarcodeHeaderState extends ConsumerState<BarcodeHeader> {
   void intializeCurrentItem() {
     currentStock =
         ref.read(inventoryControllerProvider.notifier).getCurrentItem()!;
+    print("current stock is $currentStock");
     StockDetails stockDetails = StockDetails(
-      stockQty: currentStock.Pieces,
-      tagCreated: 0,
-      remaining: currentStock.Pieces,
-      balPcs: currentStock.stonePiece,
-      balWt: currentStock.stoneWeight + currentStock.metalWeight,
-      balMetWt: currentStock.metalWeight,
-      balStonePcs: currentStock.stonePiece,
-      balStoneWt: currentStock.stoneWeight,
-      balFindPcs: 0,
-      balFindWt: 0,
-      currentWt: currentStock.stoneWeight + currentStock.metalWeight,
-    );
+        stockQty: currentStock.Pieces,
+        tagCreated: 0,
+        remaining: currentStock.Pieces,
+        balPcs: currentStock.diaPieces,
+        balWt: currentStock.diaWeight + currentStock.metalWeight,
+        balMetWt: currentStock.metalWeight,
+        balStonePcs: currentStock.diaPieces,
+        balStoneWt: currentStock.diaWeight,
+        balFindPcs: 0,
+        balFindWt: 0,
+        currentWt: currentStock.metalWeight);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(stockDetailsProvider.notifier).initialize(stockDetails);
-      _grossWeightController.text = stockDetails.balWt.toString();
+      _grossWeightController.text = stockDetails.balMetWt.toString();
       _physicalQtyController.text = stockDetails.stockQty.toString();
     });
   }

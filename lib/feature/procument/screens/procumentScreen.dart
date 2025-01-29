@@ -3,16 +3,18 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:jewlease/core/utils/utils.dart';
 import 'package:jewlease/feature/formula/controller/formula_prtocedure_controller.dart';
 import 'package:jewlease/main.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 
+import '../../../core/routes/go_router.dart';
 import '../../vendor/controller/procumentVendor_controller.dart';
 import '../controller/procumentVarientFormula.dart';
 import '../controller/procumentVendorDailog.dart';
 import '../controller/procumentcController.dart';
-import 'dialog.dart';
 import 'procumentSummeryScreen.dart';
+import 'procumentVendorDialog.dart';
 
 final tabIndexProvider = StateProvider<int>((ref) => 0);
 
@@ -33,10 +35,10 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
   void initState() {
     // TODO: implement initState
     Future.delayed(
-        Duration(seconds: 2),
+        Duration(milliseconds: 500),
         () => showDialog(
             context: context,
-            builder: (context) => Dialog(child: procumentDialog())));
+            builder: (context) => Dialog(child: procumentVendorDialog())));
     // showDialog(context: context, builder: (context) => procumentDialog());
     super.initState();
   }
@@ -75,10 +77,10 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
       "imageDetails": input["Image Details"],
       "formulaDetails": input["Formula Details"],
       "pieces": input["Pieces"],
-      "weight": input["Weight"],
-      "netWeight": input["Net Weight"],
-      "diaWeight": input["Dia Weight"],
-      "diaPieces": input["Dia Pieces"],
+      "weight": (input["Weight"] ?? 0) - (input["Stone Wt"] ?? 0),
+      "netWeight": input["Weight"] ?? 0,
+      "diaWeight": input["Stone Wt"] ?? 0,
+      "diaPieces": input["Stone Pieces"] ?? 0,
       "loactionCode": input["Location Code"],
     };
   }
@@ -206,20 +208,20 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
 
                           varientList[i]["Formula Details"] = formulaJsonMap;
                           allFormulas = [];
+                          print("varientList is ${varientList[i]}");
                           Map<String, dynamic> reuestBody =
                               convertToSchema(varientList[i]);
                           reuestBody["vendor"] =
                               ref.read(pocVendorProvider)["Vendor Name"];
+
                           reuestBody["vendorCode"] =
                               ref.read(pocVendorProvider)["Vendor Code"];
                           reuestBody["location"] = "warehouse";
-                          reuestBody["department"] = "";
+                          reuestBody["department"] = "MH_CASH";
                           reuestBody["itemGroup"] = reuestBody["style"];
                           reuestBody["metalColor"] = reuestBody["Karat Color"];
                           reuestBody["styleMetalColor"] =
                               reuestBody["Karat Color"];
-                          reuestBody["pieces"] = 5;
-                          reuestBody["netWeight"] = reuestBody["weight"];
 
                           print("req body is $reuestBody");
 
@@ -227,6 +229,9 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
                               .read(procurementControllerProvider.notifier)
                               .sendGRN(reuestBody);
                         }
+                        Utils.snackBar("Varient Aadded", context);
+                        goRouter.go("/");
+                        // Navigator.pop(context);
                       },
                       () {
                         // Reset the provider value to null on refresh

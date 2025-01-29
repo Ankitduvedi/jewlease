@@ -21,9 +21,9 @@ class ProcurementRepository {
         ),
       );
       print("status code ${response.statusCode}  ");
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         print("stock code is ${response.data}");
-        return response.data; // Return response string
+        return response.data["stockId"]; // Return response string
       } else {
         throw Exception("Failed to send GRN: ${response.data}");
       }
