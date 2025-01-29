@@ -156,7 +156,7 @@ class AddFormulaMappingScreenState
               context: context,
               builder: (context) => const ItemTypeDialogScreen(
                 title: 'Transaction Type',
-                endUrl: 'Master/PartySpecific/vendors/',
+                endUrl: 'FormulaProcedures/TransactionType/FormulaMapping',
                 value: 'Transaction Type',
               ),
             );

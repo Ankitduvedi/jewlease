@@ -55,8 +55,10 @@ class DrawerList extends StatelessWidget {
       children: [
         DrawerItem(
           icon: Icons.dashboard_outlined,
-          title: 'Pending Document(Trans)',
-          onTap: () {},
+          title: 'Departments',
+          onTap: () {
+            context.push('/departmentHomeScreen');
+          },
         ),
         DrawerExpansionItem(
           icon: Icons.currency_rupee,

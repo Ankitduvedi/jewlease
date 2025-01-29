@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:go_router/go_router.dart';
 import 'package:jewlease/core/routes/navigation_const.dart';
 import 'package:jewlease/feature/all_attributes/screen/all_attribute_screen.dart';
@@ -5,6 +6,8 @@ import 'package:jewlease/feature/all_attributes/screen/new_attribute_screen.dart
 import 'package:jewlease/feature/auth/screens/login_screen_owner.dart';
 import 'package:jewlease/feature/auth/screens/login_screen_staff.dart';
 import 'package:jewlease/feature/barcoding/screens/barCodeGeneration.dart';
+import 'package:jewlease/feature/department/screen/add_department_screen.dart';
+import 'package:jewlease/feature/department/screen/department_home_screen.dart';
 import 'package:jewlease/feature/formula/screens/addFormulaProcedure.dart';
 import 'package:jewlease/feature/formula/screens/add_formula_mapping.dart';
 import 'package:jewlease/feature/formula/screens/excelScreen.dart';
@@ -35,7 +38,6 @@ import 'package:jewlease/feature/transfer/screens/transfer_screen.dart';
 import 'package:jewlease/feature/vendor/screens/Bom&Operation.dart';
 import 'package:jewlease/feature/vendor/screens/new_vendor_screen.dart';
 import 'package:jewlease/feature/vendor/screens/vendor_screen.dart';
-
 import '../../feature/barcoding/screens/barcoding_screen.dart';
 import '../../feature/inventoryManagement/screens/inventoryScreen.dart';
 import '../../feature/item_specific/screens/add_style_variant.dart';
@@ -101,6 +103,18 @@ final goRouter = GoRouter(
             path: '/',
             builder: (context, state) => const HomeScreen(),
           ),
+          GoRoute(
+              path: '/departmentHomeScreen',
+              builder: (context, state) {
+                return const DepartmentHomeScreen();
+              },
+              routes: [
+                GoRoute(
+                    path: 'adddDepartmentScreen',
+                    builder: (context, state) {
+                      return const AddDepartmentScreen();
+                    }),
+              ]),
           GoRoute(
               path: '/masterScreen',
               builder: (context, state) {
@@ -229,11 +243,11 @@ final goRouter = GoRouter(
           GoRoute(
               path: '/addformulaProcedureScreen',
               builder: (context, state) {
-                print("going through route");
-                print("stat is ${state.extra}");
+                log("going through route");
+                log("stat is ${state.extra}");
                 final extraData = state.extra as Map<String, dynamic>;
                 // as Map<String, dynamic>; // Cast to the expected type
-                print("print extra data $extraData");
+                log("print extra data $extraData");
                 return AddFormulaProcedure(
                   ProcedureType: extraData != null
                       ? extraData['Procedure Type'] ?? ''
