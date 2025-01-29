@@ -53,7 +53,6 @@ class AddStyleVariantScreenState extends ConsumerState<AddStyleVariantScreen> {
   @override
   Widget build(BuildContext context) {
     final selectedContent = ref.watch(formSequenceProvider);
-    final isChecked = ref.watch(chechkBoxSelectionProvider);
     final textFieldvalues = ref.watch(dialogSelectionProvider);
     final dropDownValue = ref.watch(dropDownProvider);
     final masterType = ref.watch(masterTypeProvider);
@@ -119,10 +118,10 @@ class AddStyleVariantScreenState extends ConsumerState<AddStyleVariantScreen> {
                   vendorVarient: 'vendorVarient',
                   remark2: 'remark2',
                   createdBy: 'createdBy',
-                  stdBuyingRate: stdBuyingRate.text ?? "0",
-                  stoneMaxWt: stoneMaxWt.text ?? "0",
+                  stdBuyingRate: stdBuyingRate.text,
+                  stoneMaxWt: stoneMaxWt.text,
                   remark: 'remark',
-                  stoneMinWt: stoneMinWt.text ?? "0",
+                  stoneMinWt: stoneMinWt.text,
                   karatColor: 'karatColor',
                   deliveryDays: 0,
                   forWeb: 'forWeb',

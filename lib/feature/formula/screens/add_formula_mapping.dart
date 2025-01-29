@@ -6,6 +6,8 @@ import 'package:jewlease/feature/item_specific/controller/item_master_and_varian
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
 import 'package:jewlease/widgets/drop_down_text_field.dart';
+import 'package:jewlease/widgets/read_only_textfield_widget.dart';
+import 'package:jewlease/widgets/search_dailog_widget.dart';
 import 'package:jewlease/widgets/text_field_widget.dart';
 
 class AddFormulaMappingScreen extends ConsumerStatefulWidget {
@@ -127,6 +129,7 @@ class AddFormulaMappingScreenState
   }
 
   Widget parentForm() {
+    final textFieldvalues = ref.watch(dialogSelectionProvider);
     return GridView.count(
       crossAxisCount: 6,
       crossAxisSpacing: 10,
@@ -143,6 +146,44 @@ class AddFormulaMappingScreenState
             'Service Charges - Payable'
           ],
           labelText: 'Procedure Type',
+        ),
+        ReadOnlyTextFieldWidget(
+          hintText: textFieldvalues['Transaction Type'] ?? 'Transaction Type',
+          labelText: 'Transaction Type',
+          icon: Icons.search,
+          onIconPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) => const ItemTypeDialogScreen(
+                title: 'Transaction Type',
+                endUrl: 'Master/PartySpecific/vendors/',
+                value: 'Transaction Type',
+              ),
+            );
+          },
+        ),
+        const DropDownTextFieldWidget(
+          initialValue: 'READY TO SHIP ORDER (0)',
+          items: [
+            'READY TO SHIP ORDER (0)',
+            'READY TO SHIP ORDER (115)',
+          ],
+          labelText: 'Trans Category',
+        ),
+        ReadOnlyTextFieldWidget(
+          hintText: textFieldvalues['Document Type'] ?? 'Document Type',
+          labelText: 'Document Type',
+          icon: Icons.search,
+          onIconPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) => const ItemTypeDialogScreen(
+                title: 'Document Type',
+                endUrl: 'Master/PartySpecific/vendors/',
+                value: 'Document Type',
+              ),
+            );
+          },
         ),
         TextFieldWidget(
           controller: setCode,
