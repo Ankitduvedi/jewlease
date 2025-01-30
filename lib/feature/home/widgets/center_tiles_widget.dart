@@ -42,11 +42,15 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
         icon: Icons.store,
         color: Colors.green,
         key: ValueKey('RM Inventory Management')),
-    const _buildTile(
-        title: 'Migrations',
-        icon: Icons.cloud_upload,
-        color: Color.fromARGB(255, 7, 159, 229),
-        key: ValueKey('Migrations')),
+    _buildTile(
+      title: 'Sub Contractiing',
+      icon: Icons.cloud_upload,
+      color: Color.fromARGB(255, 7, 159, 229),
+      key: ValueKey('Sub Contracting'),
+      onTap: () {
+        goRouter.go('/subContracting');
+      },
+    ),
     const _buildTile(
         title: 'Generic Masters',
         icon: Icons.layers,
@@ -61,16 +65,25 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
         goRouter.go('/DataGrid');
       },
     ),
-    const _buildTile(
-        title: 'Order Management',
-        icon: Icons.list_alt,
-        color: Colors.blueAccent,
-        key: ValueKey('Order Management')),
     _buildTile(
-        title: 'Invoicing',
-        icon: Icons.receipt,
-        color: Colors.orange.shade200,
-        key: const ValueKey('Invoicing')),
+      title: 'Transfer Location',
+      icon: Icons.list_alt,
+      color: Colors.blueAccent,
+      key: ValueKey('Transfer Location'),
+      onTap: () {
+        goRouter.go('/transferOutwardLocation');
+      },
+    ),
+    _buildTile(
+      title: 'Transfer',
+      icon: Icons.receipt,
+      color: Colors.orange.shade200,
+      key: const ValueKey('Invoicing'),
+      onTap: () {
+        print("called her");
+        goRouter.go('/transferScreen');
+      },
+    ),
     _buildTile(
       title: 'Procurement',
       icon: Icons.shopping_cart,

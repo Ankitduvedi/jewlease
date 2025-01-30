@@ -222,8 +222,8 @@ class InventoryItemModel {
         inwardDocLastTrans: json['Inward Doc Last Trans'] ?? '',
         reserveInd: json['Reserve Ind'] ?? false,
         barcodeInd: json['Barcode Ind'] ?? false,
-        locationCode: json['Transit Location Code'] ?? '',
-        locationName: json['Location Name'] ?? '',
+        locationCode: json['Location Code'] ?? '',
+        locationName: json['Location'] ?? '',
         wcGroupName: json['WC Group Name'] ?? '',
         customerJobworker: json['Customer Jobworker'] ?? '',
         halimarking: json['Halimarking'] ?? '',
@@ -301,6 +301,7 @@ class InventoryItemModel {
       'hsnSacCode': hsnSacCode ?? '',
       'lineOfBusiness': lob ?? '',
       'bom': bom ?? {},
+      'operation': operation ?? {},
       // Assuming BOM is another object that needs to be converted
       'formulaDetails': formula ?? {},
       // Assuming formula is another object that needs to be converted

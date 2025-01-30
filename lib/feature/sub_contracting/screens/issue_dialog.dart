@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:jewlease/main.dart';
 
-import '../../../providers/dailog_selection_provider.dart';
-import '../../../widgets/read_only_textfield_widget.dart';
-import '../../../widgets/search_dailog_widget.dart';
-import '../controller/procumentVendorDailog.dart';
+import '../../../../main.dart';
+import '../../../../providers/dailog_selection_provider.dart';
+import '../../../../widgets/read_only_textfield_widget.dart';
+import '../../../../widgets/search_dailog_widget.dart';
+import '../../procument/controller/procumentVendorDailog.dart';
 
-class procumentDialog extends ConsumerStatefulWidget {
+class IssueDialog extends ConsumerStatefulWidget {
+  const IssueDialog({super.key});
+
   @override
-  _procumentDialogState createState() => _procumentDialogState();
+  ConsumerState<IssueDialog> createState() => _IssueDialogState();
 }
 
-class _procumentDialogState extends ConsumerState<procumentDialog> {
+class _IssueDialogState extends ConsumerState<IssueDialog> {
   String getCurrentDate() {
     return DateFormat('dd/MM/yyyy').format(DateTime.now());
   }
@@ -44,15 +46,25 @@ class _procumentDialogState extends ConsumerState<procumentDialog> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Goods Reciept Note'),
+                Text(
+                  'Transfer Outward',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
+                ),
                 InkWell(
                   onTap: () {
                     Navigator.pop(context);
                   },
                   child: Row(
                     children: [
-                      Text('Esc to Close'),
-                      Icon(Icons.close),
+                      Text(
+                        'Esc to Close',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      Icon(
+                        Icons.close,
+                        color: Colors.white,
+                      ),
                     ],
                   ),
                 )
@@ -115,15 +127,15 @@ class _procumentDialogState extends ConsumerState<procumentDialog> {
                       height: screenHeight * 0.05,
                       width: screenWidth * 0.1,
                       child: ReadOnlyTextFieldWidget(
-                        labelText: 'Vendor',
+                        labelText: 'Destination',
                         hintText:
-                            textFieldvalues['Vendor Name'] ?? 'Choose Vendor',
+                            textFieldvalues['Vendor Name'] ?? 'DESTINATION',
                         icon: Icons.search,
                         onIconPressed: () {
                           showDialog(
                             context: context,
                             builder: (context) => ItemTypeDialogScreen(
-                              title: 'Choose Vendor',
+                              title: 'Choose Destination',
                               endUrl: 'Master/PartySpecific/vendors/',
                               value: 'Vendor Name',
                               keyOfMap: 'Vendor Name',
@@ -177,7 +189,7 @@ class _procumentDialogState extends ConsumerState<procumentDialog> {
                     child: Center(
                         child: Text(
                       'Done',
-                      style: TextStyle(fontSize: 12),
+                      style: TextStyle(fontSize: 12, color: Colors.white),
                     )),
                   ),
                 ),

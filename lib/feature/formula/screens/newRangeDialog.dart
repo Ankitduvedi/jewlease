@@ -90,16 +90,13 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
 
       final String jsonData2 = jsonEncode(excel["Details"]["excelData"]);
       Future.delayed(Duration(seconds: 1), () {
+        print("initializing excel $jsonData2");
         webViewController?.evaluateJavascript(
           source: "updateHandsontableData('$jsonData2');",
         );
       });
       ref.read(excelLoadingProvider.notifier).state = false;
-      // Future.delayed(Duration(seconds: 2), () {
-      //   setState(() {});
 
-      //   setState(() {});
-      // });
       ref.read(excelLoadingProvider.notifier).state = false;
       setState(() {});
     }
@@ -539,7 +536,6 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
                                         height: screenHeight,
                                         width: screenWidth,
                                         child: InAppWebView(
-                                            // initialFile: "assets/range.html",
                                             initialUrlRequest: URLRequest(
                                                 url: WebUri.uri(Uri.file(
                                                     "C:/Users/ASUS/StudioProjects/jewlease/lib/range.html"))),
@@ -575,6 +571,17 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
                                                     ?.evaluateJavascript(
                                                   source:
                                                       "updateHandsontableData('$jsonData2');",
+                                                );
+                                              });
+                                              final String excelHeaders =
+                                                  jsonEncode(excel["Details"]
+                                                      ["Headers"]);
+                                              Future.delayed(
+                                                  Duration(seconds: 1), () {
+                                                webViewController
+                                                    ?.evaluateJavascript(
+                                                  source:
+                                                      "addCustomHeaderRow('$excelHeaders');",
                                                 );
                                               });
                                             },
@@ -734,9 +741,9 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
 
   // Function to call the JavaScript function and pass header values
   void _callAddHeaderRow(List<String> headerValues) async {
+    String excelHeaders = jsonEncode(headerValues);
     print("header values $headerValues");
-    String jsCode =
-        """addCustomHeaderRow(${headerValues.map((e) => '"$e"').toList()});""";
+    String jsCode = "addCustomHeaderRow('$excelHeaders');";
     if (webViewController != null) {
       print("js code is $jsCode");
       await webViewController!.evaluateJavascript(source: jsCode);

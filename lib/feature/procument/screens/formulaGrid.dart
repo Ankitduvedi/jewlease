@@ -25,7 +25,7 @@ class FormulaDataGrid extends ConsumerStatefulWidget {
 class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
   final DataGridController _dataGridController = DataGridController();
   List<DataGridRow> _rows = [];
-  late formulaGridSource _dataGridSource;
+  late formulaGridSource _formulaGridSource;
   List<String> formulas = [];
   List<dynamic> formulaExcel = [];
   Map<dynamic, dynamic> rangeExcelData = {};
@@ -42,7 +42,7 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
   void initState() {
     fetchVarientAttributes();
     super.initState();
-    _dataGridSource = formulaGridSource(_rows, _removeRow, _updateSummaryRow,
+    _formulaGridSource = formulaGridSource(_rows, _removeRow, _updateSummaryRow,
         formulaExcel, [], rangeExcelData, varientAttribute);
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       _initializeRows();
@@ -73,7 +73,7 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
   void _removeRow(DataGridRow row) {
     setState(() {
       _rows.remove(row);
-      _dataGridSource.updateDataGridSource();
+      _formulaGridSource.updateDataGridSource();
       _updateSummaryRow(_rows);
     });
   }
@@ -125,18 +125,19 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
     List<List<dynamic>> excelData = [];
     Map<String, dynamic> data = await ref
         .read(formulaProcedureControllerProvider.notifier)
-        .fetchFormulaExcel('Gold Final4', context);
+        .fetchFormulaExcel('Gold Final5', context);
 
     rangeExcelData = await ref
         .read(formulaProcedureControllerProvider.notifier)
-        .fetchRangeMasterExcel('12 jan', context);
+        .fetchRangeMasterExcel('15 jan', context);
     print("range master excel is $data  $rangeExcelData");
     formulaExcel = data["Excel Detail"]["data"];
     for (int i = 0; i < formulaExcel.length; i++) {
       excelData.add(formulaExcel[i]);
     }
-    print("excel data is $excelData");
+    print("formulaexcel data is $excelData");
     List<dynamic> excelHeader = data["Excel Detail"]["headers"];
+    print("formula excelheader is $excelHeader");
     for (int i = 0; i < formulaExcel.length; i++) {
       formulas.add(excelData[i][excelHeader.indexOf("Formula")]);
       _rows.add(DataGridRow(cells: [
@@ -155,7 +156,7 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
         DataGridCell<double>(columnName: 'Range', value: 0),
       ]));
     }
-    _dataGridSource = formulaGridSource(_rows, _removeRow, _updateSummaryRow,
+    _formulaGridSource = formulaGridSource(_rows, _removeRow, _updateSummaryRow,
         formulaExcel, excelHeader, rangeExcelData, varientAttribute);
     setState(() {});
   }
@@ -205,7 +206,7 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
                       child: SfDataGrid(
                         rowHeight: 40,
                         headerRowHeight: 40,
-                        source: _dataGridSource,
+                        source: _formulaGridSource,
                         controller: _dataGridController,
                         footerFrozenColumnsCount: 1,
                         // Freeze the last column

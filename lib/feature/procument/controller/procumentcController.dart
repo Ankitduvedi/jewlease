@@ -38,7 +38,7 @@ class ProcurementController extends StateNotifier<AsyncValue<void>> {
   ProcurementController(this._repository, this._ref)
       : super(const AsyncValue.data(null));
 
-  Future<void> sendGRN(Map<String, dynamic> grnData) async {
+  Future<String> sendGRN(Map<String, dynamic> grnData) async {
     state = const AsyncValue.loading();
     try {
       final response = await _repository.sendGRN(grnData);
@@ -46,9 +46,11 @@ class ProcurementController extends StateNotifier<AsyncValue<void>> {
       _ref
           .read(stocksListProvider.notifier)
           .addStockCode(response); // Add to stocksList
+      return response;
       state = const AsyncValue.data(null);
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
+      return "";
     }
   }
 

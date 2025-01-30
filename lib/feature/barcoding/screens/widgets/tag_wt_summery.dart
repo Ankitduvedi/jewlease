@@ -97,11 +97,14 @@ class _TagWtSummeryState extends ConsumerState<TagWtSummery> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _buildWeightInfo(
-                        "Gross Wt", stockDetails.currentWt.toString()),
+                        "Net Wt", stockDetails.currentNetWt.toString()),
                     _buildWeightInfo(
-                        "Net Wt", stockDetails.currentWt.toString()),
+                        "Metal Wt",
+                        (stockDetails.currentNetWt -
+                                stockDetails.currentStoneWt)
+                            .toString()),
                     _buildWeightInfo(
-                        "Dia Wt", stockDetails.balStoneWt.toString()),
+                        "Dia Wt", stockDetails.currentStoneWt.toString()),
                   ],
                 ),
                 SizedBox(height: 8),

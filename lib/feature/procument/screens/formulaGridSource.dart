@@ -84,16 +84,17 @@ class formulaGridSource extends DataGridSource {
   }
 
   double findMatchingRowValue(Map<String, dynamic> attributes,
-      List<dynamic> headerList, List<List<dynamic>> matrixData) {
+      List<dynamic> rangeHeaderList, List<List<dynamic>> rangeMatrixData) {
     // Copy the matrixData for filtering
-    print("matrix data is $headerList  $matrixData");
-    List<List<dynamic>> filteredRows = List.from(matrixData);
+    print("range headers $rangeHeaderList  rangeMatrix $rangeMatrixData");
+    print("attribute to compare are:  $attributes");
+    List<List<dynamic>> filteredRows = List.from(rangeMatrixData);
 
     // Iterate over each attribute to filter rows
-    for (String rangeheader in headerList) {
+    for (String rangeheader in rangeHeaderList) {
       // Get the index of the column for the current attribute
       if (rangeheader == "Output") continue;
-      int columnIndex = headerList.indexOf(rangeheader);
+      int columnIndex = rangeHeaderList.indexOf(rangeheader);
       print("headerName is $rangeheader columnIndex $columnIndex");
 
       // Get the attribute value to match
@@ -123,6 +124,7 @@ class formulaGridSource extends DataGridSource {
       print(
           "<----------------------row $i update start------------------------->");
       dataGridRows[i] = DataGridRow(cells: [
+        //<----------------Code to update formula grid all value based on formula----------------->
         for (var cell in dataGridRows[i].getCells())
           if (cell.columnName == 'Row Value')
             DataGridCell<double>(
@@ -133,45 +135,32 @@ class formulaGridSource extends DataGridSource {
             cell
       ]);
 
-      if (i == 3) {
+      //<----------------Code to update formula grid range value based on formula----------------->
+      if (i == 2) {
         String? rangeHierarchyName =
-            formulaExcel[i][formulaHeaders.indexOf('Range Value') - 1];
+            formulaExcel[i][formulaHeaders.indexOf('Range Value')];
         print(
             " ${formulaHeaders.indexOf('Range Value')}rangehierarchyName  $rangeHierarchyName currentIndex $updatedRowIndex $formulaExcel");
         if (rangeHierarchyName != null && rangeHierarchyName != "") {
-          double metalWeight = dataGridRows[0]
-                  .getCells()
-                  .firstWhere((cell) => cell.columnName == 'Row Value')
-                  .value *
-              1.0;
-
           List<dynamic> excelData = rangeExcel["Details"]["excelData"];
           List<List<dynamic>> matrixdata = List.from(excelData);
 
-          double? rangeOutput = 1.0;
-          findMatchingRowValue(
+          double? rangeOutput = findMatchingRowValue(
               varientAttributes, rangeExcel["Details"]["Headers"], matrixdata);
           // findOutput("18", metalWeight);
 
           dataGridRows[i] = DataGridRow(cells: [
-            for (var cell in dataGridRows[updatedRowIndex].getCells())
-              if (cell.columnName == 'Range')
+            for (var cell in dataGridRows[i].getCells())
+              if (cell.columnName == 'Row Value')
                 DataGridCell<double>(
                     columnName: cell.columnName, value: rangeOutput)
               else
                 cell
           ]);
-          for (var cell in dataGridRows[updatedRowIndex].getCells()) {
-            print("updated value is ${cell.value} ${cell.columnName}");
+          for (var cell in dataGridRows[i].getCells()) {
+            print("3rd row values is ${cell.columnName} ${cell.value}");
           }
-          print("range output is $rangeOutput ");
         }
-
-        for (var cell in dataGridRows[i].getCells())
-          if (cell.columnName == 'Range')
-            print("updated cell value ${cell.value}");
-          else
-            print("persist value ${cell.value}");
       }
       print(
           "<----------------------row $i update end------------------------->");

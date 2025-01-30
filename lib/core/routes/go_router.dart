@@ -32,6 +32,9 @@ import 'package:jewlease/feature/item_specific/screens/load_data_of_item_master_
 import 'package:jewlease/feature/item_specific/screens/load_data_of_item_master_stone.dart';
 import 'package:jewlease/feature/item_specific/screens/load_data_of_variant_master_gold.dart';
 import 'package:jewlease/feature/item_specific/screens/master_screen.dart';
+import 'package:jewlease/feature/transfer/screens/transfer_inward_location.dart';
+import 'package:jewlease/feature/transfer/screens/transfer_outward_location.dart';
+import 'package:jewlease/feature/transfer/screens/transfer_screen.dart';
 import 'package:jewlease/feature/vendor/screens/Bom&Operation.dart';
 import 'package:jewlease/feature/vendor/screens/new_vendor_screen.dart';
 import 'package:jewlease/feature/vendor/screens/vendor_screen.dart';
@@ -40,6 +43,7 @@ import '../../feature/inventoryManagement/screens/inventoryScreen.dart';
 import '../../feature/item_specific/screens/add_style_variant.dart';
 import '../../feature/procument/screens/procumentScreen.dart';
 import '../../feature/splash_screen/splash_view.dart';
+import '../../feature/sub_contracting/screens/sub_contracing.dart';
 
 final goRouter = GoRouter(
   debugLogDiagnostics: true,
@@ -287,6 +291,26 @@ final goRouter = GoRouter(
               path: '/barcodeGeneration',
               builder: (context, state) {
                 return const BarCodeGeneration();
+              }),
+          GoRoute(
+              path: '/transferScreen',
+              builder: (context, state) {
+                return const TransferScreen();
+              }),
+          GoRoute(
+              path: '/transferOutwardLocation',
+              builder: (context, state) {
+                return const TransferoutwardLoc();
+              }),
+          GoRoute(
+              path: '/transferInwardLocation',
+              builder: (context, state) {
+                return const TransferInwardLoc();
+              }),
+          GoRoute(
+              path: '/subContracting',
+              builder: (context, state) {
+                return const SubContracing();
               }),
         ]),
   ],

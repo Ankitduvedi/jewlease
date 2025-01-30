@@ -11,7 +11,7 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import '../../inventoryManagement/controllers/inventoryController.dart';
 import '../../procument/screens/procumenOprGrid.dart';
 import '../../procument/screens/procumentBomGrid.dart';
-import '../../procument/screens/procumentGridSource.dart';
+import '../../procument/screens/procumentBomGridSource.dart';
 import '../controllers/stockController.dart';
 
 class BarCodeGeneration extends ConsumerStatefulWidget {
@@ -24,8 +24,8 @@ class BarCodeGeneration extends ConsumerStatefulWidget {
 class _BarCodeGenerationState extends ConsumerState<BarCodeGeneration> {
   @override
   final DataGridController _dataGridController = DataGridController();
-  late procumentGridSource _bomDataGridSource;
-  late procumentGridSource _oprDataGridSource;
+  late procumentBomGridSource _bomDataGridSource;
+  late procumentBomGridSource _oprDataGridSource;
   List<DataGridRow> _bomRows = [];
   List<DataGridRow> _OpeationRows = [];
 
@@ -47,14 +47,26 @@ class _BarCodeGenerationState extends ConsumerState<BarCodeGeneration> {
     double totalWt = 0.0;
     double totalRate = 0.0;
     double totalAmount = 0.0;
+    double totalStoneWt = 0.0;
 
     double prevTotalAmount = _bomRows[0].getCells()[6].value * 1.0;
 
     for (var i = 1; i < _bomRows.length; i++) {
-      totalPcs += _bomRows[i].getCells()[2].value as int;
+      if (_bomRows[i].getCells()[2].value is num) {
+        num value = _bomRows[i].getCells()[2].value;
+        totalPcs += value is int ? value : value.toInt();
+      } else {
+        throw Exception(
+            'Invalid value type: ${_bomRows[i].getCells()[2].value.runtimeType}');
+      }
+
       totalWt += _bomRows[i].getCells()[3].value ?? 0 * 1.0 as double;
+      print("wt is ${_bomRows[i].getCells()[3].value}");
       totalRate += _bomRows[i].getCells()[4].value ?? 0 * 1.0 as double;
       totalAmount += _bomRows[i].getCells()[6].value ?? 0.0 as double;
+      if (_bomRows[i].getCells()[1].value.contains("Diamond")) {
+        totalStoneWt += _bomRows[i].getCells()[3].value ?? 0 * 1.0 as double;
+      }
     }
 
     double avgWtPcs = totalPcs > 0 ? totalWt / totalPcs : 0.0;
@@ -74,10 +86,11 @@ class _BarCodeGenerationState extends ConsumerState<BarCodeGeneration> {
         DataGridCell<Widget>(columnName: 'Actions', value: null),
       ]);
     });
+    print("current stone wt $totalStoneWt $totalWt ");
 
     StockDetails prevStockDetails = ref.read(stockDetailsProvider);
-    StockDetails updatedStockDetails =
-        prevStockDetails.copyWith(rate: totalAmount);
+    StockDetails updatedStockDetails = prevStockDetails.copyWith(
+        rate: totalAmount, currentStoneWt: totalStoneWt, currentNetWt: totalWt);
     print("prevTotalAmount $prevTotalAmount totalAmount $totalAmount");
     if (prevTotalAmount != totalAmount)
       ref.read(stockDetailsProvider.notifier).update(updatedStockDetails);
@@ -85,6 +98,7 @@ class _BarCodeGenerationState extends ConsumerState<BarCodeGeneration> {
 
   //<------------------------- Function To update wt   ----------- -------------->
   void _updateWt(String val) {
+    print("_upadte wt runs $val");
     _bomRows[1] = DataGridRow(
         cells: _bomRows[1].getCells().map((cell) {
       if (cell.columnName == 'Weight') {
@@ -115,10 +129,10 @@ class _BarCodeGenerationState extends ConsumerState<BarCodeGeneration> {
     // TODO: implement initState
     super.initState();
     initializeBomOpr();
-    _bomDataGridSource = procumentGridSource(
-        _bomRows, _removeRow, _updateBomSummaryRow, showFormula);
-    _oprDataGridSource = procumentGridSource(
-        _OpeationRows, _removeRow, _updateBomSummaryRow, showFormula);
+    _bomDataGridSource = procumentBomGridSource(
+        _bomRows, _removeRow, _updateBomSummaryRow, showFormula, true);
+    _oprDataGridSource = procumentBomGridSource(
+        _OpeationRows, _removeRow, _updateBomSummaryRow, showFormula, true);
   }
 
   void initializeBomOpr() {
@@ -159,6 +173,7 @@ class _BarCodeGenerationState extends ConsumerState<BarCodeGeneration> {
         DataGridCell<Widget>(columnName: 'Depd Qty', value: null),
       ]);
     }).toList();
+    setState(() {});
   }
 
   Widget build(BuildContext context) {
