@@ -1,6 +1,9 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/data/hive_local_storage/model/location_model.dart';
 import 'package:jewlease/feature/home/right_side_drawer/controller/drawer_controller.dart';
+import 'package:jewlease/feature/home/right_side_drawer/repository/drawer_repository.dart';
 
 class DrawerScreen extends ConsumerWidget {
   const DrawerScreen({super.key});
@@ -83,12 +86,57 @@ class DrawerScreen extends ConsumerWidget {
                 ),
                 _buildDivider(),
                 // Location Dropdown
-                _buildDropdown(
-                  label: 'Location',
-                  value: drawerState.location,
-                  items: ['Head Office (HO)', 'Branch Office'],
-                  onChanged: drawerNotifier.setLocation,
+                Consumer(
+                  builder: (context, ref, child) {
+                    log('in consumer widget');
+                    final locations = ref.watch(locationListProvider);
+                    final selectedLocation =
+                        ref.watch(selectedLocationProvider);
+                    log('Selected Location: ${selectedLocation!.locationName}');
+
+                    if (selectedLocation.locationName.isEmpty) {
+                      return const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Select Location",
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
+                          SizedBox(height: 8),
+                          CircularProgressIndicator(),
+                        ],
+                      );
+                    }
+
+                    return DropdownButton<Location>(
+                      value: locations.firstWhere(
+                        (loc) =>
+                            loc.locationCode == selectedLocation.locationCode,
+                        orElse: () => locations.first,
+                      ), // ✅ Ensure valid selection
+                      isExpanded: true,
+                      items: locations.map((location) {
+                        return DropdownMenuItem<Location>(
+                          value: location,
+                          child: Text(location.locationName),
+                        );
+                      }).toList(),
+                      onTap: () {
+                        ref
+                            .read(locationListProvider.notifier)
+                            .fetchLocations(); // ✅ Fetch new data when opened
+                      },
+                      onChanged: (newValue) {
+                        if (newValue != null) {
+                          log('Selected Location: $newValue');
+                          ref
+                              .read(selectedLocationProvider.notifier)
+                              .setSelectedLocation(newValue);
+                        }
+                      },
+                    );
+                  },
                 ),
+
                 _buildDivider(),
                 // Day Close Switch
                 SwitchListTile(
@@ -162,7 +210,7 @@ class DrawerScreen extends ConsumerWidget {
                             ),
                             child: const Text('Update Session'),
                           )
-                        : SizedBox(),
+                        : const SizedBox(),
                   ],
                 ),
               ],
