@@ -29,9 +29,11 @@ import 'package:jewlease/feature/item_specific/screens/load_data_of_item_master_
 import 'package:jewlease/feature/item_specific/screens/load_data_of_item_master_stone.dart';
 import 'package:jewlease/feature/item_specific/screens/load_data_of_variant_master_gold.dart';
 import 'package:jewlease/feature/item_specific/screens/master_screen.dart';
+import 'package:jewlease/feature/point_of_sale/screens/point_of_sale_screen.dart';
 import 'package:jewlease/feature/transfer/screens/transfer_inward_location.dart';
 import 'package:jewlease/feature/transfer/screens/transfer_outward_location.dart';
 import 'package:jewlease/feature/transfer/screens/transfer_screen.dart';
+import 'package:jewlease/feature/transfer/screens/transfer_screen_loc.dart';
 import 'package:jewlease/feature/vendor/screens/Bom&Operation.dart';
 import 'package:jewlease/feature/vendor/screens/new_vendor_screen.dart';
 import 'package:jewlease/feature/vendor/screens/vendor_screen.dart';
@@ -284,9 +286,9 @@ final goRouter = GoRouter(
                 return const TransferScreen();
               }),
           GoRoute(
-              path: '/transferOutwardLocation',
+              path: '/transferLocation',
               builder: (context, state) {
-                return const TransferoutwardLoc();
+                return const TransferScreenLoc();
               }),
           GoRoute(
               path: '/transferInwardLocation',
@@ -297,6 +299,11 @@ final goRouter = GoRouter(
               path: '/subContracting',
               builder: (context, state) {
                 return const SubContracing();
+              }),
+          GoRoute(
+              path: '/point_of_scale',
+              builder: (context, state) {
+                return const PointOfSaleScreen();
               }),
         ]),
   ],

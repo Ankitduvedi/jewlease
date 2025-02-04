@@ -9,7 +9,7 @@ class BarcodeDetailListController
           BarcodeDetailModel(
               stockId: "xyx",
               date: DateTime.now().toIso8601String(),
-              transNo: 12333,
+              transNo: "abc",
               transType: "Transward Inward",
               source: "xyz",
               destination: "REC",

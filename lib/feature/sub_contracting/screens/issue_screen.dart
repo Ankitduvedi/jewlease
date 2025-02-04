@@ -9,11 +9,13 @@ import '../../../main.dart';
 import '../../../widgets/app_bar_buttons.dart';
 import '../../../widgets/search_dailog_widget.dart';
 import '../../formula/controller/formula_prtocedure_controller.dart';
+import '../../procument/controller/procumentVendorDailog.dart';
 import '../../procument/screens/procumentFloatingBar.dart';
 import '../../procument/screens/procumentScreen.dart';
 import '../../procument/screens/procumentSummeryGridSource.dart';
+import '../../procument/screens/procumentVendorDialog.dart';
 import '../../vendor/controller/procumentVendor_controller.dart';
-import 'issue_dialog.dart';
+import '../issue_controller.dart';
 
 class IssueScreen extends ConsumerStatefulWidget {
   const IssueScreen({super.key});
@@ -75,9 +77,7 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
       Duration(milliseconds: 500),
       () => showDialog(
         context: context,
-        builder: (context) => const Dialog(
-          child: IssueDialog(),
-        ),
+        builder: (context) => Dialog(child: procumentVendorDialog()),
       ),
     );
     super.initState();
@@ -202,7 +202,19 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
                 if (selectedIndex == 3)
                   context.go('/addFormulaProcedureScreen');
               },
-              () async {},
+              () async {
+                List<Map<String, dynamic>>? varientList =
+                    ref.read(procurementVariantProvider);
+                for (var varient in varientList!) {
+                  ref
+                      .read(IssueStockControllerProvider.notifier)
+                      .sentIssueStock(
+                          varient["Stock ID"],
+                          ref.read(pocVendorProvider)["Vendor Name"],
+                          "Alteration",
+                          DateTime.now().toIso8601String());
+                }
+              },
               () {
                 // Reset the provider value to null on refresh
                 ref.watch(formulaProcedureProvider.notifier).state = [
@@ -224,7 +236,7 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
             Row(
               children: [
                 const Text(
-                  'Transfer Outward',
+                  'Batch Issue',
                   style: TextStyle(fontSize: 25),
                 ),
                 SizedBox(
@@ -263,7 +275,7 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
                         borderRadius: BorderRadius.circular(5)),
                     child: Center(
                       child: Text(
-                        "Add Outward Stock",
+                        "Add Issue Stock",
                         style: TextStyle(color: Colors.white, fontSize: 18),
                       ),
                     ),

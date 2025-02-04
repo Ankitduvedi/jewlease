@@ -71,7 +71,7 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
       color: Colors.blueAccent,
       key: ValueKey('Transfer Location'),
       onTap: () {
-        goRouter.go('/transferOutwardLocation');
+        goRouter.go('/transferLocation');
       },
     ),
     _buildTile(
@@ -125,11 +125,16 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
         icon: Icons.emoji_events,
         color: Colors.cyan,
         key: ValueKey('Loyalty')),
-    const _buildTile(
+     _buildTile(
         title: 'Point Of Sale',
         icon: Icons.point_of_sale,
         color: Colors.deepOrangeAccent,
-        key: ValueKey('Point Of Sale')),
+        key: ValueKey('Point Of Sale'),
+      onTap: (){
+        goRouter.go("/point_of_sale");
+      },
+
+    ),
     const _buildTile(
         title: 'Item Masters',
         icon: Icons.inventory_2,

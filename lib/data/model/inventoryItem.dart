@@ -1,7 +1,7 @@
 class InventoryItemModel {
   String more;
   String itemGroup;
-  String variantName;
+  String varientName;
   String oldVariantName;
   String stockCode;
   String groupCode;
@@ -18,7 +18,7 @@ class InventoryItemModel {
   String subCategory;
   String styleCollection;
   String projectSizeMaster;
-  String styleMetalKarat;
+  String styleKarat;
   String styleMetalColor;
   String brand;
   String productSizeStock;
@@ -27,7 +27,7 @@ class InventoryItemModel {
   String vendorCode;
   String vendor;
   String customer;
-  int Pieces;
+  int pieces;
   double metalWeight;
   double netWeight;
   int diaPieces;
@@ -39,7 +39,7 @@ class InventoryItemModel {
   double sellingLabour;
   String orderNo;
   String karatColor;
-  String imageFileName;
+  String imageDetails;
   String inwardDocLastTrans;
   bool reserveInd;
   bool barcodeInd;
@@ -62,7 +62,7 @@ class InventoryItemModel {
   int orderEllapsDays;
   Map<String, dynamic> bom;
   Map<String, dynamic> operation;
-  Map<String, dynamic> formula;
+  Map<String, dynamic> formulaDetails;
   final String oldVarient;
   final String customerVarient;
   final String baseVarient;
@@ -89,7 +89,7 @@ class InventoryItemModel {
   InventoryItemModel({
     required this.more,
     required this.itemGroup,
-    required this.variantName,
+    required this.varientName,
     required this.oldVariantName,
     required this.stockCode,
     required this.groupCode,
@@ -106,7 +106,7 @@ class InventoryItemModel {
     required this.subCategory,
     required this.styleCollection,
     required this.projectSizeMaster,
-    required this.styleMetalKarat,
+    required this.styleKarat,
     required this.styleMetalColor,
     required this.brand,
     required this.productSizeStock,
@@ -115,7 +115,7 @@ class InventoryItemModel {
     required this.vendorCode,
     required this.vendor,
     required this.customer,
-    required this.Pieces,
+    required this.pieces,
     required this.metalWeight,
     required this.netWeight,
     required this.diaPieces,
@@ -127,7 +127,7 @@ class InventoryItemModel {
     required this.sellingLabour,
     required this.orderNo,
     required this.karatColor,
-    required this.imageFileName,
+    required this.imageDetails,
     required this.inwardDocLastTrans,
     required this.reserveInd,
     required this.barcodeInd,
@@ -149,7 +149,7 @@ class InventoryItemModel {
     required this.inwardEllapsDays,
     required this.orderEllapsDays,
     required this.bom,
-    required this.formula,
+    required this.formulaDetails,
     required this.operation,
     required this.oldVarient,
     required this.customerVarient,
@@ -180,7 +180,7 @@ class InventoryItemModel {
       return InventoryItemModel(
         more: json['Remark'] ?? '',
         itemGroup: json['CATEGORY'] ?? '',
-        variantName: json['Varient Name'] ?? '',
+        varientName: json['Varient Name'] ?? '',
         oldVariantName: json['Old Varient'] ?? '',
         stockCode: json['Stock ID'] ?? '',
         groupCode: json['Group Code'] ?? '',
@@ -197,7 +197,7 @@ class InventoryItemModel {
         subCategory: json['Sub-Category'] ?? '',
         styleCollection: json['Style Collection'] ?? '',
         projectSizeMaster: json['Project Size Master'] ?? '',
-        styleMetalKarat: json['Style Metal Karat'] ?? '',
+        styleKarat: json['Style Metal Karat'] ?? '',
         styleMetalColor: json['Style Metal Color'] ?? '',
         brand: json['Brand'] ?? '',
         productSizeStock: json['Product Size Stock'] ?? '',
@@ -206,7 +206,7 @@ class InventoryItemModel {
         vendorCode: json['Vendor Code'] ?? '',
         vendor: json['Vendor'] ?? '',
         customer: json['Customer'] ?? '',
-        Pieces: json['Pieces'] ?? 0,
+        pieces: json['Pieces'] ?? 0,
         metalWeight: double.parse(json['Weight'] ?? '0'),
         netWeight: double.parse(json['Net Weight'] ?? '0'),
         diaPieces: json['Dia Pieces'] ?? 0,
@@ -218,7 +218,7 @@ class InventoryItemModel {
         sellingLabour: (json['Selling Labour'] ?? 0).toDouble(),
         orderNo: json['Order No'] ?? '',
         karatColor: json['Karat Color'] ?? '',
-        imageFileName: json['Image Details'].runtimeType == String ? '' : '',
+        imageDetails: json['Image Details'].runtimeType == String ? '' : '',
         inwardDocLastTrans: json['Inward Doc Last Trans'] ?? '',
         reserveInd: json['Reserve Ind'] ?? false,
         barcodeInd: json['Barcode Ind'] ?? false,
@@ -241,7 +241,7 @@ class InventoryItemModel {
         inwardEllapsDays: json['Inward Ellaps Days'] ?? 0,
         orderEllapsDays: json['Order Ellaps Days'] ?? 0,
         bom: json['BOM'] ?? {},
-        formula: json['Formula Details'] ?? {},
+        formulaDetails: json['Formula Details'] ?? {},
         operation: json['Operation'] ?? {},
         oldVarient: json['oldVarient'] ?? '',
         customerVarient: json['customerVarient'] ?? '',
@@ -272,10 +272,111 @@ class InventoryItemModel {
     }
   }
 
+  factory InventoryItemModel.fromJson2(Map<String, dynamic> json) {
+    print("json $json");
+    try {
+      return InventoryItemModel(
+        bom: json['bom'] ?? {},
+        style: json['style'] ?? '',
+        forWeb: json['forWeb'] ?? '',
+        length: json['length'] ?? 0,
+        pieces: json['pieces'] ?? 0,
+        remark: json['remark'] ?? '',
+        vendor: json['vendor'] ?? '',
+        metalWeight: double.tryParse(json['weight']?.toString() ?? '0') ?? 0.0,
+        remark1: json['remark1'] ?? '',
+        remark2: json['remark2'] ?? '',
+        varientName: json['varientName'] ?? '',
+        category: json['category'] ?? '',
+        locationName: json['location'] ?? '',
+        createdBy: json['createdBy'] ?? '',
+        diaPieces: json['diaPieces'] ?? 0,
+        diaWeight: double.tryParse(json['diaWeight']?.toString() ?? '0') ?? 0.0,
+        itemGroup: json['itemGroup'] ?? '',
+        netWeight: double.tryParse(json['netWeight']?.toString() ?? '0') ?? 0.0,
+        operation: json['operation'] ?? {},
+        rowStatus: json['rowStatus'] ?? '',
+        department: json['department'] ?? '',
+        hsnSacCode: json['hsnSacCode'] ?? '',
+        karatColor: json['karatColor'] ?? '',
+        metalColor: json['metalColor'] ?? '',
+        oldVarient: json['oldVarient'] ?? '',
+        stoneMaxWt: json['stoneMaxWt'] ?? 0,
+        stoneMinWt: json['stoneMinWt'] ?? 0,
+        styleKarat: json['styleKarat'] ?? 0,
+        vendorCode: json['vendorCode'] ?? '',
+        baseVarient: json['baseVarient'] ?? '',
+        codegenSrNo: json['codegenSrNo'] ?? '',
+        subCategory: json['subCategory'] ?? '',
+        deliveryDays: json['deliveryDays'] ?? 0,
+        imageDetails: json['imageDetails'].length > 0
+            ? json['imageDetails'][0]["url"]
+            : "" ?? "",
+        locationCode: json['loactionCode'] ?? '',
+        stdBuyingRate: json['stdBuyingRate'] ?? 0,
+        vendorVarient: json['vendorVarient'] ?? '',
+        formulaDetails: json['formulaDetails'] ?? {},
+        lineOfBusiness: json['lineOfBusiness'] ?? '',
+        verifiedStatus: json['verifiedStatus'] ?? '',
+        customerVarient: json['customerVarient'] ?? '',
+        styleMetalColor: json['styleMetalColor'] ?? '',
+        // Added missing parameters from fromJson
+        more: json['Remark'] ?? '',
+        stockCode: json['Stock ID'] ?? '',
+        groupCode: json['Group Code'] ?? '',
+        qcStatus: json['Verified Status'] ?? '',
+        batchNo: json['Batch No'] ?? '',
+        stoneShape: json['Stone Shape'] ?? '',
+        stoneRange: json['Stone Range'] ?? '',
+        stoneColor: json['Stone Color'] ?? '',
+        stoneCut: json['Stone Cut'] ?? '',
+        metalKarat: json['STYLE KARAT'] ?? '',
+        lob: json['LINE OF BUSINESS'] ?? '',
+        styleCollection: json['Style Collection'] ?? '',
+        projectSizeMaster: json['Project Size Master'] ?? '',
+        brand: json['Brand'] ?? '',
+        productSizeStock: json['Product Size Stock'] ?? '',
+        tablePer: json['Table Per'] ?? '',
+        brandStock: json['Brand Stock'] ?? '',
+        customer: json['Customer'] ?? '',
+        lgPiece: int.parse(json['Lg Piece'] ?? '0'),
+        lgWeight: double.parse(json['Lg Weight'] ?? '0'),
+        stonePiece: json['Stone Piece'] ?? 0,
+        stoneWeight: double.parse(json['Stone Weight'] ?? '0'),
+        sellingLabour: (json['Selling Labour'] ?? 0).toDouble(),
+        orderNo: json['Order No'] ?? '',
+        inwardDocLastTrans: json['Inward Doc Last Trans'] ?? '',
+        reserveInd: json['Reserve Ind'] ?? false,
+        barcodeInd: json['Barcode Ind'] ?? false,
+        wcGroupName: json['WC Group Name'] ?? '',
+        customerJobworker: json['Customer Jobworker'] ?? '',
+        halimarking: json['Halimarking'] ?? '',
+        certificateNo: json['Certificate No'] ?? '',
+        stockAge: json['Stock Age'] ?? 0,
+        memoInd: json['Memo Ind'] ?? false,
+        barcodeDate:
+            DateTime.tryParse(json['Barcode Date'] ?? '') ?? DateTime.now(),
+        sorTransItemId: json['Sor Trans Item ID'] ?? '',
+        sorTransItemBomId: json['Sor Trans Item BOM ID'] ?? '',
+        ownerPartyTypeId: json['Owner Party Type ID'] ?? '',
+        reservePartyId: json['Reserve Party ID'] ?? '',
+        lineNo: json['Line No'] ?? 0,
+        orderPartName: json['Order Part Name'] ?? '',
+        inwardEllapsDays: json['Inward Ellaps Days'] ?? 0,
+        orderEllapsDays: json['Order Ellaps Days'] ?? 0,
+        oldVariantName: '',
+      );
+    } catch (e, stacktrace) {
+      print("Error while parsing JSON: $e");
+      print("Stacktrace: $stacktrace");
+      rethrow;
+    }
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'style': style,
-      'varientName': variantName ?? '',
+      'varientName': varientName ?? '',
       'oldVarient': oldVarient ?? '',
       'customerVarient': customerVarient ?? '',
       'baseVarient': baseVarient ?? '',
@@ -303,13 +404,13 @@ class InventoryItemModel {
       'bom': bom ?? {},
       'operation': operation ?? {},
       // Assuming BOM is another object that needs to be converted
-      'formulaDetails': formula ?? {},
+      'formulaDetails': formulaDetails ?? {},
       // Assuming formula is another object that needs to be converted
       'imageDetails': [
-            {'url': imageFileName}
+            {'url': imageDetails}
           ] ??
           '',
-      'pieces': Pieces ?? 0,
+      'pieces': pieces ?? 0,
       'weight': metalWeight?.toString() ?? '0',
       'netWeight': netWeight?.toString() ?? '0',
       'diaPieces': diaPieces ?? 0,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/data/model/stock_details_model.dart';
 import 'package:jewlease/feature/barcoding/controllers/stockController.dart';
 import 'package:jewlease/feature/barcoding/controllers/tag_list_controller.dart';
 
@@ -11,7 +12,7 @@ class TagMRP extends ConsumerStatefulWidget {
 class _TagMRPState extends ConsumerState<TagMRP> {
   @override
   Widget build(BuildContext context) {
-    StockDetails stockDetails = ref.watch(stockDetailsProvider);
+    StockDetailsModel stockDetails = ref.watch(stockDetailsProvider);
     return Center(
       child: Container(
         padding: EdgeInsets.all(16.0),
@@ -60,7 +61,7 @@ class _TagMRPState extends ConsumerState<TagMRP> {
               onPressed: () {
                 bool oldVal = ref.read(isTagUpdateProvider);
                 ref.read(isTagUpdateProvider.notifier).setUpdate(!oldVal); //
-                StockDetails stock = ref.read(stockDetailsProvider);
+                StockDetailsModel stock = ref.read(stockDetailsProvider);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xff28713E), // Background color

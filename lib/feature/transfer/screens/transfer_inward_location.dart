@@ -189,7 +189,9 @@ class _TransferInwardLocLocationState extends ConsumerState<TransferInwardLoc> {
                 if (selectedIndex == 3)
                   context.go('/addFormulaProcedureScreen');
               },
-              () async {},
+              () async {
+
+              },
               () {
                 // Reset the provider value to null on refresh
                 ref.watch(formulaProcedureProvider.notifier).state = [
@@ -223,7 +225,7 @@ class _TransferInwardLocLocationState extends ConsumerState<TransferInwardLoc> {
                       context: context,
                       builder: (context) => ItemTypeDialogScreen(
                         title: 'InwardLoc Stock',
-                        endUrl: 'Procurement/GRN',
+                        endUrl: 'Transfer/Location  ',
                         value: 'Stock ID',
                         onOptionSelectd: (selectedValue) {
                           print("selected value $selectedValue");

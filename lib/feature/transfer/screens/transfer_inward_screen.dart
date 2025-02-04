@@ -6,6 +6,7 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 import '../../../data/model/barcode_detail_model.dart';
 import '../../../data/model/barcode_historyModel.dart';
+import '../../../data/model/transaction_model.dart';
 import '../../../main.dart';
 import '../../../widgets/app_bar_buttons.dart';
 import '../../../widgets/search_dailog_widget.dart';
@@ -14,6 +15,7 @@ import '../../barcoding/controllers/barcode_history_controller.dart';
 import '../../formula/controller/formula_prtocedure_controller.dart';
 import '../../procument/screens/procumentFloatingBar.dart';
 import '../../procument/screens/procumentSummeryGridSource.dart';
+import '../../transaction/controller/transaction_controller.dart';
 import '../../vendor/controller/procumentVendor_controller.dart';
 
 class TransferInwardScreen extends ConsumerStatefulWidget {
@@ -61,7 +63,7 @@ class _TransferInwardScreenState extends ConsumerState<TransferInwardScreen> {
     "Total Amt": 0.0,
   };
   late ProcumentDataGridSource _procumentdataGridSource;
-  List<Map<dynamic, dynamic>> inwardRowsMap = [];
+  List<Map<String, dynamic>> inwardRowsMap = [];
 
   double _calculateColumnWidth(String columnName) {
     const double charWidth = 15.0; // Approximate width of a character
@@ -79,7 +81,7 @@ class _TransferInwardScreenState extends ConsumerState<TransferInwardScreen> {
     super.initState();
   }
 
-  void _addNewRowWithItemGroup(Map<dynamic, dynamic> varient) {
+  void _addNewRowWithItemGroup(Map<String, dynamic> varient) {
     // print("varient $varient ${varient["BOM"]["data"][0][3]}");
     print("varient $varient");
     List<dynamic> bomSummery = [];
@@ -180,53 +182,36 @@ class _TransferInwardScreenState extends ConsumerState<TransferInwardScreen> {
     }
   }
 
-  Map<String, dynamic> transformSchema(Map<dynamic, dynamic> schema1) {
-    return {
-      "style": schema1["Style"],
-      "varientName": schema1["Varient Name"],
-      "oldVarient": schema1["Old Varient"],
-      "customerVarient": schema1["Customer Varient"],
-      "baseVarient": schema1["Base Varient"],
-      "vendorCode": schema1["Vendor Code"],
-      "vendor": schema1["Vendor"],
-      "location": schema1["Location"],
-      "department": schema1["Department"],
-      "remark1": schema1["Remark 1"],
-      "vendorVarient": schema1["Vendor Varient"],
-      "remark2": schema1["Remark 2"],
-      "createdBy": schema1["Created By"],
-      "stdBuyingRate": schema1["Std Buying Rate"],
-      "stoneMaxWt": schema1["Stone Max Wt"],
-      "remark": schema1["Remark"],
-      "stoneMinWt": schema1["Stone Min Wt"],
-      "karatColor": schema1["Karat Color"],
-      "deliveryDays": schema1["Delivery Days"],
-      "forWeb": schema1["For Web"],
-      "rowStatus": schema1["Row Status"],
-      "verifiedStatus": schema1["Verified Status"],
-      "length": schema1["Length"],
-      "codegenSrNo": schema1["Codegen Sr No"],
-      "category": schema1["CATEGORY"],
-      "subCategory": schema1["Sub-Category"],
-      "styleKarat": schema1["STYLE KARAT"],
-      "varient": schema1["Varient"],
-      "hsnSacCode": schema1["HSN - SAC CODE"],
-      "lineOfBusiness": schema1["LINE OF BUSINESS"],
-      "bom": schema1["BOM"],
-      "operation": schema1["Operation"],
-      "imageDetails": schema1["Image Details"],
-      "formulaDetails": schema1["Formula Details"],
-      "pieces": schema1["Pieces"],
-      "weight": schema1["Weight"],
-      "netWeight": schema1["Net Weight"],
-      "diaWeight": schema1["Dia Weight"],
-      "diaPieces": schema1["Dia Pieces"],
-      "locationCode": schema1["Location Code"],
-      "itemGroup": schema1["Item Group"],
-      "metalColor": schema1["Metal Color"],
-      "styleMetalColor": schema1["Style Metal Color"]
-    };
+
+  void saveTransInward()async{
+    List<Map<String, dynamic>>? varientList = inwardRowsMap;
+    TransactionModel transaction =createTransaction(varientList);
+    String transactionID = await ref
+        .read(TransactionControllerProvider.notifier)
+        .sentTransaction(transaction)??"ABC";
+    for (var varient in varientList!) {
+      print("varient $varient");
+      print("tansform schema is ${transformSchema(varient)}");
+      await ref
+          .read(OutwardControllerProvider.notifier)
+          .updateGRN(
+          transformSchema(varient), varient["Stock ID"]);
+      await ref
+          .read(OutwardControllerProvider.notifier)
+          .deleteInward(varient["Stock ID"]);
+      BarcodeDetailModel detailModel = createBarcodeDetail(varient, transactionID);
+      BarcodeHistoryModel historyModel = createBarcodeHistory(varient, transactionID);
+      await ref
+          .read(BarocdeDetailControllerProvider.notifier)
+          .sentBarcodeDetail(detailModel);
+      await ref
+          .read(BarocdeHistoryControllerProvider.notifier)
+          .sentBarcodeHistory(historyModel);
+    }
   }
+
+
+
 
   Widget build(BuildContext context) {
     screenWidth = MediaQuery.of(context).size.width;
@@ -255,52 +240,7 @@ class _TransferInwardScreenState extends ConsumerState<TransferInwardScreen> {
                   },
                   () async {
                     print("update inward grn");
-                    List<Map<dynamic, dynamic>>? varientList = inwardRowsMap;
-                    for (var varient in varientList!) {
-                      print("varient $varient");
-                      print("tansform schema is ${transformSchema(varient)}");
-                      await ref
-                          .read(OutwardControllerProvider.notifier)
-                          .updateGRN(
-                              transformSchema(varient), varient["Stock ID"]);
-                      await ref
-                          .read(OutwardControllerProvider.notifier)
-                          .deleteInward(varient["Stock ID"]);
-                      BarcodeDetailModel detailModel = BarcodeDetailModel(
-                          stockId: varient["Stock ID"],
-                          date: DateTime.now().toIso8601String(),
-                          transNo: 12333,
-                          transType: "Transward Inward",
-                          source: varient["Location"],
-                          destination: "REC",
-                          customer: "Anurag",
-                          vendor: varient["Vendor"],
-                          sourceDept: "MHCASH",
-                          destinationDept: "MHCash",
-                          exchangeRate: 11.33,
-                          currency: "Rs",
-                          salesPerson: "Arpit",
-                          term: "nothing",
-                          remark: "transward inward ",
-                          createdBy: "Arpit Verma",
-                          varient: varient['Varient Name'],
-                          postingDate: DateTime.now().toIso8601String());
-                      BarcodeHistoryModel historyModel = BarcodeHistoryModel(
-                          stockId: varient["Stock ID"],
-                          attribute: '',
-                          varient: varient['Varient Name'],
-                          transactionNumber: 1231,
-                          date: DateTime.now().toIso8601String(),
-                          bom: varient["BOM"],
-                          operation: varient["Operation"],
-                          formula: varient["Formula Details"]);
-                      await ref
-                          .read(BarocdeDetailControllerProvider.notifier)
-                          .sentBarcodeDetail(detailModel);
-                      await ref
-                          .read(BarocdeHistoryControllerProvider.notifier)
-                          .sentBarcodeHistory(historyModel);
-                    }
+                    saveTransInward();
                   },
                   () {
                     // Reset the provider value to null on refresh
@@ -468,5 +408,110 @@ class _TransferInwardScreenState extends ConsumerState<TransferInwardScreen> {
               Summery: inwardSummery,
             ),
     );
+  }
+  BarcodeDetailModel createBarcodeDetail(Map<dynamic,dynamic>varient, String transactionID){
+    BarcodeDetailModel detailModel = BarcodeDetailModel(
+        stockId: varient["Stock ID"],
+        date: DateTime.now().toIso8601String(),
+        transNo: transactionID,
+        transType: "Transward Inward",
+        source: varient["Location"],
+        destination: "REC",
+        customer: "Anurag",
+        vendor: varient["Vendor"],
+        sourceDept: "MHCASH",
+        destinationDept: "MHCash",
+        exchangeRate: 11.33,
+        currency: "Rs",
+        salesPerson: "Arpit",
+        term: "nothing",
+        remark: "transward inward ",
+        createdBy: "Arpit Verma",
+        varient: varient['Varient Name'],
+        postingDate: DateTime.now().toIso8601String());
+    return detailModel;
+  }
+  BarcodeHistoryModel createBarcodeHistory(Map<dynamic,dynamic>varient, String transactionID,){
+      BarcodeHistoryModel historyModel = BarcodeHistoryModel(
+        stockId: varient["Stock ID"],
+        attribute: '',
+        varient: varient['Varient Name'],
+        transactionNumber: "ABC",
+        date: DateTime.now().toIso8601String(),
+        bom: varient["BOM"],
+        operation: varient["Operation"],
+        formula: varient["Formula Details"]);
+      return historyModel;
+  }
+
+  TransactionModel createTransaction(List<Map<String,dynamic>>varients){
+    TransactionModel transaction = TransactionModel(
+        transType: "Transfer Inward",
+        subType: "TI",
+        transCategory: "GENERAL",
+        docNo: "bsjbcs",
+        transDate: DateTime.now().toIso8601String(),
+        source: "WareHouse",
+        destination: "MH_CASH",
+        customer: "ankit",
+        sourceDept: "Warehouse",
+        destinationDept: "MH_CASH",
+        exchangeRate: "0.0",
+        currency: "RS",
+        salesPerson: "Arun",
+        term: "term",
+        remark: "transaction inward GRN",
+        createdBy: DateTime.now().toIso8601String(),
+        postingDate: DateTime.now().toIso8601String(),
+        varients: varients);
+    return transaction;
+  }
+
+  Map<String, dynamic> transformSchema(Map<dynamic, dynamic> schema1) {
+    return {
+      "style": schema1["Style"],
+      "varientName": schema1["Varient Name"],
+      "oldVarient": schema1["Old Varient"],
+      "customerVarient": schema1["Customer Varient"],
+      "baseVarient": schema1["Base Varient"],
+      "vendorCode": schema1["Vendor Code"],
+      "vendor": schema1["Vendor"],
+      "location": schema1["Location"],
+      "department": schema1["Department"],
+      "remark1": schema1["Remark 1"],
+      "vendorVarient": schema1["Vendor Varient"],
+      "remark2": schema1["Remark 2"],
+      "createdBy": schema1["Created By"],
+      "stdBuyingRate": schema1["Std Buying Rate"],
+      "stoneMaxWt": schema1["Stone Max Wt"],
+      "remark": schema1["Remark"],
+      "stoneMinWt": schema1["Stone Min Wt"],
+      "karatColor": schema1["Karat Color"],
+      "deliveryDays": schema1["Delivery Days"],
+      "forWeb": schema1["For Web"],
+      "rowStatus": schema1["Row Status"],
+      "verifiedStatus": schema1["Verified Status"],
+      "length": schema1["Length"],
+      "codegenSrNo": schema1["Codegen Sr No"],
+      "category": schema1["CATEGORY"],
+      "subCategory": schema1["Sub-Category"],
+      "styleKarat": schema1["STYLE KARAT"],
+      "varient": schema1["Varient"],
+      "hsnSacCode": schema1["HSN - SAC CODE"],
+      "lineOfBusiness": schema1["LINE OF BUSINESS"],
+      "bom": schema1["BOM"],
+      "operation": schema1["Operation"],
+      "imageDetails": schema1["Image Details"],
+      "formulaDetails": schema1["Formula Details"],
+      "pieces": schema1["Pieces"],
+      "weight": schema1["Weight"],
+      "netWeight": schema1["Net Weight"],
+      "diaWeight": schema1["Dia Weight"],
+      "diaPieces": schema1["Dia Pieces"],
+      "locationCode": schema1["Location Code"],
+      "itemGroup": schema1["Item Group"],
+      "metalColor": schema1["Metal Color"],
+      "styleMetalColor": schema1["Style Metal Color"]
+    };
   }
 }

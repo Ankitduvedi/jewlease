@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/data/model/inventoryItem.dart';
+import 'package:jewlease/data/model/stock_details_model.dart';
 import 'package:jewlease/feature/barcoding/screens/widgets/barcode_generator_header.dart';
 import 'package:jewlease/feature/barcoding/screens/widgets/tag_data_grid.dart';
 import 'package:jewlease/feature/barcoding/screens/widgets/tag_mrp.dart';
@@ -88,8 +89,8 @@ class _BarCodeGenerationState extends ConsumerState<BarCodeGeneration> {
     });
     print("current stone wt $totalStoneWt $totalWt ");
 
-    StockDetails prevStockDetails = ref.read(stockDetailsProvider);
-    StockDetails updatedStockDetails = prevStockDetails.copyWith(
+    StockDetailsModel prevStockDetails = ref.read(stockDetailsProvider);
+    StockDetailsModel updatedStockDetails = prevStockDetails.copyWith(
         rate: totalAmount, currentStoneWt: totalStoneWt, currentNetWt: totalWt);
     print("prevTotalAmount $prevTotalAmount totalAmount $totalAmount");
     if (prevTotalAmount != totalAmount)
@@ -177,7 +178,7 @@ class _BarCodeGenerationState extends ConsumerState<BarCodeGeneration> {
   }
 
   Widget build(BuildContext context) {
-    ref.listen<StockDetails>(
+    ref.listen<StockDetailsModel>(
       stockDetailsProvider,
       (previous, next) {
         // Trigger your function here

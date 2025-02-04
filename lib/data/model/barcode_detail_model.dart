@@ -1,7 +1,7 @@
 class BarcodeDetailModel {
   final String stockId;
   final String date;
-  final int transNo;
+  final String transNo;
   final String transType;
   final String source;
   final String destination;
@@ -69,7 +69,7 @@ class BarcodeDetailModel {
     return BarcodeDetailModel(
       stockId: json['Stock ID'] ?? '',
       date: json['Date'],
-      transNo: json['Trans No'],
+      transNo: json['Trans No'].toString(),
       transType: json['Trans Type'],
       source: json['Source'],
       destination: json['Destination'],

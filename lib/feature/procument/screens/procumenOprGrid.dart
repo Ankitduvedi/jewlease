@@ -21,7 +21,8 @@ class ProcumentOperationGrid extends StatelessWidget {
     screenWidth = MediaQuery.of(context).size.width;
     screenHeight = MediaQuery.of(context).size.height;
     return Container(
-      height: screenHeight * 0.4,
+      width: (gridWidth/5)*10,
+      // height: screenHeight * 0.4,
       // margin: EdgeInsets.only(top: 20, left: 20),// fix this in procument varinet
       // padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -45,12 +46,15 @@ class ProcumentOperationGrid extends StatelessWidget {
             ),
           ),
 
-          Expanded(
+          Flexible( // Allows the content to expand only as needed
+            fit: FlexFit.loose,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               // Adjust this for desired roundness
-              child: Expanded(
+              child:  Flexible( // Allows the content to expand only as needed
+                fit: FlexFit.loose,
                 child: Container(
+
                   // width: screenWidth * 0.42,42
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),

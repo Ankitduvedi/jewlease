@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jewlease/core/utils/utils.dart';
+import 'package:jewlease/data/model/transaction_model.dart';
 import 'package:jewlease/feature/formula/controller/formula_prtocedure_controller.dart';
+import 'package:jewlease/feature/transaction/controller/transaction_controller.dart';
 import 'package:jewlease/main.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 
@@ -190,6 +192,9 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
                             ref.read(varientAllFormulaProvider);
 
                         print("allFormulas = $allFormualMap");
+
+                        List<Map<String, dynamic>> reqstBodeis = [];
+
                         for (int i = 0; i < varientList!.length; i++) {
                           List<dynamic> allFormulas = [];
                           String formulaName =
@@ -225,10 +230,39 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
 
                           print("req body is $reuestBody");
 
-                          await ref
-                              .read(procurementControllerProvider.notifier)
-                              .sendGRN(reuestBody);
+                          reqstBodeis.add(reuestBody);
                         }
+
+                        TransactionModel transaction = TransactionModel(
+                            transType: "Opening Stock",
+                            subType: "OPS",
+                            transCategory: "GENERAL",
+                            docNo: "bsjbcs",
+                            transDate: DateTime.now().toIso8601String(),
+                            source: "WareHouse",
+                            destination: "MH_CASH",
+                            customer: "ankit",
+                            sourceDept: "Warehouse",
+                            destinationDept: "MH_CASH",
+                            exchangeRate: "0.0",
+                            currency: "RS",
+                            salesPerson: "Arun",
+                            term: "term",
+                            remark: "Creating GRN",
+                            createdBy: DateTime.now().toIso8601String(),
+                            postingDate: DateTime.now().toIso8601String(),
+                            varients: reqstBodeis);
+                        String? transactionID = await ref
+                            .read(TransactionControllerProvider.notifier)
+                            .sentTransaction(transaction);
+                        print("transactionID is $transactionID");
+                        for (var reqstBody in reqstBodeis) {
+                          // reqstBody[]
+                          // await ref
+                          //     .read(procurementControllerProvider.notifier)
+                          //     .sendGRN(reqstBody);
+                        }
+
                         Utils.snackBar("Varient Aadded", context);
                         goRouter.go("/");
                         // Navigator.pop(context);

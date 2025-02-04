@@ -62,7 +62,7 @@ class InventoryDataSource extends DataGridSource {
             DataGridCell(
                 columnName: 'ItemGroup', value: inventoryItem.itemGroup),
             DataGridCell(
-                columnName: 'VariantName', value: inventoryItem.variantName),
+                columnName: 'VariantName', value: inventoryItem.varientName),
             DataGridCell(
                 columnName: 'OldVariantName',
                 value: inventoryItem.oldVariantName),
@@ -95,7 +95,7 @@ class InventoryDataSource extends DataGridSource {
                 value: inventoryItem.projectSizeMaster),
             DataGridCell(
                 columnName: 'StyleMetalKarat',
-                value: inventoryItem.styleMetalKarat),
+                value: inventoryItem.styleKarat),
             DataGridCell(
                 columnName: 'StyleMetalColor',
                 value: inventoryItem.styleMetalColor),
@@ -110,7 +110,7 @@ class InventoryDataSource extends DataGridSource {
                 columnName: 'VendorCode', value: inventoryItem.vendorCode),
             DataGridCell(columnName: 'Vendor', value: inventoryItem.vendor),
             DataGridCell(columnName: 'Customer', value: inventoryItem.customer),
-            DataGridCell(columnName: 'Piece', value: inventoryItem.Pieces),
+            DataGridCell(columnName: 'Piece', value: inventoryItem.pieces),
             DataGridCell(
                 columnName: 'Weight', value: inventoryItem.metalWeight),
             DataGridCell(
@@ -138,7 +138,7 @@ class InventoryDataSource extends DataGridSource {
                 width: 40,
                 decoration: BoxDecoration(
                     image: DecorationImage(
-                        image: NetworkImage(inventoryItem.imageFileName))),
+                        image: NetworkImage(inventoryItem.imageDetails))),
               ),
             ),
             DataGridCell(

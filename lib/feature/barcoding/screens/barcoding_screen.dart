@@ -11,6 +11,9 @@ import '../../procument/screens/procumenOprGrid.dart';
 import '../../procument/screens/procumentBomGrid.dart';
 import '../../procument/screens/procumentBomGridSource.dart';
 import 'StockDetailsScreen.dart';
+import 'invantory_transaction_screeen.dart';
+
+final tabIndexProvider = StateProvider<int>((ref) => 0);
 
 class BarcodingScreen extends ConsumerStatefulWidget {
   const BarcodingScreen({super.key});
@@ -41,212 +44,201 @@ class _BarcodingScreenState extends ConsumerState<BarcodingScreen> {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
     int selectedIndex = ref.watch(barcodeIndexProvider);
-
+    int tabselectedIndex = ref.watch(tabIndexProvider);
     var historys = ref.watch(barcodeHistoryListProvider);
 
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(screenHeight * 0.08),
-        child: Container(
-            margin: EdgeInsets.only(
-              top: screenHeight * 0.08,
-            ),
-            height: screenHeight * 0.05,
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.01),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  spreadRadius: 1,
-                  blurRadius: 2,
-                  offset: const Offset(1, 1),
-                ),
-              ],
-            ),
-            child: SizedBox(
-                height: double.infinity,
-                width: double.infinity,
-                child: Row(
-                    children: List.generate(
-                  _tabs.length,
-                  (index) {
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedIndex = index;
-                        });
-                      },
-                      child: Container(
-                        color: index == selectedIndex
-                            ? Color(0xff28713E)
-                            : Colors.white,
-                        margin: EdgeInsets.symmetric(
-                            horizontal: screenWidth * 0.01),
-                        padding: EdgeInsets.symmetric(
-                            vertical: screenHeight * 0.007),
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(screenHeight * 0.08),
+          child: Container(
+              margin: EdgeInsets.only(
+                top: screenHeight * 0.08,
+              ),
+              height: screenHeight * 0.05,
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.01),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    spreadRadius: 1,
+                    blurRadius: 2,
+                    offset: const Offset(1, 1),
+                  ),
+                ],
+              ),
+              child: SizedBox(
+                  height: double.infinity,
+                  width: double.infinity,
+                  child: Row(
+                      children: List.generate(
+                    _tabs.length,
+                    (index) {
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            ref.read(tabIndexProvider.notifier).state = index;
+                          });
+                        },
                         child: Container(
+                          color: index == tabselectedIndex
+                              ? Color(0xff28713E)
+                              : Colors.white,
+                          margin: EdgeInsets.symmetric(
+                              horizontal: screenWidth * 0.01),
                           padding: EdgeInsets.symmetric(
-                              horizontal: screenWidth * 0.02,
-                              vertical: screenHeight * 0.005),
-                          decoration: BoxDecoration(
-                            color: index == selectedIndex
-                                ? Color(0xff28713E)
-                                : Color(0xffF0F4F8),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: Center(
-                            child: Text(
-                              _tabs[index],
-                              style: TextStyle(
-                                  color: index == selectedIndex
-                                      ? Colors.white
-                                      : Colors.black),
+                              vertical: screenHeight * 0.007),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: screenWidth * 0.02,
+                                vertical: screenHeight * 0.005),
+                            decoration: BoxDecoration(
+                              color: index == tabselectedIndex
+                                  ? Color(0xff28713E)
+                                  : Color(0xffF0F4F8),
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: Center(
+                              child: Text(
+                                _tabs[index],
+                                style: TextStyle(
+                                    color: index == tabselectedIndex
+                                        ? Colors.white
+                                        : Colors.black),
+                              ),
                             ),
                           ),
                         ),
+                      );
+                    },
+                  )))),
+        ),
+        body: tabselectedIndex==0?
+        Container(
+            color: Colors.grey.shade200,
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
                       ),
-                    );
-                  },
-                )))),
-      ),
-      body: Container(
-          color: Colors.grey.shade200,
-          child: Row(
-            children: [
-              Expanded(
-                flex: 1,
-                child: Container(
-                    margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: StockDetailsScreen()),
-              ),
-              Expanded(
-                flex: 3,
-                child: Container(
-                  padding: EdgeInsets.all(10),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        flex: 1,
-                        child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount:
-                                ref.watch(barcodeDetailListProvider).length,
-                            itemBuilder: (context, index) {
-                              return Container(
-                                margin: EdgeInsets.only(right: 10),
-                                height: 50,
-                                width: 220,
-                                child: InkWell(
-                                  onTap: () {
-                                    ref
-                                        .read(barcodeIndexProvider.notifier)
-                                        .state = index;
-                                  },
-                                  child: StatusCard(
-                                    date: DateFormat('d-M-yyyy').format(
-                                        DateTime.parse(ref
-                                            .watch(barcodeDetailListProvider)[
-                                                index]
-                                            .date)),
-                                    documentId: ref
-                                        .watch(barcodeDetailListProvider)[index]
-                                        .transNo
-                                        .toString(),
-                                    note: ref
-                                        .watch(barcodeDetailListProvider)[index]
-                                        .transType,
-                                    status1: 'Verified',
-                                    status2: 'Active',
-                                    isSelected: index == selectedIndex,
-                                  ),
-                                ),
-                              );
-                            }),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Expanded(
-                        flex: 5,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          padding: EdgeInsets.all(10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  InkWell(
-                                    onTap: () {},
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          color: Color(0xff075184),
-                                          borderRadius:
-                                              BorderRadius.circular(8)),
-                                      child: Center(
-                                        child: Text(
-                                          "Item Details",
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                      ),
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 20, vertical: 5),
+                      child: StockDetailsScreen()),
+                ),
+                Expanded(
+                  flex: 3,
+                  child: Container(
+                    padding: EdgeInsets.all(10),
+                    child: Column(
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount:
+                                  ref.watch(barcodeDetailListProvider).length,
+                              itemBuilder: (context, index) {
+                                return Container(
+                                  margin: EdgeInsets.only(right: 10),
+                                  height: 50,
+                                  width: 220,
+                                  child: InkWell(
+                                    onTap: () {
+                                      ref
+                                          .read(barcodeIndexProvider.notifier)
+                                          .state = index;
+                                    },
+                                    child: StatusCard(
+                                      date: DateFormat('d-M-yyyy').format(
+                                          DateTime.parse(ref
+                                              .watch(barcodeDetailListProvider)[
+                                                  index]
+                                              .date)),
+                                      documentId: ref
+                                          .watch(barcodeDetailListProvider)[index]
+                                          .transNo
+                                          .toString(),
+                                      note: ref
+                                          .watch(barcodeDetailListProvider)[index]
+                                          .transType,
+                                      status1: 'Verified',
+                                      status2: 'Active',
+                                      isSelected: index == selectedIndex,
                                     ),
                                   ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  // InkWell(
-                                  //   onTap: () {},
-                                  //   child: Container(
-                                  //     decoration: BoxDecoration(
-                                  //         color: Colors.black12,
-                                  //         borderRadius:
-                                  //             BorderRadius.circular(8)),
-                                  //     child: Center(
-                                  //       child: Text(
-                                  //         "Item Summery",
-                                  //         style: TextStyle(color: Colors.black),
-                                  //       ),
-                                  //     ),
-                                  //     padding: EdgeInsets.symmetric(
-                                  //         horizontal: 20, vertical: 5),
-                                  //   ),
-                                  // ),
-                                  Expanded(child: Container())
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              if (historys[selectedIndex].bom.isNotEmpty)
-                                Expanded(
-                                    child: ItemDetails(
-                                        bom: historys[selectedIndex].bom,
-                                        operation:
-                                            historys[selectedIndex].operation)),
-                            ],
-                          ),
+                                );
+                              }),
                         ),
-                      )
-                    ],
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Expanded(
+                          flex: 5,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            padding: EdgeInsets.all(10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    InkWell(
+                                      onTap: () {},
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            color: Color(0xff075184),
+                                            borderRadius:
+                                                BorderRadius.circular(8)),
+                                        child: Center(
+                                          child: Text(
+                                            "Item Details",
+                                            style: TextStyle(color: Colors.white),
+                                          ),
+                                        ),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 20, vertical: 5),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+
+                                    Expanded(child: Container())
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                if (historys[selectedIndex].bom.isNotEmpty)
+                                  Expanded(
+                                      child: ItemDetails(
+                                          bom: historys[selectedIndex].bom,
+                                          operation:
+                                              historys[selectedIndex].operation)),
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
-                ),
-              )
-            ],
-          )),
-    );
+                )
+              ],
+            )):
+        InvantoryTransactionScreeen()
+
+        );
   }
 }
+
+
 
 class ItemDetails extends StatefulWidget {
   const ItemDetails({super.key, required this.bom, required this.operation});
@@ -335,8 +327,10 @@ class _ItemDetailsState extends State<ItemDetails> {
   Widget build(BuildContext context) {
     double gridWidth = screenWidth * 0.4;
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Container(
+          width: (gridWidth/5)*10,
           margin: EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
               color: Colors.white,
@@ -349,6 +343,7 @@ class _ItemDetailsState extends State<ItemDetails> {
               ]),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -358,7 +353,7 @@ class _ItemDetailsState extends State<ItemDetails> {
                 ),
               ),
               SizedBox(
-                height: screenHeight * 0.28,
+                // height: screenHeight * 0.28,
                 child: ProcumentBomGrid(
                   bomDataGridSource: _bomDataGridSource,
                   dataGridController: _dataGridController,
@@ -371,7 +366,8 @@ class _ItemDetailsState extends State<ItemDetails> {
         SizedBox(
           width: 10,
         ),
-        Expanded(
+        Flexible( // Allows the content to expand only as needed
+          fit: FlexFit.loose,
           child: Container(
             margin: EdgeInsets.symmetric(vertical: 10),
             decoration: BoxDecoration(
@@ -384,7 +380,7 @@ class _ItemDetailsState extends State<ItemDetails> {
                       spreadRadius: 1)
                 ]),
             child: SizedBox(
-              height: screenHeight * 0.33,
+              // height: screenHeight * 0.33,
               child: ProcumentOperationGrid(
                   operationType: 'Modify operation',
                   gridWidth: gridWidth,
