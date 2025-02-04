@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/data/model/drawer_state.dart';
 
@@ -53,7 +54,7 @@ class DrawerNotifier extends StateNotifier<Session> {
   // Function to update the session
   void updateSession() {
     // Perform update logic (e.g., API call or local save)
-    print('Session updated: $state');
+    log('Session updated: $state');
 
     // Set the current state as the new initial state
     _initialSession = state;
@@ -69,3 +70,11 @@ class DrawerNotifier extends StateNotifier<Session> {
 final drawerProvider = StateNotifierProvider<DrawerNotifier, Session>((ref) {
   return DrawerNotifier();
 });
+
+// final locationRepositoryProvider =
+//     Provider((ref) => LocationRepository(ref.read(dioProvider)));
+
+// final locationProvider = FutureProvider<List<Location>>((ref) async {
+//   final repo = ref.watch(locationRepositoryProvider);
+//   return await repo.fetchLocations();
+// });
