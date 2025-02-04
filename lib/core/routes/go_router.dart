@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jewlease/core/routes/navigation_const.dart';
 import 'package:jewlease/feature/all_attributes/screen/all_attribute_screen.dart';
@@ -250,14 +251,15 @@ final goRouter = GoRouter(
                 final extraData = state.extra as Map<String, dynamic>;
                 // as Map<String, dynamic>; // Cast to the expected type
                 log("print extra data $extraData");
-                return AddFormulaProcedure(
-                  ProcedureType: extraData != null
-                      ? extraData['Procedure Type'] ?? ''
-                      : '',
-                  FormulaProcedureName: extraData != null
-                      ? extraData['Formula Procedure Name'] ?? ''
-                      : '',
-                );
+                return Container();
+                  // AddFormulaProcedure(
+                  // ProcedureType: extraData != null
+                  //     ? extraData['Procedure Type'] ?? ''
+                  //     : '',
+                  // FormulaProcedureName: extraData != null
+                  //     ? extraData['Formula Procedure Name'] ?? ''
+                  //     : '',
+                // );
               }),
           GoRoute(
               path: '/addformulaMapping',
@@ -315,9 +317,9 @@ final goRouter = GoRouter(
                 return const SubContracing();
               }),
           GoRoute(
-              path: '/point_of_scale',
+              path: '/point_of_sale',
               builder: (context, state) {
-                return const PointOfSaleScreen();
+                return  PointOfSaleScreen();
               }),
         ]),
   ],

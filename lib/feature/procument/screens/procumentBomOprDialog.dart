@@ -65,170 +65,173 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: screenWidth * 0.45,
-            height: screenHeight * 0.4,
-            margin: EdgeInsets.only(top: 20, left: 20),
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-              color: Colors.white,
-            ),
-            // height: screenHeight * 0.5,
-            // width: screenWidth * 0.,
-            child: Column(
-              children: [
-                // Header Row
-
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Bom',
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.bold),
-                      ),
-                      Row(
-                        children: [
-                          TextButton(
-                            onPressed: () {
-                              if (widget.canEdit == false) return;
-                              showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                        content: ItemDataScreen(
-                                          title: '',
-                                          endUrl: 'Global/operations/',
-                                          canGo: true,
-                                          onDoubleClick: (Map<String, dynamic>
-                                              intialData) {
-                                            print("intial data is $intialData");
-                                            _addNewRowOpr(
-                                                intialData["OPERATION_NAME"] ??
-                                                    "");
-                                            Navigator.pop(context);
-                                          },
-                                        ),
-                                      ));
-                            },
-                            child: Text('+ Add Operation',
-                                style: TextStyle(color: Color(0xff28713E))),
-                          ),
-                          // Inside the build method, replace the "+ Add Bom" button with a PopupMenuButton:
-                          PopupMenuButton<String>(
-                            onSelected: (String value) {
-                              // When an item is selected, add a new row with the item group
-                              log("choosen Item $value");
-                              if (widget.canEdit == false) return;
-
-                              if (value.contains('Gold')) {
-                                showProcumentdialog(
-                                    "ItemMasterAndVariants/Metal/Gold/Variant/",
-                                    value);
-                              } else if (value.contains('Silver'))
-                                showProcumentdialog(
-                                    "ItemMasterAndVariants/Metal/Silver/Variant/",
-                                    value);
-                              else if (value.contains('Diamond'))
-                                showProcumentdialog(
-                                    "ItemMasterAndVariants/Stone/Diamond/Varient/",
-                                    value);
-                              else if (value.contains('Bronze'))
-                                showProcumentdialog(
-                                    "ItemMasterAndVariants/Metal/Bronze/Variant/",
-                                    value);
-                            },
-                            itemBuilder: (BuildContext context) =>
-                                <PopupMenuEntry<String>>[
-                              PopupMenuItem<String>(
-                                value: 'Metal - Gold',
-                                child: ExpansionTile(
-                                  title: Text('Metal'),
-                                  children: <Widget>[
-                                    ListTile(
-                                      title: Text('Gold'),
-                                      onTap: () {
-                                        Navigator.pop(context, 'Metal - Gold');
-                                      },
-                                    ),
-                                    ListTile(
-                                      title: Text('Silver'),
-                                      onTap: () {
-                                        Navigator.pop(
-                                            context, 'Metal - Silver');
-                                      },
-                                    ),
-                                    ListTile(
-                                      title: Text('Bronze'),
-                                      onTap: () {
-                                        Navigator.pop(
-                                            context, 'Metal - Bronze');
-                                      },
-                                    ),
-                                  ],
+          Expanded(
+            child: Container(
+              width: screenWidth * 0.45,
+              // height: screenHeight * 0.4,
+              margin: EdgeInsets.only(top: 20, left: 20),
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+                color: Colors.white,
+              ),
+              // height: screenHeight * 0.5,
+              // width: screenWidth * 0.,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  // Header Row
+            
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Bom',
+                          style: TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.bold),
+                        ),
+                        Row(
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                if (widget.canEdit == false) return;
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                          content: ItemDataScreen(
+                                            title: '',
+                                            endUrl: 'Global/operations/',
+                                            canGo: true,
+                                            onDoubleClick: (Map<String, dynamic>
+                                                intialData) {
+                                              print("intial data is $intialData");
+                                              _addNewRowOpr(
+                                                  intialData["OPERATION_NAME"] ??
+                                                      "");
+                                              Navigator.pop(context);
+                                            },
+                                          ),
+                                        ));
+                              },
+                              child: Text('+ Add Operation',
+                                  style: TextStyle(color: Color(0xff28713E))),
+                            ),
+                            // Inside the build method, replace the "+ Add Bom" button with a PopupMenuButton:
+                            PopupMenuButton<String>(
+                              onSelected: (String value) {
+                                // When an item is selected, add a new row with the item group
+                                log("choosen Item $value");
+                                if (widget.canEdit == false) return;
+            
+                                if (value.contains('Gold')) {
+                                  showProcumentdialog(
+                                      "ItemMasterAndVariants/Metal/Gold/Variant/",
+                                      value);
+                                } else if (value.contains('Silver'))
+                                  showProcumentdialog(
+                                      "ItemMasterAndVariants/Metal/Silver/Variant/",
+                                      value);
+                                else if (value.contains('Diamond'))
+                                  showProcumentdialog(
+                                      "ItemMasterAndVariants/Stone/Diamond/Varient/",
+                                      value);
+                                else if (value.contains('Bronze'))
+                                  showProcumentdialog(
+                                      "ItemMasterAndVariants/Metal/Bronze/Variant/",
+                                      value);
+                              },
+                              itemBuilder: (BuildContext context) =>
+                                  <PopupMenuEntry<String>>[
+                                PopupMenuItem<String>(
+                                  value: 'Metal - Gold',
+                                  child: ExpansionTile(
+                                    title: Text('Metal'),
+                                    children: <Widget>[
+                                      ListTile(
+                                        title: Text('Gold'),
+                                        onTap: () {
+                                          Navigator.pop(context, 'Metal - Gold');
+                                        },
+                                      ),
+                                      ListTile(
+                                        title: Text('Silver'),
+                                        onTap: () {
+                                          Navigator.pop(
+                                              context, 'Metal - Silver');
+                                        },
+                                      ),
+                                      ListTile(
+                                        title: Text('Bronze'),
+                                        onTap: () {
+                                          Navigator.pop(
+                                              context, 'Metal - Bronze');
+                                        },
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              PopupMenuItem<String>(
-                                value: 'Stone - Diamond',
-                                child: ExpansionTile(
-                                  title: Text('Stone'),
-                                  children: <Widget>[
-                                    ListTile(
-                                      title: Text('Diamond'),
-                                      onTap: () {
-                                        Navigator.pop(
-                                            context, 'Stone - Diamond');
-                                      },
-                                    ),
-                                  ],
+                                PopupMenuItem<String>(
+                                  value: 'Stone - Diamond',
+                                  child: ExpansionTile(
+                                    title: Text('Stone'),
+                                    children: <Widget>[
+                                      ListTile(
+                                        title: Text('Diamond'),
+                                        onTap: () {
+                                          Navigator.pop(
+                                              context, 'Stone - Diamond');
+                                        },
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              PopupMenuItem<String>(
-                                value: 'Consumables',
-                                child: ListTile(
-                                  title: Text('Consumables'),
-                                  onTap: () {
-                                    Navigator.pop(context, 'Consumables');
-                                  },
+                                PopupMenuItem<String>(
+                                  value: 'Consumables',
+                                  child: ListTile(
+                                    title: Text('Consumables'),
+                                    onTap: () {
+                                      Navigator.pop(context, 'Consumables');
+                                    },
+                                  ),
                                 ),
-                              ),
-                              PopupMenuItem<String>(
-                                value: 'Packing Material',
-                                child: ListTile(
-                                  title: Text('Packing Material'),
-                                  onTap: () {
-                                    Navigator.pop(context, 'Packing Material');
-                                  },
+                                PopupMenuItem<String>(
+                                  value: 'Packing Material',
+                                  child: ListTile(
+                                    title: Text('Packing Material'),
+                                    onTap: () {
+                                      Navigator.pop(context, 'Packing Material');
+                                    },
+                                  ),
                                 ),
-                              ),
-                            ],
-                            child: TextButton(
-                              onPressed: null,
-                              child: Text(
-                                '+ Add Bom',
-                                style: TextStyle(color: Color(0xff28713E)),
+                              ],
+                              child: TextButton(
+                                onPressed: null,
+                                child: Text(
+                                  '+ Add Bom',
+                                  style: TextStyle(color: Color(0xff28713E)),
+                                ),
                               ),
                             ),
-                          ),
-
-                          TextButton(
-                            onPressed: () {},
-                            child: Text('Summary',
-                                style: TextStyle(color: Color(0xff28713E))),
-                          ),
-                        ],
-                      ),
-                    ],
+            
+                            TextButton(
+                              onPressed: () {},
+                              child: Text('Summary',
+                                  style: TextStyle(color: Color(0xff28713E))),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                ProcumentBomGrid(
-                  bomDataGridSource: _bomDataGridSource,
-                  dataGridController: _dataGridController,
-                  gridWidth: gridWidth,
-                )
-              ],
+                  ProcumentBomGrid(
+                    bomDataGridSource: _bomDataGridSource,
+                    dataGridController: _dataGridController,
+                    gridWidth: gridWidth,
+                  )
+                ],
+              ),
             ),
           ),
           if (isShowFormula)

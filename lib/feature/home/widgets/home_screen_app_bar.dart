@@ -17,7 +17,7 @@ class Appbar extends ConsumerWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     log('AppbarWithDrawer screen rebuild');
-    final selectedLocation = ref.watch(selectedLocationProvider);
+    // final selectedLocation = ref.watch(selectedLocationProvider);
 
     return AppBar(
       backgroundColor: Colors.white,
@@ -52,7 +52,8 @@ class Appbar extends ConsumerWidget implements PreferredSizeWidget {
         OutlinedButton(
           onPressed: () {},
           child: Text(
-            selectedLocation!.locationName,
+            "",
+            // selectedLocation!.locationName,
             style: const TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.w700,
