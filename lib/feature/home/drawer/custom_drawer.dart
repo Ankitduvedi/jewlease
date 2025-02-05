@@ -60,6 +60,13 @@ class DrawerList extends StatelessWidget {
             context.push('/departmentHomeScreen');
           },
         ),
+        DrawerItem(
+          icon: Icons.person,
+          title: 'Employee',
+          onTap: () {
+            context.push('/employeeHomeScreen');
+          },
+        ),
         DrawerExpansionItem(
           icon: Icons.currency_rupee,
           title: 'Rate Updation',

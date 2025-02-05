@@ -6,20 +6,20 @@ import 'package:jewlease/feature/item_specific/controller/item_master_and_varian
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/widgets/data_widget.dart';
 
-class DepartmentHomeScreen extends ConsumerWidget {
-  const DepartmentHomeScreen({super.key});
+class EmployeeHomeScreen extends ConsumerWidget {
+  const EmployeeHomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Departments'),
+          title: const Text('Employees'),
           actions: [
             AppBarButtons(
               ontap: [
                 () {
                   log('new pressed');
-                  context.push('/departmentHomeScreen/adddDepartmentScreen');
+                  context.push('/employeeHomeScreen/addEmployeeScreen');
                 },
                 () {},
                 () {
@@ -37,7 +37,7 @@ class DepartmentHomeScreen extends ConsumerWidget {
         ),
         body: ItemDataScreen(
           title: '',
-          endUrl: 'Global/Department',
+          endUrl: 'ItemCodeGeneration/',
         ));
   }
 }

@@ -8,6 +8,8 @@ import 'package:jewlease/feature/auth/screens/login_screen_staff.dart';
 import 'package:jewlease/feature/barcoding/screens/barCodeGeneration.dart';
 import 'package:jewlease/feature/department/screen/add_department_screen.dart';
 import 'package:jewlease/feature/department/screen/department_home_screen.dart';
+import 'package:jewlease/feature/employee/screen/add_employee_screen.dart';
+import 'package:jewlease/feature/employee/screen/employee_home_screen.dart';
 import 'package:jewlease/feature/formula/screens/addFormulaProcedure.dart';
 import 'package:jewlease/feature/formula/screens/add_formula_mapping.dart';
 import 'package:jewlease/feature/formula/screens/excelScreen.dart';
@@ -113,6 +115,18 @@ final goRouter = GoRouter(
                     path: 'adddDepartmentScreen',
                     builder: (context, state) {
                       return const AddDepartmentScreen();
+                    }),
+              ]),
+          GoRoute(
+              path: '/employeeHomeScreen',
+              builder: (context, state) {
+                return const EmployeeHomeScreen();
+              },
+              routes: [
+                GoRoute(
+                    path: 'addEmployeeScreen',
+                    builder: (context, state) {
+                      return const AddEmployeeScreen();
                     }),
               ]),
           GoRoute(

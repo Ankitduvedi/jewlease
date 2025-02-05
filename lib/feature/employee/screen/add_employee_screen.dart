@@ -1,33 +1,29 @@
 import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jewlease/data/model/departments_model.dart';
-import 'package:jewlease/feature/department/controller/department_controller.dart';
+import 'package:jewlease/data/model/item_master_metal.dart';
+import 'package:jewlease/widgets/drop_down_text_field.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
-import 'package:jewlease/widgets/read_only_textfield_widget.dart';
-import 'package:jewlease/widgets/search_dailog_widget.dart';
 import 'package:jewlease/widgets/text_field_widget.dart';
 
-class AddDepartmentScreen extends ConsumerStatefulWidget {
-  const AddDepartmentScreen({super.key});
+class AddEmployeeScreen extends ConsumerStatefulWidget {
+  const AddEmployeeScreen({super.key});
   @override
   ConsumerState<ConsumerStatefulWidget> createState() {
-    return AddDepartmentScreenState();
+    return AddEmployeeScreenState();
   }
 }
 
-class AddDepartmentScreenState extends ConsumerState<AddDepartmentScreen> {
-  final TextEditingController departmentCode = TextEditingController();
-  final TextEditingController departmentName = TextEditingController();
+class AddEmployeeScreenState extends ConsumerState<AddEmployeeScreen> {
+  final TextEditingController employeeCode = TextEditingController();
   final TextEditingController description = TextEditingController();
 
   @override
   void dispose() {
-    departmentCode.dispose();
-    departmentName.dispose();
-
+    employeeCode.dispose();
     description.dispose();
     super.dispose();
   }
@@ -38,24 +34,30 @@ class AddDepartmentScreenState extends ConsumerState<AddDepartmentScreen> {
   ];
   @override
   Widget build(BuildContext context) {
+    final isChecked = ref.watch(chechkBoxSelectionProvider);
     final textFieldvalues = ref.watch(dialogSelectionProvider);
+    final dropDownValue = ref.watch(dropDownProvider);
     final masterType = ref.watch(masterTypeProvider);
 
     return Scaffold(
       persistentFooterButtons: [
         ElevatedButton(
           onPressed: () {
-            final config = Departments(
-                departmentCode: departmentCode.text,
-                departmentName: departmentName.text,
-                departmentDescription: description.text,
-                locationCode: textFieldvalues['Location Code']!);
+            final config = ItemMasterMetal(
+                metalCode: employeeCode.text,
+                exclusiveIndicator: isChecked['Exclusive Indicator'] ?? false,
+                description: description.text,
+                rowStatus: dropDownValue['Row Status'] ?? 'Active',
+                createdDate: DateTime.timestamp(),
+                updateDate: DateTime.timestamp(),
+                attributeType: 'HSN - SAC CODE',
+                attributeValue: textFieldvalues['HSN - SAC CODE']!);
 
             log(config.toJson().toString());
 
             ref
-                .read(departmentsControllerProvider.notifier)
-                .submitDepartmentsConfiguration(config, context);
+                .read(itemSpecificControllerProvider.notifier)
+                .submitMetalItemConfiguration(config, context, masterType[1]!);
           },
           style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.fromLTRB(50, 20, 50, 20),
@@ -126,7 +128,6 @@ class AddDepartmentScreenState extends ConsumerState<AddDepartmentScreen> {
   }
 
   Widget parentForm() {
-    final textFieldvalues = ref.watch(dialogSelectionProvider);
     return GridView.count(
       crossAxisCount: 6,
       crossAxisSpacing: 10,
@@ -134,32 +135,39 @@ class AddDepartmentScreenState extends ConsumerState<AddDepartmentScreen> {
       childAspectRatio: 4.5,
       children: [
         TextFieldWidget(
-          controller: departmentCode,
-          labelText: 'Department Code',
+          controller: employeeCode,
+          labelText: 'Employee Code',
         ),
         TextFieldWidget(
-          controller: departmentName,
-          labelText: 'Department Name',
+          controller: employeeCode,
+          labelText: 'Employee Name',
+        ),
+        const DropDownTextFieldWidget(
+          initialValue: 'Admin',
+          items: ['Admin', 'SalesMan', 'Manager', 'Accountant', 'Other'],
+          labelText: 'Employee Type',
         ),
         TextFieldWidget(
-          controller: description,
-          labelText: 'Department Description',
+          controller: employeeCode,
+          labelText: 'Login Name',
         ),
-        ReadOnlyTextFieldWidget(
-          hintText: textFieldvalues['Location Code'] ?? 'Location Code',
-          labelText: 'Location Code',
-          icon: Icons.search,
-          onIconPressed: () {
-            showDialog(
-              context: context,
-              builder: (context) => const ItemTypeDialogScreen(
-                title: 'Location Code',
-                endUrl: 'Global/Location',
-                value: 'Location Code',
-              ),
-            );
-          },
+        TextFieldWidget(
+          controller: employeeCode,
+          labelText: 'Login Password',
         ),
+        TextFieldWidget(
+          controller: employeeCode,
+          labelText: 'PF account Number',
+        ),
+        TextFieldWidget(
+          controller: employeeCode,
+          labelText: 'ESIC Number',
+        ),
+        const DropDownTextFieldWidget(
+          initialValue: 'Active',
+          items: ['InActive', 'Active'],
+          labelText: 'Row Status',
+        )
       ],
     );
   }
