@@ -1,11 +1,11 @@
 // import 'dart:developer';
 
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
 import 'package:jewlease/widgets/custom_app_bar_finder.dart';
-
 import '../feature/formula/controller/heirarchy_controller.dart';
 
 class ItemTypeDialogScreen extends ConsumerStatefulWidget {
@@ -198,8 +198,7 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                               selectedItem[widget.keyOfMap ?? widget.title]
                                       .toString() ==
                                   item[widget.value].toString();
-                          //log("item list value $item->selected item lsit $selectedItem ->selecteditem   ${selectedItem[widget.keyOfMap ?? widget.title]}-> item value ${item[widget.value]}-> ${widget.value}");
-                          //log("seleced $isSelected");
+
                           return DataRow(
                             selected: isSelected,
                             onSelectChanged: (bool? selected) {
@@ -273,11 +272,6 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                           }
                         }
                         if (widget.title == "Data Type") {
-                          //log("data type selected $selectedItemID");
-
-                          // log("selected row $selectedRow");
-                          // log("selected item is ${selectedRow["Config value"]} ");
-
                           ref
                               .read(itemProvider.notifier)
                               .setItem(selectedRow["Config value"]);
@@ -293,7 +287,7 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                           }
                         }
                         if (widget.onSelectdRow != null) {
-                          print("selected row $selectedRow");
+                          log("selected row $selectedRow");
                           widget.onSelectdRow!(selectedRow);
                         }
 

@@ -1,12 +1,14 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/data/model/item_master_metal.dart';
+import 'package:jewlease/feature/employee/controller/employee_controller.dart';
+import 'package:jewlease/feature/employee/screen/dailog_screen.dart';
 import 'package:jewlease/widgets/drop_down_text_field.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
+import 'package:jewlease/widgets/read_only_textfield_widget.dart';
 import 'package:jewlease/widgets/text_field_widget.dart';
 
 class AddEmployeeScreen extends ConsumerStatefulWidget {
@@ -35,7 +37,7 @@ class AddEmployeeScreenState extends ConsumerState<AddEmployeeScreen> {
   @override
   Widget build(BuildContext context) {
     final isChecked = ref.watch(chechkBoxSelectionProvider);
-    final textFieldvalues = ref.watch(dialogSelectionProvider);
+    //final textFieldvalues = ref.watch(dialogSelectionProvider);
     final dropDownValue = ref.watch(dropDownProvider);
     final masterType = ref.watch(masterTypeProvider);
 
@@ -51,7 +53,7 @@ class AddEmployeeScreenState extends ConsumerState<AddEmployeeScreen> {
                 createdDate: DateTime.timestamp(),
                 updateDate: DateTime.timestamp(),
                 attributeType: 'HSN - SAC CODE',
-                attributeValue: textFieldvalues['HSN - SAC CODE']!);
+                attributeValue: '');
 
             log(config.toJson().toString());
 
@@ -128,6 +130,8 @@ class AddEmployeeScreenState extends ConsumerState<AddEmployeeScreen> {
   }
 
   Widget parentForm() {
+    final textFieldvalues = ref.watch(dialogSelectionProvider);
+
     return GridView.count(
       crossAxisCount: 6,
       crossAxisSpacing: 10,
@@ -167,7 +171,22 @@ class AddEmployeeScreenState extends ConsumerState<AddEmployeeScreen> {
           initialValue: 'Active',
           items: ['InActive', 'Active'],
           labelText: 'Row Status',
-        )
+        ),
+        ReadOnlyTextFieldWidget(
+          hintText: textFieldvalues['Department Code'] ?? 'Department Code',
+          labelText: 'Department Code',
+          icon: Icons.search,
+          onIconPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) => const ItemTypeDialogScreen(
+                title: 'Department Code',
+                endUrl: 'Global/Department',
+                value: 'Department Code',
+              ),
+            );
+          },
+        ),
       ],
     );
   }

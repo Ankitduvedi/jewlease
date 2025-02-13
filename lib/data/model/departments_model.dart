@@ -13,40 +13,46 @@ class Departments {
   String departmentCode;
   String departmentName;
   String departmentDescription;
-  String locationCode;
+  String locationName;
 
   Departments({
     required this.departmentCode,
     required this.departmentName,
     required this.departmentDescription,
-    required this.locationCode,
+    required this.locationName,
   });
 
   Departments copyWith({
     String? departmentCode,
     String? departmentName,
     String? departmentDescription,
-    String? locationCode,
+    String? locationName,
   }) =>
       Departments(
         departmentCode: departmentCode ?? this.departmentCode,
         departmentName: departmentName ?? this.departmentName,
         departmentDescription:
             departmentDescription ?? this.departmentDescription,
-        locationCode: locationCode ?? this.locationCode,
+        locationName: locationName ?? this.locationName,
       );
 
   factory Departments.fromJson(Map<String, dynamic> json) => Departments(
         departmentCode: json["departmentCode"],
         departmentName: json["departmentName"],
         departmentDescription: json["departmentDescription"],
-        locationCode: json["locationCode"],
+        locationName: json["locationName"],
       );
 
   Map<String, dynamic> toJson() => {
         "departmentCode": departmentCode,
         "departmentName": departmentName,
         "departmentDescription": departmentDescription,
-        "locationCode": locationCode,
+        "locationName": locationName,
       };
+  factory Departments.froomJson(Map<String, dynamic> json) => Departments(
+        departmentCode: json["Department Code"],
+        departmentName: json["Department Name"],
+        departmentDescription: json["Department Discription"],
+        locationName: json["Location Name"],
+      );
 }

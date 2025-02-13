@@ -49,7 +49,7 @@ class AddDepartmentScreenState extends ConsumerState<AddDepartmentScreen> {
                 departmentCode: departmentCode.text,
                 departmentName: departmentName.text,
                 departmentDescription: description.text,
-                locationCode: textFieldvalues['Location Code']!);
+                locationName: textFieldvalues['Location Name']!);
 
             log(config.toJson().toString());
 
@@ -63,7 +63,7 @@ class AddDepartmentScreenState extends ConsumerState<AddDepartmentScreen> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
               backgroundColor: const Color.fromARGB(255, 40, 112, 62)),
-          child: !ref.watch(itemSpecificControllerProvider)
+          child: !ref.watch(departmentsControllerProvider)
               ? const Text(
                   'Save',
                   style: TextStyle(color: Colors.white),
@@ -146,16 +146,16 @@ class AddDepartmentScreenState extends ConsumerState<AddDepartmentScreen> {
           labelText: 'Department Description',
         ),
         ReadOnlyTextFieldWidget(
-          hintText: textFieldvalues['Location Code'] ?? 'Location Code',
-          labelText: 'Location Code',
+          hintText: textFieldvalues['Location Name'] ?? 'Location Name',
+          labelText: 'Location Name',
           icon: Icons.search,
           onIconPressed: () {
             showDialog(
               context: context,
               builder: (context) => const ItemTypeDialogScreen(
-                title: 'Location Code',
+                title: 'Location Name',
                 endUrl: 'Global/Location',
-                value: 'Location Code',
+                value: 'Location Name',
               ),
             );
           },

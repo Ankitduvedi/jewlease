@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:jewlease/data/model/departments_model.dart';
+
 Employee employeeFromJson(String str) => Employee.fromJson(json.decode(str));
 
 String employeeToJson(Employee data) => json.encode(data.toJson());
@@ -122,45 +124,22 @@ class Employee {
 
 class Location {
   final String locationCode;
-  final String locationName;
-  final List<Department> departments;
+
+  final List<Departments> departments;
 
   Location({
     required this.locationCode,
-    required this.locationName,
     required this.departments,
   });
 
   factory Location.fromJson(Map<String, dynamic> json) => Location(
         locationCode: json["locationCode"],
-        locationName: json["locationName"],
-        departments: List<Department>.from(
-            json["departments"].map((x) => Department.fromJson(x))),
+        departments: List<Departments>.from(
+            json["departments"].map((x) => Departments.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
         "locationCode": locationCode,
-        "locationName": locationName,
         "departments": departments.map((x) => x.toJson()).toList(),
-      };
-}
-
-class Department {
-  final String departmentCode;
-  final String departmentName;
-
-  Department({
-    required this.departmentCode,
-    required this.departmentName,
-  });
-
-  factory Department.fromJson(Map<String, dynamic> json) => Department(
-        departmentCode: json["departmentCode"],
-        departmentName: json["departmentName"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "departmentCode": departmentCode,
-        "departmentName": departmentName,
       };
 }
