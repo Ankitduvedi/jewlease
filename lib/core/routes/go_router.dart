@@ -65,10 +65,10 @@ final goRouter = GoRouter(
       path: '/loginScreen',
       builder: (context, state) => const LoginScreen(),
     ),
-    GoRoute(
-      path: '/loginScreenStaff',
-      builder: (context, state) => const LoginScreenStaff(),
-    ),
+    // GoRoute(
+    //   path: '/loginScreenStaff',
+    //   builder: (context, state) => const LoginScreenStaff(),
+    // ),
 
     // GoRoute(
     //     path: '/onBoardingScreens',
