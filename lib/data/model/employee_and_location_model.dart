@@ -118,28 +118,29 @@ class Employee {
         "emergencyContact": emergencyContact,
         "salaryInstr": salaryInstr,
         "accountName": accountName,
-        "lastLoginDate": lastLoginDate.toIso8601String(),
+        "lastLoginDate":
+            "${lastLoginDate.year.toString().padLeft(4, '0')}-${lastLoginDate.month.toString().padLeft(2, '0')}-${lastLoginDate.day.toString().padLeft(2, '0')}",
       };
 }
 
 class Location {
-  final String locationCode;
+  final String locationName;
 
   final List<Departments> departments;
 
   Location({
-    required this.locationCode,
+    required this.locationName,
     required this.departments,
   });
 
   factory Location.fromJson(Map<String, dynamic> json) => Location(
-        locationCode: json["locationCode"],
+        locationName: json["locationName"],
         departments: List<Departments>.from(
             json["departments"].map((x) => Departments.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
-        "locationCode": locationCode,
+        "locationName": locationName,
         "departments": departments.map((x) => x.toJson()).toList(),
       };
 }

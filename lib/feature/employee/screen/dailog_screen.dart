@@ -6,10 +6,11 @@ import 'package:jewlease/data/model/departments_model.dart';
 import 'package:jewlease/data/model/employee_and_location_model.dart';
 import 'package:jewlease/feature/employee/controller/employee_controller.dart';
 import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
+import 'package:jewlease/providers/dailog_selection_provider.dart';
 import 'package:jewlease/widgets/custom_app_bar_finder.dart';
 
-class ItemTypeDialogScreen extends ConsumerStatefulWidget {
-  const ItemTypeDialogScreen({
+class MultipleItemTypeDialogScreen extends ConsumerStatefulWidget {
+  const MultipleItemTypeDialogScreen({
     super.key,
     required this.title,
     required this.endUrl,
@@ -27,10 +28,12 @@ class ItemTypeDialogScreen extends ConsumerStatefulWidget {
   final Function(List<Map<String, dynamic>>)? onOptionsSelected; // Updated
 
   @override
-  ItemTypeDialogScreenState createState() => ItemTypeDialogScreenState();
+  MultipleItemTypeDialogScreenState createState() =>
+      MultipleItemTypeDialogScreenState();
 }
 
-class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
+class MultipleItemTypeDialogScreenState
+    extends ConsumerState<MultipleItemTypeDialogScreen> {
   String _searchQuery = '';
   String _selectedColumn = 'All';
 
@@ -175,26 +178,12 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                           ref.read(newdialogSelectionProvider);
                       log('Selected Items: $selectedItems');
 
-                      // Extract selected rows based on selected item IDs
-                      // List<Map<String, dynamic>> selectedRows = _filteredItems
-                      //     .where((map) => selectedItems
-                      //         .contains(map[widget.value].toString()))
-                      //     .toList();
-
                       List<Departments> selectedDepartments = selectedItems
                           .map((row) => Departments.froomJson(row))
                           .toList();
                       log('Selected Rows: ${selectedDepartments.first.departmentName}');
 
                       if (selectedDepartments.isNotEmpty) {
-                        // Convert selected rows to list of Departments
-                        // List<Departments> selectedDepartments =
-                        //     selectedDepartments.map((row) {
-                        //   return Departments.fromJson(row);
-                        // }).toList();
-
-                        // Create Location object
-                        // Group departments by locationCode
                         Map<String, List<Departments>> groupedDepartments = {};
 
                         for (var department in selectedDepartments) {
@@ -210,13 +199,15 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                         List<Location> locations =
                             groupedDepartments.entries.map((entry) {
                           return Location(
-                            locationCode: entry.key,
+                            locationName: entry.key,
                             departments: entry.value,
                           );
                         }).toList();
+                        ref.watch(locationProvider.notifier).state = locations;
+                        final loc = ref.watch(locationProvider.notifier).state;
 
                         // Log the final grouped list of locations
-                        log("Grouped Locations: ${locations.map((loc) => loc.toJson()).toList()}");
+                        log("Grouped Locations from provider: ${loc.map((loc) => loc.toJson()).toList()}");
 
                         // Perform any additional actions (e.g., save to provider or DB)
 

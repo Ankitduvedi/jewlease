@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jewlease/data/model/item_master_metal.dart';
+import 'package:jewlease/data/model/employee_and_location_model.dart';
 import 'package:jewlease/feature/employee/controller/employee_controller.dart';
 import 'package:jewlease/feature/employee/screen/dailog_screen.dart';
 import 'package:jewlease/widgets/drop_down_text_field.dart';
@@ -9,6 +9,7 @@ import 'package:jewlease/feature/item_specific/controller/item_master_and_varian
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
 import 'package:jewlease/widgets/read_only_textfield_widget.dart';
+import 'package:jewlease/widgets/search_dailog_widget.dart';
 import 'package:jewlease/widgets/text_field_widget.dart';
 
 class AddEmployeeScreen extends ConsumerStatefulWidget {
@@ -22,44 +23,80 @@ class AddEmployeeScreen extends ConsumerStatefulWidget {
 class AddEmployeeScreenState extends ConsumerState<AddEmployeeScreen> {
   final TextEditingController employeeCode = TextEditingController();
   final TextEditingController description = TextEditingController();
+  final TextEditingController employeeName = TextEditingController();
+  final TextEditingController loginName = TextEditingController();
+  final TextEditingController loginPassword = TextEditingController();
+  final TextEditingController pfAccountNumber = TextEditingController();
+  final TextEditingController esicNumber = TextEditingController();
+  final TextEditingController emergencyContactName = TextEditingController();
+  final TextEditingController emergencyContact = TextEditingController();
+  final TextEditingController salaryInstr = TextEditingController();
+  final TextEditingController accountName = TextEditingController();
 
   @override
   void dispose() {
     employeeCode.dispose();
     description.dispose();
+    employeeName.dispose();
+    loginName.dispose();
+    loginPassword.dispose();
+    pfAccountNumber.dispose();
+    esicNumber.dispose();
+    emergencyContactName.dispose();
+    emergencyContact.dispose();
+    salaryInstr.dispose();
+    accountName.dispose();
     super.dispose();
   }
 
-  final List<String> content = [
-    'Parent Form',
-    'Item Attribute',
-  ];
   @override
   Widget build(BuildContext context) {
     final isChecked = ref.watch(chechkBoxSelectionProvider);
     //final textFieldvalues = ref.watch(dialogSelectionProvider);
     final dropDownValue = ref.watch(dropDownProvider);
     final masterType = ref.watch(masterTypeProvider);
+    final textFieldvalues = ref.watch(dialogSelectionProvider);
 
     return Scaffold(
       persistentFooterButtons: [
         ElevatedButton(
           onPressed: () {
-            final config = ItemMasterMetal(
-                metalCode: employeeCode.text,
-                exclusiveIndicator: isChecked['Exclusive Indicator'] ?? false,
-                description: description.text,
+            final configs = Employee(
+                employeeCode: employeeCode.text,
+                employeeName: employeeName.text,
+                employeeType: dropDownValue['Employee Type'] ?? 'Admin',
+                defaultLocation: textFieldvalues['Location Name'] ?? 'Location',
+                defaultDepartment:
+                    textFieldvalues['Department Name'] ?? 'Department',
+                locations: ref.watch(locationProvider.notifier).state,
+                canChangeGlobalSetting: 0,
+                loginName: loginName.text,
+                pfAccountNo: pfAccountNumber.text,
+                esicNo: esicNumber.text,
                 rowStatus: dropDownValue['Row Status'] ?? 'Active',
-                createdDate: DateTime.timestamp(),
-                updateDate: DateTime.timestamp(),
-                attributeType: 'HSN - SAC CODE',
-                attributeValue: '');
+                remark: '',
+                grade: '',
+                weighterName: '',
+                password: loginPassword.text,
+                passwordExpired: 0,
+                isLocked: 0,
+                noOfFailedAttempts: 0,
+                passwordExpiresOn: DateTime.timestamp(),
+                allowAccessFromMainURL: 0,
+                emergencyContactName: emergencyContactName.text,
+                emergencyContact: emergencyContact.text,
+                salaryInstr: salaryInstr.text,
+                accountName: accountName.text,
+                lastLoginDate: DateTime.timestamp());
 
-            log(config.toJson().toString());
+            log(configs.toJson().toString());
 
             ref
-                .read(itemSpecificControllerProvider.notifier)
-                .submitMetalItemConfiguration(config, context, masterType[1]!);
+                .read(employeeControllerProvider.notifier)
+                .submitEmployeeConfiguration(
+                  configs,
+                  context,
+                );
           },
           style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.fromLTRB(50, 20, 50, 20),
@@ -143,7 +180,7 @@ class AddEmployeeScreenState extends ConsumerState<AddEmployeeScreen> {
           labelText: 'Employee Code',
         ),
         TextFieldWidget(
-          controller: employeeCode,
+          controller: employeeName,
           labelText: 'Employee Name',
         ),
         const DropDownTextFieldWidget(
@@ -152,19 +189,19 @@ class AddEmployeeScreenState extends ConsumerState<AddEmployeeScreen> {
           labelText: 'Employee Type',
         ),
         TextFieldWidget(
-          controller: employeeCode,
+          controller: loginName,
           labelText: 'Login Name',
         ),
         TextFieldWidget(
-          controller: employeeCode,
+          controller: loginPassword,
           labelText: 'Login Password',
         ),
         TextFieldWidget(
-          controller: employeeCode,
+          controller: pfAccountNumber,
           labelText: 'PF account Number',
         ),
         TextFieldWidget(
-          controller: employeeCode,
+          controller: esicNumber,
           labelText: 'ESIC Number',
         ),
         const DropDownTextFieldWidget(
@@ -173,19 +210,65 @@ class AddEmployeeScreenState extends ConsumerState<AddEmployeeScreen> {
           labelText: 'Row Status',
         ),
         ReadOnlyTextFieldWidget(
-          hintText: textFieldvalues['Department Code'] ?? 'Department Code',
-          labelText: 'Department Code',
+          hintText: textFieldvalues['Location Name'] ?? 'Location Name',
+          labelText: 'Default Location',
           icon: Icons.search,
           onIconPressed: () {
             showDialog(
               context: context,
               builder: (context) => const ItemTypeDialogScreen(
+                title: 'Location Name',
+                endUrl: 'Global/Location',
+                value: 'Location Name',
+              ),
+            );
+          },
+        ),
+        ReadOnlyTextFieldWidget(
+          hintText: textFieldvalues['Department Name'] ?? 'Department',
+          labelText: 'Default Department',
+          icon: Icons.search,
+          onIconPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) => const ItemTypeDialogScreen(
+                title: 'Department Name',
+                endUrl: 'Global/Department',
+                value: 'Department Name',
+              ),
+            );
+          },
+        ),
+        ReadOnlyTextFieldWidget(
+          hintText: textFieldvalues['Department Code'] ?? 'Department Code',
+          labelText: 'Allowed Departments',
+          icon: Icons.search,
+          onIconPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) => const MultipleItemTypeDialogScreen(
                 title: 'Department Code',
                 endUrl: 'Global/Department',
                 value: 'Department Code',
               ),
             );
           },
+        ),
+        TextFieldWidget(
+          controller: emergencyContactName,
+          labelText: 'Emergency Contact Name',
+        ),
+        TextFieldWidget(
+          controller: emergencyContact,
+          labelText: 'Emergency Contact',
+        ),
+        TextFieldWidget(
+          controller: salaryInstr,
+          labelText: 'Salary Instruction',
+        ),
+        TextFieldWidget(
+          controller: accountName,
+          labelText: 'Account Name',
         ),
       ],
     );
