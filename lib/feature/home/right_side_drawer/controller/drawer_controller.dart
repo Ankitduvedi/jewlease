@@ -1,6 +1,9 @@
 import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/data/model/departments_model.dart';
 import 'package:jewlease/data/model/drawer_state.dart';
+import 'package:jewlease/data/model/employee_and_location_model.dart';
+import 'package:jewlease/feature/auth/controller/auth_controller.dart';
 
 class DrawerNotifier extends StateNotifier<Session> {
   late Session _initialSession;
@@ -77,4 +80,30 @@ final drawerProvider = StateNotifierProvider<DrawerNotifier, Session>((ref) {
 // final locationProvider = FutureProvider<List<Location>>((ref) async {
 //   final repo = ref.watch(locationRepositoryProvider);
 //   return await repo.fetchLocations();
+// });
+
+// Providers to track selected location and department
+final selectedLocationDropdownProvider = StateProvider<Location?>((ref) {
+  final employee = ref.watch(authProvider);
+  return employee!.locations.where((loc) {
+    return loc.locationName == employee.defaultLocation;
+  }).first;
+});
+final selectedDepartmentProvider = StateProvider<Departments?>((ref) {
+  final employee = ref.watch(authProvider);
+  final selectedLocation = ref.watch(selectedLocationDropdownProvider);
+
+  if (selectedLocation == null || selectedLocation.departments.isEmpty) {
+    return null; // Prevents Bad State error
+  }
+
+  return selectedLocation.departments.firstWhere(
+    (dept) => dept.departmentName == employee!.defaultDepartment,
+    orElse: () => selectedLocation.departments.first,
+  );
+});
+
+//   return employee!.locations.where((loc) {
+//     return loc.locationName == employee.defaultLocation;
+//   }).first;
 // });

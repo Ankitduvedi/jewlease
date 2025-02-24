@@ -138,19 +138,6 @@ class LoginScreenState extends ConsumerState<LoginScreen> {
                         context,
                         ref,
                       );
-
-                      // // Check if login was successful
-                      // if (ref.read(authProvider) != null) {
-                      //   Navigator.pushReplacement(
-                      //     context,
-                      //     MaterialPageRoute(
-                      //         builder: (context) => HomeScreen()),
-                      //   );
-                      // } else {
-                      //   ScaffoldMessenger.of(context).showSnackBar(
-                      //     const SnackBar(content: Text('Login failed!')),
-                      //   );
-                      // }
                     },
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,

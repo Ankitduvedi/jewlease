@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -18,7 +17,7 @@ class AuthController extends StateNotifier<bool> {
   ) : super(false);
 
   Future<void> login(String username, String password, BuildContext context,
-      WidgetRef _ref) async {
+      WidgetRef ref) async {
     try {
       log('in controller');
 
@@ -27,7 +26,7 @@ class AuthController extends StateNotifier<bool> {
       state = false;
       response.fold((l) => Utils.snackBar(l.message, context), (employee) {
         log('login successfull employee $employee');
-        _ref.read(authProvider.notifier).state = employee;
+        ref.read(authProvider.notifier).state = employee;
         Utils.snackBar('login successfull', context);
         context.push('/');
         null;

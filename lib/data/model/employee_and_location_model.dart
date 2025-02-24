@@ -62,34 +62,34 @@ class Employee {
   });
 
   factory Employee.fromJson(Map<String, dynamic> json) => Employee(
-        employeeCode: json["employeeCode"],
-        employeeName: json["employeeName"],
-        employeeType: json["employeeType"],
-        defaultLocation: json["defaultLocation"],
-        defaultDepartment: json["defaultDepartment"],
-        locations: (json["location"] is String && json["location"] == "{}")
+        employeeCode: json["Employee Code"],
+        employeeName: json["Employee Name"],
+        employeeType: json["Employee Type"],
+        defaultLocation: json["Default Location"],
+        defaultDepartment: json["Default Department"],
+        locations: (json["Location"] is String && json["Location"] == "{}")
             ? []
-            : List<Location>.from((jsonDecode(json["location"]) as List)
+            : List<Location>.from((jsonDecode(json["Location"]) as List)
                 .map((x) => Location.fromJson(x))),
-        canChangeGlobalSetting: json["canChangeGlobalSetting"],
-        loginName: json["loginName"],
-        pfAccountNo: json["pfAccountNo"],
-        esicNo: json["esicNo"],
-        rowStatus: json["rowStatus"],
-        remark: json["remark"],
-        grade: json["grade"],
-        weighterName: json["weighterName"],
-        password: json["password"],
-        passwordExpired: json["passwordExpired"],
-        isLocked: json["isLocked"],
-        noOfFailedAttempts: json["noOfFailedAttempts"],
-        passwordExpiresOn: DateTime.parse(json["passwordExpiresOn"]),
-        allowAccessFromMainURL: json["allowAccessFromMainURL"],
-        emergencyContactName: json["emergencyContactName"],
-        emergencyContact: json["emergencyContact"],
-        salaryInstr: json["salaryInstr"],
-        accountName: json["accountName"],
-        lastLoginDate: DateTime.parse(json["lastLoginDate"]),
+        canChangeGlobalSetting: json["Can Change Global Setting"],
+        loginName: json["Login Name"],
+        pfAccountNo: json["PF Account No"],
+        esicNo: json["ESIC No"],
+        rowStatus: json["Row Status"],
+        remark: json["Remark"],
+        grade: json["Grade"],
+        weighterName: json["Weighter Name"],
+        password: json["Password"],
+        passwordExpired: json["Password Expired"],
+        isLocked: json["Is Locked"],
+        noOfFailedAttempts: json["No of Failed Attempts"],
+        passwordExpiresOn: DateTime.parse(json["Password Expires on"]),
+        allowAccessFromMainURL: json["Allow Access From Main URL"],
+        emergencyContactName: json["Emergency Contact Name"],
+        emergencyContact: json["Emergency Contact"],
+        salaryInstr: json["Salary Instr"],
+        accountName: json["Account Name"],
+        lastLoginDate: DateTime.parse(json["Last Login Date"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -121,6 +121,37 @@ class Employee {
         "lastLoginDate":
             "${lastLoginDate.year.toString().padLeft(4, '0')}-${lastLoginDate.month.toString().padLeft(2, '0')}-${lastLoginDate.day.toString().padLeft(2, '0')}",
       };
+
+  // Factory method for creating a default Employee instance
+  factory Employee.defaultEmployee() {
+    return Employee(
+      employeeCode: '',
+      employeeName: '',
+      employeeType: '',
+      defaultLocation: '',
+      defaultDepartment: '',
+      locations: [],
+      canChangeGlobalSetting: 0,
+      loginName: '',
+      pfAccountNo: '',
+      esicNo: '',
+      rowStatus: '',
+      remark: '',
+      grade: '',
+      weighterName: '',
+      password: '',
+      passwordExpired: 0,
+      isLocked: 0,
+      noOfFailedAttempts: 0,
+      passwordExpiresOn: DateTime(2000, 1, 1),
+      allowAccessFromMainURL: 0,
+      emergencyContactName: '',
+      emergencyContact: '',
+      salaryInstr: '',
+      accountName: '',
+      lastLoginDate: DateTime(2000, 1, 1),
+    );
+  }
 }
 
 class Location {

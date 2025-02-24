@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/core/routes/go_router.dart';
 import 'package:jewlease/feature/home/drawer/drawer_toogle_button.dart';
-import 'package:jewlease/feature/home/right_side_drawer/repository/drawer_repository.dart';
+import 'package:jewlease/feature/home/right_side_drawer/controller/drawer_controller.dart';
 
 class Appbar extends ConsumerWidget implements PreferredSizeWidget {
   const Appbar({super.key, required GlobalKey<ScaffoldState> scaffoldKey})
@@ -16,7 +16,7 @@ class Appbar extends ConsumerWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     log('AppbarWithDrawer screen rebuild');
-    final selectedLocation = ref.watch(selectedLocationProvider);
+    final selectedDepartment = ref.watch(selectedDepartmentProvider);
 
     return AppBar(
       backgroundColor: Colors.white,
@@ -50,13 +50,15 @@ class Appbar extends ConsumerWidget implements PreferredSizeWidget {
       actions: [
         OutlinedButton(
           onPressed: () {},
-          child: Text(
-            selectedLocation!.locationName,
-            style: const TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
+          child: selectedDepartment != null
+              ? Text(
+                  selectedDepartment.departmentName,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w700,
+                  ),
+                )
+              : const CircularProgressIndicator(),
         ),
         IconButton(onPressed: () {}, icon: const Icon(Icons.image_outlined)),
         IconButton(

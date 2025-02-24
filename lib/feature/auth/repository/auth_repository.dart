@@ -11,21 +11,6 @@ class AuthRepository {
 
   AuthRepository();
 
-  // Future<Employee?> login(String username, String password) async {
-  //   try {
-  //     Response response = await _dio.post(
-  //       '/login',
-  //       data: {'username': username, 'password': password},
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       return Employee.fromJson(response.data);
-  //     }
-  //   } catch (e) {
-  //     log('Login error: $e');
-  //   }
-  //   return null;
-  // }
   Future<Either<Failure, Employee>> login(
       String username, String password) async {
     try {
