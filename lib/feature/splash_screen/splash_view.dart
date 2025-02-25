@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/feature/splash_screen/controller/splash_controller.dart';
 
 import 'animation/splash_animation.dart';
-import 'controller/splash_controller.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -26,11 +26,10 @@ class SplashScreenState extends ConsumerState<SplashScreen>
   @override
   void initState() {
     super.initState();
-
     Future.delayed(const Duration(seconds: 2)).then((value) async {
       //ref.read(sizeProvider.notifier).state = MediaQuery.of(context).size;
       final splashInitilise = ref.read(splashControllerProvider);
-      splashInitilise.intializeWhile(context);
+
       splashInitilise.checkCondition(context);
     });
     // Initialize the animation controller

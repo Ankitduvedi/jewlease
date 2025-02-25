@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:jewlease/core/utils/utils.dart';
 
 import '../repository/splash_repository.dart';
 
@@ -20,35 +19,11 @@ class SplashController extends StateNotifier<bool> {
         _ref = ref,
         super(false);
 
-  void intializeWhile(BuildContext context) async {
-    state = true;
-    final res = await _splashRepository.intializeWhile();
-    res.fold((l) => Utils.snackBar(l.message, context), (r) {
-      if (r == true) context.pushReplacement('/updateAppScreen');
-    });
-    state = false;
-  }
-
   void checkCondition(BuildContext context) async {
     state = true;
-    final res = await _splashRepository.checkCondition();
-    res.fold(
-      (l) {
-        Utils.snackBar(l.message, context);
-      },
-      (r) {
-        if (r == 1) {
-          context.push('/onBoardingScreens');
-          return;
-        } else if (r == 2) {
-          context.push('/');
-          return;
-        } else if (r == 3) {
-          context.push('/welcomeScreen');
-          return;
-        }
-      },
-    );
+
+    context.push('/welcomeScreen');
     state = false;
+    return;
   }
 }
