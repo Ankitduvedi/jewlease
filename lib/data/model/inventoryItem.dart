@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 class InventoryItemModel {
   String more;
   String itemGroup;
@@ -175,7 +177,7 @@ class InventoryItemModel {
   });
 
   factory InventoryItemModel.fromJson(Map<String, dynamic> json) {
-    print("json $json");
+    log("json $json");
     try {
       return InventoryItemModel(
         more: json['Remark'] ?? '',
@@ -266,8 +268,8 @@ class InventoryItemModel {
         department: json['Department'] ?? '',
       );
     } catch (e, stacktrace) {
-      print("Error while parsing JSON: $e");
-      print("Stacktrace: $stacktrace");
+      log("Error while parsing JSON: $e");
+      log("Stacktrace: $stacktrace");
       rethrow; // Re-throw the error after logging
     }
   }

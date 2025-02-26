@@ -4,7 +4,6 @@ import 'package:jewlease/core/routes/navigation_const.dart';
 import 'package:jewlease/feature/all_attributes/screen/all_attribute_screen.dart';
 import 'package:jewlease/feature/all_attributes/screen/new_attribute_screen.dart';
 import 'package:jewlease/feature/auth/screens/login_screen_owner.dart';
-import 'package:jewlease/feature/auth/screens/login_screen_staff.dart';
 import 'package:jewlease/feature/barcoding/screens/barCodeGeneration.dart';
 import 'package:jewlease/feature/department/screen/add_department_screen.dart';
 import 'package:jewlease/feature/department/screen/department_home_screen.dart';

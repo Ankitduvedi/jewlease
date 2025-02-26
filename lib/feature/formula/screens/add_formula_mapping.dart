@@ -157,7 +157,7 @@ class AddFormulaMappingScreenState
               builder: (context) => const ItemTypeDialogScreen(
                 title: 'Transaction Type',
                 endUrl: 'FormulaProcedures/TransactionType/FormulaMapping',
-                value: 'Transaction Type',
+                value: 'Config value',
               ),
             );
           },
@@ -179,25 +179,83 @@ class AddFormulaMappingScreenState
               context: context,
               builder: (context) => const ItemTypeDialogScreen(
                 title: 'Document Type',
-                endUrl: 'Master/PartySpecific/vendors/',
-                value: 'Document Type',
+                endUrl: 'FormulaProcedures/DocumentType/FormulaMapping',
+                value: 'Config value',
               ),
             );
           },
         ),
-        TextFieldWidget(
-          controller: setCode,
-          labelText: 'Set Code',
+        const DropDownTextFieldWidget(
+          initialValue: 'Style',
+          items: [
+            'Style',
+            'Style(Pcs)',
+            'Style(Wt)',
+            'Gold',
+            'Platinum',
+            'Silver',
+            'Bronze',
+            'Diamond',
+            'Pearl',
+            'Precious Stone',
+            'Semi Precious Stone',
+            'Zircon',
+            'Polki',
+            'Diamond Solitaire',
+            'Consumables(Wt)',
+            'Consumables-Cts',
+            'Set',
+            'Style Certificate',
+            'Stone Certificate',
+            'Packing Materials',
+          ],
+          labelText: 'Item Group',
         ),
-        TextFieldWidget(
-          controller: description,
-          labelText: 'Description',
+        ReadOnlyTextFieldWidget(
+          hintText: textFieldvalues['Attribute Code'] ?? 'Attribute Code',
+          labelText: 'Attribute Code',
+          icon: Icons.search,
+          onIconPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) => const ItemTypeDialogScreen(
+                title: 'Attribute Code',
+                endUrl: 'AllAttribute/',
+                value: 'AttributeCode',
+              ),
+            );
+          },
+        ),
+        ReadOnlyTextFieldWidget(
+          hintText: textFieldvalues['Operation'] ?? 'Operation',
+          labelText: 'Operation',
+          icon: Icons.search,
+          onIconPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) => const ItemTypeDialogScreen(
+                title: 'Operation',
+                endUrl: 'Global/operations/',
+                value: 'OPERATION_NAME',
+              ),
+            );
+          },
         ),
         const DropDownTextFieldWidget(
-          initialValue: 'Active',
-          items: ['InActive', 'Active'],
-          labelText: 'Row Status',
-        )
+          initialValue: 'Na',
+          items: [
+            'Hand Setting',
+            'Wax Setting',
+            'Machine Setting',
+            'Manual Setting',
+            'Paste Setting',
+            'Na',
+            'Stringing',
+            'Glue',
+            'Ghantan',
+          ],
+          labelText: 'Trans Category',
+        ),
       ],
     );
   }

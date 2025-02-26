@@ -1,3 +1,5 @@
+// ignore_for_file: curly_braces_in_flow_control_structures
+
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -54,195 +56,190 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
         screenWidth * 0.4; // Set grid width to 50% of screen width
     final gridAction = ref.watch(formulaBomOprProvider);
     if (gridAction['trigger'] == true) {
-      print("start updating bom from formula1");
-      // print("gridactions ${gridAction}");
+      log("start updating bom from formula1");
+      // log("gridactions ${gridAction}");
       updateBomFromFormula(gridAction["data"]);
 
-      print("end updating bom from formula1");
+      log("end updating bom from formula1");
     }
-    return Container(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: screenWidth * 0.45,
-            height: screenHeight * 0.4,
-            margin: EdgeInsets.only(top: 20, left: 20),
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-              color: Colors.white,
-            ),
-            // height: screenHeight * 0.5,
-            // width: screenWidth * 0.,
-            child: Column(
-              children: [
-                // Header Row
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: screenWidth * 0.45,
+          height: screenHeight * 0.4,
+          margin: const EdgeInsets.only(top: 20, left: 20),
+          padding: const EdgeInsets.all(20),
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+            color: Colors.white,
+          ),
+          // height: screenHeight * 0.5,
+          // width: screenWidth * 0.,
+          child: Column(
+            children: [
+              // Header Row
 
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Bom',
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.bold),
-                      ),
-                      Row(
-                        children: [
-                          TextButton(
-                            onPressed: () {
-                              if (widget.canEdit == false) return;
-                              showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                        content: ItemDataScreen(
-                                          title: '',
-                                          endUrl: 'Global/operations/',
-                                          canGo: true,
-                                          onDoubleClick: (Map<String, dynamic>
-                                              intialData) {
-                                            print("intial data is $intialData");
-                                            _addNewRowOpr(
-                                                intialData["OPERATION_NAME"] ??
-                                                    "");
-                                            Navigator.pop(context);
-                                          },
-                                        ),
-                                      ));
-                            },
-                            child: Text('+ Add Operation',
-                                style: TextStyle(color: Color(0xff28713E))),
-                          ),
-                          // Inside the build method, replace the "+ Add Bom" button with a PopupMenuButton:
-                          PopupMenuButton<String>(
-                            onSelected: (String value) {
-                              // When an item is selected, add a new row with the item group
-                              log("choosen Item $value");
-                              if (widget.canEdit == false) return;
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Bom',
+                      style:
+                          TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                    ),
+                    Row(
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            if (widget.canEdit == false) return;
+                            showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                      content: ItemDataScreen(
+                                        title: '',
+                                        endUrl: 'Global/operations/',
+                                        canGo: true,
+                                        onDoubleClick:
+                                            (Map<String, dynamic> intialData) {
+                                          log("intial data is $intialData");
+                                          _addNewRowOpr(
+                                              intialData["OPERATION_NAME"] ??
+                                                  "");
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                    ));
+                          },
+                          child: const Text('+ Add Operation',
+                              style: TextStyle(color: Color(0xff28713E))),
+                        ),
+                        // Inside the build method, replace the "+ Add Bom" button with a PopupMenuButton:
+                        PopupMenuButton<String>(
+                          onSelected: (String value) {
+                            // When an item is selected, add a new row with the item group
+                            log("choosen Item $value");
+                            if (widget.canEdit == false) return;
 
-                              if (value.contains('Gold')) {
-                                showProcumentdialog(
-                                    "ItemMasterAndVariants/Metal/Gold/Variant/",
-                                    value);
-                              } else if (value.contains('Silver'))
-                                showProcumentdialog(
-                                    "ItemMasterAndVariants/Metal/Silver/Variant/",
-                                    value);
-                              else if (value.contains('Diamond'))
-                                showProcumentdialog(
-                                    "ItemMasterAndVariants/Stone/Diamond/Varient/",
-                                    value);
-                              else if (value.contains('Bronze'))
-                                showProcumentdialog(
-                                    "ItemMasterAndVariants/Metal/Bronze/Variant/",
-                                    value);
-                            },
-                            itemBuilder: (BuildContext context) =>
-                                <PopupMenuEntry<String>>[
-                              PopupMenuItem<String>(
-                                value: 'Metal - Gold',
-                                child: ExpansionTile(
-                                  title: Text('Metal'),
-                                  children: <Widget>[
-                                    ListTile(
-                                      title: Text('Gold'),
-                                      onTap: () {
-                                        Navigator.pop(context, 'Metal - Gold');
-                                      },
-                                    ),
-                                    ListTile(
-                                      title: Text('Silver'),
-                                      onTap: () {
-                                        Navigator.pop(
-                                            context, 'Metal - Silver');
-                                      },
-                                    ),
-                                    ListTile(
-                                      title: Text('Bronze'),
-                                      onTap: () {
-                                        Navigator.pop(
-                                            context, 'Metal - Bronze');
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              PopupMenuItem<String>(
-                                value: 'Stone - Diamond',
-                                child: ExpansionTile(
-                                  title: Text('Stone'),
-                                  children: <Widget>[
-                                    ListTile(
-                                      title: Text('Diamond'),
-                                      onTap: () {
-                                        Navigator.pop(
-                                            context, 'Stone - Diamond');
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              PopupMenuItem<String>(
-                                value: 'Consumables',
-                                child: ListTile(
-                                  title: Text('Consumables'),
-                                  onTap: () {
-                                    Navigator.pop(context, 'Consumables');
-                                  },
-                                ),
-                              ),
-                              PopupMenuItem<String>(
-                                value: 'Packing Material',
-                                child: ListTile(
-                                  title: Text('Packing Material'),
-                                  onTap: () {
-                                    Navigator.pop(context, 'Packing Material');
-                                  },
-                                ),
-                              ),
-                            ],
-                            child: TextButton(
-                              onPressed: null,
-                              child: Text(
-                                '+ Add Bom',
-                                style: TextStyle(color: Color(0xff28713E)),
+                            if (value.contains('Gold')) {
+                              showProcumentdialog(
+                                  "ItemMasterAndVariants/Metal/Gold/Variant/",
+                                  value);
+                            } else if (value.contains('Silver'))
+                              showProcumentdialog(
+                                  "ItemMasterAndVariants/Metal/Silver/Variant/",
+                                  value);
+                            else if (value.contains('Diamond'))
+                              showProcumentdialog(
+                                  "ItemMasterAndVariants/Stone/Diamond/Varient/",
+                                  value);
+                            else if (value.contains('Bronze'))
+                              showProcumentdialog(
+                                  "ItemMasterAndVariants/Metal/Bronze/Variant/",
+                                  value);
+                          },
+                          itemBuilder: (BuildContext context) =>
+                              <PopupMenuEntry<String>>[
+                            PopupMenuItem<String>(
+                              value: 'Metal - Gold',
+                              child: ExpansionTile(
+                                title: const Text('Metal'),
+                                children: <Widget>[
+                                  ListTile(
+                                    title: const Text('Gold'),
+                                    onTap: () {
+                                      Navigator.pop(context, 'Metal - Gold');
+                                    },
+                                  ),
+                                  ListTile(
+                                    title: const Text('Silver'),
+                                    onTap: () {
+                                      Navigator.pop(context, 'Metal - Silver');
+                                    },
+                                  ),
+                                  ListTile(
+                                    title: const Text('Bronze'),
+                                    onTap: () {
+                                      Navigator.pop(context, 'Metal - Bronze');
+                                    },
+                                  ),
+                                ],
                               ),
                             ),
+                            PopupMenuItem<String>(
+                              value: 'Stone - Diamond',
+                              child: ExpansionTile(
+                                title: const Text('Stone'),
+                                children: <Widget>[
+                                  ListTile(
+                                    title: const Text('Diamond'),
+                                    onTap: () {
+                                      Navigator.pop(context, 'Stone - Diamond');
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem<String>(
+                              value: 'Consumables',
+                              child: ListTile(
+                                title: const Text('Consumables'),
+                                onTap: () {
+                                  Navigator.pop(context, 'Consumables');
+                                },
+                              ),
+                            ),
+                            PopupMenuItem<String>(
+                              value: 'Packing Material',
+                              child: ListTile(
+                                title: const Text('Packing Material'),
+                                onTap: () {
+                                  Navigator.pop(context, 'Packing Material');
+                                },
+                              ),
+                            ),
+                          ],
+                          child: const TextButton(
+                            onPressed: null,
+                            child: Text(
+                              '+ Add Bom',
+                              style: TextStyle(color: Color(0xff28713E)),
+                            ),
                           ),
+                        ),
 
-                          TextButton(
-                            onPressed: () {},
-                            child: Text('Summary',
-                                style: TextStyle(color: Color(0xff28713E))),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        TextButton(
+                          onPressed: () {},
+                          child: const Text('Summary',
+                              style: TextStyle(color: Color(0xff28713E))),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                ProcumentBomGrid(
-                  bomDataGridSource: _bomDataGridSource,
-                  dataGridController: _dataGridController,
-                  gridWidth: gridWidth,
-                )
-              ],
-            ),
+              ),
+              ProcumentBomGrid(
+                bomDataGridSource: _bomDataGridSource,
+                dataGridController: _dataGridController,
+                gridWidth: gridWidth,
+              )
+            ],
           ),
-          if (isShowFormula)
-            FormulaDataGrid(widget.VarientName, widget.VairentIndex),
-          if (!isShowFormula)
-            Expanded(
-              child: ProcumentOperationGrid(
-                  operationType: 'Operation',
-                  gridWidth: gridWidth,
-                  dataGridController: _dataGridController,
-                  oprDataGridSource: _oprDataGridSource),
-            )
-        ],
-      ),
+        ),
+        if (isShowFormula)
+          FormulaDataGrid(widget.VarientName, widget.VairentIndex),
+        if (!isShowFormula)
+          Expanded(
+            child: ProcumentOperationGrid(
+                operationType: 'Operation',
+                gridWidth: gridWidth,
+                dataGridController: _dataGridController,
+                oprDataGridSource: _oprDataGridSource),
+          )
+      ],
     );
   }
 
@@ -251,7 +248,7 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
     setState(() {
       isShowFormula = !isShowFormula;
     });
-    print("selected row is $rowIndex");
+    log("selected row is $rowIndex");
     ref.read(showFormulaProvider.notifier).selectedRow(rowIndex);
     ref
         .read(formulaBomOprProvider.notifier)
@@ -261,7 +258,7 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
   //<-------------------------Function To Update Bom From Formula -------------->
 
   void updateBomFromFormula(Map<dynamic, dynamic> data) {
-    print("start updating bom from formula");
+    log("start updating bom from formula");
     int updatedRowIndex = ref.read(showFormulaProvider);
     double rate = _bomRows[updatedRowIndex]
             .getCells()
@@ -275,7 +272,7 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
             .first
             .value *
         1.0;
-    print("updated Amount ${rate * weight}");
+    log("updated Amount ${rate * weight}");
     _bomRows[updatedRowIndex] = DataGridRow(
         cells: _bomRows[updatedRowIndex].getCells().map((cell) {
       if (cell.columnName == 'Rate')
@@ -292,7 +289,7 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateBomSummaryRow();
     });
-    print("end updating bom from formula");
+    log("end updating bom from formula");
   }
 
   //<------------------------- Function To Add New Bom ----------- -------------->
@@ -302,7 +299,7 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
       Map<dynamic, dynamic>? varientData = ref
           .read(procurementVariantProvider.notifier)
           .getItemByVariant(widget.VarientName);
-      print("varientData is $varientData");
+      log("varientData is $varientData");
       _bomRows.add(
         DataGridRow(cells: [
           DataGridCell<String>(columnName: 'Variant Name', value: variantName),
@@ -310,14 +307,14 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
           DataGridCell<int>(
               columnName: 'Pieces',
               value: itemGroup.contains('Diamond') ? 1 : 0),
-          DataGridCell<double>(columnName: 'Weight', value: 0.0),
-          DataGridCell(columnName: 'Rate', value: 0.0),
-          DataGridCell<double>(columnName: 'Avg Wt(Pcs)', value: 0.0),
-          DataGridCell(columnName: 'Amount', value: 0),
-          DataGridCell<String>(columnName: 'Sp Char', value: ''),
-          DataGridCell<String>(columnName: 'Operation', value: ''),
-          DataGridCell<String>(columnName: 'Type', value: ''),
-          DataGridCell<Widget>(columnName: 'Actions', value: null),
+          const DataGridCell<double>(columnName: 'Weight', value: 0.0),
+          const DataGridCell(columnName: 'Rate', value: 0.0),
+          const DataGridCell<double>(columnName: 'Avg Wt(Pcs)', value: 0.0),
+          const DataGridCell(columnName: 'Amount', value: 0),
+          const DataGridCell<String>(columnName: 'Sp Char', value: ''),
+          const DataGridCell<String>(columnName: 'Operation', value: ''),
+          const DataGridCell<String>(columnName: 'Type', value: ''),
+          const DataGridCell<Widget>(columnName: 'Actions', value: null),
         ]),
       );
       _bomDataGridSource.updateDataGridSource();
@@ -332,16 +329,19 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
     setState(() {
       _OpeationRows.add(
         DataGridRow(cells: [
-          DataGridCell<String>(columnName: 'Calc Bom', value: 'New Variant'),
+          const DataGridCell<String>(
+              columnName: 'Calc Bom', value: 'New Variant'),
           DataGridCell<String>(columnName: 'Operation', value: operation),
-          DataGridCell<int>(columnName: 'Calc Qty', value: 0),
-          DataGridCell<double>(columnName: 'Type', value: 0.0),
-          DataGridCell<double>(columnName: 'Calc Method', value: 0.0),
-          DataGridCell<String>(columnName: 'Calc Method Value', value: ''),
-          DataGridCell<String>(columnName: 'Depd Method', value: ''),
-          DataGridCell<String>(columnName: 'Depd Method Value', value: ''),
-          DataGridCell<Widget>(columnName: 'Depd Type', value: null),
-          DataGridCell<Widget>(columnName: 'Depd Qty', value: null),
+          const DataGridCell<int>(columnName: 'Calc Qty', value: 0),
+          const DataGridCell<double>(columnName: 'Type', value: 0.0),
+          const DataGridCell<double>(columnName: 'Calc Method', value: 0.0),
+          const DataGridCell<String>(
+              columnName: 'Calc Method Value', value: ''),
+          const DataGridCell<String>(columnName: 'Depd Method', value: ''),
+          const DataGridCell<String>(
+              columnName: 'Depd Method Value', value: ''),
+          const DataGridCell<Widget>(columnName: 'Depd Type', value: null),
+          const DataGridCell<Widget>(columnName: 'Depd Qty', value: null),
         ]),
       );
       _bomDataGridSource.updateDataGridSource();
@@ -353,15 +353,15 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
   //<------------------------- Function To Intialize Bom &  Opr ----------- -------------->
 
   void initializeBomOpr() {
-    print("widget.VarientName ${widget.VarientName}");
+    log("widget.VarientName ${widget.VarientName}");
     Map<dynamic, dynamic>? varientData = ref
         .read(procurementVariantProvider.notifier)
         .getItemByVariant(widget.VarientName);
-    print("varientData is  ${varientData}");
+    log("varientData is  ${varientData}");
     List<dynamic> listOfBoms = varientData!["BOM"]["data"];
 
     _bomRows = listOfBoms.map((bom) {
-      print("bom is ${bom[2]}${bom[2].runtimeType}");
+      log("bom is ${bom[2]}${bom[2].runtimeType}");
       return DataGridRow(cells: [
         DataGridCell<String>(columnName: 'Variant Name', value: bom[0]),
         DataGridCell<String>(columnName: 'Item Group', value: bom[1]),
@@ -373,11 +373,11 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
         DataGridCell<String>(columnName: 'Sp Char', value: bom[7]),
         DataGridCell<String>(columnName: 'Operation', value: bom[8]),
         DataGridCell<String>(columnName: 'Type', value: bom[9]),
-        DataGridCell<Widget>(columnName: 'Actions', value: null),
+        const DataGridCell<Widget>(columnName: 'Actions', value: null),
       ]);
     }).toList();
     List<dynamic> listOfOperation = varientData!["Operation"]["data"];
-    print("operation is $listOfOperation");
+    log("operation is $listOfOperation");
     _OpeationRows = listOfOperation.map((opr) {
       return DataGridRow(cells: [
         DataGridCell<String>(columnName: 'Calc Bom', value: opr[0]),
@@ -388,8 +388,8 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
         DataGridCell<dynamic>(columnName: 'Calc Method Value', value: opr[5]),
         DataGridCell<dynamic>(columnName: 'Depd Method', value: opr[6]),
         DataGridCell<dynamic>(columnName: 'Depd Method Value', value: opr[7]),
-        DataGridCell<Widget>(columnName: 'Depd Type', value: null),
-        DataGridCell<Widget>(columnName: 'Depd Qty', value: null),
+        const DataGridCell<Widget>(columnName: 'Depd Type', value: null),
+        const DataGridCell<Widget>(columnName: 'Depd Qty', value: null),
       ]);
     }).toList();
   }
@@ -407,7 +407,7 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
   //<------------------------- Function To Update Bom Summary Row  ----------- -------------->
 
   void _updateBomSummaryRow() {
-    print("start updating bom summary row");
+    log("start updating bom summary row");
     int totalPcs = 0;
     double totalWt = 0.0;
     double totalRate = 0.0;
@@ -433,17 +433,18 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
 
     setState(() {
       _bomRows[0] = DataGridRow(cells: [
-        DataGridCell<String>(columnName: 'Variant Name', value: 'Summary'),
-        DataGridCell<String>(columnName: 'Item Group', value: ''),
-        DataGridCell<int>(columnName: 'Pieces', value: 1),
+        const DataGridCell<String>(
+            columnName: 'Variant Name', value: 'Summary'),
+        const DataGridCell<String>(columnName: 'Item Group', value: ''),
+        const DataGridCell<int>(columnName: 'Pieces', value: 1),
         DataGridCell<double>(columnName: 'Weight', value: totalWt),
         DataGridCell<double>(columnName: 'Rate', value: totalRate),
         DataGridCell<double>(columnName: 'Avg Wt(Pcs)', value: avgWtPcs),
         DataGridCell(columnName: 'Amount', value: totalAmount),
-        DataGridCell<String>(columnName: 'Sp Char', value: ''),
-        DataGridCell<String>(columnName: 'Operation', value: ''),
-        DataGridCell<String>(columnName: 'Type', value: ''),
-        DataGridCell<Widget>(columnName: 'Actions', value: null),
+        const DataGridCell<String>(columnName: 'Sp Char', value: ''),
+        const DataGridCell<String>(columnName: 'Operation', value: ''),
+        const DataGridCell<String>(columnName: 'Type', value: ''),
+        const DataGridCell<Widget>(columnName: 'Actions', value: null),
       ]);
     });
     ref.read(formulaBomOprProvider.notifier).updateAction({}, false);
@@ -484,9 +485,9 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
         stoneWeight += row.getCells()[3].value;
         stonePieces += row.getCells()[2].value * 1.0;
       }
-      print("stone pieces ${row.getCells()[2].value}");
+      log("stone pieces ${row.getCells()[2].value}");
     }
-    print("updated stone weight is ${stoneWeight} $stonePieces");
+    log("updated stone weight is $stoneWeight $stonePieces");
     if (stoneWeight != 0) updatedVarient["Stone Wt"] = stoneWeight;
     updatedVarient["Stone Pieces"] = stonePieces;
     updatedVarient["varientIndex"] = widget.VairentIndex;
@@ -497,22 +498,22 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
       "Headers": operationHeader
     };
 
-    print("updatedVarient map is $updatedVarient ${widget.VarientName}");
+    log("updatedVarient map is $updatedVarient ${widget.VarientName}");
 
     //<----update ui updates the procum varient with new values---->
-    print("start ui updates the procum varient with new values");
+    log("start ui updates the procum varient with new values");
 
     ref.read(BomProcProvider.notifier).updateAction(updatedVarient, true);
 
     //<----update the procument varient with new values---->
-    print("start update the procument varient with new values");
+    log("start update the procument varient with new values");
     // Future.delayed(Duration(seconds: 3), () {
     ref
         .read(procurementVariantProvider.notifier)
         .updateVariant(widget.VarientName, updatedVarient);
     // });
 
-    print("end updating bom summary row");
+    log("end updating bom summary row");
   }
 
   //<------------------------- Function To Show Dialog Bom & Opr ----------- -------------->
