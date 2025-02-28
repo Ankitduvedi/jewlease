@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:jewlease/main.dart';
 
+import '../../formula/screens/transaction_formula.dart';
+import 'formulaGrid.dart';
+
 class SummaryDetails extends StatelessWidget {
   const SummaryDetails({super.key, required this.Summery});
 
@@ -103,10 +106,31 @@ class TotalHeader extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const CircleAvatar(
-            backgroundColor: Colors.green,
-            radius: 8,
-            child: Icon(Icons.check, color: Colors.white, size: 12),
+          InkWell(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) => Dialog(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15)),
+                  child: Container(
+                    height: screenHeight * 0.35,
+                    child: TransactionFormulaDataGrid("GPSKC21736776984049", 0),
+                  ),
+                ),
+              );
+            },
+            child: Container(
+              height: 35,
+              width: 35,
+              color: Colors.green.shade50,
+              child: Center(
+                child: Text(
+                  "F",
+                  style: TextStyle(color: Colors.green, fontSize: 16),
+                ),
+              ),
+            ),
           ),
           const SizedBox(width: 8),
           Text(

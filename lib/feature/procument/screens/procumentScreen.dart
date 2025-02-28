@@ -125,7 +125,7 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
                 width: double.infinity,
                 child: Row(
                     children: List.generate(
-                  3,
+                  _tabs.length,
                   (index) {
                     return GestureDetector(
                       onTap: () {

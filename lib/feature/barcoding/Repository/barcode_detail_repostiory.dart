@@ -22,9 +22,9 @@ class BarcodeDetailRepository {
       );
       print("status code ${response.statusCode}  ");
       if (response.statusCode == 201) {
-        print("successfully outward send GRN ${response.data}");
+        print("successfully bar code detail GRN ${response.data}");
       } else {
-        throw Exception("Failed to outward send GRN: ${response.data}");
+        throw Exception("Failed to bar code detail GRN: ${response.data}");
       }
     } catch (e) {
       print("Error in sending otward GRN: $e");

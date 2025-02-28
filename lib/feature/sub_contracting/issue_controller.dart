@@ -23,11 +23,32 @@ class IssueStockController extends StateNotifier<AsyncValue<void>> {
       : super(const AsyncValue.data(null));
 
   Future<void> sentIssueStock(
-      String stockId, String vendor, String operation, String issueDate) async {
+      Map<String, dynamic>reqBody) async {
     state = const AsyncValue.loading();
     try {
-      final response = await _repository.sentIssueStock(
-          stockId, vendor, operation, issueDate);
+      final response = await _repository.sentIssueStock(reqBody);
+
+      state = const AsyncValue.data(null);
+    } catch (e, stackTrace) {
+      state = AsyncValue.error(e, stackTrace);
+    }
+  }
+  Future<void> updateIssueStock(
+      Map<String, dynamic>reqBody,String stockId) async {
+    state = const AsyncValue.loading();
+    try {
+      final response = await _repository.updateIssueStock(reqBody,stockId);
+
+      state = const AsyncValue.data(null);
+    } catch (e, stackTrace) {
+      state = AsyncValue.error(e, stackTrace);
+    }
+  }
+  Future<void> deleteIssueStock(
+      String stockId) async {
+    state = const AsyncValue.loading();
+    try {
+      final response = await _repository.deleteIssueStock(stockId);
 
       state = const AsyncValue.data(null);
     } catch (e, stackTrace) {

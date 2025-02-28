@@ -9,6 +9,8 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 import '../../../main.dart';
 import '../../../widgets/data_widget.dart';
+import '../../../widgets/search_dailog_widget.dart';
+import '../../sub_contracting/Controllers/return_raw_material.dart';
 import '../../vendor/controller/procumentVendor_controller.dart';
 import '../controller/procumentBomProcController.dart';
 import '../controller/procumentFormualaBomController.dart';
@@ -17,11 +19,13 @@ import 'formulaGrid.dart';
 
 class procumentBomOprDialog extends ConsumerStatefulWidget {
   procumentBomOprDialog(this.VarientName, this.VairentIndex, this.canEdit,
+      this.isFromSubContracting,
       {super.key});
 
   final String VarientName;
   final int VairentIndex;
   final bool canEdit;
+  final bool isFromSubContracting;
 
   @override
   _procumentGridState createState() => _procumentGridState();
@@ -44,6 +48,33 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
         _updateBomSummaryRow, showFormula, widget.canEdit);
     _oprDataGridSource = procumentBomGridSource(_OpeationRows, _removeRow,
         _updateBomSummaryRow, showFormula, widget.canEdit);
+  }
+
+  void showRawMaterialDialog(String value) {
+    showDialog(
+      context: context,
+      builder: (context1) => ItemTypeDialogScreen(
+        title: 'Outward Stock',
+        endUrl: 'SubContracting/IssueWork',
+        value: 'Stock ID',
+        queryMap: value.contains("Stone")
+            ? {"isRawMaterial": 1, "Varient Name": "New DIAMOND-5"}
+            : {"isRawMaterial": 1, "Varient Name": "new"},
+        onOptionSelectd: (selectedValue) {
+          print("selected value $selectedValue");
+        },
+        onSelectdRow: (selectedRow) {
+          print("dialog");
+          print("selected raw material row $selectedRow");
+          selectedRow["styleVariant"] = widget.VarientName;
+          selectedRow["rowNo"] = _bomRows.length + 1;
+          ref.read(returnRawListProvider.notifier).addMap(selectedRow);
+
+          _addNewRowBomRawMaterial(selectedRow, value);
+          _updateBomSummaryRow();
+        },
+      ),
+    );
   }
 
   @override
@@ -81,7 +112,7 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   // Header Row
-            
+
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
@@ -106,10 +137,11 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
                                             canGo: true,
                                             onDoubleClick: (Map<String, dynamic>
                                                 intialData) {
-                                              print("intial data is $intialData");
-                                              _addNewRowOpr(
-                                                  intialData["OPERATION_NAME"] ??
-                                                      "");
+                                              print(
+                                                  "intial data is $intialData");
+                                              _addNewRowOpr(intialData[
+                                                      "OPERATION_NAME"] ??
+                                                  "");
                                               Navigator.pop(context);
                                             },
                                           ),
@@ -124,88 +156,30 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
                                 // When an item is selected, add a new row with the item group
                                 log("choosen Item $value");
                                 if (widget.canEdit == false) return;
-            
-                                if (value.contains('Gold')) {
-                                  showProcumentdialog(
-                                      "ItemMasterAndVariants/Metal/Gold/Variant/",
-                                      value);
-                                } else if (value.contains('Silver'))
-                                  showProcumentdialog(
-                                      "ItemMasterAndVariants/Metal/Silver/Variant/",
-                                      value);
-                                else if (value.contains('Diamond'))
-                                  showProcumentdialog(
-                                      "ItemMasterAndVariants/Stone/Diamond/Varient/",
-                                      value);
-                                else if (value.contains('Bronze'))
-                                  showProcumentdialog(
-                                      "ItemMasterAndVariants/Metal/Bronze/Variant/",
-                                      value);
+
+                                if (widget.isFromSubContracting) {
+                                  showRawMaterialDialog(value);
+                                } else {
+                                  if (value.contains('Gold')) {
+                                    showProcumentdialog(
+                                        "ItemMasterAndVariants/Metal/Gold/Variant/",
+                                        value);
+                                  } else if (value.contains('Silver'))
+                                    showProcumentdialog(
+                                        "ItemMasterAndVariants/Metal/Silver/Variant/",
+                                        value);
+                                  else if (value.contains('Diamond'))
+                                    showProcumentdialog(
+                                        "ItemMasterAndVariants/Stone/Diamond/Varient/",
+                                        value);
+                                  else if (value.contains('Bronze'))
+                                    showProcumentdialog(
+                                        "ItemMasterAndVariants/Metal/Bronze/Variant/",
+                                        value);
+                                }
                               },
                               itemBuilder: (BuildContext context) =>
-                                  <PopupMenuEntry<String>>[
-                                PopupMenuItem<String>(
-                                  value: 'Metal - Gold',
-                                  child: ExpansionTile(
-                                    title: Text('Metal'),
-                                    children: <Widget>[
-                                      ListTile(
-                                        title: Text('Gold'),
-                                        onTap: () {
-                                          Navigator.pop(context, 'Metal - Gold');
-                                        },
-                                      ),
-                                      ListTile(
-                                        title: Text('Silver'),
-                                        onTap: () {
-                                          Navigator.pop(
-                                              context, 'Metal - Silver');
-                                        },
-                                      ),
-                                      ListTile(
-                                        title: Text('Bronze'),
-                                        onTap: () {
-                                          Navigator.pop(
-                                              context, 'Metal - Bronze');
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                PopupMenuItem<String>(
-                                  value: 'Stone - Diamond',
-                                  child: ExpansionTile(
-                                    title: Text('Stone'),
-                                    children: <Widget>[
-                                      ListTile(
-                                        title: Text('Diamond'),
-                                        onTap: () {
-                                          Navigator.pop(
-                                              context, 'Stone - Diamond');
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                PopupMenuItem<String>(
-                                  value: 'Consumables',
-                                  child: ListTile(
-                                    title: Text('Consumables'),
-                                    onTap: () {
-                                      Navigator.pop(context, 'Consumables');
-                                    },
-                                  ),
-                                ),
-                                PopupMenuItem<String>(
-                                  value: 'Packing Material',
-                                  child: ListTile(
-                                    title: Text('Packing Material'),
-                                    onTap: () {
-                                      Navigator.pop(context, 'Packing Material');
-                                    },
-                                  ),
-                                ),
-                              ],
+                                  bomPopUpItem(),
                               child: TextButton(
                                 onPressed: null,
                                 child: Text(
@@ -214,7 +188,7 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
                                 ),
                               ),
                             ),
-            
+
                             TextButton(
                               onPressed: () {},
                               child: Text('Summary',
@@ -247,6 +221,69 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
         ],
       ),
     );
+  }
+
+  List<PopupMenuEntry<String>> bomPopUpItem() {
+    return [
+      PopupMenuItem<String>(
+        value: 'Metal - Gold',
+        child: ExpansionTile(
+          title: Text('Metal'),
+          children: <Widget>[
+            ListTile(
+              title: Text('Gold'),
+              onTap: () {
+                Navigator.pop(context, 'Metal - Gold');
+              },
+            ),
+            ListTile(
+              title: Text('Silver'),
+              onTap: () {
+                Navigator.pop(context, 'Metal - Silver');
+              },
+            ),
+            ListTile(
+              title: Text('Bronze'),
+              onTap: () {
+                Navigator.pop(context, 'Metal - Bronze');
+              },
+            ),
+          ],
+        ),
+      ),
+      PopupMenuItem<String>(
+        value: 'Stone - Diamond',
+        child: ExpansionTile(
+          title: Text('Stone'),
+          children: <Widget>[
+            ListTile(
+              title: Text('Diamond'),
+              onTap: () {
+                Navigator.pop(context, 'Stone - Diamond');
+              },
+            ),
+          ],
+        ),
+      ),
+      PopupMenuItem<String>(
+        value: 'Consumables',
+        child: ListTile(
+          title: Text('Consumables'),
+          onTap: () {
+            Navigator.pop(context, 'Consumables');
+          },
+        ),
+      ),
+      PopupMenuItem<String>(
+        value: 'Packing Material',
+        child: ListTile(
+          title: Text('Packing Material'),
+          onTap: () {
+            Navigator.pop(context, 'Packing Material');
+          },
+        ),
+      ),
+    ];
   }
 
   //<-------------------------Function To Hide Opr/Formula------------------------------>
@@ -329,6 +366,39 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
     });
   }
 
+  //<------------------------- Add New Bom With Raw Material ------------------------->
+  void _addNewRowBomRawMaterial(
+      Map<String, dynamic> rawMaterialData, String itemGroup) {
+    setState(() {
+      _bomRows.add(
+        DataGridRow(cells: [
+          DataGridCell<String>(
+              columnName: 'Variant Name',
+              value: rawMaterialData["Varient Name"]),
+          DataGridCell<String>(columnName: 'Item Group', value: itemGroup),
+          DataGridCell<int>(
+              columnName: 'Pieces',
+              value: rawMaterialData['Dia Pieces'] == 0
+                  ? 0
+                  : rawMaterialData['Dia Pieces']),
+          DataGridCell<double>(
+              columnName: 'Weight',
+              value: double.parse(rawMaterialData["Net Weight"])),
+          DataGridCell(columnName: 'Rate', value: 0.0),
+          DataGridCell<double>(columnName: 'Avg Wt(Pcs)', value: 0.0),
+          DataGridCell(columnName: 'Amount', value: 0),
+          DataGridCell<String>(columnName: 'Sp Char', value: ''),
+          DataGridCell<String>(columnName: 'Operation', value: ''),
+          DataGridCell<String>(columnName: 'Type', value: ''),
+          DataGridCell<Widget>(columnName: 'Actions', value: null),
+        ]),
+      );
+      _bomDataGridSource.updateDataGridSource();
+      _bomDataGridSource.updateDataGridSource();
+      _updateBomSummaryRow();
+    });
+  }
+
   //<------------------------- Function To Add New Opr ----------- -------------->
 
   void _addNewRowOpr(String operation) {
@@ -360,6 +430,7 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
     Map<dynamic, dynamic>? varientData = ref
         .read(procurementVariantProvider.notifier)
         .getItemByVariant(widget.VarientName);
+    print("varient Data");
     print("varientData is  ${varientData}");
     List<dynamic> listOfBoms = varientData!["BOM"]["data"];
 
@@ -379,6 +450,7 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
         DataGridCell<Widget>(columnName: 'Actions', value: null),
       ]);
     }).toList();
+    if (varientData["Operation"] == null) return;
     List<dynamic> listOfOperation = varientData!["Operation"]["data"];
     print("operation is $listOfOperation");
     _OpeationRows = listOfOperation.map((opr) {

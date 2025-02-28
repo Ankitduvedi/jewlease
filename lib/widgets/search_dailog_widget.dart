@@ -17,6 +17,7 @@ class ItemTypeDialogScreen extends ConsumerStatefulWidget {
       this.keyOfMap,
       this.query,
       this.onOptionSelectd,
+      this.queryMap,
       this.onSelectdRow});
 
   final String title;
@@ -24,6 +25,7 @@ class ItemTypeDialogScreen extends ConsumerStatefulWidget {
   final String value;
   final String? query;
   final String? keyOfMap;
+  final Map<String, dynamic>? queryMap;
   final Function(String)? onOptionSelectd;
   final Function(Map<String, dynamic>)? onSelectdRow;
 
@@ -133,7 +135,8 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
             Expanded(
               child: itemDataAsyncValue.when(
                 data: (item) {
-                  final List<Map<String, dynamic>> items;
+                  List<Map<String, dynamic>> items;
+
                   if (widget.query != null) {
                     items = item.where((item) {
                       return item.values.any(
@@ -142,6 +145,16 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                   } else {
                     items = item;
                     //log("item list is $items");
+                  }
+                  if (widget.queryMap != null) {
+                    print("query map ${item.length}");
+
+                    items = item.where((item) {
+                      return widget.queryMap!.entries.every((queryEntry) =>
+                      item.containsKey(queryEntry.key) &&
+                          item[queryEntry.key] == queryEntry.value);
+                    }).toList();
+                    print("query map2 ${items}");
                   }
                   if (items.isEmpty) {
                     return const Center(child: Text('No data available'));
@@ -176,6 +189,11 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                           false;
                     }
                   }).toList();
+                 // for(Map<String,dynamic>item in _filteredItems)
+                 //   item["Stock ID"] ="STC- ${_filteredItems.indexOf(item)}";
+                 //
+                 //
+                 //  print("filtered items ${_filteredItems.length}");
 
                   return SingleChildScrollView(
                     scrollDirection: Axis.horizontal,

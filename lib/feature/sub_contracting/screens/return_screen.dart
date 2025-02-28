@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/feature/sub_contracting/issue_controller.dart';
 import 'package:jewlease/feature/transfer/controller/outward_controller.dart';
 // import 'package:jewlease/feature/transfer/screens/widgets/transfer_Inward_dialog.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
+import '../../../core/utils/utils.dart';
 import '../../../data/model/barcode_detail_model.dart';
 import '../../../data/model/barcode_historyModel.dart';
 import '../../../data/model/transaction_model.dart';
@@ -13,20 +15,21 @@ import '../../../widgets/search_dailog_widget.dart';
 import '../../barcoding/controllers/barcode_detail_controller.dart';
 import '../../barcoding/controllers/barcode_history_controller.dart';
 import '../../formula/controller/formula_prtocedure_controller.dart';
+import '../../procument/controller/procumentcController.dart';
 import '../../procument/screens/procumentFloatingBar.dart';
 import '../../procument/screens/procumentSummeryGridSource.dart';
 import '../../transaction/controller/transaction_controller.dart';
 import '../../vendor/controller/procumentVendor_controller.dart';
+import '../Controllers/return_raw_material.dart';
 
-class TransferInwardScreen extends ConsumerStatefulWidget {
-  const TransferInwardScreen({super.key});
+class ReturnScreen extends ConsumerStatefulWidget {
+  const ReturnScreen({super.key});
 
   @override
-  ConsumerState<TransferInwardScreen> createState() =>
-      _TransferInwardScreenState();
+  ConsumerState<ReturnScreen> createState() => _TransferInwardScreenState();
 }
 
-class _TransferInwardScreenState extends ConsumerState<TransferInwardScreen> {
+class _TransferInwardScreenState extends ConsumerState<ReturnScreen> {
   List<String> transferInwardColumnns = [
     'Ref Document',
     'Variant Name',
@@ -75,16 +78,102 @@ class _TransferInwardScreenState extends ConsumerState<TransferInwardScreen> {
   void initState() {
     // TODO: implement initState
 
-    _procumentdataGridSource =
-        ProcumentDataGridSource(InwardRows, (DataGridRow) {}, () {}, false);
+    _procumentdataGridSource = ProcumentDataGridSource(
+        InwardRows, (DataGridRow) {}, () {}, true,
+        isFromSubContracting: true);
 
     super.initState();
   }
 
+  Map<String, dynamic> transformMapKeys(
+      Map<String, dynamic> source, Map<String, dynamic> reference) {
+    Map<String, String> keyMapping = {};
+
+    // Create a mapping of lowercase source keys to reference keys
+    reference.forEach((key, value) {
+      String formattedKey = key.replaceAll("_", " ").splitMapJoin(
+          RegExp(r'([a-z])([A-Z])'),
+          onMatch: (m) => "${m[1]} ${m[2]}",
+          onNonMatch: (s) => s);
+      keyMapping[key.toLowerCase()] = formattedKey;
+    });
+
+    Map<String, dynamic> result = {};
+
+    source.forEach((key, value) {
+      String lowerKey = key.toLowerCase();
+      if (keyMapping.containsKey(lowerKey)) {
+        result[keyMapping[lowerKey]!] = value; // Use mapped key
+      } else {
+        result[key] = value; // Keep original key
+      }
+    });
+    result["BOM"] = source["bom"];
+    result["Varient Name"] = source["varientName"];
+    result["Net Weight"] = source["netWeight"];
+    result["Stock ID"] = source["stockId"];
+    result["Karat Color"] = source["karatColor"];
+    result["Std Buying Rate"] = source["stdBuyingRate"];
+
+    return result;
+  }
+
+  Map<String, dynamic> referenceMap = {
+    "Stock ID": "",
+    "Style": "",
+    "Varient Name": "",
+    "Old Varient": "",
+    "Customer Varient": "",
+    "Base Varient": "",
+    "Vendor Code": "",
+    "Vendor": "",
+    "Location": "",
+    "Department": "",
+    "Remark 1": "",
+    "Vendor Varient": "",
+    "Remark 2": "",
+    "Created By": "",
+    "Std Buying Rate": "",
+    "Stone Max Wt": "",
+    "Remark": "",
+    "Stone Min Wt": "",
+    "Karat Color": "",
+    "Delivery Days": "",
+    "For Web": "",
+    "Row Status": "",
+    "Verified Status": "",
+    "Length": "",
+    "Codegen Sr No": "",
+    "CATEGORY": "",
+    "Sub-Category": "",
+    "STYLE KARAT": "",
+    "Varient": "",
+    "HSN - SAC CODE": "",
+    "LINE OF BUSINESS": "",
+    "BOM": {},
+    "Operation": {},
+    "Image Details": "",
+    "Formula Details": {},
+    "Pieces": "",
+    "Weight": "",
+    "Net Weight": "",
+    "Dia Weight": "",
+    "Dia Pieces": "",
+    "Location Code": "",
+    "Item Group": "",
+    "Metal Color": "",
+    "Style Metal Color": "",
+    "Inward Doc": "",
+    "Last Trans": "",
+    "isRawMaterial": ""
+  };
+
   void _addNewRowWithItemGroup(Map<String, dynamic> varient) {
     // print("varient $varient ${varient["BOM"]["data"][0][3]}");
-    print("varient $varient");
+    print("updated varient is  $varient");
     List<dynamic> bomSummery = [];
+    Map<String, dynamic> bom = varient["BOM"];
+    // if(bom.isNotEmpty)
     for (var item in varient["BOM"]["data"][0]) {
       print("item $item");
       bomSummery.add(item);
@@ -181,26 +270,178 @@ class _TransferInwardScreenState extends ConsumerState<TransferInwardScreen> {
       print("error in updating summery $e");
     }
   }
+  //<-----------------------Test Metal In Range-------------------------------->
+  bool testForMetal(String variantName, int rowNo, double weight) {
+    Map<String, dynamic> rawMaterial = ref
+        .read(returnRawListProvider.notifier)
+        .findMap(variantName, rowNo + 1);
+    print("complete map${ref.read(returnRawListProvider)}");
+    print("raw material $rowNo $rawMaterial");
+    if (rawMaterial.isEmpty) return true;
+    double rawNetWt = double.parse(rawMaterial["Net Weight"]);
+    print("raw1 $rawNetWt");
+    return rawNetWt >= weight;
+  }
+  //<-----------------------Test Stone In Range-------------------------------->
+
+  bool testForStone(String variantName, int rowNo, double weight, int pieces) {
+    Map<String, dynamic> rawMaterial =
+        ref.read(returnRawListProvider.notifier).findMap(variantName, rowNo);
+    print("raw material $rowNo $rawMaterial");
+    if (rawMaterial.isEmpty) return true;
+    double rawNetWt = double.parse(rawMaterial["Net Weight"]);
+    int rawPieces = rawMaterial["Pieces"];
+    print("raw $rawNetWt $rawPieces");
+    return rawNetWt >= weight && rawPieces >= pieces;
+  }
+//<-----------------------Test Raw Material In Range-------------------------------->
+  void testWithInRange(List<Map<String, dynamic>> varientList) {
+    bool result = true;
+    int rowNo = -1;
+    String styleVariantName = "";
+    for (Map<String, dynamic> varient in varientList) {
+      print("test varient is $varient");
+      Map<String, dynamic> bom = varient["BOM"];
+      List<List<dynamic>> bomRows = (bom["data"] as List<dynamic>)
+          .map((row) => row as List<dynamic>)
+          .toList();
+      styleVariantName = varient["Varient Name"];
+
+      for (List<dynamic> row in bomRows) {
+        rowNo = bomRows.indexOf(row);
+        if (rowNo == 0) continue;
+        double weight = row[3] * 1.0;
+        int pieces = row[2].toInt();
+        print("bom row $row");
+        if (row[0] == "new") {
+          result = testForMetal(styleVariantName, rowNo, weight);
+        } else if (row[0].contains("New DIAMOND-5")) {
+          result = testForStone(styleVariantName, rowNo, weight, pieces);
+        }
+        if (result == false) {
+          Utils.snackBar(
+              "Range Exceed in Variant $styleVariantName at Row ${rowNo + 1}",
+              context);
+          return;
+        }
+      }
+    }
+
+    updateIssueWork(varientList);
+  }
 
 
-  void saveTransInward()async{
-    List<Map<String, dynamic>>? varientList = inwardRowsMap;
-    TransactionModel transaction =createTransaction(varientList);
+//<-----------------------Update Raw Issue-------------------------------->
+  void updateRawIssue(
+      String variantName, int rowNo, double weight, int pieces, bool isStone) {
+    Map<String, dynamic> rawMaterial =
+        ref.read(returnRawListProvider.notifier).findMap(variantName, rowNo+1);
+    print("raw material $rowNo $rawMaterial");
+    String stockId= rawMaterial["Stock ID"];
+    if (rawMaterial.isEmpty) return;
+    double rawNetWt = double.parse(rawMaterial["Net Weight"]);
+    int rawPieces = isStone?rawMaterial["Dia Pieces"]: rawMaterial["Pieces"];
+    print("raw $rawNetWt $rawPieces");
+    // return;
+    if (isStone) {
+      if (rawPieces > pieces) {
+        rawMaterial["Net Weight"] = rawNetWt - weight;
+        rawMaterial["Dia Pieces"] = rawPieces - pieces;
+
+        Map<String,dynamic>newMap = transformSchema(rawMaterial);
+        print("update map1 $newMap");
+        ref
+            .read(IssueStockControllerProvider.notifier)
+            .updateIssueStock(newMap,stockId);
+      } else {
+        print("update map2 $rawMaterial");
+        ref
+            .read(IssueStockControllerProvider.notifier)
+            .deleteIssueStock(stockId);
+      }
+    } else {
+      if (rawNetWt > weight) {
+        rawMaterial["Net Weight"] = rawNetWt - weight;
+        print("update map3 $rawMaterial");
+        Map<String,dynamic>newMap = transformSchema(rawMaterial);
+        print("update map1 $newMap");
+        ref
+            .read(IssueStockControllerProvider.notifier)
+            .updateIssueStock(rawMaterial,stockId);
+      } else {
+        print("update map4  $rawMaterial");
+        ref
+            .read(IssueStockControllerProvider.notifier)
+            .deleteIssueStock(stockId);
+      }
+    }
+  }
+//<-----------------------Update Issue Raw Material------------------------------->
+  void updateIssueWork(List<Map<String, dynamic>> varientList) {
+    bool result = true;
+    int rowNo = -1;
+    String styleVariantName = "";
+    //if complete reove from issue raw materila
+    //else update issue raw materila
+    // update issue varient
+
+    for (Map<String, dynamic> varient in varientList) {
+      print("test varient is $varient");
+      Map<String, dynamic> bom = varient["BOM"];
+      List<List<dynamic>> bomRows = (bom["data"] as List<dynamic>)
+          .map((row) => row as List<dynamic>)
+          .toList();
+      styleVariantName = varient["Varient Name"];
+
+      for (List<dynamic> row in bomRows) {
+        rowNo = bomRows.indexOf(row);
+        if (rowNo == 0) continue;
+        double weight = row[3] * 1.0;
+        int pieces = row[2].toInt();
+        print("bom row $row");
+        if (row[0] == "new") {
+          Map<String, dynamic> rawMaterial = ref
+              .read(returnRawListProvider.notifier)
+              .findMap(styleVariantName, rowNo + 1);
+          if (rawMaterial.isNotEmpty)
+            updateRawIssue(styleVariantName, rowNo, weight, pieces, false);
+        } else if (row[0].contains("New DIAMOND-5")) {
+          Map<String, dynamic> rawMaterial = ref
+              .read(returnRawListProvider.notifier)
+              .findMap(styleVariantName, rowNo + 1);
+          if (rawMaterial.isNotEmpty)
+            updateRawIssue(styleVariantName, rowNo, weight, pieces, true);
+        }
+        if (result == false) {
+          Utils.snackBar(
+              "Range Exceed in Variant $styleVariantName at Row ${rowNo + 1}",
+              context);
+          return;
+        }
+      }
+    }
+  }
+
+  void saveReturnStyle() async {
+    List<Map<String, dynamic>> varientList =
+        ref.read(procurementVariantProvider);
+
+    testWithInRange(varientList);
+
+    TransactionModel transaction = createTransaction(varientList);
     String transactionID = await ref
-        .read(TransactionControllerProvider.notifier)
-        .sentTransaction(transaction)??"ABC";
+            .read(TransactionControllerProvider.notifier)
+            .sentTransaction(transaction) ??
+        "ABC";
     for (var varient in varientList!) {
       print("varient $varient");
       print("tansform schema is ${transformSchema(varient)}");
-      await ref
-          .read(OutwardControllerProvider.notifier)
-          .updateGRN(
-          transformSchema(varient), varient["Stock ID"]);
-      await ref
-          .read(OutwardControllerProvider.notifier)
-          .deleteInward(varient["Stock ID"]);
-      BarcodeDetailModel detailModel = createBarcodeDetail(varient, transactionID);
-      BarcodeHistoryModel historyModel = createBarcodeHistory(varient, transactionID);
+
+      ref.read(procurementControllerProvider.notifier).updateGRN(transformSchema(varient), varient["Stock ID"]);
+      BarcodeDetailModel detailModel =
+          createBarcodeDetail(varient, transactionID);
+      BarcodeHistoryModel historyModel =
+          createBarcodeHistory(varient, transactionID);
       await ref
           .read(BarocdeDetailControllerProvider.notifier)
           .sentBarcodeDetail(detailModel);
@@ -209,9 +450,6 @@ class _TransferInwardScreenState extends ConsumerState<TransferInwardScreen> {
           .sentBarcodeHistory(historyModel);
     }
   }
-
-
-
 
   Widget build(BuildContext context) {
     screenWidth = MediaQuery.of(context).size.width;
@@ -240,7 +478,7 @@ class _TransferInwardScreenState extends ConsumerState<TransferInwardScreen> {
                   },
                   () async {
                     print("update inward grn");
-                    saveTransInward();
+                    saveReturnStyle();
                   },
                   () {
                     // Reset the provider value to null on refresh
@@ -263,7 +501,7 @@ class _TransferInwardScreenState extends ConsumerState<TransferInwardScreen> {
                 Row(
                   children: [
                     const Text(
-                      'Transfer Inward',
+                      'Return Stock',
                       style: TextStyle(fontSize: 25),
                     ),
                     SizedBox(
@@ -274,25 +512,29 @@ class _TransferInwardScreenState extends ConsumerState<TransferInwardScreen> {
                         showDialog(
                           context: context,
                           builder: (context) => ItemTypeDialogScreen(
-                            title: 'Inward Stock',
-                            endUrl: 'Transfer/Department',
+                            title: 'Return Stock',
+                            endUrl: 'SubContracting/IssueWork',
                             value: 'Stock ID',
                             onOptionSelectd: (selectedValue) {
                               print("selected value $selectedValue");
                             },
+                            queryMap: {"isRawMaterial": 0},
                             onSelectdRow: (selectedRow) async {
-                              String stockCode = selectedRow['Stock ID'];
-                              Map<String, dynamic> inwardStock = await ref
-                                  .read(OutwardControllerProvider.notifier)
-                                  .fetchGRN(stockCode);
+                              print("selected row is $selectedRow");
+                              // String stockCode = selectedRow['stockId'];
+                              // Map<String, dynamic> inwardStock = await ref
+                              //     .read(OutwardControllerProvider.notifier)
+                              //     .fetchGRN(stockCode);
+                              // inwardStock["Department"] =
+                              // selectedRow["Destination Department"];
+                              //
+                              // print("inward stock is $inwardStock");
+                              // selectedRow =
+                              //     transformMapKeys(selectedRow, referenceMap);
                               ref
                                   .read(procurementVariantProvider.notifier)
-                                  .addItem(inwardStock);
-                              inwardStock["Department"] =
-                                  selectedRow["Destination Department"];
-
-                              print("inward stock is $inwardStock");
-                              _addNewRowWithItemGroup(inwardStock);
+                                  .addItem(selectedRow);
+                              _addNewRowWithItemGroup(selectedRow);
                               setState(() {});
                             },
                           ),
@@ -306,7 +548,7 @@ class _TransferInwardScreenState extends ConsumerState<TransferInwardScreen> {
                             borderRadius: BorderRadius.circular(5)),
                         child: Center(
                           child: Text(
-                            "Add Inward Stock",
+                            "Add Return Stock",
                             style: TextStyle(color: Colors.white, fontSize: 18),
                           ),
                         ),
@@ -412,7 +654,9 @@ class _TransferInwardScreenState extends ConsumerState<TransferInwardScreen> {
             ),
     );
   }
-  BarcodeDetailModel createBarcodeDetail(Map<dynamic,dynamic>varient, String transactionID){
+
+  BarcodeDetailModel createBarcodeDetail(
+      Map<dynamic, dynamic> varient, String transactionID) {
     BarcodeDetailModel detailModel = BarcodeDetailModel(
         stockId: varient["Stock ID"],
         date: DateTime.now().toIso8601String(),
@@ -434,8 +678,12 @@ class _TransferInwardScreenState extends ConsumerState<TransferInwardScreen> {
         postingDate: DateTime.now().toIso8601String());
     return detailModel;
   }
-  BarcodeHistoryModel createBarcodeHistory(Map<dynamic,dynamic>varient, String transactionID,){
-      BarcodeHistoryModel historyModel = BarcodeHistoryModel(
+
+  BarcodeHistoryModel createBarcodeHistory(
+    Map<dynamic, dynamic> varient,
+    String transactionID,
+  ) {
+    BarcodeHistoryModel historyModel = BarcodeHistoryModel(
         stockId: varient["Stock ID"],
         attribute: '',
         varient: varient['Varient Name'],
@@ -444,10 +692,10 @@ class _TransferInwardScreenState extends ConsumerState<TransferInwardScreen> {
         bom: varient["BOM"],
         operation: varient["Operation"],
         formula: varient["Formula Details"]);
-      return historyModel;
+    return historyModel;
   }
 
-  TransactionModel createTransaction(List<Map<String,dynamic>>varients){
+  TransactionModel createTransaction(List<Map<String, dynamic>> varients) {
     TransactionModel transaction = TransactionModel(
         transType: "Transfer Inward",
         subType: "TI",

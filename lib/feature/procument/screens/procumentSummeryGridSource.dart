@@ -4,17 +4,16 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 class ProcumentDataGridSource extends DataGridSource {
   ProcumentDataGridSource(
-    this.dataGridRows,
-    this.onDelete,
-    this.onEdit,
-    this.canEdit,
-  ) : _editingRows = dataGridRows;
+      this.dataGridRows, this.onDelete, this.onEdit, this.canEdit,
+      {this.isFromSubContracting = false})
+      : _editingRows = dataGridRows;
 
   final List<DataGridRow> dataGridRows;
   final List<DataGridRow> _editingRows;
   final Function(DataGridRow) onDelete;
   final Function() onEdit;
   final bool canEdit;
+  final bool isFromSubContracting;
 
   @override
   List<DataGridRow> get rows => dataGridRows;
@@ -122,8 +121,11 @@ class ProcumentDataGridSource extends DataGridSource {
                                 BorderRadius.vertical(top: Radius.circular(16)),
                           ),
                           padding: EdgeInsets.all(16),
-                          child: procumentBomOprDialog(dataCell.value,
-                              dataGridRows.indexOf(row), canEdit),
+                          child: procumentBomOprDialog(
+                            dataCell.value,
+                            dataGridRows.indexOf(row),
+                            canEdit,isFromSubContracting
+                          ),
                         ),
                       );
                     },

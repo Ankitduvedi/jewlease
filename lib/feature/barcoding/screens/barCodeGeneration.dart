@@ -100,6 +100,8 @@ class _BarCodeGenerationState extends ConsumerState<BarCodeGeneration> {
   //<------------------------- Function To update wt   ----------- -------------->
   void _updateWt(String val) {
     print("_upadte wt runs $val");
+    if(_bomRows.length>0) {
+
     _bomRows[1] = DataGridRow(
         cells: _bomRows[1].getCells().map((cell) {
       if (cell.columnName == 'Weight') {
@@ -109,7 +111,7 @@ class _BarCodeGenerationState extends ConsumerState<BarCodeGeneration> {
       return cell;
     }).toList());
     _updateAmount(double.parse(val) * _bomRows[1].getCells()[4].value);
-    _updateBomSummaryRow();
+    _updateBomSummaryRow();}
   }
 
   void _updateAmount(double updatedAmount) {
@@ -139,6 +141,9 @@ class _BarCodeGenerationState extends ConsumerState<BarCodeGeneration> {
   void initializeBomOpr() {
     InventoryItemModel currentStock =
         ref.read(inventoryControllerProvider.notifier).getCurrentItem()!;
+    if(currentStock.bom.isEmpty)
+      return;
+    print("bom is ${currentStock.bom}");
 
     List<dynamic> listOfBoms = currentStock.bom["data"];
 

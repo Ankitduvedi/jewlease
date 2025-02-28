@@ -45,6 +45,11 @@ class InventoryDataSource extends DataGridSource {
                     value: "Generate Barcode",
                     child: Text("Generate Barcode"),
                     onTap: () {
+                      print("varient Name is ${inventoryItem.varientName}");
+                      if (inventoryItem.isRawMaterial ==1 &&
+                          inventoryItem.varientName == "new") return;
+                      if(inventoryItem.pieces==1)
+                        return;
                       int index = inventoryItems.indexOf(inventoryItem);
                       setCureentRowIndex(index);
 
@@ -94,8 +99,7 @@ class InventoryDataSource extends DataGridSource {
                 columnName: 'ProjectSizeMaster',
                 value: inventoryItem.projectSizeMaster),
             DataGridCell(
-                columnName: 'StyleMetalKarat',
-                value: inventoryItem.styleKarat),
+                columnName: 'StyleMetalKarat', value: inventoryItem.styleKarat),
             DataGridCell(
                 columnName: 'StyleMetalColor',
                 value: inventoryItem.styleMetalColor),

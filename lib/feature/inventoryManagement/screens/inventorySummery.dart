@@ -69,7 +69,7 @@ class _inventorySummeryState extends ConsumerState<inventorySummery> {
 
   Widget buildStatItem(String title, String value) {
     return Container(
-      width: 170,
+      width: 160,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -81,7 +81,7 @@ class _inventorySummeryState extends ConsumerState<inventorySummery> {
               fontWeight: FontWeight.w500,
             ),
           ),
-          SizedBox(width: 5),
+          SizedBox(width: 2),
           Text(
             value,
             style: TextStyle(
