@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -124,12 +125,28 @@ class _TagImageDialogState extends ConsumerState<TagImageDialog> {
   }
 
   void _pickImageFromGallery() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+      withData: true,
+    );
+
+    if (result != null && result.files.single.bytes != null) {
       setState(() {
-        _image = File(pickedFile.path);
+        _image = File(result.files.single.path!);
       });
     }
+    print("calling fun");
+    // try {
+    //   final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    //   print("picked file $pickedFile");
+    //   if (pickedFile != null) {
+    //     setState(() {
+    //       _image = File(pickedFile.path);
+    //     });
+    //   }
+    // } catch (e) {
+    //   print("error is  $e");
+    // }
   }
 
   void _pickImageFromCamera() async {

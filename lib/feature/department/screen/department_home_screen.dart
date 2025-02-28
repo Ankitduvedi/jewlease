@@ -37,7 +37,7 @@ class DepartmentHomeScreen extends ConsumerWidget {
         ),
         body: ItemDataScreen(
           title: '',
-          endUrl: 'ItemCodeGeneration/',
+          endUrl: 'Global/Department',
         ));
   }
 }

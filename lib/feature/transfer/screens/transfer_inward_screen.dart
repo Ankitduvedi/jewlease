@@ -285,6 +285,9 @@ class _TransferInwardScreenState extends ConsumerState<TransferInwardScreen> {
                               Map<String, dynamic> inwardStock = await ref
                                   .read(OutwardControllerProvider.notifier)
                                   .fetchGRN(stockCode);
+                              ref
+                                  .read(procurementVariantProvider.notifier)
+                                  .addItem(inwardStock);
                               inwardStock["Department"] =
                                   selectedRow["Destination Department"];
 

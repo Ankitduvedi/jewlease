@@ -1,10 +1,11 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/core/routes/go_router.dart';
 import 'package:jewlease/feature/home/drawer/drawer_toogle_button.dart';
-import 'package:jewlease/feature/home/right_side_drawer/repository/drawer_repository.dart';
+import 'package:jewlease/feature/home/right_side_drawer/controller/drawer_controller.dart';
+import 'package:jewlease/feature/search_box/controller/search_box_controller.dart';
+import 'package:jewlease/feature/search_box/screen/search_box_screen.dart';
 
 class Appbar extends ConsumerWidget implements PreferredSizeWidget {
   const Appbar({super.key, required GlobalKey<ScaffoldState> scaffoldKey})
@@ -17,7 +18,9 @@ class Appbar extends ConsumerWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     log('AppbarWithDrawer screen rebuild');
-    final selectedLocation = ref.watch(selectedLocationProvider);
+    final selectedDepartment = ref.watch(selectedDepartmentProvider);
+    final searchQuery = ref.watch(searchQueryProvider);
+    final showResults = searchQuery.isNotEmpty;
 
     return AppBar(
       backgroundColor: Colors.white,
@@ -44,20 +47,22 @@ class Appbar extends ConsumerWidget implements PreferredSizeWidget {
             height: 35, // Decrease the height of the search bar
             width:
                 MediaQuery.of(context).size.width * 0.4, // Set a smaller width
-            child: const SearchBox(),
+            child: SearchBox(),
           ),
         ),
       ),
       actions: [
         OutlinedButton(
           onPressed: () {},
-          child: Text(
-            selectedLocation!.locationName,
-            style: const TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
+          child: selectedDepartment != null
+              ? Text(
+                  selectedDepartment.departmentName,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w700,
+                  ),
+                )
+              : const CircularProgressIndicator(),
         ),
         IconButton(onPressed: () {}, icon: const Icon(Icons.image_outlined)),
         IconButton(
@@ -77,32 +82,32 @@ class Appbar extends ConsumerWidget implements PreferredSizeWidget {
   }
 }
 
-class SearchBox extends StatelessWidget {
-  const SearchBox({super.key});
+// class SearchBox extends StatelessWidget {
+//   const SearchBox({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      cursorColor: Colors.black,
-      decoration: InputDecoration(
-        hintText: 'Search...',
-        hintStyle: TextStyle(color: Colors.grey.shade500),
-        filled: true,
-        fillColor: Colors.grey.shade200,
-        prefixIcon: Icon(Icons.search, color: Colors.grey.shade500),
-        contentPadding: const EdgeInsets.symmetric(vertical: 10.0),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(25.0),
-          borderSide: BorderSide.none,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(25.0),
-          borderSide: BorderSide(
-            color: Colors.grey.shade400,
-          ),
-        ),
-      ),
-      style: const TextStyle(color: Colors.black),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return TextField(
+//       cursorColor: Colors.black,
+//       decoration: InputDecoration(
+//         hintText: 'Search...',
+//         hintStyle: TextStyle(color: Colors.grey.shade500),
+//         filled: true,
+//         fillColor: Colors.grey.shade200,
+//         prefixIcon: Icon(Icons.search, color: Colors.grey.shade500),
+//         contentPadding: const EdgeInsets.symmetric(vertical: 10.0),
+//         border: OutlineInputBorder(
+//           borderRadius: BorderRadius.circular(25.0),
+//           borderSide: BorderSide.none,
+//         ),
+//         focusedBorder: OutlineInputBorder(
+//           borderRadius: BorderRadius.circular(25.0),
+//           borderSide: BorderSide(
+//             color: Colors.grey.shade400,
+//           ),
+//         ),
+//       ),
+//       style: const TextStyle(color: Colors.black),
+//     );
+//   }
+// }

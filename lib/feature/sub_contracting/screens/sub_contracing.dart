@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/feature/sub_contracting/screens/return_screen.dart';
 
 import '../../../main.dart';
 import 'issue_screen.dart';
@@ -90,7 +91,7 @@ class _SubContracingState extends ConsumerState<SubContracing> {
           if (selectedIndex == 0)
             Expanded(child: IssueScreen())
           else
-            Expanded(child: IssueScreen())
+            Expanded(child: ReturnScreen())
         ],
       ),
     );

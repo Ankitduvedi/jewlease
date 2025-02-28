@@ -1,11 +1,11 @@
 // import 'dart:developer';
 
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
 import 'package:jewlease/widgets/custom_app_bar_finder.dart';
-
 import '../feature/formula/controller/heirarchy_controller.dart';
 
 class ItemTypeDialogScreen extends ConsumerStatefulWidget {
@@ -17,6 +17,7 @@ class ItemTypeDialogScreen extends ConsumerStatefulWidget {
       this.keyOfMap,
       this.query,
       this.onOptionSelectd,
+      this.queryMap,
       this.onSelectdRow});
 
   final String title;
@@ -24,6 +25,7 @@ class ItemTypeDialogScreen extends ConsumerStatefulWidget {
   final String value;
   final String? query;
   final String? keyOfMap;
+  final Map<String, dynamic>? queryMap;
   final Function(String)? onOptionSelectd;
   final Function(Map<String, dynamic>)? onSelectdRow;
 
@@ -133,7 +135,8 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
             Expanded(
               child: itemDataAsyncValue.when(
                 data: (item) {
-                  final List<Map<String, dynamic>> items;
+                  List<Map<String, dynamic>> items;
+
                   if (widget.query != null) {
                     items = item.where((item) {
                       return item.values.any(
@@ -142,6 +145,16 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                   } else {
                     items = item;
                     //log("item list is $items");
+                  }
+                  if (widget.queryMap != null) {
+                    print("query map ${item.length}");
+
+                    items = item.where((item) {
+                      return widget.queryMap!.entries.every((queryEntry) =>
+                      item.containsKey(queryEntry.key) &&
+                          item[queryEntry.key] == queryEntry.value);
+                    }).toList();
+                    print("query map2 ${items}");
                   }
                   if (items.isEmpty) {
                     return const Center(child: Text('No data available'));
@@ -176,6 +189,11 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                           false;
                     }
                   }).toList();
+                 // for(Map<String,dynamic>item in _filteredItems)
+                 //   item["Stock ID"] ="STC- ${_filteredItems.indexOf(item)}";
+                 //
+                 //
+                 //  print("filtered items ${_filteredItems.length}");
 
                   return SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
@@ -198,8 +216,7 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                               selectedItem[widget.keyOfMap ?? widget.title]
                                       .toString() ==
                                   item[widget.value].toString();
-                          //log("item list value $item->selected item lsit $selectedItem ->selecteditem   ${selectedItem[widget.keyOfMap ?? widget.title]}-> item value ${item[widget.value]}-> ${widget.value}");
-                          //log("seleced $isSelected");
+
                           return DataRow(
                             selected: isSelected,
                             onSelectChanged: (bool? selected) {
@@ -273,11 +290,6 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                           }
                         }
                         if (widget.title == "Data Type") {
-                          //log("data type selected $selectedItemID");
-
-                          // log("selected row $selectedRow");
-                          // log("selected item is ${selectedRow["Config value"]} ");
-
                           ref
                               .read(itemProvider.notifier)
                               .setItem(selectedRow["Config value"]);
@@ -293,7 +305,7 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                           }
                         }
                         if (widget.onSelectdRow != null) {
-                          print("selected row $selectedRow");
+                          log("selected row $selectedRow");
                           widget.onSelectdRow!(selectedRow);
                         }
 

@@ -1,9 +1,11 @@
 import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jewlease/data/hive_local_storage/model/location_model.dart';
+import 'package:jewlease/data/model/departments_model.dart';
+import 'package:jewlease/data/model/employee_and_location_model.dart';
+import 'package:jewlease/feature/auth/controller/auth_controller.dart';
 import 'package:jewlease/feature/home/right_side_drawer/controller/drawer_controller.dart';
-import 'package:jewlease/feature/home/right_side_drawer/repository/drawer_repository.dart';
 
 class DrawerScreen extends ConsumerWidget {
   const DrawerScreen({super.key});
@@ -12,6 +14,8 @@ class DrawerScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final drawerState = ref.watch(drawerProvider);
     final drawerNotifier = ref.read(drawerProvider.notifier);
+
+    final employee = ref.read(authProvider.notifier).state;
 
     return Drawer(
       width: MediaQuery.of(context).size.width * 0.4,
@@ -30,36 +34,36 @@ class DrawerScreen extends ConsumerWidget {
                 ),
               ],
             ),
-            child: const Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    CircleAvatar(
+                    const CircleAvatar(
                       radius: 30,
                       backgroundImage: AssetImage('assets/profile.jpg'),
                     ),
-                    SizedBox(width: 16),
+                    const SizedBox(width: 16),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'SSPL',
-                          style: TextStyle(
+                          employee!.employeeName,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 4),
-                        Text(
+                        const SizedBox(height: 4),
+                        const Text(
                           'Session ID: 18900526',
                           style: TextStyle(color: Colors.white70, fontSize: 12),
                         ),
                       ],
                     ),
-                    Spacer(),
-                    Text(
+                    const Spacer(),
+                    const Text(
                       '12 Jan 2025',
                       style: TextStyle(color: Colors.white70),
                     ),
@@ -88,51 +92,70 @@ class DrawerScreen extends ConsumerWidget {
                 // Location Dropdown
                 Consumer(
                   builder: (context, ref, child) {
-                    log('in consumer widget');
-                    final locations = ref.watch(locationListProvider);
+                    final employee = ref.watch(authProvider);
                     final selectedLocation =
-                        ref.watch(selectedLocationProvider);
-                    log('Selected Location: ${selectedLocation!.locationName}');
+                        ref.watch(selectedLocationDropdownProvider);
+                    final selectedDepartment =
+                        ref.watch(selectedDepartmentProvider);
 
-                    if (selectedLocation.locationName.isEmpty) {
-                      return const Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("Select Location",
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold)),
-                          SizedBox(height: 8),
-                          CircularProgressIndicator(),
-                        ],
-                      );
-                    }
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Location Dropdown
+                        DropdownButton<Location>(
+                          value: selectedLocation ??
+                              employee!.locations.where((loc) {
+                                return loc.locationName ==
+                                    employee.defaultLocation;
+                              }).first,
+                          hint: const Text("Select Location"),
+                          isExpanded: true,
+                          items: employee!.locations.map((location) {
+                            return DropdownMenuItem<Location>(
+                              value: location,
+                              child: Text(location.locationName),
+                            );
+                          }).toList(),
+                          onChanged: (location) {
+                            ref
+                                .read(selectedLocationDropdownProvider.notifier)
+                                .state = location;
+                            if (location != null) {
+                              log("selected location: ${location.locationName}");
+                              ref
+                                      .read(selectedDepartmentProvider.notifier)
+                                      .state =
+                                  location.departments.isNotEmpty
+                                      ? location.departments.first
+                                      : null;
+                            }
+                            // Reset department
+                          },
+                        ),
 
-                    return DropdownButton<Location>(
-                      value: locations.firstWhere(
-                        (loc) =>
-                            loc.locationCode == selectedLocation.locationCode,
-                        orElse: () => locations.first,
-                      ), // ✅ Ensure valid selection
-                      isExpanded: true,
-                      items: locations.map((location) {
-                        return DropdownMenuItem<Location>(
-                          value: location,
-                          child: Text(location.locationName),
-                        );
-                      }).toList(),
-                      onTap: () {
-                        ref
-                            .read(locationListProvider.notifier)
-                            .fetchLocations(); // ✅ Fetch new data when opened
-                      },
-                      onChanged: (newValue) {
-                        if (newValue != null) {
-                          log('Selected Location: $newValue');
-                          ref
-                              .read(selectedLocationProvider.notifier)
-                              .setSelectedLocation(newValue);
-                        }
-                      },
+                        const SizedBox(height: 16),
+
+                        // Department Dropdown (Depends on selected Location)
+                        DropdownButton<Departments>(
+                          value: selectedDepartment,
+                          hint: const Text("Select Department"),
+                          isExpanded: true,
+                          items: selectedLocation?.departments.map((dept) {
+                                return DropdownMenuItem<Departments>(
+                                  value: dept,
+                                  child: Text(dept.departmentName),
+                                );
+                              }).toList() ??
+                              [],
+                          onChanged: selectedLocation != null
+                              ? (dept) {
+                                  ref
+                                      .read(selectedDepartmentProvider.notifier)
+                                      .state = dept;
+                                }
+                              : null,
+                        ),
+                      ],
                     );
                   },
                 ),
@@ -160,11 +183,9 @@ class DrawerScreen extends ConsumerWidget {
                 ),
                 _buildDivider(),
                 // Role Dropdown
-                _buildDropdown(
-                  label: 'Role',
-                  value: drawerState.role,
-                  items: ['SA (ADMIN)', 'User'],
-                  onChanged: drawerNotifier.setRole,
+                Text(
+                  employee.employeeType,
+                  style: const TextStyle(color: Colors.black, fontSize: 12),
                 ),
                 _buildDivider(),
                 // Department Dropdown

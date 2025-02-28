@@ -1,7 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/data/model/employee_and_location_model.dart';
 
 final dropDownValueProvider = StateProvider<List<String>>((ref) => ['All']);
 final formSequenceProvider = StateProvider<int>((ref) => 0);
+final locationProvider = StateProvider<List<Location>>(
+    (ref) => [Location(locationName: '', departments: [])]);
 
 class DialogSelectionNotifier extends StateNotifier<Map<String, String?>> {
   DialogSelectionNotifier() : super({'Item Group': null});

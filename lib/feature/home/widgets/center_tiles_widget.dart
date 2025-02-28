@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:jewlease/core/routes/go_router.dart';
 import 'package:jewlease/main.dart';
@@ -27,35 +28,46 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
         icon: Icons.settings,
         color: Color.fromARGB(255, 163, 175, 76),
         key: ValueKey('Configuration & Rules')),
-    const _buildTile(
+    _buildTile(
+        onTap: () {
+          goRouter.go('/formulaProcedureScreen');
+        },
         title: 'Formula Procedures',
         icon: Icons.functions,
-        color: Color.fromARGB(255, 222, 192, 74),
-        key: ValueKey('Formula Procedures')),
+        color: const Color.fromARGB(255, 222, 192, 74),
+        key: const ValueKey('Formula Procedures')),
     const _buildTile(
         title: 'FG Inventory Management',
         icon: Icons.inventory,
         color: Color.fromARGB(255, 59, 120, 104),
         key: ValueKey('FG Inventory Management')),
-    const _buildTile(
+     _buildTile(
         title: 'RM Inventory Management',
         icon: Icons.store,
         color: Colors.green,
-        key: ValueKey('RM Inventory Management')),
+        key: ValueKey('RM Inventory Management')
+        ,onTap: (){
+          goRouter.go("/rmInventoryScreen");
+    },
+    ),
     _buildTile(
       title: 'Sub Contractiing',
       icon: Icons.cloud_upload,
-      color: Color.fromARGB(255, 7, 159, 229),
-      key: ValueKey('Sub Contracting'),
+      color: const Color.fromARGB(255, 7, 159, 229),
+      key: const ValueKey('Sub Contracting'),
       onTap: () {
         goRouter.go('/subContracting');
       },
     ),
-    const _buildTile(
-        title: 'Generic Masters',
+     _buildTile(
+        title: 'RM Procument',
         icon: Icons.layers,
         color: Color.fromARGB(255, 117, 55, 30),
-        key: ValueKey('Generic Masters')),
+        key: ValueKey('RM Procument'),
+      onTap: (){
+          goRouter.go("/rm_procument");
+      },
+    ),
     _buildTile(
       title: 'Production',
       icon: Icons.build,
@@ -69,7 +81,7 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
       title: 'Transfer Location',
       icon: Icons.list_alt,
       color: Colors.blueAccent,
-      key: ValueKey('Transfer Location'),
+      key: const ValueKey('Transfer Location'),
       onTap: () {
         goRouter.go('/transferLocation');
       },
@@ -80,7 +92,7 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
       color: Colors.orange.shade200,
       key: const ValueKey('Invoicing'),
       onTap: () {
-        print("called her");
+        log("called her");
         goRouter.go('/transferScreen');
       },
     ),
@@ -90,7 +102,7 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
       color: Colors.purple.shade200,
       key: const ValueKey('Procurement'),
       onTap: () {
-        print("called her");
+        log("called her");
         goRouter.go('/procumentScreen');
       },
     ),
@@ -101,7 +113,7 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
         onTap: () {
           goRouter.go('/barcodeGeneration');
         },
-        key: ValueKey('Bar Codr Gneration')),
+        key: const ValueKey('Bar Codr Gneration')),
     _buildTile(
       title: 'Bar Coding',
       icon: Icons.people,
@@ -109,22 +121,27 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
       onTap: () {
         goRouter.go('/barcodingScreen');
       },
-      key: ValueKey('Sub Contracting'),
+      key: const ValueKey('Sub Contracting'),
     ),
     _buildTile(
       title: 'Inventory Management',
       icon: Icons.lightbulb,
       color: Colors.blueAccent,
-      key: ValueKey('Scheme'),
+      key: const ValueKey('Scheme'),
       onTap: () {
         goRouter.go('/inventoryScreen');
       },
     ),
-    const _buildTile(
-        title: 'Loyalty',
+     _buildTile(
+        title: 'CRM',
         icon: Icons.emoji_events,
         color: Colors.cyan,
-        key: ValueKey('Loyalty')),
+        key: ValueKey('Loyalty'),
+      onTap: (){
+          goRouter.go('/CustomerInfoScreen');
+      },
+
+    ),
      _buildTile(
         title: 'Point Of Sale',
         icon: Icons.point_of_sale,
