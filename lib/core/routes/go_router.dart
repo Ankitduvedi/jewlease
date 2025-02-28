@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jewlease/core/routes/navigation_const.dart';
 import 'package:jewlease/feature/all_attributes/screen/all_attribute_screen.dart';
@@ -260,15 +261,16 @@ final goRouter = GoRouter(
                 log("stat is ${state.extra}");
                 final extraData = state.extra as Map<String, dynamic>;
                 // as Map<String, dynamic>; // Cast to the expected type
-                log("print extra data $extraData");
-                return AddFormulaProcedure(
-                  ProcedureType: extraData != null
-                      ? extraData['Procedure Type'] ?? ''
-                      : '',
-                  FormulaProcedureName: extraData != null
-                      ? extraData['Formula Procedure Name'] ?? ''
-                      : '',
-                );
+                // log("print extra data $extraData");
+                return Container();
+                // return AddFormulaProcedure(
+                // ProcedureType: extraData != null
+                //     ? extraData['Procedure Type'] ?? ''
+                //     : '',
+                // FormulaProcedureName: extraData != null
+                //     ? extraData['Formula Procedure Name'] ?? ''
+                //     : '',
+                // );
               }),
           GoRoute(
               path: '/addformulaMapping',
@@ -313,7 +315,7 @@ final goRouter = GoRouter(
           GoRoute(
               path: '/transferOutwardLocation',
               builder: (context, state) {
-                return const TransferoutwardLoc();
+                return const TransferOutwardLoc();
               }),
           GoRoute(
               path: '/transferInwardLocation',
