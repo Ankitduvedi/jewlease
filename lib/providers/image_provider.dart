@@ -2,8 +2,6 @@
 
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -58,7 +56,7 @@ class ImageNotifier extends StateNotifier<List<ImageModel>> {
 
     var request = http.MultipartRequest('POST', uri)
       ..files.add(http.MultipartFile.fromBytes('image', image.imageData,
-          filename: '${Timestamp.now().toString()}.jpeg'));
+          filename: '${DateTime.timestamp.toString()}.jpeg'));
 
     try {
       final response = await request.send();

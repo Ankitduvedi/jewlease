@@ -1,34 +1,35 @@
+// item_repository.dart
 import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:jewlease/core/routes/constant.dart';
-import 'package:jewlease/data/model/employee_and_location_model.dart';
+import 'package:jewlease/data/model/departments_model.dart';
 import 'package:jewlease/data/model/failure.dart';
 
-class AuthRepository {
-  final Dio _dio = Dio();
+class DepartmentsRepository {
+  final Dio _dio;
 
-  AuthRepository();
+  DepartmentsRepository(this._dio);
 
-  Future<Either<Failure, Employee>> login(
-      String username, String password) async {
+  Future<Either<Failure, String>> addDepartments(Departments config) async {
     try {
-      Response response = await _dio.post(
-        '$url2/EmployeeMaster/auth',
-        data: {'loginName': username, 'password': password},
+      log(config.toJson().toString());
+
+      final response = await _dio.post(
+        '$url2/Global/Department',
+        data: config.toJson(),
         options: Options(
           headers: {'Content-Type': 'application/json'},
         ),
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         // Successfully uploaded
-        log('login successfully ${response.data}');
-        return right(Employee.fromJson(response.data));
+        log('Data uploaded successfully');
+        return right(response.statusCode.toString());
       } else {
         // Error handling
-        log('Failed to login: ${response.statusCode}');
+        log('Failed to upload data: ${response.statusCode}');
         return left(Failure(message: response.toString()));
       }
     } catch (e) {
