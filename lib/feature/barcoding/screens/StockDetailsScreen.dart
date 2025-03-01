@@ -45,7 +45,7 @@ class _StockDetailsScreenState extends ConsumerState<StockDetailsScreen> {
                 width: screenWidth * 0.2,
                 child: ReadOnlyTextFieldWidget(
                   labelText: 'Stock ID',
-                  hintText: textFieldvalues['Vendor Name'] ?? 'DESTINATION',
+                  hintText: textFieldvalues['Vendor Name'] ?? 'Transaction ID',
                   icon: Icons.search,
                   onIconPressed: () {
                     showDialog(

@@ -6,6 +6,7 @@ import 'package:jewlease/feature/procument/screens/procumentSummeryGridSource.da
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 import '../../../main.dart';
+import '../../../widgets/data_widget.dart';
 import '../../../widgets/search_dailog_widget.dart';
 import '../../vendor/controller/procumentVendor_controller.dart';
 
@@ -175,6 +176,24 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
 
   bool showDialogBom = false;
 
+  void showProcumentdialog(String endUrl, String value) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          content: ItemDataScreen(
+            title: '',
+            endUrl: endUrl,
+            canGo: true,
+            onDoubleClick: (Map<String, dynamic> intialData) {
+              print("intial data $intialData");
+              // _addNewRowBom(intialData["OPERATION_NAME"] ?? "", value);
+              // Navigator.pop(context);
+              // _updateBomSummaryRow();
+            },
+          ),
+        ));
+  }
+
   @override
   Widget build(BuildContext context) {
     screenWidth = MediaQuery.of(context).size.width;
@@ -240,6 +259,7 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                           "Add Varients",
                           style: TextStyle(color: Colors.white, fontSize: 18),
                         )))),
+
               ],
             ),
             Container(

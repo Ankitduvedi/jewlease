@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/data/model/inventoryItem.dart';
+import 'package:jewlease/data/model/stock_details_model.dart';
 import 'package:jewlease/feature/barcoding/screens/widgets/barcode_generator_header.dart';
 import 'package:jewlease/feature/barcoding/screens/widgets/tag_data_grid.dart';
 import 'package:jewlease/feature/barcoding/screens/widgets/tag_mrp.dart';
@@ -88,8 +89,8 @@ class _BarCodeGenerationState extends ConsumerState<BarCodeGeneration> {
     });
     print("current stone wt $totalStoneWt $totalWt ");
 
-    StockDetails prevStockDetails = ref.read(stockDetailsProvider);
-    StockDetails updatedStockDetails = prevStockDetails.copyWith(
+    StockDetailsModel prevStockDetails = ref.read(stockDetailsProvider);
+    StockDetailsModel updatedStockDetails = prevStockDetails.copyWith(
         rate: totalAmount, currentStoneWt: totalStoneWt, currentNetWt: totalWt);
     print("prevTotalAmount $prevTotalAmount totalAmount $totalAmount");
     if (prevTotalAmount != totalAmount)
@@ -99,6 +100,8 @@ class _BarCodeGenerationState extends ConsumerState<BarCodeGeneration> {
   //<------------------------- Function To update wt   ----------- -------------->
   void _updateWt(String val) {
     print("_upadte wt runs $val");
+    if(_bomRows.length>0) {
+
     _bomRows[1] = DataGridRow(
         cells: _bomRows[1].getCells().map((cell) {
       if (cell.columnName == 'Weight') {
@@ -108,7 +111,7 @@ class _BarCodeGenerationState extends ConsumerState<BarCodeGeneration> {
       return cell;
     }).toList());
     _updateAmount(double.parse(val) * _bomRows[1].getCells()[4].value);
-    _updateBomSummaryRow();
+    _updateBomSummaryRow();}
   }
 
   void _updateAmount(double updatedAmount) {
@@ -138,6 +141,9 @@ class _BarCodeGenerationState extends ConsumerState<BarCodeGeneration> {
   void initializeBomOpr() {
     InventoryItemModel currentStock =
         ref.read(inventoryControllerProvider.notifier).getCurrentItem()!;
+    if(currentStock.bom.isEmpty)
+      return;
+    print("bom is ${currentStock.bom}");
 
     List<dynamic> listOfBoms = currentStock.bom["data"];
 
@@ -177,7 +183,7 @@ class _BarCodeGenerationState extends ConsumerState<BarCodeGeneration> {
   }
 
   Widget build(BuildContext context) {
-    ref.listen<StockDetails>(
+    ref.listen<StockDetailsModel>(
       stockDetailsProvider,
       (previous, next) {
         // Trigger your function here

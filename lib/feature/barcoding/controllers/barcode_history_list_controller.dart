@@ -11,7 +11,7 @@ class BarcodeHistoryListController
               stockId: 'xyx',
               attribute: '',
               varient: 'xyx',
-              transactionNumber: 1231,
+              transactionNumber: "ABC",
               date: DateTime.now().toIso8601String(),
               bom: {},
               operation: {},

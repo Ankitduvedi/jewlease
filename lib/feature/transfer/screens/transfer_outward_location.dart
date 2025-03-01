@@ -7,26 +7,32 @@ import 'package:jewlease/feature/transfer/controller/outward_loc_controller.dart
 import 'package:jewlease/feature/transfer/screens/widgets/transfer_outward_location_dialog.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
+import '../../../data/model/barcode_detail_model.dart';
+import '../../../data/model/barcode_historyModel.dart';
+import '../../../data/model/transaction_model.dart';
 import '../../../main.dart';
 import '../../../widgets/app_bar_buttons.dart';
 import '../../../widgets/search_dailog_widget.dart';
+import '../../barcoding/controllers/barcode_detail_controller.dart';
+import '../../barcoding/controllers/barcode_history_controller.dart';
 import '../../formula/controller/formula_prtocedure_controller.dart';
 import '../../procument/screens/procumentFloatingBar.dart';
 import '../../procument/screens/procumentScreen.dart';
 import '../../procument/screens/procumentSummeryGridSource.dart';
+import '../../transaction/controller/transaction_controller.dart';
 import '../../vendor/controller/procumentVendor_controller.dart';
 import '../controller/destination_controller.dart';
 
-class TransferoutwardLoc extends ConsumerStatefulWidget {
-  const TransferoutwardLoc({super.key});
+class TransferOutwardLoc extends ConsumerStatefulWidget {
+  const TransferOutwardLoc({super.key});
 
   @override
-  ConsumerState<TransferoutwardLoc> createState() =>
+  ConsumerState<TransferOutwardLoc> createState() =>
       _TransferoutwardLocLocationState();
 }
 
 class _TransferoutwardLocLocationState
-    extends ConsumerState<TransferoutwardLoc> {
+    extends ConsumerState<TransferOutwardLoc> {
   List<String> transferoutwardLocColumnns = [
     'Ref Document',
     'Variant Name',
@@ -180,6 +186,38 @@ class _TransferoutwardLocLocationState
   }
 
   @override
+  void saveTransOutLoc() async {
+    List<Map<String, dynamic>> varientList =
+        ref.read(procurementVariantProvider);
+    String destinationName =
+        ref.read(destinationProvider)["Destination Name"] ?? "MCH";
+    String destinationCode =
+        ref.read(destinationProvider)["Destination Code"] ?? "MCH";
+    TransactionModel transaction = createTransaction(varientList);
+    String transactionId = await ref
+            .read(TransactionControllerProvider.notifier)
+            .sentTransaction(transaction) ??
+        "ABC";
+    for (var varient in varientList!) {
+      print("varient  outward loc is $varient ");
+      String stockCode = varient["Stock ID"];
+      String source = varient["Location"] ?? "MCH";
+      ref
+          .read(OutwardLocControllerProvider.notifier)
+          .sendOutwarLocGRN(stockCode, source, destinationName);
+      BarcodeDetailModel detailModel =
+          createBarCodeDetail(varient, transactionId);
+      BarcodeHistoryModel historyModel =
+          createBarCodeHistory(varient, transactionId);
+      await ref
+          .read(BarocdeDetailControllerProvider.notifier)
+          .sentBarcodeDetail(detailModel);
+      await ref
+          .read(BarocdeHistoryControllerProvider.notifier)
+          .sentBarcodeHistory(historyModel);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final selectedIndex = ref.watch(tabIndexProvider);
@@ -201,20 +239,7 @@ class _TransferoutwardLocLocationState
                   context.go('/addFormulaProcedureScreen');
               },
               () async {
-                List<Map<String, dynamic>>? varientList =
-                    ref.read(procurementVariantProvider);
-                String destinationName =
-                    ref.read(destinationProvider)["Destination Name"] ?? "MCH";
-                String destinationCode =
-                    ref.read(destinationProvider)["Destination Code"] ?? "MCH";
-                for (var varient in varientList!) {
-                  print("varient  outward loc is $varient ");
-                  String stockCode = varient["Stock ID"];
-                  String source = varient["Location"] ?? "MCH";
-                  ref
-                      .read(OutwardLocControllerProvider.notifier)
-                      .sendOutwarLocGRN(stockCode, source, destinationName);
-                }
+                saveTransOutLoc();
               },
               () {
                 // Reset the provider value to null on refresh
@@ -378,5 +403,66 @@ class _TransferoutwardLocLocationState
               Summery: otwardSummery,
             ),
     );
+  }
+
+  BarcodeHistoryModel createBarCodeHistory(
+      Map<String, dynamic> varient, String transactionID) {
+    BarcodeHistoryModel historyModel = BarcodeHistoryModel(
+        stockId: varient["Stock ID"],
+        attribute: '',
+        varient: varient['Varient Name'],
+        transactionNumber: transactionID,
+        date: DateTime.now().toIso8601String(),
+        bom: varient["BOM"],
+        operation: varient["Operation"],
+        formula: varient["Formula Details"]);
+    return historyModel;
+  }
+
+  BarcodeDetailModel createBarCodeDetail(
+      Map<String, dynamic> varient, String transactionID) {
+    BarcodeDetailModel detailModel = BarcodeDetailModel(
+        stockId: varient["Stock ID"],
+        date: DateTime.now().toIso8601String(),
+        transNo: transactionID,
+        transType: "Transward outward Loc",
+        source: varient["Location"],
+        destination: "IET",
+        customer: "Anurag",
+        vendor: varient["Vendor"],
+        sourceDept: "MHCASH",
+        destinationDept: "MHCash",
+        exchangeRate: 11.33,
+        currency: "Rs",
+        salesPerson: "Arpit",
+        term: "nothing",
+        remark: "transward outward loc ",
+        createdBy: "Arpit Verma",
+        varient: varient['Varient Name'],
+        postingDate: DateTime.now().toIso8601String());
+    return detailModel;
+  }
+
+  TransactionModel createTransaction(List<Map<String, dynamic>> varients) {
+    TransactionModel transaction = TransactionModel(
+        transType: "Transfer Outward loc",
+        subType: "TOL",
+        transCategory: "GENERAL",
+        docNo: "bsjbcs",
+        transDate: DateTime.now().toIso8601String(),
+        source: "WareHouse",
+        destination: "MH_CASH",
+        customer: "ankit",
+        sourceDept: "Warehouse",
+        destinationDept: "MH_CASH",
+        exchangeRate: "0.0",
+        currency: "RS",
+        salesPerson: "Arun",
+        term: "term",
+        remark: "Creating GRN",
+        createdBy: DateTime.now().toIso8601String(),
+        postingDate: DateTime.now().toIso8601String(),
+        varients: varients);
+    return transaction;
   }
 }

@@ -2,7 +2,7 @@ class BarcodeHistoryModel {
   final String stockId;
   final String attribute;
   final String varient;
-  final int transactionNumber;
+  final String transactionNumber;
   final String date;
   final Map<String, dynamic> bom;
   final Map<String, dynamic> operation;

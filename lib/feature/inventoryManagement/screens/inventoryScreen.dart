@@ -118,7 +118,7 @@ class _InventoryManagementScreenState
       inventoryItems.addAll(allStocks);
       ref.read(inventorySummaryProvider.notifier).updateAll({
         "TotalRows": allStocks.length.toString(),
-        "Pcs": allStocks.fold(0.0, (sum, item) => sum + item.Pieces).toString(),
+        "Pcs": allStocks.fold(0.0, (sum, item) => sum + item.pieces).toString(),
         "Wt": allStocks
             .fold(0.0, (sum, item) => sum + item.metalWeight)
             .toString(),

@@ -4,11 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jewlease/core/utils/utils.dart';
+import 'package:jewlease/data/model/barcode_historyModel.dart';
+import 'package:jewlease/data/model/transaction_model.dart';
 import 'package:jewlease/feature/formula/controller/formula_prtocedure_controller.dart';
+import 'package:jewlease/feature/transaction/controller/transaction_controller.dart';
 import 'package:jewlease/main.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 
 import '../../../core/routes/go_router.dart';
+import '../../../data/model/barcode_detail_model.dart';
+import '../../barcoding/controllers/barcode_detail_controller.dart';
+import '../../barcoding/controllers/barcode_history_controller.dart';
 import '../../vendor/controller/procumentVendor_controller.dart';
 import '../controller/procumentVarientFormula.dart';
 import '../controller/procumentVendorDailog.dart';
@@ -119,7 +125,7 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
                 width: double.infinity,
                 child: Row(
                     children: List.generate(
-                  3,
+                  _tabs.length,
                   (index) {
                     return GestureDetector(
                       onTap: () {
@@ -190,6 +196,9 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
                             ref.read(varientAllFormulaProvider);
 
                         print("allFormulas = $allFormualMap");
+
+                        List<Map<String, dynamic>> reqstBodeis = [];
+
                         for (int i = 0; i < varientList!.length; i++) {
                           List<dynamic> allFormulas = [];
                           String formulaName =
@@ -225,13 +234,54 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
 
                           print("req body is $reuestBody");
 
-                          await ref
-                              .read(procurementControllerProvider.notifier)
-                              .sendGRN(reuestBody);
+                          reqstBodeis.add(reuestBody);
                         }
+
+                        TransactionModel transaction = TransactionModel(
+                            transType: "Opening Stock",
+                            subType: "OPS",
+                            transCategory: "GENERAL",
+                            docNo: "bsjbcs",
+                            transDate: DateTime.now().toIso8601String(),
+                            source: "WareHouse",
+                            destination: "MH_CASH",
+                            customer: "ankit",
+                            sourceDept: "Warehouse",
+                            destinationDept: "MH_CASH",
+                            exchangeRate: "0.0",
+                            currency: "RS",
+                            salesPerson: "Arun",
+                            term: "term",
+                            remark: "Creating GRN",
+                            createdBy: DateTime.now().toIso8601String(),
+                            postingDate: DateTime.now().toIso8601String(),
+                            varients: reqstBodeis);
+                        String? transactionID = await ref
+                            .read(TransactionControllerProvider.notifier)
+                            .sentTransaction(transaction);
+                        print("transactionID is $transactionID");
+
+                        for (var reqstBody in reqstBodeis) {
+                          print("reqst body $reqstBody");
+                          print("-------------------------------------");
+                          String stockId = await ref
+                              .read(procurementControllerProvider.notifier)
+                              .sendGRN(reqstBody);
+                          BarcodeHistoryModel history =
+                              createHistory(reqstBody, stockId, transactionID!);
+                          BarcodeDetailModel detail =
+                              createDetail(reqstBody, stockId, transactionID!);
+                          await ref
+                              .read(BarocdeDetailControllerProvider.notifier)
+                              .sentBarcodeDetail(detail);
+                          await ref
+                              .read(BarocdeHistoryControllerProvider.notifier)
+                              .sentBarcodeHistory(history);
+                        }
+
                         Utils.snackBar("Varient Aadded", context);
                         goRouter.go("/");
-                        // Navigator.pop(context);
+                        // Navigator.pop(context);\\
                       },
                       () {
                         // Reset the provider value to null on refresh
@@ -250,5 +300,44 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
         ),
       ],
     );
+  }
+
+  BarcodeDetailModel createDetail(
+      Map<String, dynamic> reqstBody, String stockId, String transactionID) {
+    BarcodeDetailModel detail = BarcodeDetailModel(
+      stockId: stockId,
+      date: DateTime.now().toIso8601String(),
+      transNo: transactionID!,
+      transType: "GRN",
+      source: "MHCASH",
+      destination: "MHCASH",
+      customer: "Ashish",
+      vendor: "A",
+      sourceDept: "MHCASH",
+      destinationDept: "MHCASH",
+      exchangeRate: 0.0,
+      currency: "inr",
+      salesPerson: "arun",
+      term: "terms",
+      remark: "grn",
+      createdBy: DateTime.now().toIso8601String(),
+      varient: reqstBody["varientName"],
+      postingDate: DateTime.now().toIso8601String(),
+    );
+    return detail;
+  }
+
+  BarcodeHistoryModel createHistory(
+      Map<String, dynamic> reqstBody, String stockId, String transactionID) {
+    BarcodeHistoryModel history = BarcodeHistoryModel(
+        stockId: stockId,
+        attribute: "",
+        varient: reqstBody["varientName"],
+        transactionNumber: transactionID ?? "",
+        date: DateTime.now().toIso8601String(),
+        bom: reqstBody["bom"],
+        operation: reqstBody["operation"],
+        formula: {});
+    return history;
   }
 }

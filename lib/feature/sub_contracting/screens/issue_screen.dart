@@ -3,17 +3,20 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:jewlease/widgets/text_field_widget.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 import '../../../main.dart';
 import '../../../widgets/app_bar_buttons.dart';
 import '../../../widgets/search_dailog_widget.dart';
 import '../../formula/controller/formula_prtocedure_controller.dart';
+import '../../procument/controller/procumentVendorDailog.dart';
 import '../../procument/screens/procumentFloatingBar.dart';
 import '../../procument/screens/procumentScreen.dart';
 import '../../procument/screens/procumentSummeryGridSource.dart';
+import '../../procument/screens/procumentVendorDialog.dart';
 import '../../vendor/controller/procumentVendor_controller.dart';
-import 'issue_dialog.dart';
+import '../issue_controller.dart';
 
 class IssueScreen extends ConsumerStatefulWidget {
   const IssueScreen({super.key});
@@ -75,15 +78,54 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
       Duration(milliseconds: 500),
       () => showDialog(
         context: context,
-        builder: (context) => const Dialog(
-          child: IssueDialog(),
-        ),
+        builder: (context) => Dialog(child: procumentVendorDialog()),
       ),
     );
     super.initState();
   }
 
-  void _addNewRowWithItemGroup(Map<dynamic, dynamic> varient) {
+  void addNewRowRawMaterial(Map<String, dynamic> varient, bool isStone) {
+    String netWt = double.parse(varient["Net Weight"]) == 0.0
+        ? varient["Dia Weight"]
+        : varient["Net Weight"];
+    print("net wt $netWt");
+    setState(() {
+      outwardRows.add(
+        DataGridRow(cells: [
+          DataGridCell<String>(columnName: 'Ref Document', value: ''),
+          DataGridCell<String>(
+              columnName: 'Variant Name', value: varient['Varient Name']),
+          DataGridCell<String>(columnName: 'Line No', value: ''),
+          DataGridCell(columnName: "Batch", value: ""),
+          DataGridCell<String>(
+              columnName: 'Stock Code', value: varient['Stock ID']),
+          DataGridCell<String>(columnName: 'Stock Status', value: ""),
+          DataGridCell(columnName: 'Group Item', value: varient["Item Group"]),
+          DataGridCell<String>(
+              columnName: 'Pieces',
+              value: isStone
+                  ? varient['Dia Pieces'].toString()
+                  : varient['Pieces'].toString()),
+          DataGridCell<String>(columnName: 'Weight', value: netWt),
+          DataGridCell<String>(
+              columnName: 'Rate', value: varient["Std Buying Rate"]),
+          DataGridCell<String>(columnName: 'Amount', value: ""),
+          DataGridCell(
+              columnName: "Karat Color", value: varient["Karat Color"]),
+          DataGridCell(columnName: "Certificate No", value: ""),
+          DataGridCell(columnName: "Batch Quality", value: ""),
+          DataGridCell(columnName: "Remarks", value: varient["Remark 1"]),
+          DataGridCell<String>(columnName: 'Against Transfer Doc', value: "0"),
+        ]),
+      );
+      _procumentdataGridSource.updateDataGridSource();
+      setState(() {});
+      _otwardSummery({});
+      _updateSummaryRow();
+    });
+  }
+
+  void addNewRowWithItemGroup(Map<String, dynamic> varient) {
     // print("varient $varient ${varient["BOM"]["data"][0][3]}");
     print("varient $varient");
     List<dynamic> bomSummery = [];
@@ -183,6 +225,65 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
     }
   }
 
+  TextEditingController metalIssueController = TextEditingController();
+
+  Map<String, dynamic> convertToSchema(Map<String, dynamic> input) {
+    print("input is $input");
+    return {
+      "stockId": input["Stock ID"],
+      "style": input["Style"],
+      "varientName": input["Varient Name"],
+      "oldVarient": input["Varient Name"],
+      "customerVarient": input["Varient Name"],
+      "baseVarient": input["Varient Name"],
+      "vendor": input["Vendor"],
+      "remark1": input["Remark 1"],
+      "vendorVarient": input["Varient Name"],
+      "remark2": input["Remark 2"],
+      "createdBy": input["Created By"],
+      "stdBuyingRate": input["Std Buying Rate"],
+      "stoneMaxWt": input["Stone Max Wt"],
+      "remark": input["Remark"],
+      "stoneMinWt": input["Stone Min Wt"],
+      "karatColor": input["Karat Color"],
+      "deliveryDays": input["Delivery Days"],
+      "forWeb": input["For Web"],
+      "rowStatus": input["Row Status"],
+      "verifiedStatus": input["Verified Status"],
+      "length": input["Length"],
+      "codegenSrNo": input["Codegen Sr No"],
+      "category": input["CATEGORY"],
+      "subCategory": input["Sub-Category"],
+      "styleKarat": input["STYLE KARAT"],
+      "varient": input["Varient"],
+      "hsnSacCode": input["HSN - SAC CODE"],
+      "lineOfBusiness": input["LINE OF BUSINESS"],
+      "imageDetails": input["Image Details"],
+      "pieces": input["Pieces"],
+      "weight": (input["Weight"] ?? 0),
+      "netWeight": input["Weight"] ?? 0,
+      "diaWeight": input["Dia Weight"] ?? 0,
+      "diaPieces": input["Dia Pieces"] ?? 0,
+      "itemGroup": "Gold",
+      "metalColor": "Yellow",
+      "styleMetalColor": "Shiny Gold",
+      "inwardDoc": "INV-2024001",
+      "lastTrans": DateTime.now().toIso8601String(),
+      "bom": input["BOM"] ?? {},
+      "operation": input["Operation"] ?? {},
+      "formulaDetails": input["Formula Details"] ?? {},
+      "isRawMaterial": input["isRawMaterial"] ?? 0,
+      "vendor": input["Vendor Name"],
+      "vendorCode": input["Vendor Code"],
+      "location": input["Location"],
+      "department": input["Department"],
+      "itemGroup": input["style"] ?? "",
+      "metalColor": input["Karat Color"],
+      "styleMetalColor": input["Karat Color"],
+      "locationCode": ""
+    };
+  }
+
   Widget build(BuildContext context) {
     final selectedIndex = ref.watch(tabIndexProvider);
     screenWidth = MediaQuery.of(context).size.width;
@@ -202,7 +303,22 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
                 if (selectedIndex == 3)
                   context.go('/addFormulaProcedureScreen');
               },
-              () async {},
+              () async {
+                List<Map<String, dynamic>>? varientList =
+                    ref.read(procurementVariantProvider);
+                for (var varient in varientList!) {
+                  Map<String, dynamic> reqBody = convertToSchema(varient);
+                  print("req body $reqBody");
+                  reqBody["vendor"] =
+                      ref.read(pocVendorProvider)["Vendor Name"];
+                  reqBody["issueDate"] = DateTime.now().toIso8601String();
+                  reqBody["operationName"] = "Alteration";
+
+                  ref
+                      .read(IssueStockControllerProvider.notifier)
+                      .sentIssueStock(reqBody);
+                }
+              },
               () {
                 // Reset the provider value to null on refresh
                 ref.watch(formulaProcedureProvider.notifier).state = [
@@ -224,7 +340,7 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
             Row(
               children: [
                 const Text(
-                  'Transfer Outward',
+                  'Batch Issue',
                   style: TextStyle(fontSize: 25),
                 ),
                 SizedBox(
@@ -249,7 +365,7 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
                               .read(procurementVariantProvider.notifier)
                               .getItemByVariant(selectedRow['Varient']);
                           print("selected $selected selectedRow $selectedRow");
-                          _addNewRowWithItemGroup(selectedRow);
+                          addNewRowWithItemGroup(selectedRow);
                           setState(() {});
                         },
                       ),
@@ -263,12 +379,105 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
                         borderRadius: BorderRadius.circular(5)),
                     child: Center(
                       child: Text(
-                        "Add Outward Stock",
+                        "Add Issue Stock",
                         style: TextStyle(color: Colors.white, fontSize: 18),
                       ),
                     ),
                   ),
                 ),
+                SizedBox(
+                  width: 10,
+                ),
+                PopupMenuButton<String>(
+                    onSelected: (String value) {
+                      // When an item is selected, add a new row with the item group
+                      print("selected value is $value");
+                      showDialog(
+                        context: context,
+                        builder: (context1) => ItemTypeDialogScreen(
+                          title: 'Outward Stock',
+                          endUrl: 'Procurement/GRN',
+                          value: 'Stock ID',
+                          queryMap: value == "Stone"
+                              ? {
+                                  "isRawMaterial": 1,
+                                  "Varient Name": "New DIAMOND-5"
+                                }
+                              : {"isRawMaterial": 1, "Varient Name": "new"},
+                          onOptionSelectd: (selectedValue) {
+                            print("selected value $selectedValue");
+                          },
+                          onSelectdRow: (selectedRow) {
+                            print("dialog");
+                            // Future.delayed(Duration(milliseconds: 200), () {
+                            // Navigator.of(context).pop(); // Close first dialog
+                            if (value.contains("Stone")) {
+                              addNewRowRawMaterial(selectedRow,true);
+                            } else
+                              Future.delayed(Duration(milliseconds: 200), () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => Dialog(
+                                      child: metalIssueDialog(
+                                          metalWeightController:
+                                              metalIssueController,
+                                          row: selectedRow,
+                                          addRow: addNewRowRawMaterial)),
+                                );
+                              });
+
+                            ref
+                                .read(procurementVariantProvider.notifier)
+                                .addItem(selectedRow);
+                          },
+                        ),
+                      );
+                    },
+                    itemBuilder: (BuildContext context) =>
+                        <PopupMenuEntry<String>>[
+                          PopupMenuItem<String>(
+                            value: 'Metal - Gold',
+                            child: ExpansionTile(
+                              title: Text('Metal'),
+                              children: [
+                                ListTile(
+                                  title: Text('Metal'),
+                                  onTap: () {
+                                    Navigator.pop(context, 'Metal');
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem<String>(
+                            value: 'Stone - Diamond',
+                            child: ExpansionTile(
+                              title: Text('Stone'),
+                              children: [
+                                ListTile(
+                                  title: Text('Stone'),
+                                  onTap: () {
+                                    Navigator.pop(context, 'Stone');
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                    child: Container(
+                      // width: screenWidth * 0.1,
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      height: 35,
+                      decoration: BoxDecoration(
+                          color: Color(0xff003450),
+                          borderRadius: BorderRadius.circular(5)),
+                      child: Center(
+                        child: Text(
+                          "Add  Raw Material",
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        ),
+                      ),
+                    )),
               ],
             ),
             Expanded(
@@ -362,6 +571,132 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
           : SummaryDetails(
               Summery: otwardSummery,
             ),
+    );
+  }
+}
+
+class metalIssueDialog extends StatefulWidget {
+  final TextEditingController metalWeightController;
+  final Function(Map<String, dynamic>,bool) addRow;
+  final Map<String, dynamic> row;
+
+  const metalIssueDialog(
+      {super.key,
+      required this.metalWeightController,
+      required this.row,
+      required this.addRow});
+
+  @override
+  State<metalIssueDialog> createState() => _metalIssueDialogState();
+}
+
+class _metalIssueDialogState extends State<metalIssueDialog> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: screenHeight * 0.3,
+      width: screenWidth * 0.9,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.white,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            padding: EdgeInsets.all(10),
+            height: screenHeight * 0.08,
+            decoration: BoxDecoration(
+                color: Colors.green,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(10),
+                  topRight: Radius.circular(10),
+                )),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Goods Reciept Note'),
+                InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Row(
+                    children: [
+                      Text('Esc to Close'),
+                      Icon(Icons.close),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              height: screenHeight * 0.12,
+              width: double.infinity,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      border: Border.all(color: Colors.grey),
+                    ),
+                    child: Text('Document No'),
+                  ),
+                  SizedBox(
+                      width: screenWidth * 0.1,
+                      height: screenHeight * 0.05,
+                      child: TextFieldWidget(
+                          labelText: "Metal Weight",
+                          controller: widget.metalWeightController)),
+                  SizedBox(
+                    width: screenWidth * 0.4,
+                  )
+                ],
+              ),
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.all(10),
+            width: double.infinity,
+            height: screenHeight * 0.07,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(10),
+                bottomRight: Radius.circular(10),
+              ),
+              color: Colors.grey.shade300,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    widget.addRow(widget.row,false);
+                    Navigator.of(context).pop();
+                  },
+                  child: Container(
+                    width: screenWidth * 0.07,
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      color: Colors.green,
+                    ),
+                    child: Center(
+                        child: Text(
+                      'Done',
+                      style: TextStyle(fontSize: 12),
+                    )),
+                  ),
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 }

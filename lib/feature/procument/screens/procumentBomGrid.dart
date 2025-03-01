@@ -37,7 +37,8 @@ class _ProcumentBomGridState extends State<ProcumentBomGrid> {
   Widget build(BuildContext context) {
     screenWidth = MediaQuery.of(context).size.width;
     screenHeight = MediaQuery.of(context).size.height;
-    return Expanded(
+    return  Flexible( // Allows the content to expand only as needed
+      fit: FlexFit.loose,
       child: ClipRRect(
         borderRadius:
             BorderRadius.circular(10), // Adjust this for desired roundness
@@ -45,7 +46,8 @@ class _ProcumentBomGridState extends State<ProcumentBomGrid> {
           // width: screenWidth * 0.42,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            border: Border.fromBorderSide(BorderSide(color: Colors.grey)),
+            // border: Border.fromBorderSide(BorderSide(color: Colors.red),
+            // ),
           ),
           child: SfDataGrid(
             rowHeight: 35,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/data/model/stock_details_model.dart';
 
 import '../../../../data/model/inventoryItem.dart';
 import '../../../../widgets/read_only_textfield_widget.dart';
@@ -44,10 +45,10 @@ class _BarcodeHeaderState extends ConsumerState<BarcodeHeader> {
     currentStock =
         ref.read(inventoryControllerProvider.notifier).getCurrentItem()!;
     print("current stock is $currentStock");
-    StockDetails stockDetails = StockDetails(
-        stockQty: currentStock.Pieces,
+    StockDetailsModel stockDetails = StockDetailsModel(
+        stockQty: currentStock.pieces,
         tagCreated: 0,
-        remaining: currentStock.Pieces,
+        remaining: currentStock.pieces,
         balPcs: currentStock.diaPieces,
         balWt: currentStock.diaWeight + currentStock.metalWeight,
         balMetWt: currentStock.metalWeight,
@@ -140,7 +141,7 @@ class _BarcodeHeaderState extends ConsumerState<BarcodeHeader> {
                         ),
                       ),
                       onSubmitted: (value) {
-                        StockDetails updatedStockDetails = stockDetails;
+                        StockDetailsModel updatedStockDetails = stockDetails;
                         updatedStockDetails.currentWt = double.parse(value);
                         ref
                             .read(stockDetailsProvider.notifier)

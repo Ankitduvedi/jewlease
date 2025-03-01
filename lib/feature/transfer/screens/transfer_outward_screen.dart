@@ -3,6 +3,8 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:jewlease/data/model/transaction_model.dart';
+import 'package:jewlease/feature/transaction/controller/transaction_controller.dart';
 import 'package:jewlease/feature/transfer/screens/widgets/transfer_outward_dialog.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
@@ -190,6 +192,40 @@ class _TransferOutwardScreenState extends ConsumerState<TransferOutwardScreen> {
     }
   }
 
+  void transferSave() async {
+    List<Map<String, dynamic>> varientList =
+        ref.read(procurementVariantProvider);
+    String destinationName =
+        ref.read(destinationProvider)["Destination Name"] ?? "MCH";
+    String destinationCode =
+        ref.read(destinationProvider)["Destination Code"] ?? "MCH";
+
+    TransactionModel transaction = createTransaction(varientList);
+    String transactionId = await ref
+            .read(TransactionControllerProvider.notifier)
+            .sentTransaction(transaction) ??
+        "ABC";
+
+    for (var varient in varientList!) {
+      String stockCode = varient["Stock ID"];
+      String source = varient["Location"] ?? "MCH";
+      await ref
+          .read(OutwardControllerProvider.notifier)
+          .sendOutwardGRN(stockCode, source, destinationName);
+
+      BarcodeDetailModel detailModel =
+          createBarCodeDetail(varient, transactionId);
+      BarcodeHistoryModel historyModel =
+          createBarCodeHistory(varient, transactionId);
+      await ref
+          .read(BarocdeDetailControllerProvider.notifier)
+          .sentBarcodeDetail(detailModel);
+      await ref
+          .read(BarocdeHistoryControllerProvider.notifier)
+          .sentBarcodeHistory(historyModel);
+    }
+  }
+
   Widget build(BuildContext context) {
     final selectedIndex = ref.watch(tabIndexProvider);
     screenWidth = MediaQuery.of(context).size.width;
@@ -210,55 +246,7 @@ class _TransferOutwardScreenState extends ConsumerState<TransferOutwardScreen> {
                   context.go('/addFormulaProcedureScreen');
               },
               () async {
-                List<Map<String, dynamic>>? varientList =
-                    ref.read(procurementVariantProvider);
-                String destinationName =
-                    ref.read(destinationProvider)["Destination Name"] ?? "MCH";
-                String destinationCode =
-                    ref.read(destinationProvider)["Destination Code"] ?? "MCH";
-                for (var varient in varientList!) {
-                  print("varient  outward is $varient ");
-                  String stockCode = varient["Stock ID"];
-                  String source = varient["Location"] ?? "MCH";
-                  await ref
-                      .read(OutwardControllerProvider.notifier)
-                      .sendOutwardGRN(stockCode, source, destinationName);
-
-                  BarcodeDetailModel detailModel = BarcodeDetailModel(
-                      stockId: varient["Stock ID"],
-                      date: DateTime.now().toIso8601String(),
-                      transNo: 12333,
-                      transType: "Transward outward",
-                      source: varient["Location"],
-                      destination: "IET",
-                      customer: "Anurag",
-                      vendor: varient["Vendor"],
-                      sourceDept: "MHCASH",
-                      destinationDept: "MHCash",
-                      exchangeRate: 11.33,
-                      currency: "Rs",
-                      salesPerson: "Arpit",
-                      term: "nothing",
-                      remark: "transward outward ",
-                      createdBy: "Arpit Verma",
-                      varient: varient['Varient Name'],
-                      postingDate: DateTime.now().toIso8601String());
-                  BarcodeHistoryModel historyModel = BarcodeHistoryModel(
-                      stockId: varient["Stock ID"],
-                      attribute: '',
-                      varient: varient['Varient Name'],
-                      transactionNumber: 1231,
-                      date: DateTime.now().toIso8601String(),
-                      bom: varient["BOM"],
-                      operation: varient["Operation"],
-                      formula: varient["Formula Details"]);
-                  await ref
-                      .read(BarocdeDetailControllerProvider.notifier)
-                      .sentBarcodeDetail(detailModel);
-                  await ref
-                      .read(BarocdeHistoryControllerProvider.notifier)
-                      .sentBarcodeHistory(historyModel);
-                }
+                transferSave();
               },
               () {
                 // Reset the provider value to null on refresh
@@ -420,5 +408,66 @@ class _TransferOutwardScreenState extends ConsumerState<TransferOutwardScreen> {
               Summery: otwardSummery,
             ),
     );
+  }
+
+  BarcodeHistoryModel createBarCodeHistory(
+      Map<String, dynamic> varient, String transactionID) {
+    BarcodeHistoryModel historyModel = BarcodeHistoryModel(
+        stockId: varient["Stock ID"],
+        attribute: '',
+        varient: varient['Varient Name'],
+        transactionNumber: transactionID,
+        date: DateTime.now().toIso8601String(),
+        bom: varient["BOM"],
+        operation: varient["Operation"],
+        formula: varient["Formula Details"]);
+    return historyModel;
+  }
+
+  BarcodeDetailModel createBarCodeDetail(
+      Map<String, dynamic> varient, String transactionID) {
+    BarcodeDetailModel detailModel = BarcodeDetailModel(
+        stockId: varient["Stock ID"],
+        date: DateTime.now().toIso8601String(),
+        transNo: transactionID,
+        transType: "Transward outward",
+        source: varient["Location"],
+        destination: "IET",
+        customer: "Anurag",
+        vendor: varient["Vendor"],
+        sourceDept: "MHCASH",
+        destinationDept: "MHCash",
+        exchangeRate: 11.33,
+        currency: "Rs",
+        salesPerson: "Arpit",
+        term: "nothing",
+        remark: "transward outward ",
+        createdBy: "Arpit Verma",
+        varient: varient['Varient Name'],
+        postingDate: DateTime.now().toIso8601String());
+    return detailModel;
+  }
+
+  TransactionModel createTransaction(List<Map<String, dynamic>> varients) {
+    TransactionModel transaction = TransactionModel(
+        transType: "Transfer Outward",
+        subType: "TO",
+        transCategory: "GENERAL",
+        docNo: "bsjbcs",
+        transDate: DateTime.now().toIso8601String(),
+        source: "WareHouse",
+        destination: "MH_CASH",
+        customer: "ankit",
+        sourceDept: "Warehouse",
+        destinationDept: "MH_CASH",
+        exchangeRate: "0.0",
+        currency: "RS",
+        salesPerson: "Arun",
+        term: "term",
+        remark: "Creating GRN",
+        createdBy: DateTime.now().toIso8601String(),
+        postingDate: DateTime.now().toIso8601String(),
+        varients: varients);
+    return transaction;
   }
 }

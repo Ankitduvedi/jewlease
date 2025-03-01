@@ -166,8 +166,8 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
     double gridWidth =
         screenWidth * 0.4; // Set grid width to 50% of screen width
     return Container(
-      width: screenWidth * 0.45,
-      height: screenHeight * 0.4,
+      // width: screenWidth * 0.45,
+      // height: screenHeight * 0.4,
       margin: EdgeInsets.only(top: 20, left: 20),
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -184,7 +184,7 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Metal Exchange',
+                  'Formula',
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 ),
               ],
