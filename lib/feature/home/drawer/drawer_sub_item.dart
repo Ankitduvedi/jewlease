@@ -37,6 +37,7 @@ class DrawerSubItem extends ConsumerWidget {
           ),
           onTap: () {
             onTap();
+            ref.read(drawerStateProvider.notifier).toggleDrawer();
           },
         ),
         //const Divider(color: Colors.grey),

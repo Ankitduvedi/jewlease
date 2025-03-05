@@ -32,6 +32,7 @@ class DrawerItem extends ConsumerWidget {
       ),
       onTap: () {
         onTap();
+        ref.read(drawerStateProvider.notifier).toggleDrawer();
       },
     );
   }

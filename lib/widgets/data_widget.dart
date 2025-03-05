@@ -4,7 +4,7 @@ import 'package:jewlease/feature/item_configuration/controller/item_configuratio
 import 'package:jewlease/providers/dailog_selection_provider.dart';
 
 class ItemDataScreen extends ConsumerStatefulWidget {
-  ItemDataScreen(
+  const ItemDataScreen(
       {super.key,
       required this.title,
       required this.endUrl,
@@ -13,7 +13,7 @@ class ItemDataScreen extends ConsumerStatefulWidget {
 
   final String title;
   final String endUrl;
-  bool canGo;
+  final bool canGo;
   final Function(Map<String, dynamic>)? onDoubleClick;
 
   @override

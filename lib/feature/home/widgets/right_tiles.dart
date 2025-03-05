@@ -10,7 +10,7 @@ class WorkToDoWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 6,
@@ -22,7 +22,7 @@ class WorkToDoWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min, // Constrain the height of the widget
         children: [
-          Row(
+          const Row(
             children: [
               Icon(
                 Icons.check_box,
@@ -39,7 +39,7 @@ class WorkToDoWidget extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -65,22 +65,22 @@ class WorkToDoWidget extends StatelessWidget {
           children: [
             Text(
               title,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
                 color: Colors.black54,
               ),
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(
               count,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 4),
-            Icon(
+            const SizedBox(height: 4),
+            const Icon(
               Icons.refresh,
               color: Colors.blue,
               size: 16,

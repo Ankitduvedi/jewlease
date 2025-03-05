@@ -25,7 +25,7 @@ class AllAttributeRepository {
       if (response.statusCode == 201) {
         // Successfully uploaded
         log('Data uploaded successfully');
-        return right(r"Successfully signed out.");
+        return right(response.statusCode.toString());
       } else {
         // Error handling
         log('Failed to upload data: ${response.statusCode}');
