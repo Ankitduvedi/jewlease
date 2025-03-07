@@ -41,14 +41,14 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
         icon: Icons.inventory,
         color: Color.fromARGB(255, 59, 120, 104),
         key: ValueKey('FG Inventory Management')),
-     _buildTile(
-        title: 'RM Inventory Management',
-        icon: Icons.store,
-        color: Colors.green,
-        key: ValueKey('RM Inventory Management')
-        ,onTap: (){
-          goRouter.go("/rmInventoryScreen");
-    },
+    _buildTile(
+      title: 'RM Inventory Management',
+      icon: Icons.store,
+      color: Colors.green,
+      key: const ValueKey('RM Inventory Management'),
+      onTap: () {
+        goRouter.go("/rmInventoryScreen");
+      },
     ),
     _buildTile(
       title: 'Sub Contractiing',
@@ -59,13 +59,13 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
         goRouter.go('/subContracting');
       },
     ),
-     _buildTile(
-        title: 'RM Procument',
-        icon: Icons.layers,
-        color: Color.fromARGB(255, 117, 55, 30),
-        key: ValueKey('RM Procument'),
-      onTap: (){
-          goRouter.go("/rm_procument");
+    _buildTile(
+      title: 'RM Procument',
+      icon: Icons.layers,
+      color: const Color.fromARGB(255, 117, 55, 30),
+      key: const ValueKey('RM Procument'),
+      onTap: () {
+        goRouter.go("/rm_procument");
       },
     ),
     _buildTile(
@@ -132,25 +132,23 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
         goRouter.go('/inventoryScreen');
       },
     ),
-     _buildTile(
-        title: 'CRM',
-        icon: Icons.emoji_events,
-        color: Colors.cyan,
-        key: ValueKey('Loyalty'),
-      onTap: (){
-          goRouter.go('/CustomerInfoScreen');
+    _buildTile(
+      title: 'CRM',
+      icon: Icons.emoji_events,
+      color: Colors.cyan,
+      key: const ValueKey('Loyalty'),
+      onTap: () {
+        goRouter.go('/CustomerInfoScreen');
       },
-
     ),
-     _buildTile(
-        title: 'Point Of Sale',
-        icon: Icons.point_of_sale,
-        color: Colors.deepOrangeAccent,
-        key: ValueKey('Point Of Sale'),
-      onTap: (){
+    _buildTile(
+      title: 'Point Of Sale',
+      icon: Icons.point_of_sale,
+      color: Colors.deepOrangeAccent,
+      key: const ValueKey('Point Of Sale'),
+      onTap: () {
         goRouter.go("/point_of_sale");
       },
-
     ),
     const _buildTile(
         title: 'Item Masters',

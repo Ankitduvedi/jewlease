@@ -103,9 +103,9 @@ class FormulaProcdedureScreen extends ConsumerWidget {
                       context.go('/addformulaMapping');
                     }
                     if (selectedIndex == 1) {
-                      // showDialog(
-                      //     context: context,
-                      //     builder: (context) => rangeDialog());
+                      showDialog(
+                          context: context,
+                          builder: (context) => rangeDialog());
                     }
                     log('new pressed');
                     if (selectedIndex == 2) {
@@ -135,11 +135,11 @@ class FormulaProcdedureScreen extends ConsumerWidget {
                         'FormulaProcedures/RateStructure/FormulaRangeMaster/',
                     canGo: true,
                     onDoubleClick: (Map<String, dynamic> intialData) {
-                      // showDialog(
-                      //     context: context,
-                      //     builder: (context) => rangeDialog(
-                      //           intialData: intialData,
-                      //         ));
+                      showDialog(
+                          context: context,
+                          builder: (context) => rangeDialog(
+                                intialData: intialData,
+                              ));
                     },
                   ),
                 )

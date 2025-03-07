@@ -1,0 +1,6 @@
+initialSettings:
+                                                InAppWebViewSettings(
+                                                  javaScriptEnabled: true,
+                                                  
+
+                                            ),

@@ -11,24 +11,36 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable@11.1.0/dist/handsontable.full.min.css" />
     <style>
         body {
-        font-family: Arial, sans-serif;
-        padding: 20px;
+            font-family: Arial, sans-serif;
+            padding: 20px;
         }
         #spreadsheet {
-        width: 100vw;
-        height: 100vh;
-        visibility: visible;
+            width: 100vw;
+            height: 100vh;
+            visibility: visible;
         }
         button {
-        margin-top: 20px;
-        padding: 10px;
-        font-size: 14px;
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 14px;
         }
         #dismissBtn {
-        display: none;
+            display: none;
         }
         .htInvalid {
-        background-color: #FFCCCC !important;
+            background-color: #FFCCCC !important;
+        }
+        .handsontable th {
+            background-color: #00394e !important; /* Dark blue background */
+            color: #ffffff !important; /* White text color */
+            border-right: 1px solid #cccccc !important; /* Light border color */
+            text-align: center;
+            font-weight: bold;
+        }
+        /* Highlight specific columns in green */
+        .handsontable th:nth-child(4), /* Variant Name */
+        .handsontable th:nth-child(5)  /* Stock Status */ {
+            color: #00FF00 !important; /* Green text color */
         }
     </style>
 </head>
@@ -37,9 +49,19 @@
 <button id="dismissBtn" onclick="dismissSpreadsheet()">Dismiss Spreadsheet</button>
 <script>
     var hotInstance;
-    var selectedCellCoords = null;
+    var selectedCellCoords = null;c
     var lastEditedRow = null;
-    const defaultColumnHeaders = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '];
+    const defaultColumnHeaders = ["Ref Document",
+  "Line No",
+  "Stock Code",
+  "Variant Name",
+  "Stock Status",
+  "Stone Wt",
+  "Pieces",
+  "Weight",
+  "Rate",
+  "Amount",
+  "Wastage"];
 
     // Function to initialize Handsontable
     function initializeHandsontable() {
@@ -68,7 +90,13 @@
                 },
                 cells: function (row, col) {
                     var cellProperties = {};
-
+                    if (col === 5) {
+                        var dataType = this.instance.getDataAtCell(row, 2);
+                        if (dataType !== 'Calculation') {
+                            cellProperties.readOnly = true;
+                            cellProperties.className = 'htNonEditable';
+                        }
+                    }
                     return cellProperties;
                 },
             });
@@ -93,53 +121,42 @@
             console.error('Spreadsheet container not found');
         }
     }
-    function updateCellWithDialogValue(value) {
-        if (selectedCellCoords) {
-            hotInstance.setDataAtCell(selectedCellCoords.row, selectedCellCoords.col, value);
-            console.log(`Updated cell at row ${selectedCellCoords.row}, col ${selectedCellCoords.col} with value: ${value}`);
-            selectedCellCoords = null;
-        } else {
-            console.error('No cell selected to update.');
-        }
-    }
 
     // Function to add custom header row and remove default headers
     // Function to dynamically set new headers
-    function addCustomHeaderRow(newHeader) {
-     var newHeaders = JSON.parse(newHeader);
+function addCustomHeaderRow(newHeaders) {
+  if (!Array.isArray(newHeaders) || newHeaders.length === 0) {
+    console.error("Invalid header array. Must be a non-empty array.");
+    return;
+  }
 
-        if (!Array.isArray(newHeaders) || newHeaders.length === 0) {
-         console.error("Invalid header array. Must be a non-empty array.");
-             return;
-         }
+  // Update column headers with the new ones
+  hotInstance.updateSettings({
+    colHeaders: newHeaders
+  });
 
-    // Update column headers with the new ones
-        hotInstance.updateSettings({
-        colHeaders: newHeaders
-             });
+  // Adjust the number of columns in the table to match the number of headers
+  const currentData = hotInstance.getData();
+  const currentRows = hotInstance.countRows();
+  const currentCols = hotInstance.countCols();
 
-    // Adjust the number of columns in the table to match the number of headers
-    const currentData = hotInstance.getData();
-    const currentRows = hotInstance.countRows();
-    const currentCols = hotInstance.countCols();
-
-    // If the current column count is less than the new headers, add columns
-        if (newHeaders.length > currentCols) {
-        const additionalCols = newHeaders.length - currentCols;
-            for (let i = 0; i < currentRows; i++) {
-                currentData[i] = [...currentData[i], ...Array(additionalCols).fill('')];
-                 }
-         }
-    // If the current column count is more than the new headers, remove columns
-        else if (newHeaders.length < currentCols) {
-            for (let i = 0; i < currentRows; i++) {
-             currentData[i] = currentData[i].slice(0, newHeaders.length);
-              }
-        }
-
-    hotInstance.loadData(currentData);
-    console.log(`Headers updated: ${newHeaders}`);
+  // If the current column count is less than the new headers, add columns
+  if (newHeaders.length > currentCols) {
+    const additionalCols = newHeaders.length - currentCols;
+    for (let i = 0; i < currentRows; i++) {
+      currentData[i] = [...currentData[i], ...Array(additionalCols).fill('')];
     }
+  }
+  // If the current column count is more than the new headers, remove columns
+  else if (newHeaders.length < currentCols) {
+    for (let i = 0; i < currentRows; i++) {
+      currentData[i] = currentData[i].slice(0, newHeaders.length);
+    }
+  }
+
+  hotInstance.loadData(currentData);
+  console.log(`Headers updated: ${newHeaders}`);
+}
 
 
     // Other utility functions
@@ -154,35 +171,10 @@
         dismissBtn.style.display = 'none';
     }
 
-    function getHandsontableData() {
-        if (hotInstance) {
-            const data = hotInstance.getData();
-            return JSON.stringify(data);
-        }
-        return null;
-    }
-    // Function to update Handsontable data from JSON
-    function updateHandsontableData(jsonData) {
-        console.log("Updating data with:", jsonData);
-        try {
-            var data = JSON.parse(jsonData);
-            if (Array.isArray(data)) {
-                hotInstance.loadData(data);
-            } else {
-                console.error('Invalid data format: Expected an array of arrays');
-            }
-        } catch (error) {
-            console.error('Failed to parse JSON data:', error);
-        }
-    }
-
     // Expose necessary functions to the global window
     window.onload = initializeHandsontable;
     window.addCustomHeaderRow = addCustomHeaderRow;
-    window.getHandsontableData = getHandsontableData;
     window.dismissSpreadsheet = dismissSpreadsheet;
-    window.updateHandsontableData = updateHandsontableData;
-    window.updateCellWithDialogValue = updateCellWithDialogValue;
 </script>
 </body>
 </html>
