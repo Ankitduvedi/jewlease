@@ -259,18 +259,23 @@ final goRouter = GoRouter(
               builder: (context, state) {
                 log("going through route");
                 log("stat is ${state.extra}");
-                final extraData = state.extra as Map<String, dynamic>;
+                final extraData;
+                if(state.extra==null)
+                  extraData ={};
+                else
+                extraData = state.extra   as Map<String, dynamic>??{};
+
                 // as Map<String, dynamic>; // Cast to the expected type
                 // log("print extra data $extraData");
-                return Container();
-                // return AddFormulaProcedure(
-                // ProcedureType: extraData != null
-                //     ? extraData['Procedure Type'] ?? ''
-                //     : '',
-                // FormulaProcedureName: extraData != null
-                //     ? extraData['Formula Procedure Name'] ?? ''
-                //     : '',
-                // );
+                // return
+                return AddFormulaProcedure(
+                ProcedureType: extraData != null
+                    ? extraData['Procedure Type'] ?? ''
+                    : '',
+                FormulaProcedureName: extraData != null
+                    ? extraData['Formula Procedure Name'] ?? ''
+                    : '',
+                );
               }),
           GoRoute(
               path: '/addformulaMapping',
