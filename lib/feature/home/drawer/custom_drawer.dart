@@ -45,11 +45,11 @@ class CustomDrawer extends StatelessWidget {
 }
 
 // Separate widget for the list of items in the drawer
-class DrawerList extends StatelessWidget {
+class DrawerList extends ConsumerWidget {
   const DrawerList({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return ListView(
       padding: EdgeInsets.zero,
       children: [

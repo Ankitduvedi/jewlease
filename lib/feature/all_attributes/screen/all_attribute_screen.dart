@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
+import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/widgets/data_widget.dart';
 
@@ -25,18 +25,14 @@ class AllAttributeScreen extends ConsumerWidget {
                 () {},
                 () {
                   // Reset the provider value to null on refresh
-                  ref.watch(masterTypeProvider.notifier).state = [
-                    'Style',
-                    null,
-                    null
-                  ];
+                  ref.invalidate(itemTypeFutureProvider);
                 },
                 () {}
               ],
             )
           ],
         ),
-        body: ItemDataScreen(
+        body: const ItemDataScreen(
           title: '',
           endUrl: 'AllAttribute/',
         ));

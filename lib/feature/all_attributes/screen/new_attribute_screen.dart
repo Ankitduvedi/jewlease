@@ -149,7 +149,7 @@ class AddAttributeScreenState extends ConsumerState<AddAttributeScreen> {
                         );
                         ref
                             .read(allAttributeControllerProvider.notifier)
-                            .submitItemConfiguration(config, context);
+                            .submitAttributeConfiguration(config, context);
                       },
                       style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.fromLTRB(50, 20, 50, 20),
@@ -158,7 +158,7 @@ class AddAttributeScreenState extends ConsumerState<AddAttributeScreen> {
                               borderRadius: BorderRadius.circular(10)),
                           backgroundColor:
                               const Color.fromARGB(255, 40, 112, 62)),
-                      child: !ref.watch(itemConfigurationControllerProvider)
+                      child: !ref.watch(allAttributeControllerProvider)
                           ? const Text(
                               'Done',
                               style: TextStyle(color: Colors.white),

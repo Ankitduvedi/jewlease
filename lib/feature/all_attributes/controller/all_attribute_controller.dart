@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jewlease/core/utils/utils.dart';
 import 'package:jewlease/data/model/all_attribute_model.dart';
-import 'package:jewlease/feature/all_attributes/repository/item_configuration_repository.dart';
+import 'package:jewlease/feature/all_attributes/repository/all_attribute_repository.dart';
 
 // Create a StateNotifier for managing the state and interactions
 class AllAttributeController extends StateNotifier<bool> {
@@ -13,7 +13,7 @@ class AllAttributeController extends StateNotifier<bool> {
 
   AllAttributeController(this._allAttributeRepository) : super(false);
 
-  Future<void> submitItemConfiguration(
+  Future<void> submitAttributeConfiguration(
       AllAttribute config, BuildContext context) async {
     try {
       state = true;
@@ -24,6 +24,7 @@ class AllAttributeController extends StateNotifier<bool> {
         context.pop();
         null;
       });
+
       // Optionally update the state if necessary after submission
     } catch (e) {
       state = false;
