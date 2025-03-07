@@ -1,5 +1,5 @@
 import 'dart:developer';
-import 'package:flutter/material.dart';
+import  'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jewlease/core/routes/navigation_const.dart';
 import 'package:jewlease/feature/all_attributes/screen/all_attribute_screen.dart';
@@ -41,9 +41,11 @@ import 'package:jewlease/feature/vendor/screens/Bom&Operation.dart';
 import 'package:jewlease/feature/vendor/screens/new_vendor_screen.dart';
 import 'package:jewlease/feature/vendor/screens/vendor_screen.dart';
 import '../../feature/barcoding/screens/barcoding_screen.dart';
+import '../../feature/crm/screens/customer_info_screen.dart';
 import '../../feature/inventoryManagement/screens/inventoryScreen.dart';
 import '../../feature/item_specific/screens/add_style_variant.dart';
 import '../../feature/procument/screens/procumentScreen.dart';
+import '../../feature/rm_inventory_management/screens/rm_procument_screen.dart';
 import '../../feature/splash_screen/splash_view.dart';
 import '../../feature/sub_contracting/screens/sub_contracing.dart';
 
@@ -332,6 +334,16 @@ final goRouter = GoRouter(
               builder: (context, state) {
                 return const SubContracing();
               }),
+          GoRoute(
+              path: '/CustomerInfoScreen',
+              builder: (context, state) {
+                return CustomerInfoScreen();
+              }),
+          GoRoute(path: '/rm_procument',
+              builder: (context,state) {
+                return RmProcumentSummaryScreen();
+              }
+          )
         ]),
   ],
 );
