@@ -89,6 +89,26 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
     super.dispose();
   }
 
+  void addNewRow() {
+    outwardRows.add(DataGridRow(cells: [
+      DataGridCell<String>(
+          columnName: 'Row', value: (outwardRows.length + 1).toString()),
+      DataGridCell<String>(columnName: 'Description', value: ''),
+      DataGridCell<String>(columnName: 'Data Type', value: ''),
+      DataGridCell<String>(columnName: 'Row Type', value: ''),
+      DataGridCell<String>(columnName: 'Formula', value: ''),
+      DataGridCell<String>(columnName: 'Range Value', value: ''),
+      DataGridCell<String>(columnName: 'Editable', value: '0'),
+      DataGridCell<String>(columnName: 'Visible', value: '1'),
+      DataGridCell<String>(columnName: 'Round Off', value: ''),
+      DataGridCell<String>(columnName: 'Account Name', value: ''),
+    ]));
+    setState(() {
+      _procumentDataGridSource = AddFormulaDataGridSource(
+          outwardRows, (_) {}, () {}, false, _handleOpenDialog);
+    });
+  }
+
   //<-----------------------Fetching intial formula if exist----------------------->
   Future<void> initializeRows() async {
     if (widget.FormulaProcedureName.isEmpty) {
@@ -184,7 +204,7 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
     for (int i = 0; i < lastEditedRow + 1; i++) {
       List<dynamic> row = [];
       for (int j = 0; j < lastEditedColumn + 1; j++) {
-        row.add(datagridRows[i].getCells()[j] ?? "");
+        row.add(datagridRows[i].getCells()[j].value ?? "");
       }
       if (row.length != 0) {
         newlist.add(row);
@@ -242,21 +262,20 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
     List<String> options = [];
 
     // Show the dialog with the options
-    if(row!=-1)
-    _showOptionsDialog(context, columnName, options, (selectedOption) {
-      setState(() {
-        outwardRows[row] = DataGridRow(
-            cells: outwardRows[row].getCells().map((cell) {
-              if (cell.columnName != outwardRows[row].getCells()[col].columnName)
-                return cell;
-              else
-                return DataGridCell(
-                    columnName: outwardRows[row].getCells()[col].columnName,
-                    value: selectedOption);
-            }).toList());
+    if (row != -1)
+      _showOptionsDialog(context, columnName, options, (selectedOption) {
+        setState(() {
+          outwardRows[row] = DataGridRow(
+              cells: outwardRows[row].getCells().map((cell) {
+            if (cell.columnName != outwardRows[row].getCells()[col].columnName)
+              return cell;
+            else
+              return DataGridCell(
+                  columnName: outwardRows[row].getCells()[col].columnName,
+                  value: selectedOption);
+          }).toList());
+        });
       });
-
-    });
   }
 
   // Function to show a dialog with a list of options
@@ -659,6 +678,19 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
         ),
         NumberTextFieldWidget(labelText: 'Maximum Value', controller: maxValue),
         // TextFieldWidget(labelText: 'Procedure Set', controller: procedureSet),
+        InkWell(
+            onTap: () {
+              addNewRow();
+            },
+            child: Container(
+                decoration: BoxDecoration(
+                    color: const Color(0xff003450),
+                    borderRadius: BorderRadius.circular(8)),
+                child: const Center(
+                    child: Text(
+                  "Add Row",
+                  style: TextStyle(color: Colors.white),
+                )))),
         InkWell(
             onTap: () {
               _validateFormulas();

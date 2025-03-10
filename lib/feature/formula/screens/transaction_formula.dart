@@ -132,13 +132,13 @@ class FormulaDataGridState extends ConsumerState<TransactionFormulaDataGrid> {
     List<List<dynamic>> excelData = [];
     Map<String, dynamic> data = await ref
         .read(formulaProcedureControllerProvider.notifier)
-        .fetchFormulaExcel('Gold Final5', context);
+        .fetchFormulaExcel('Transaction Formula', context);
 
     rangeExcelData = await ref
         .read(formulaProcedureControllerProvider.notifier)
         .fetchRangeMasterExcel('15 jan', context);
     print("range master excel is $data  $rangeExcelData");
-    formulaExcel = data["Excel Detail"]["data"];
+    formulaExcel = data["Excel Detail"]["datagridRows"];
     for (int i = 0; i < formulaExcel.length; i++) {
       excelData.add(formulaExcel[i]);
     }
