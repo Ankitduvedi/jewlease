@@ -55,14 +55,14 @@ class SelectMasterPanelWidget extends ConsumerWidget {
                             ref.watch(masterTypeProvider.notifier).state = [
                               masterType[0],
                               items[index],
-                              'item master'
+                              'Item'
                             ];
                           },
                           child: Text(
                             'Item',
                             style: TextStyle(
                                 color: masterType[1] == items[index]
-                                    ? masterType[2] == 'item master'
+                                    ? masterType[2] == 'Item'
                                         ? Colors.white
                                         : Colors.white70
                                     : const Color.fromARGB(255, 40, 112, 62),
@@ -77,14 +77,14 @@ class SelectMasterPanelWidget extends ConsumerWidget {
                             ref.watch(masterTypeProvider.notifier).state = [
                               masterType[0],
                               items[index],
-                              'variant master'
+                              'Variant'
                             ];
                           },
                           child: Text(
                             'Variant',
                             style: TextStyle(
                                 color: masterType[1] == items[index]
-                                    ? masterType[2] == 'variant master'
+                                    ? masterType[2] == 'Variant'
                                         ? Colors.white
                                         : Colors.white70
                                     : const Color.fromARGB(255, 40, 112, 62),

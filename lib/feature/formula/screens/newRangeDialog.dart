@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/feature/formula/screens/rangeGrid.dart';
 import 'package:jewlease/main.dart';
@@ -32,7 +31,7 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
   @override
   TextEditingController rangeHierarchy = TextEditingController();
   TextEditingController rangeType = TextEditingController();
-  InAppWebViewController? webViewController;
+
   bool showExcel = false;
   List<List<dynamic>> excelData = [];
   List<dynamic> excelHeaders = [];
@@ -78,7 +77,8 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
       setState(() {});
     }
   }
- //<--------------------Intialize Range Excel-------------------------->
+
+  //<--------------------Intialize Range Excel-------------------------->
   void intializeExcel() async {
     if (widget.intialData["Range Hierarchy Name"] != null) {
       ref.read(excelLoadingProvider.notifier).state = true;
@@ -420,10 +420,10 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
                                         height: screenHeight,
                                         width: screenWidth,
                                         child: Rangegrid(
-                                          headers: excelHeaders,
-                                          excelData: excelData,
-                                          rangeHierarchy: rangeHierarchy.text
-                                        ),
+                                            headers: excelHeaders,
+                                            excelData: excelData,
+                                            rangeHierarchy:
+                                                rangeHierarchy.text),
 
                                         // InAppWebView(
                                         //   initialFile: "assets/range.html",
@@ -511,7 +511,6 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
                               SizedBox(
                                 width: screenWidth * 0.01,
                               ),
-
                             ],
                           )
                         ],

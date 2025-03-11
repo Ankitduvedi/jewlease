@@ -1,23 +1,13 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jewlease/data/model/item_master_metal.dart';
-import 'package:jewlease/data/model/item_master_stone.dart';
 import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
-
 import 'package:jewlease/providers/dailog_selection_provider.dart';
 
 class LeftPannelSearchWidget extends ConsumerStatefulWidget {
-  const LeftPannelSearchWidget(
-      {super.key,
-      required this.title,
-      required this.endUrl,
-      this.value,
-      this.query});
-  final String title;
-  final String endUrl;
+  const LeftPannelSearchWidget({super.key, this.value, this.query});
+
   final String? value;
   final String? query;
 
@@ -33,8 +23,12 @@ class LeftPannelSearchWidgetState
 
   @override
   Widget build(BuildContext context) {
-    final itemDataAsyncValue = ref.watch(itemTypeFutureProvider(widget.endUrl));
     final masterType = ref.watch(masterTypeProvider);
+    final title = '${masterType[2]} Master (Item Group- ${masterType[1]})';
+    final url =
+        'ItemMasterAndVariants/${masterType[0]}/${masterType[1]}/${masterType[2]}/';
+    log('url $url, title $title');
+    final itemDataAsyncValue = ref.watch(itemTypeFutureProvider(url));
 
     final selectedItem = ref.watch(dialogSelectionProvider);
 
@@ -100,13 +94,12 @@ class LeftPannelSearchWidgetState
                     DataColumn(
                       label: Text(
                         _keys[0],
-                        style: const TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.red),
                       ),
                     ),
                   ],
                   rows: _filteredItems.map((item) {
-                    final isSelected =
-                        selectedItem[widget.title] == item[_keys[0]];
+                    final isSelected = selectedItem[title] == item[_keys[0]];
 
                     return DataRow(
                       selected: isSelected,
@@ -114,16 +107,11 @@ class LeftPannelSearchWidgetState
                         if (selected == true) {
                           ref
                               .read(dialogSelectionProvider.notifier)
-                              .updateSelection(widget.title, item[_keys[0]]);
-                          log(' metal code ${item['Metal code']}');
-                          if (masterType[0] == 'Metal') {
-                            ref.read(selectedMetalDataProvider.notifier).state =
-                                ItemMasterMetal.fromJson(item);
-                          } else if (masterType[0] == 'Stone') {
-                            ref
-                                .read(selectedStoneItemDataProvider.notifier)
-                                .state = ItemMasterStone.fromJson(item);
-                          }
+                              .updateSelection(title, item[_keys[0]]);
+
+                          // Unified Provider Update
+                          ref.read(selectedItemDataProvider.notifier).state =
+                              item;
                         }
                       },
                       cells: [DataCell(Text(item[_keys[0]].toString()))],
@@ -140,3 +128,6 @@ class LeftPannelSearchWidgetState
     );
   }
 }
+
+final selectedItemDataProvider =
+    StateProvider<Map<String, dynamic>?>((ref) => null);

@@ -5,7 +5,10 @@ import 'package:jewlease/widgets/read_only_textfield_widget.dart';
 import 'package:jewlease/widgets/search_dailog_widget.dart';
 
 class ItemAttributesScreen extends ConsumerWidget {
-  const ItemAttributesScreen({super.key, required this.attributeTypes});
+  const ItemAttributesScreen({
+    super.key,
+    required this.attributeTypes,
+  });
   final List<Map<String, String>> attributeTypes;
 
   @override

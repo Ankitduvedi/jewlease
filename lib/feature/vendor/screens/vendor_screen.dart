@@ -1,9 +1,8 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:jewlease/feature/vendor/controller/vendor_controller.dart';
+import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/widgets/data_widget.dart';
 
@@ -25,20 +24,16 @@ class VendorScreen extends ConsumerWidget {
                 () {},
                 () {
                   // Reset the provider value to null on refresh
-                  // ref.watch(vendorProvider.notifier).state = [
-                  //   'Style',
-                  //   null,
-                  //   null
-                  // ];
+                  ref.invalidate(itemTypeFutureProvider);
                 },
                 () {}
               ],
             )
           ],
         ),
-        body: ItemDataScreen(
+        body: const ItemDataScreen(
           title: '',
-          endUrl: 'AllAttribute/',
+          endUrl: 'Master/PartySpecific/vendors/',
         ));
   }
 }
