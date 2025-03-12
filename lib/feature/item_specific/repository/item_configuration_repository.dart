@@ -163,7 +163,7 @@ class ItemSpecificRepository {
     try {
       log(config.toJson().toString());
       final response = await _dio.post(
-        '$url2/ItemMasterAndVariants/Style/Style/Varient',
+        '$url2/ItemMasterAndVariants/Style/Style/Variant',
         data: config,
         options: Options(
           headers: {'Content-Type': 'application/json'},

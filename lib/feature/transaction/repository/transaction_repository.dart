@@ -24,8 +24,9 @@ class TransactionRepository {
       print("status code ${response.statusCode}  ${response.data} ");
       if (response.statusCode == 201) {
         // pr
-        return response.data["transId"];
         print("successfully transaction send GRN ${response.data}");
+        return response.data["transId"];
+
       } else {
         throw Exception("Failed to transaction send GRN: ${response.data}");
       }

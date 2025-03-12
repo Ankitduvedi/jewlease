@@ -170,7 +170,7 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
                                         value);
                                   else if (value.contains('Diamond'))
                                     showProcumentdialog(
-                                        "ItemMasterAndVariants/Stone/Diamond/Varient/",
+                                        "ItemMasterAndVariants/Stone/Diamond/Variant/",
                                         value);
                                   else if (value.contains('Bronze'))
                                     showProcumentdialog(

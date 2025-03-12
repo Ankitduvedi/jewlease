@@ -83,19 +83,19 @@ final drawerProvider = StateNotifierProvider<DrawerNotifier, Session>((ref) {
 // });
 
 // Providers to track selected location and department
-final selectedLocationDropdownProvider = StateProvider<Location?>((ref) {
+final selectedLocationDropdownProvider = StateProvider<Location>((ref) {
   final employee = ref.watch(authProvider);
   return employee!.locations.where((loc) {
     return loc.locationName == employee.defaultLocation;
   }).first;
 });
-final selectedDepartmentProvider = StateProvider<Departments?>((ref) {
+final selectedDepartmentProvider = StateProvider<Departments>((ref) {
   final employee = ref.watch(authProvider);
   final selectedLocation = ref.watch(selectedLocationDropdownProvider);
 
-  if (selectedLocation == null || selectedLocation.departments.isEmpty) {
-    return null; // Prevents Bad State error
-  }
+  // if (selectedLocation == null || selectedLocation.departments.isEmpty) {
+  //   return null; // Prevents Bad State error
+  // }
 
   return selectedLocation.departments.firstWhere(
     (dept) => dept.departmentName == employee!.defaultDepartment,
