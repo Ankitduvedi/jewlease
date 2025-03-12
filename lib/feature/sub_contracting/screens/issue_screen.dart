@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
+import '../../../core/routes/go_router.dart';
+import '../../../core/utils/utils.dart';
 import '../../../data/model/barcode_detail_model.dart';
 import '../../../data/model/barcode_historyModel.dart';
 import '../../../data/model/transaction_model.dart';
@@ -303,7 +305,9 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
         reqBody["issueDate"] = DateTime.now().toIso8601String();
         reqBody["operationName"] = "Alteration";
         reqstBodeis.add(reqBody);
+        print("req $reqBody");
       }
+
 
       TransactionModel transaction = createTransaction(reqstBodeis);
       String? transactionID = await ref
@@ -360,8 +364,8 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
               () async {
                 String compltionMsg = await saveIssueStock();
                 print("completion msh $compltionMsg");
-                // Utils.snackBar(compltionMsg, context);
-                // goRouter.go("/");
+                Utils.snackBar(compltionMsg, context);
+                goRouter.go("/");
               },
               () {
                 // Reset the provider value to null on refresh
