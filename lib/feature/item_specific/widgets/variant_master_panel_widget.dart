@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
+import 'package:jewlease/feature/item_specific/widgets/left_side_pannel_load_data_widget.dart';
 import 'package:jewlease/widgets/read_only_textfield_widget.dart';
 import 'package:jewlease/widgets/text_field_widget.dart';
 
@@ -58,21 +59,21 @@ class VariantMasterPanelWidget extends ConsumerWidget {
                       ref.read(masterTypeProvider.notifier).state = [
                         masterType[0],
                         masterType[1],
-                        'item master'
+                        'Item'
                       ];
                     },
                     style: ElevatedButton.styleFrom(
                       elevation: 4,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10)),
-                      backgroundColor: masterType[2] == 'item master'
+                      backgroundColor: masterType[2] == 'Item'
                           ? const Color.fromARGB(255, 0, 52, 80)
                           : Colors.white,
                     ),
                     child: Text(
                       'Item Master',
                       style: TextStyle(
-                        color: masterType[2] == 'item master'
+                        color: masterType[2] == 'Item'
                             ? Colors.white
                             : Colors.black,
                       ),
@@ -84,21 +85,21 @@ class VariantMasterPanelWidget extends ConsumerWidget {
                       ref.read(masterTypeProvider.notifier).state = [
                         masterType[0],
                         masterType[1],
-                        'variant master'
+                        'Variant'
                       ];
                     },
                     style: ElevatedButton.styleFrom(
                       elevation: 4,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10)),
-                      backgroundColor: masterType[2] == 'variant master'
+                      backgroundColor: masterType[2] == 'Variant'
                           ? const Color.fromARGB(255, 0, 52, 80)
                           : Colors.white,
                     ),
                     child: Text(
                       'Variant Master',
                       style: TextStyle(
-                        color: masterType[2] == 'variant master'
+                        color: masterType[2] == 'Variant'
                             ? Colors.white
                             : Colors.black,
                       ),
@@ -138,7 +139,7 @@ class VariantMasterPanelWidget extends ConsumerWidget {
                     ReadOnlyTextFieldWidget(
                         labelText: 'Item Group...*',
                         hintText: masterType[1] ?? 'Item Group...*'),
-                    if (masterType[2] == 'variant master')
+                    if (masterType[2] == 'Variant')
                       TextFieldWidget(
                         labelText: 'Variant Name',
                         controller: itemType,
@@ -147,43 +148,33 @@ class VariantMasterPanelWidget extends ConsumerWidget {
                       labelText: 'Item Name',
                       controller: itemType,
                     ),
-                    if (masterType[2] == 'variant master')
+                    if (masterType[2] == 'Variant')
                       TextFieldWidget(
                         labelText: 'Old Variant Name',
                         controller: itemType,
                       ),
-                    if (masterType[2] == 'variant master')
+                    if (masterType[2] == 'Variant')
                       TextFieldWidget(
                         labelText: 'Attribute Description',
                         controller: itemType,
                       ),
-                    if (masterType[2] == 'variant master')
+                    if (masterType[2] == 'Variant')
                       TextFieldWidget(
                         labelText: 'Variant Remark',
                         controller: itemType,
                       ),
-                    if (masterType[2] == 'variant master')
+                    if (masterType[2] == 'Variant')
                       TextFieldWidget(
                         labelText: 'Customer Variant Name',
                         controller: itemType,
                       ),
                     ElevatedButton(
                       onPressed: () {
-                        if (masterType[2] == 'variant master') {
-                          context.go(
-                            '/masterScreen/variantMasterGoldScreen',
-                          );
-                        } else if ((masterType[0] == 'Metal') &&
-                            (masterType[2] == 'item master')) {
-                          context.go(
-                            '/masterScreen/itemMasterGoldScreen',
-                          );
-                        } else if ((masterType[0] == 'Stone') &&
-                            (masterType[2] == 'item master')) {
-                          context.go(
-                            '/masterScreen/itemMasterStoneScreen',
-                          );
-                        }
+                        ref.read(selectedItemDataProvider.notifier).state =
+                            null;
+                        context.go(
+                          '/masterScreen/variantMasterGoldScreen',
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         elevation: 4,

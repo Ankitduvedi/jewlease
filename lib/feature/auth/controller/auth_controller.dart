@@ -41,7 +41,7 @@ class AuthController extends StateNotifier<bool> {
 }
 
 // Define a provider for the controller
-final employeeControllerProvider =
+final authControllerProvider =
     StateNotifierProvider<AuthController, bool>((ref) {
   final repository = AuthRepository();
   return AuthController(

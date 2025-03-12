@@ -49,44 +49,44 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
                   width: double.infinity,
                   child: Row(
                       children: List.generate(
-                    _tabs.length,
-                    (index) {
-                      return GestureDetector(
-                        onTap: () {
-                          ref.read(tabIndexProvider.notifier).state = index;
-                        },
-                        child: Container(
-                          color: index == selectedIndex
-                              ? Color(0xff28713E)
-                              : Colors.white,
-                          margin: EdgeInsets.symmetric(
-                              horizontal: screenWidth * 0.01),
-                          padding: EdgeInsets.symmetric(
-                              vertical: screenHeight * 0.007),
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: screenWidth * 0.02,
-                                vertical: screenHeight * 0.005),
-                            decoration: BoxDecoration(
+                        _tabs.length,
+                            (index) {
+                          return GestureDetector(
+                            onTap: () {
+                              ref.read(tabIndexProvider.notifier).state = index;
+                            },
+                            child: Container(
                               color: index == selectedIndex
                                   ? Color(0xff28713E)
-                                  : Color(0xffF0F4F8),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: Center(
-                              child: Text(
-                                _tabs[index],
-                                style: TextStyle(
-                                    color: index == selectedIndex
-                                        ? Colors.white
-                                        : Colors.black),
+                                  : Colors.white,
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: screenWidth * 0.01),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: screenHeight * 0.007),
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: screenWidth * 0.02,
+                                    vertical: screenHeight * 0.005),
+                                decoration: BoxDecoration(
+                                  color: index == selectedIndex
+                                      ? Color(0xff28713E)
+                                      : Color(0xffF0F4F8),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    _tabs[index],
+                                    style: TextStyle(
+                                        color: index == selectedIndex
+                                            ? Colors.white
+                                            : Colors.black),
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                      );
-                    },
-                  )))),
+                          );
+                        },
+                      )))),
           if (selectedIndex == 0)
             Expanded(child: TransferOutwardScreen())
           else

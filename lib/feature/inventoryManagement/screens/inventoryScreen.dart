@@ -5,6 +5,7 @@ import 'package:jewlease/feature/inventoryManagement/screens/inventorySummery.da
 import 'package:jewlease/main.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
+import '../../home/right_side_drawer/controller/drawer_controller.dart';
 import '../controllers/inventoryController.dart';
 import '../controllers/inventorySummery.dart';
 import 'inventoryDataSource.dart';
@@ -109,8 +110,12 @@ class _InventoryManagementScreenState
   List<InventoryItemModel> inventoryItems = [];
 
   void addInventoryItem() async {
-    Future.delayed(Duration(seconds: 1), () async {
-      await ref.read(inventoryControllerProvider.notifier).fetchAllStocks();
+    Future.delayed(Duration(seconds: 0), () async {
+      String locationName = ref.watch(selectedDepartmentProvider).locationName;
+      String departmentName =
+          ref.watch(selectedDepartmentProvider).departmentName;
+      await ref.read(inventoryControllerProvider.notifier).fetchAllStocks(
+          locationName: locationName, deprtmentName: departmentName);
       List<InventoryItemModel> allStocks =
           ref.read(inventoryControllerProvider.notifier).inventoryItems;
 

@@ -22,7 +22,7 @@ class SplashController extends StateNotifier<bool> {
   void checkCondition(BuildContext context) async {
     state = true;
 
-    context.push('/welcomeScreen');
+    context.go('/loginScreen');
     state = false;
     return;
   }

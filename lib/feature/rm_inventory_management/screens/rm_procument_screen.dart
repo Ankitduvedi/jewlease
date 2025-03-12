@@ -388,7 +388,7 @@ class _ProcumentDataGridState extends ConsumerState<RmProcumentSummaryScreen> {
                           "ItemMasterAndVariants/Metal/Silver/Variant/", value);
                     else if (value.contains('Diamond'))
                       showProcumentdialog(
-                          "ItemMasterAndVariants/Stone/Diamond/Varient/",
+                          "ItemMasterAndVariants/Stone/Diamond/Variant/",
                           value);
                     else if (value.contains('Bronze'))
                       showProcumentdialog(

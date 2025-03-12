@@ -1,5 +1,6 @@
 import 'dart:developer';
-import  'package:flutter/material.dart';
+
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jewlease/core/routes/navigation_const.dart';
 import 'package:jewlease/feature/all_attributes/screen/all_attribute_screen.dart';
@@ -15,7 +16,6 @@ import 'package:jewlease/feature/formula/screens/add_formula_mapping.dart';
 import 'package:jewlease/feature/formula/screens/excelScreen.dart';
 import 'package:jewlease/feature/formula/screens/formula_procedure.dart';
 import 'package:jewlease/feature/home/screens/home_screen.dart';
-import 'package:jewlease/feature/home/screens/welcome_screen.dart';
 import 'package:jewlease/feature/home/widgets/home_screen_navbar.dart';
 import 'package:jewlease/feature/item_code_generation/screen/item_code_generation_screen.dart';
 import 'package:jewlease/feature/item_code_generation/screen/new_item_code_generation_screen.dart';
@@ -30,16 +30,16 @@ import 'package:jewlease/feature/item_specific/screens/add_set_item_screen.dart'
 import 'package:jewlease/feature/item_specific/screens/add_stone_item_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/add_stone_variant_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/add_style_item_screen.dart';
-import 'package:jewlease/feature/item_specific/screens/load_data_of_item_master_metal.dart';
-import 'package:jewlease/feature/item_specific/screens/load_data_of_item_master_stone.dart';
-import 'package:jewlease/feature/item_specific/screens/load_data_of_variant_master_gold.dart';
+import 'package:jewlease/feature/item_specific/screens/load_data_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/master_screen.dart';
+import 'package:jewlease/feature/point_of_sale/screens/point_of_sale_screen.dart';
 import 'package:jewlease/feature/transfer/screens/transfer_inward_location.dart';
 import 'package:jewlease/feature/transfer/screens/transfer_outward_location.dart';
 import 'package:jewlease/feature/transfer/screens/transfer_screen.dart';
 import 'package:jewlease/feature/vendor/screens/Bom&Operation.dart';
 import 'package:jewlease/feature/vendor/screens/new_vendor_screen.dart';
 import 'package:jewlease/feature/vendor/screens/vendor_screen.dart';
+
 import '../../feature/barcoding/screens/barcoding_screen.dart';
 import '../../feature/crm/screens/customer_info_screen.dart';
 import '../../feature/inventoryManagement/screens/inventoryScreen.dart';
@@ -52,17 +52,13 @@ import '../../feature/sub_contracting/screens/sub_contracing.dart';
 final goRouter = GoRouter(
   debugLogDiagnostics: true,
   navigatorKey: NavigationService.rootNavigatorKey,
-  initialLocation: '/splashScreen',
+  initialLocation: '/loginScreen',
   routes: <RouteBase>[
     GoRoute(
       path: '/splashScreen',
       builder: (context, state) => const SplashScreen(),
     ),
 
-    GoRoute(
-      path: '/welcomeScreen',
-      builder: (context, state) => const WelcomeScreen(),
-    ),
     GoRoute(
       path: '/loginScreen',
       builder: (context, state) => const LoginScreen(),
@@ -105,7 +101,23 @@ final goRouter = GoRouter(
         routes: [
           GoRoute(
             path: '/',
-            builder: (context, state) => const HomeScreen(),
+            pageBuilder: (context, state) => CustomTransitionPage(
+              key: state.pageKey,
+              child: const HomeScreen(),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                const curve = Curves.easeInOut;
+
+                var tween =
+                    Tween<Offset>(begin: const Offset(0, 1), end: Offset.zero)
+                        .chain(CurveTween(curve: curve));
+
+                return SlideTransition(
+                  position: animation.drive(tween),
+                  child: FadeTransition(opacity: animation, child: child),
+                );
+              },
+            ),
           ),
           GoRoute(
               path: '/departmentHomeScreen',
@@ -188,25 +200,9 @@ final goRouter = GoRouter(
                       return const AddStoneVariantScreen();
                     }),
                 GoRoute(
-                    path: 'itemMasterGoldScreen',
-                    builder: (context, state) {
-                      return const ItemMasterGoldScreen(
-                        value: 'Metal code',
-                      );
-                    }),
-                GoRoute(
-                    path: 'itemMasterStoneScreen',
-                    builder: (context, state) {
-                      return const ItemMasterStoneScreen(
-                        value: 'Stone code',
-                      );
-                    }),
-                GoRoute(
                     path: 'variantMasterGoldScreen',
                     builder: (context, state) {
-                      return const VariantMasterGoldScreen(
-                        title: 'Variant Master (Item Group- Gold)',
-                        endUrl: 'ItemMasterAndVariants/Metal/Gold/Variant/',
+                      return const LoadDataScreen(
                         value: 'Metal code',
                       );
                     }),
@@ -262,21 +258,21 @@ final goRouter = GoRouter(
                 log("going through route");
                 log("stat is ${state.extra}");
                 final extraData;
-                if(state.extra==null)
-                  extraData ={};
+                if (state.extra == null)
+                  extraData = {};
                 else
-                extraData = state.extra   as Map<String, dynamic>??{};
+                  extraData = state.extra as Map<String, dynamic> ?? {};
 
                 // as Map<String, dynamic>; // Cast to the expected type
                 // log("print extra data $extraData");
                 // return
                 return AddFormulaProcedure(
-                ProcedureType: extraData != null
-                    ? extraData['Procedure Type'] ?? ''
-                    : '',
-                FormulaProcedureName: extraData != null
-                    ? extraData['Formula Procedure Name'] ?? ''
-                    : '',
+                  ProcedureType: extraData != null
+                      ? extraData['Procedure Type'] ?? ''
+                      : '',
+                  FormulaProcedureName: extraData != null
+                      ? extraData['Formula Procedure Name'] ?? ''
+                      : '',
                 );
               }),
           GoRoute(
@@ -337,13 +333,25 @@ final goRouter = GoRouter(
           GoRoute(
               path: '/CustomerInfoScreen',
               builder: (context, state) {
-                return CustomerInfoScreen();
+                return const CustomerInfoScreen();
               }),
-          GoRoute(path: '/rm_procument',
-              builder: (context,state) {
-                return RmProcumentSummaryScreen();
-              }
-          )
+          GoRoute(
+              path: '/rm_procument',
+              builder: (context, state) {
+                return const RmProcumentSummaryScreen();
+              }),
+          GoRoute(
+              path: '/point_of_sale',
+              builder: (context, state) {
+                return PointOfSaleScreen();
+              }),
+          GoRoute(
+              path: '/transferLocation',
+              builder: (context, state) {
+                return TransferScreen();
+              })
         ]),
+
+
   ],
 );

@@ -1,12 +1,9 @@
-// ignore_for_file: unused_element
-
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jewlease/feature/auth/controller/auth_controller.dart';
 import 'package:jewlease/feature/auth/repository/auth_repository.dart';
+import 'package:jewlease/feature/splash_screen/splash_view.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -16,169 +13,200 @@ class LoginScreen extends ConsumerStatefulWidget {
   }
 }
 
-class LoginScreenState extends ConsumerState<LoginScreen> {
+class LoginScreenState extends ConsumerState<LoginScreen>
+    with SingleTickerProviderStateMixin {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool _obscureText = true; // Initially password is obscure
+  bool _obscureText = true;
   final _formKey = GlobalKey<FormState>();
+
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 700),
+    );
+    _fadeAnimation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeIn,
+    );
+
+    _controller.forward();
+  }
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    log("Login screen staff");
-
     final screenSize = MediaQuery.of(context).size;
-    final double verticalPadding = screenSize.height * 0.02;
-    // final isLoading = ref.watch(authControllerProvider);
     final authController = AuthController(AuthRepository());
+
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.all(screenSize.width * 0.05),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: <Widget>[
-                  Image.asset(
-                    'assets/login_robot.png',
-                    width: screenSize.width * 1, // Dynamic width for the image
-                    height: screenSize.height * 0.43,
-                  ), // Placeholder for the image
-                  Text(
-                    'Welcome to Jwelease!',
-                    style: GoogleFonts.pacifico(
-                      fontSize: 28,
-                      color: Colors.brown[700],
+        child: Stack(children: [
+          const AnimatedBackgroundParticles(),
+          SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.all(screenSize.width * 0.05),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    Text(
+                      'Welcome to',
+                      style: GoogleFonts.pacifico(
+                        fontSize: 30,
+                        color: Colors.brown[700],
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: verticalPadding / 2),
-                  Text(
-                    'Login as a Staff',
-                    style: GoogleFonts.ptSans(
-                      fontSize: 18,
-                      color: Colors.brown[500],
+                    const SizedBox(height: 20),
+                    FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: Image.asset(
+                        'assets/images/complete_logo.png',
+                        width: screenSize.width * 0.4,
+                        height: screenSize.height * 0.2,
+                      ),
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: verticalPadding),
 
-                  TextFormField(
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    // validator: (value) {
-                    //   if (value!.isEmpty) {
-                    //     return 'Please enter an email address';
-                    //   } else if (!RegExp(
-                    //           r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$')
-                    //       .hasMatch(value)) {
-                    //     return 'Please enter a valid email address';
-                    //   }
-                    //   return null; // Return null if the input is valid
-                    // },
-                    decoration: InputDecoration(
-                      labelText: 'Enter Email',
-                      labelStyle: GoogleFonts.ptSans(),
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 20.0),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30.0)),
+                    const SizedBox(height: 100),
+
+                    Text(
+                      'Login to Continue',
+                      style: GoogleFonts.ptSans(
+                        fontSize: 18,
+                        color: Colors.brown[500],
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    keyboardType: TextInputType.emailAddress,
-                    controller: _emailController,
-                  ),
-                  SizedBox(height: verticalPadding),
-                  TextFormField(
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (password) => password!.length < 8
-                        ? 'Password must be at least 8 characters'
-                        : null,
-                    controller: _passwordController,
-                    obscureText:
-                        _obscureText, // Toggle this boolean to show/hide password
-                    keyboardType: TextInputType.visiblePassword,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      labelStyle: GoogleFonts.ptSans(),
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 20.0),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30.0)),
-                      // Added suffixIcon to toggle password visibility
+                    const SizedBox(height: 30),
+
+                    // Email Field with Animated Border
+                    _buildAnimatedTextFormField(
+                      controller: _emailController,
+                      label: 'Enter Email',
+                      keyboardType: TextInputType.emailAddress,
+                      icon: Icons.email,
+                    ),
+
+                    const SizedBox(height: 25),
+
+                    // Password Field with Animated Visibility Toggle
+                    _buildAnimatedTextFormField(
+                      controller: _passwordController,
+                      label: 'Password',
+                      obscureText: _obscureText,
+                      keyboardType: TextInputType.visiblePassword,
+                      icon: Icons.lock,
                       suffixIcon: IconButton(
                         icon: Icon(
-                          // Change the icon based on the state of _obscureText
                           _obscureText
                               ? Icons.visibility
                               : Icons.visibility_off,
                         ),
                         onPressed: () {
-                          // Update the state to toggle password visibility
                           setState(() {
                             _obscureText = !_obscureText;
                           });
                         },
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      await authController.login(
-                        _emailController.text,
-                        _passwordController.text,
-                        context,
-                        ref,
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: const Color.fromARGB(
-                          255, 225, 114, 94), // Icon color taken from the logo
-                      minimumSize:
-                          const Size(double.infinity, 50), // Button size
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12), // Inner padding
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                            24), // Rounded corners to match logo style
-                        side: const BorderSide(
-                            color: Color.fromARGB(255, 255, 114,
-                                94)), // Border color taken from the logo
+
+                    const SizedBox(height: 30),
+
+                    // Animated Button with Ripple Effect
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 400),
+                      width: double.infinity,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        gradient: const LinearGradient(
+                          colors: [
+                            Color.fromARGB(255, 240, 144, 132),
+                            Color.fromARGB(255, 225, 114, 94)
+                          ],
+                        ),
                       ),
-                      elevation:
-                          0, // No shadow for a flat design similar to the logo
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          await authController.login(
+                            _emailController.text,
+                            _passwordController.text,
+                            context,
+                            ref,
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        child: Text(
+                          'Sign In',
+                          style: GoogleFonts.ptSans(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                     ),
-                    child: Text(
-                      'Sign In',
-                      style: GoogleFonts.ptSans(
-                          fontSize: 20, fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                          onPressed: () {
-                            context.go('/welcomeScreen');
-                          },
-                          child: const Text(
-                            'Go back',
-                            style: TextStyle(color: Colors.black),
-                          ))
-                    ],
-                  )
-                ],
+
+                    const SizedBox(height: 10),
+                  ],
+                ),
               ),
             ),
+          ),
+        ]),
+      ),
+    );
+  }
+
+  // Animated TextFormField Builder
+  Widget _buildAnimatedTextFormField({
+    required TextEditingController controller,
+    required String label,
+    required TextInputType keyboardType,
+    bool obscureText = false,
+    IconData? icon,
+    Widget? suffixIcon,
+  }) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 400),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30),
+      ),
+      child: TextFormField(
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        controller: controller,
+        obscureText: obscureText,
+        keyboardType: keyboardType,
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: GoogleFonts.ptSans(),
+          prefixIcon: Icon(icon, color: Colors.brown[400]),
+          suffixIcon: suffixIcon,
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
           ),
         ),
       ),

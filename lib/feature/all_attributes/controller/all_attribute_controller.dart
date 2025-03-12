@@ -1,5 +1,4 @@
 // item_controller.dart
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -35,7 +34,6 @@ class AllAttributeController extends StateNotifier<bool> {
 // Define a provider for the controller
 final allAttributeControllerProvider =
     StateNotifierProvider<AllAttributeController, bool>((ref) {
-  final dio = Dio();
-  final repository = AllAttributeRepository(dio);
+  final repository = AllAttributeRepository();
   return AllAttributeController(repository);
 });

@@ -46,7 +46,6 @@ class AddMetalItemScreenState extends ConsumerState<AddVendor> {
   final TextEditingController corresponding = TextEditingController();
   final TextEditingController tds194Q = TextEditingController();
   final TextEditingController defaultCurrency = TextEditingController();
-  final TextEditingController agentName = TextEditingController();
   final TextEditingController defaultTerm = TextEditingController();
   final TextEditingController vendorCode = TextEditingController();
   final TextEditingController vendorName = TextEditingController();
@@ -76,7 +75,6 @@ class AddMetalItemScreenState extends ConsumerState<AddVendor> {
     corresponding.dispose();
     tds194Q.dispose();
     defaultCurrency.dispose();
-    agentName.dispose();
     defaultTerm.dispose();
     vendorCode.dispose();
     vendorName.dispose();
@@ -109,7 +107,7 @@ class AddMetalItemScreenState extends ConsumerState<AddVendor> {
                 vendorCode: vendorCode.text,
                 vendorName: vendorName.text,
                 defaultCurrency: 'To be replaced',
-                agentName: 'To be replaced',
+                agentName: '',
                 defaultTerms: 'To be replaced',
                 rowStatus: dropDownValue['Row Status'] ?? 'Active',
                 logoFileName: logoFileName.text,
@@ -246,8 +244,8 @@ class AddMetalItemScreenState extends ConsumerState<AddVendor> {
             showDialog(
               context: context,
               builder: (context) => const ItemTypeDialogScreen(
-                title: 'Attribute Type',
-                endUrl: 'AllAttribute/AttributeType',
+                title: 'GST Registration Type',
+                endUrl: 'Global/GstRegistration',
                 value: 'ConfigValue',
               ),
             );
@@ -273,38 +271,23 @@ class AddMetalItemScreenState extends ConsumerState<AddVendor> {
             showDialog(
               context: context,
               builder: (context) => const ItemTypeDialogScreen(
-                title: 'Attribute Type',
-                endUrl: 'AllAttribute/AttributeType',
+                title: 'Default Currency',
+                endUrl: 'Global/DefaultCurrency',
                 value: 'ConfigValue',
               ),
             );
           },
         ),
         ReadOnlyTextFieldWidget(
-          hintText: 'Agent Name',
-          labelText: 'Agent Name',
+          hintText: 'Default Term',
+          labelText: 'Default Term',
           icon: Icons.search,
           onIconPressed: () {
             showDialog(
               context: context,
               builder: (context) => const ItemTypeDialogScreen(
-                title: 'Attribute Type',
-                endUrl: 'AllAttribute/AttributeType',
-                value: 'ConfigValue',
-              ),
-            );
-          },
-        ),
-        ReadOnlyTextFieldWidget(
-          hintText: 'Default Term...',
-          labelText: 'Default Term...',
-          icon: Icons.search,
-          onIconPressed: () {
-            showDialog(
-              context: context,
-              builder: (context) => const ItemTypeDialogScreen(
-                title: 'Attribute Type',
-                endUrl: 'AllAttribute/AttributeType',
+                title: 'Default Term',
+                endUrl: 'Global/TermsMaster',
                 value: 'ConfigValue',
               ),
             );
