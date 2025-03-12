@@ -50,7 +50,7 @@ class MasterScreenState extends ConsumerState<MasterScreen> {
             ontap: [
               () {
                 log('new pressed');
-                if (masterType[1] != null && masterType[2] == 'item master') {
+                if (masterType[1] != null && masterType[2] == 'Item') {
                   if (masterType[0] == 'Style') {
                     context.push('/masterScreen/addStyleItemScreen');
                   } else if (masterType[0] == 'Metal') {
@@ -67,7 +67,7 @@ class MasterScreenState extends ConsumerState<MasterScreen> {
                     context.push('/masterScreen/addPackingMaterialItemScreen');
                   }
                 } else if (masterType[1] != null &&
-                    masterType[2] == 'variant master') {
+                    masterType[2] == 'Variant') {
                   if (masterType[0] == 'Style') {
                     context.push('/masterScreen/addStyleVariantScreen');
                   } else if (masterType[0] == 'Metal') {

@@ -30,7 +30,7 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
         key: ValueKey('Configuration & Rules')),
     _buildTile(
         onTap: () {
-          goRouter.go('/formulaProcedureScreen');
+          goRouter.push('/formulaProcedureScreen');
         },
         title: 'Formula Procedures',
         icon: Icons.functions,
@@ -47,7 +47,7 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
       color: Colors.green,
       key: const ValueKey('RM Inventory Management'),
       onTap: () {
-        goRouter.go("/rmInventoryScreen");
+        goRouter.push("/rmInventoryScreen");
       },
     ),
     _buildTile(
@@ -56,7 +56,7 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
       color: const Color.fromARGB(255, 7, 159, 229),
       key: const ValueKey('Sub Contracting'),
       onTap: () {
-        goRouter.go('/subContracting');
+        goRouter.push('/subContracting');
       },
     ),
     _buildTile(
@@ -65,7 +65,7 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
       color: const Color.fromARGB(255, 117, 55, 30),
       key: const ValueKey('RM Procument'),
       onTap: () {
-        goRouter.go("/rm_procument");
+        goRouter.push("/rm_procument");
       },
     ),
     _buildTile(
@@ -74,7 +74,7 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
       color: Colors.purple,
       key: const ValueKey('Production'),
       onTap: () {
-        goRouter.go('/DataGrid');
+        goRouter.push('/DataGrid');
       },
     ),
     _buildTile(
@@ -83,7 +83,7 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
       color: Colors.blueAccent,
       key: const ValueKey('Transfer Location'),
       onTap: () {
-        goRouter.go('/transferLocation');
+        goRouter.push('/transferLocation');
       },
     ),
     _buildTile(
@@ -93,7 +93,7 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
       key: const ValueKey('Invoicing'),
       onTap: () {
         log("called her");
-        goRouter.go('/transferScreen');
+        goRouter.push('/transferScreen');
       },
     ),
     _buildTile(
@@ -103,7 +103,7 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
       key: const ValueKey('Procurement'),
       onTap: () {
         log("called her");
-        goRouter.go('/procumentScreen');
+        goRouter.push('/procumentScreen');
       },
     ),
     _buildTile(
@@ -111,7 +111,7 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
         icon: Icons.person,
         color: Colors.brown,
         onTap: () {
-          goRouter.go('/barcodeGeneration');
+          goRouter.push('/barcodeGeneration');
         },
         key: const ValueKey('Bar Codr Gneration')),
     _buildTile(
@@ -119,7 +119,7 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
       icon: Icons.people,
       color: Colors.amberAccent,
       onTap: () {
-        goRouter.go('/barcodingScreen');
+        goRouter.push('/barcodingScreen');
       },
       key: const ValueKey('Sub Contracting'),
     ),
@@ -129,7 +129,7 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
       color: Colors.blueAccent,
       key: const ValueKey('Scheme'),
       onTap: () {
-        goRouter.go('/inventoryScreen');
+        goRouter.push('/inventoryScreen');
       },
     ),
     _buildTile(
@@ -138,7 +138,7 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
       color: Colors.cyan,
       key: const ValueKey('Loyalty'),
       onTap: () {
-        goRouter.go('/CustomerInfoScreen');
+        goRouter.push('/CustomerInfoScreen');
       },
     ),
     _buildTile(
@@ -147,7 +147,7 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
       color: Colors.deepOrangeAccent,
       key: const ValueKey('Point Of Sale'),
       onTap: () {
-        goRouter.go("/point_of_sale");
+        goRouter.push("/point_of_sale");
       },
     ),
     const _buildTile(

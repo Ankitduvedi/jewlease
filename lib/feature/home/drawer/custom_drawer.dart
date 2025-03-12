@@ -169,7 +169,7 @@ class DrawerList extends ConsumerWidget {
                   icon: Icons.museum,
                   title: 'Code Generation For Item',
                   onTap: () {
-                    context.go('/itemCodeGenerationScreen');
+                    context.push('/itemCodeGenerationScreen');
                   },
                 ),
                 DrawerSubItem(
@@ -315,7 +315,7 @@ class DrawerList extends ConsumerWidget {
                   icon: Icons.currency_rupee,
                   title: 'All Attributes',
                   onTap: () {
-                    context.go('/allAttributeScreen');
+                    context.push('/allAttributeScreen');
                   },
                 ),
                 DrawerSubItem(
@@ -339,7 +339,7 @@ class DrawerList extends ConsumerWidget {
                   title: 'Item Master & Variant',
                   onTap: () {
                     log('button tapped');
-                    context.go('/masterScreen');
+                    context.push('/masterScreen');
                   },
                 ),
               ],
@@ -887,7 +887,7 @@ class DrawerList extends ConsumerWidget {
           icon: Icons.dashboard_outlined,
           title: 'Formula Procedures',
           onTap: () {
-            context.go('/formulaProcedureScreen');
+            context.push('/formulaProcedureScreen');
           },
         ),
         DrawerItem(

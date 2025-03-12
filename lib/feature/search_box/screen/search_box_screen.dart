@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:jewlease/core/routes/go_router.dart';
 import 'package:jewlease/feature/search_box/controller/search_box_controller.dart';
 
 class SearchBox extends ConsumerStatefulWidget {
@@ -87,7 +88,8 @@ class _SearchBoxState extends ConsumerState<SearchBox> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8)),
                           onTap: () {
-                            context.go(page.route);
+                            goRouter.push(page.route);
+                            //context.push(page.route);
                             Future.microtask(() {
                               ref.read(searchQueryProvider.notifier).state = "";
                               _removeOverlay();
