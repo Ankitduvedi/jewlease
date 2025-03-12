@@ -119,15 +119,15 @@ class DrawerScreen extends ConsumerWidget {
                           onChanged: (location) {
                             ref
                                 .read(selectedLocationDropdownProvider.notifier)
-                                .state = location;
+                                .state = location!;
                             if (location != null) {
                               log("selected location: ${location.locationName}");
                               ref
                                       .read(selectedDepartmentProvider.notifier)
                                       .state =
-                                  location.departments.isNotEmpty
-                                      ? location.departments.first
-                                      : null;
+                                  (location!.departments!.isNotEmpty
+                                      ? location!.departments!.first
+                                      : null)!;
                             }
                             // Reset department
                           },
@@ -151,7 +151,7 @@ class DrawerScreen extends ConsumerWidget {
                               ? (dept) {
                                   ref
                                       .read(selectedDepartmentProvider.notifier)
-                                      .state = dept;
+                                      .state = dept!;
                                 }
                               : null,
                         ),

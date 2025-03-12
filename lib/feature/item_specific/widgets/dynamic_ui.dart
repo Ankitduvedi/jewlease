@@ -75,25 +75,25 @@ class DynamicItemDetailsScreen extends ConsumerWidget {
                             fit: BoxFit.cover,
                             width: double.infinity,
                             loadingBuilder: (context, child, progress) =>
-                                progress == null
-                                    ? child
-                                    : Container(
-                                        color: Colors.grey.shade200,
-                                        child: const Center(
-                                            child: CircularProgressIndicator()),
-                                      ),
+                            progress == null
+                                ? child
+                                : Container(
+                              color: Colors.grey.shade200,
+                              child: const Center(
+                                  child: CircularProgressIndicator()),
+                            ),
                             errorBuilder: (context, error, stackTrace) =>
                                 Container(
-                              color: Colors.grey.shade300,
-                              child: const Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.image_not_supported, size: 40),
-                                  SizedBox(height: 8),
-                                  Text('Failed to load image'),
-                                ],
-                              ),
-                            ),
+                                  color: Colors.grey.shade300,
+                                  child: const Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.image_not_supported, size: 40),
+                                      SizedBox(height: 8),
+                                      Text('Failed to load image'),
+                                    ],
+                                  ),
+                                ),
                           ),
                           Positioned(
                             bottom: 0,
@@ -118,9 +118,9 @@ class DynamicItemDetailsScreen extends ConsumerWidget {
                                     .textTheme
                                     .bodyMedium
                                     ?.copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w500,
-                                    ),
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                ),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -177,9 +177,9 @@ class DynamicItemDetailsScreen extends ConsumerWidget {
                     child: Text(
                       key,
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            color: Colors.blueGrey.shade700,
-                            fontWeight: FontWeight.w600,
-                          ),
+                        color: Colors.blueGrey.shade700,
+                        fontWeight: FontWeight.w600,
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -206,9 +206,9 @@ class DynamicItemDetailsScreen extends ConsumerWidget {
               Text(
                 value,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey.shade800,
-                      height: 1.4,
-                    ),
+                  color: Colors.grey.shade800,
+                  height: 1.4,
+                ),
               ),
             ],
           ),

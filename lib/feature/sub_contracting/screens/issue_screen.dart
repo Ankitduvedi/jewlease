@@ -3,20 +3,28 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:jewlease/widgets/text_field_widget.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
+import '../../../data/model/barcode_detail_model.dart';
+import '../../../data/model/barcode_historyModel.dart';
+import '../../../data/model/transaction_model.dart';
 import '../../../main.dart';
 import '../../../widgets/app_bar_buttons.dart';
 import '../../../widgets/search_dailog_widget.dart';
+import '../../barcoding/controllers/barcode_detail_controller.dart';
+import '../../barcoding/controllers/barcode_history_controller.dart';
 import '../../formula/controller/formula_prtocedure_controller.dart';
+import '../../home/right_side_drawer/controller/drawer_controller.dart';
 import '../../procument/controller/procumentVendorDailog.dart';
+import '../../procument/controller/procumentcController.dart';
 import '../../procument/screens/procumentFloatingBar.dart';
 import '../../procument/screens/procumentScreen.dart';
 import '../../procument/screens/procumentSummeryGridSource.dart';
 import '../../procument/screens/procumentVendorDialog.dart';
+import '../../transaction/controller/transaction_controller.dart';
 import '../../vendor/controller/procumentVendor_controller.dart';
 import '../issue_controller.dart';
+import '../widgets/metail_issue_dialog.dart';
 
 class IssueScreen extends ConsumerStatefulWidget {
   const IssueScreen({super.key});
@@ -228,7 +236,6 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
   TextEditingController metalIssueController = TextEditingController();
 
   Map<String, dynamic> convertToSchema(Map<String, dynamic> input) {
-    print("input is $input");
     return {
       "stockId": input["Stock ID"],
       "style": input["Style"],
@@ -284,6 +291,53 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
     };
   }
 
+  Future<String> saveIssueStock() async {
+    try {
+      List<Map<String, dynamic>> reqstBodeis = [];
+      List<Map<String, dynamic>>? varientList =
+          ref.read(procurementVariantProvider);
+      for (var varient in varientList!) {
+        Map<String, dynamic> reqBody = convertToSchema(varient);
+
+        reqBody["vendor"] = ref.read(pocVendorProvider)["Vendor Name"];
+        reqBody["issueDate"] = DateTime.now().toIso8601String();
+        reqBody["operationName"] = "Alteration";
+        reqstBodeis.add(reqBody);
+      }
+
+      TransactionModel transaction = createTransaction(reqstBodeis);
+      String? transactionID = await ref
+          .read(TransactionControllerProvider.notifier)
+          .sentTransaction(transaction);
+      print("transId $transactionID");
+
+      for (Map<String, dynamic> reqBody in reqstBodeis) {
+        String? stockId = reqBody["stockId"];
+        print("stockId $stockId $reqBody");
+
+        ref.read(IssueStockControllerProvider.notifier).sentIssueStock(reqBody);
+        BarcodeHistoryModel history =
+            createHistory(reqBody, stockId!, transactionID!);
+        BarcodeDetailModel detail =
+            createDetail(reqBody, stockId, transactionID!);
+        await ref
+            .read(BarocdeDetailControllerProvider.notifier)
+            .sentBarcodeDetail(detail);
+        await ref
+            .read(BarocdeHistoryControllerProvider.notifier)
+            .sentBarcodeHistory(history);
+
+        reqBody["length"]=-1;
+        await ref
+            .read(procurementControllerProvider.notifier)
+            .updateGRN(reqBody, stockId);
+      }
+      return "Successfully issues stocks";
+    } catch (e) {
+      return "Error: $e";
+    }
+  }
+
   Widget build(BuildContext context) {
     final selectedIndex = ref.watch(tabIndexProvider);
     screenWidth = MediaQuery.of(context).size.width;
@@ -304,20 +358,10 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
                   context.go('/addFormulaProcedureScreen');
               },
               () async {
-                List<Map<String, dynamic>>? varientList =
-                    ref.read(procurementVariantProvider);
-                for (var varient in varientList!) {
-                  Map<String, dynamic> reqBody = convertToSchema(varient);
-                  print("req body $reqBody");
-                  reqBody["vendor"] =
-                      ref.read(pocVendorProvider)["Vendor Name"];
-                  reqBody["issueDate"] = DateTime.now().toIso8601String();
-                  reqBody["operationName"] = "Alteration";
-
-                  ref
-                      .read(IssueStockControllerProvider.notifier)
-                      .sentIssueStock(reqBody);
-                }
+                String compltionMsg = await saveIssueStock();
+                print("completion msh $compltionMsg");
+                // Utils.snackBar(compltionMsg, context);
+                // goRouter.go("/");
               },
               () {
                 // Reset the provider value to null on refresh
@@ -357,6 +401,7 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
                         onOptionSelectd: (selectedValue) {
                           print("selected value $selectedValue");
                         },
+                        queryMap: {"Length": 0},
                         onSelectdRow: (selectedRow) {
                           ref
                               .read(procurementVariantProvider.notifier)
@@ -412,7 +457,7 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
                             // Future.delayed(Duration(milliseconds: 200), () {
                             // Navigator.of(context).pop(); // Close first dialog
                             if (value.contains("Stone")) {
-                              addNewRowRawMaterial(selectedRow,true);
+                              addNewRowRawMaterial(selectedRow, true);
                             } else
                               Future.delayed(Duration(milliseconds: 200), () {
                                 showDialog(
@@ -573,130 +618,65 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
             ),
     );
   }
-}
 
-class metalIssueDialog extends StatefulWidget {
-  final TextEditingController metalWeightController;
-  final Function(Map<String, dynamic>,bool) addRow;
-  final Map<String, dynamic> row;
-
-  const metalIssueDialog(
-      {super.key,
-      required this.metalWeightController,
-      required this.row,
-      required this.addRow});
-
-  @override
-  State<metalIssueDialog> createState() => _metalIssueDialogState();
-}
-
-class _metalIssueDialogState extends State<metalIssueDialog> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: screenHeight * 0.3,
-      width: screenWidth * 0.9,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.white,
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            padding: EdgeInsets.all(10),
-            height: screenHeight * 0.08,
-            decoration: BoxDecoration(
-                color: Colors.green,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(10),
-                  topRight: Radius.circular(10),
-                )),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Goods Reciept Note'),
-                InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Row(
-                    children: [
-                      Text('Esc to Close'),
-                      Icon(Icons.close),
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              height: screenHeight * 0.12,
-              width: double.infinity,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      border: Border.all(color: Colors.grey),
-                    ),
-                    child: Text('Document No'),
-                  ),
-                  SizedBox(
-                      width: screenWidth * 0.1,
-                      height: screenHeight * 0.05,
-                      child: TextFieldWidget(
-                          labelText: "Metal Weight",
-                          controller: widget.metalWeightController)),
-                  SizedBox(
-                    width: screenWidth * 0.4,
-                  )
-                ],
-              ),
-            ),
-          ),
-          Container(
-            padding: EdgeInsets.all(10),
-            width: double.infinity,
-            height: screenHeight * 0.07,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(10),
-                bottomRight: Radius.circular(10),
-              ),
-              color: Colors.grey.shade300,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    widget.addRow(widget.row,false);
-                    Navigator.of(context).pop();
-                  },
-                  child: Container(
-                    width: screenWidth * 0.07,
-                    padding: EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      color: Colors.green,
-                    ),
-                    child: Center(
-                        child: Text(
-                      'Done',
-                      style: TextStyle(fontSize: 12),
-                    )),
-                  ),
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
+  BarcodeDetailModel createDetail(
+      Map<String, dynamic> reqstBody, String stockId, String transactionID) {
+    BarcodeDetailModel detail = BarcodeDetailModel(
+      stockId: stockId,
+      date: DateTime.now().toIso8601String(),
+      transNo: transactionID!,
+      transType: "GRN",
+      destination: "MHCASH",
+      customer: "Ashish",
+      vendor: "A",
+      source: ref.watch(selectedDepartmentProvider).locationName,
+      sourceDept: ref.watch(selectedDepartmentProvider).departmentName,
+      destinationDept: "MHCASH",
+      exchangeRate: 0.0,
+      currency: "inr",
+      salesPerson: "arun",
+      term: "terms",
+      remark: "grn",
+      createdBy: DateTime.now().toIso8601String(),
+      varient: reqstBody["varientName"],
+      postingDate: DateTime.now().toIso8601String(),
     );
+    return detail;
+  }
+
+  BarcodeHistoryModel createHistory(
+      Map<String, dynamic> reqstBody, String stockId, String transactionID) {
+    BarcodeHistoryModel history = BarcodeHistoryModel(
+        stockId: stockId,
+        attribute: "",
+        varient: reqstBody["varientName"],
+        transactionNumber: transactionID ?? "",
+        date: DateTime.now().toIso8601String(),
+        bom: reqstBody["bom"],
+        operation: reqstBody["operation"],
+        formula: {});
+    return history;
+  }
+
+  TransactionModel createTransaction(List<Map<String, dynamic>> reqstBodeis) {
+    return TransactionModel(
+        transType: "Opening Stock",
+        subType: "OPS",
+        transCategory: "GENERAL",
+        docNo: "bsjbcs",
+        transDate: DateTime.now().toIso8601String(),
+        destination: "MH_CASH",
+        customer: "ankit",
+        source: ref.watch(selectedDepartmentProvider).locationName,
+        sourceDept: ref.watch(selectedDepartmentProvider).departmentName,
+        destinationDept: "MH_CASH",
+        exchangeRate: "0.0",
+        currency: "RS",
+        salesPerson: "Arun",
+        term: "term",
+        remark: "Creating GRN",
+        createdBy: DateTime.now().toIso8601String(),
+        postingDate: DateTime.now().toIso8601String(),
+        varients: reqstBodeis);
   }
 }

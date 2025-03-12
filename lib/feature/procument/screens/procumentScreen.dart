@@ -15,6 +15,7 @@ import '../../../core/routes/go_router.dart';
 import '../../../data/model/barcode_detail_model.dart';
 import '../../barcoding/controllers/barcode_detail_controller.dart';
 import '../../barcoding/controllers/barcode_history_controller.dart';
+import '../../home/right_side_drawer/controller/drawer_controller.dart';
 import '../../vendor/controller/procumentVendor_controller.dart';
 import '../controller/procumentVarientFormula.dart';
 import '../controller/procumentVendorDailog.dart';
@@ -49,49 +50,74 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
     super.initState();
   }
 
-  Map<String, dynamic> convertToSchema(Map<String, dynamic> input) {
-    return {
-      "style": input["Style"],
-      "varientName": input["Varient Name"],
-      "oldVarient": input["Old Varient"],
-      "customerVarient": input["Customer Varient"],
-      "baseVarient": input["Base Varient"],
-      "vendor": input["Vendor"],
-      "remark1": input["Remark 1"],
-      "vendorVarient": input["Vendor Varient"],
-      "remark2": input["Remark 2"],
-      "createdBy": input["Created By"],
-      "stdBuyingRate": input["Std Buying Rate"],
-      "stoneMaxWt": input["Stone Max Wt"],
-      "remark": input["Remark"],
-      "stoneMinWt": input["Stone Min Wt"],
-      "karatColor": input["Karat Color"],
-      "deliveryDays": input["Delivery Days"],
-      "forWeb": input["For Web"],
-      "rowStatus": input["Row Status"],
-      "verifiedStatus": input["Verified Status"],
-      "length": input["Length"],
-      "codegenSrNo": input["Codegen Sr No"],
-      "category": input["CATEGORY"],
-      "subCategory": input["Sub-Category"],
-      "styleKarat": input["STYLE KARAT"],
-      "varient": input["Varient"],
-      "hsnSacCode": input["HSN - SAC CODE"],
-      "lineOfBusiness": input["LINE OF BUSINESS"],
-      "bom": input["BOM"],
-      "operation": input["Operation"],
-      "imageDetails": input["Image Details"],
-      "formulaDetails": input["Formula Details"],
-      "pieces": input["Pieces"],
-      "weight": (input["Weight"] ?? 0) - (input["Stone Wt"] ?? 0),
-      "netWeight": input["Weight"] ?? 0,
-      "diaWeight": input["Stone Wt"] ?? 0,
-      "diaPieces": input["Stone Pieces"] ?? 0,
-      "loactionCode": input["Location Code"],
-    };
-  }
-
   String? selectedValue = 'Variant';
+
+  Future<bool> saveProcument() async {
+    try {
+      List<Map<String, dynamic>>? varientList =
+          ref.read(procurementVariantProvider);
+      print("varientList = $varientList ");
+
+      Map<dynamic, dynamic> allFormualMap = ref.read(varientAllFormulaProvider);
+
+      print("allFormulas = $allFormualMap");
+
+      List<Map<String, dynamic>> reqstBodeis = [];
+
+      for (int i = 0; i < varientList!.length; i++) {
+        List<dynamic> allFormulas = [];
+        String formulaName = "$i${varientList[i]["Varient Name"]}";
+        for (String formula in allFormualMap.keys) {
+          if (formula.contains(formulaName)) {
+            allFormulas.add(allFormualMap[formula]);
+          }
+        }
+        Map<dynamic, dynamic> formulaJsonMap = {};
+        for (int i = 0; i < allFormulas.length; i++) {
+          formulaJsonMap["row$i"] = allFormulas[i];
+        }
+
+        varientList[i]["Formula Details"] = formulaJsonMap;
+        allFormulas = [];
+        Map<String, dynamic> reuestBody = convertToGRNSchema(varientList[i]);
+
+        print("req body is $reuestBody");
+        reqstBodeis.add(reuestBody);
+      }
+
+      TransactionModel transaction = createTransaction(reqstBodeis);
+      String? transactionID = await ref
+          .read(TransactionControllerProvider.notifier)
+          .sentTransaction(transaction);
+      print("transactionID is $transactionID");
+
+      for (var reqstBody in reqstBodeis) {
+        print("reqst body $reqstBody");
+        print("-------------------------------------");
+        String stockId = await ref
+            .read(procurementControllerProvider.notifier)
+            .sendGRN(reqstBody);
+        BarcodeHistoryModel history =
+            createHistory(reqstBody, stockId, transactionID!);
+        BarcodeDetailModel detail =
+            createDetail(reqstBody, stockId, transactionID!);
+        await ref
+            .read(BarocdeDetailControllerProvider.notifier)
+            .sentBarcodeDetail(detail);
+        await ref
+            .read(BarocdeHistoryControllerProvider.notifier)
+            .sentBarcodeHistory(history);
+      }
+
+      Utils.snackBar("Varient Aadded", context);
+      goRouter.go("/");
+      return true;
+    } catch (e) {
+      Utils.snackBar("error: $e", context);
+      return false;
+    }
+    // Navigator.pop(context);\\
+  }
 
   @override
   Widget build(
@@ -188,100 +214,7 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
                           context.go('/addFormulaProcedureScreen');
                       },
                       () async {
-                        List<Map<String, dynamic>>? varientList =
-                            ref.read(procurementVariantProvider);
-                        print("varientList = $varientList ");
-
-                        Map<dynamic, dynamic> allFormualMap =
-                            ref.read(varientAllFormulaProvider);
-
-                        print("allFormulas = $allFormualMap");
-
-                        List<Map<String, dynamic>> reqstBodeis = [];
-
-                        for (int i = 0; i < varientList!.length; i++) {
-                          List<dynamic> allFormulas = [];
-                          String formulaName =
-                              "$i${varientList[i]["Varient Name"]}";
-                          for (String formula in allFormualMap.keys) {
-                            if (formula.contains(formulaName)) {
-                              allFormulas.add(allFormualMap[formula]);
-                            }
-                          }
-                          Map<dynamic, dynamic> formulaJsonMap = {};
-                          for (int i = 0; i < allFormulas.length; i++) {
-                            formulaJsonMap["row$i"] = allFormulas[i];
-                          }
-                          print(
-                              "$i th row len ${allFormulas.length} all formula are $allFormulas");
-
-                          varientList[i]["Formula Details"] = formulaJsonMap;
-                          allFormulas = [];
-                          print("varientList is ${varientList[i]}");
-                          Map<String, dynamic> reuestBody =
-                              convertToSchema(varientList[i]);
-                          reuestBody["vendor"] =
-                              ref.read(pocVendorProvider)["Vendor Name"];
-
-                          reuestBody["vendorCode"] =
-                              ref.read(pocVendorProvider)["Vendor Code"];
-                          reuestBody["location"] = "warehouse";
-                          reuestBody["department"] = "MH_CASH";
-                          reuestBody["itemGroup"] = reuestBody["style"];
-                          reuestBody["metalColor"] = reuestBody["Karat Color"];
-                          reuestBody["styleMetalColor"] =
-                              reuestBody["Karat Color"];
-
-                          print("req body is $reuestBody");
-
-                          reqstBodeis.add(reuestBody);
-                        }
-
-                        TransactionModel transaction = TransactionModel(
-                            transType: "Opening Stock",
-                            subType: "OPS",
-                            transCategory: "GENERAL",
-                            docNo: "bsjbcs",
-                            transDate: DateTime.now().toIso8601String(),
-                            source: "WareHouse",
-                            destination: "MH_CASH",
-                            customer: "ankit",
-                            sourceDept: "Warehouse",
-                            destinationDept: "MH_CASH",
-                            exchangeRate: "0.0",
-                            currency: "RS",
-                            salesPerson: "Arun",
-                            term: "term",
-                            remark: "Creating GRN",
-                            createdBy: DateTime.now().toIso8601String(),
-                            postingDate: DateTime.now().toIso8601String(),
-                            varients: reqstBodeis);
-                        String? transactionID = await ref
-                            .read(TransactionControllerProvider.notifier)
-                            .sentTransaction(transaction);
-                        print("transactionID is $transactionID");
-
-                        for (var reqstBody in reqstBodeis) {
-                          print("reqst body $reqstBody");
-                          print("-------------------------------------");
-                          String stockId = await ref
-                              .read(procurementControllerProvider.notifier)
-                              .sendGRN(reqstBody);
-                          BarcodeHistoryModel history =
-                              createHistory(reqstBody, stockId, transactionID!);
-                          BarcodeDetailModel detail =
-                              createDetail(reqstBody, stockId, transactionID!);
-                          await ref
-                              .read(BarocdeDetailControllerProvider.notifier)
-                              .sentBarcodeDetail(detail);
-                          await ref
-                              .read(BarocdeHistoryControllerProvider.notifier)
-                              .sentBarcodeHistory(history);
-                        }
-
-                        Utils.snackBar("Varient Aadded", context);
-                        goRouter.go("/");
-                        // Navigator.pop(context);\\
+                        saveProcument();
                       },
                       () {
                         // Reset the provider value to null on refresh
@@ -309,11 +242,12 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
       date: DateTime.now().toIso8601String(),
       transNo: transactionID!,
       transType: "GRN",
-      source: "MHCASH",
+
       destination: "MHCASH",
       customer: "Ashish",
       vendor: "A",
-      sourceDept: "MHCASH",
+      source: ref.watch(selectedDepartmentProvider).locationName,
+      sourceDept: ref.watch(selectedDepartmentProvider).departmentName,
       destinationDept: "MHCASH",
       exchangeRate: 0.0,
       currency: "inr",
@@ -339,5 +273,77 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
         operation: reqstBody["operation"],
         formula: {});
     return history;
+  }
+
+  TransactionModel createTransaction(List<Map<String, dynamic>> reqstBodeis) {
+    return TransactionModel(
+        transType: "Opening Stock",
+        subType: "OPS",
+        transCategory: "GENERAL",
+        docNo: "bsjbcs",
+        transDate: DateTime.now().toIso8601String(),
+
+        destination: "MH_CASH",
+        customer: "ankit",
+        source: ref.watch(selectedDepartmentProvider).locationName,
+        sourceDept: ref.watch(selectedDepartmentProvider).departmentName,
+        destinationDept: "MH_CASH",
+        exchangeRate: "0.0",
+        currency: "RS",
+        salesPerson: "Arun",
+        term: "term",
+        remark: "Creating GRN",
+        createdBy: DateTime.now().toIso8601String(),
+        postingDate: DateTime.now().toIso8601String(),
+        varients: reqstBodeis);
+  }
+
+  Map<String, dynamic> convertToGRNSchema(Map<String, dynamic> input) {
+    return {
+      "style": input["Style"],
+      "varientName": input["Varient Name"],
+      "oldVarient": input["Old Varient"],
+      "customerVarient": input["Customer Varient"],
+      "baseVarient": input["Base Varient"],
+      "vendor": ref.read(pocVendorProvider)["Vendor Name"],
+      "remark1": input["Remark 1"],
+      "vendorVarient": input["Vendor Varient"],
+      "remark2": input["Remark 2"],
+      "createdBy": input["Created By"],
+      "stdBuyingRate": input["Std Buying Rate"],
+      "stoneMaxWt": input["Stone Max Wt"],
+      "remark": input["Remark"],
+      "stoneMinWt": input["Stone Min Wt"],
+      "karatColor": input["Karat Color"],
+      "deliveryDays": input["Delivery Days"],
+      "forWeb": input["For Web"],
+      "rowStatus": input["Row Status"],
+      "verifiedStatus": input["Verified Status"],
+      "length": input["Length"],
+      "codegenSrNo": input["Codegen Sr No"],
+      "category": input["CATEGORY"],
+      "subCategory": input["Sub-Category"],
+      "styleKarat": input["STYLE KARAT"],
+      "varient": input["Varient"],
+      "hsnSacCode": input["HSN - SAC CODE"],
+      "lineOfBusiness": input["LINE OF BUSINESS"],
+      "bom": input["BOM"],
+      "operation": input["Operation"],
+      "imageDetails": input["Image Details"],
+      "formulaDetails": input["Formula Details"],
+      "pieces": input["Pieces"],
+      "weight": (double.parse(input["Weight"] ?? 0)) -
+          (double.parse(input["Stone Wt"]) ?? 0),
+      "netWeight": input["Weight"] ?? 0,
+      "diaWeight": input["Stone Wt"] ?? 0,
+      "diaPieces": input["Stone Pieces"] ?? 0,
+      "loactionCode": input["Location Code"],
+      "vendorCode": ref.read(pocVendorProvider)["Vendor Code"],
+      "location": ref.watch(selectedDepartmentProvider).locationName,
+      "department": ref.watch(selectedDepartmentProvider).departmentName,
+      "itemGroup": input["Style"],
+      "metalColor": input["Karat Color"],
+      "styleMetalColor": input["Karat Color"],
+    };
   }
 }

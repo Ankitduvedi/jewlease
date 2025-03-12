@@ -228,7 +228,7 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                         context: context,
                         builder: (context) => ItemTypeDialogScreen(
                           title: 'Add Varient',
-                          endUrl: 'ItemMasterAndVariants/Style/Style/Varient',
+                          endUrl: 'ItemMasterAndVariants/Style/Style/Variant',
                           value: 'Varient Name',
                           onOptionSelectd: (selectedValue) {
                             print("selected value $selectedValue");

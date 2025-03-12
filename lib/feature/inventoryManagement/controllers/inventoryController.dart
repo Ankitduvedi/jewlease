@@ -14,13 +14,19 @@ class InventoryController extends StateNotifier<bool> {
   InventoryController(this._inventoryRepository) : super(false);
 
   // Fetch all inventory items
-  Future<void> fetchAllStocks() async {
+  Future<void> fetchAllStocks( {required String locationName, required String deprtmentName}) async {
     try {
       state = true;
       final response = await _inventoryRepository.fetchInventory();
-      inventoryItems = response.map((stock) {
-        return InventoryItemModel.fromJson(stock);
-      }).toList();
+      inventoryItems = response
+          .map((stock) {
+            return InventoryItemModel.fromJson(stock);
+          })
+          .toList()
+          .where((item) =>
+              item.locationName == locationName &&
+              item.department == deprtmentName)
+          .toList();
       state = false;
     } catch (e) {
       print("Error fetching stock: $e");

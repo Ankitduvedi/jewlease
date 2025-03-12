@@ -1,5 +1,5 @@
 import 'dart:developer';
-import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jewlease/core/routes/navigation_const.dart';
@@ -32,12 +32,14 @@ import 'package:jewlease/feature/item_specific/screens/add_stone_variant_screen.
 import 'package:jewlease/feature/item_specific/screens/add_style_item_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/load_data_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/master_screen.dart';
+import 'package:jewlease/feature/point_of_sale/screens/point_of_sale_screen.dart';
 import 'package:jewlease/feature/transfer/screens/transfer_inward_location.dart';
 import 'package:jewlease/feature/transfer/screens/transfer_outward_location.dart';
 import 'package:jewlease/feature/transfer/screens/transfer_screen.dart';
 import 'package:jewlease/feature/vendor/screens/Bom&Operation.dart';
 import 'package:jewlease/feature/vendor/screens/new_vendor_screen.dart';
 import 'package:jewlease/feature/vendor/screens/vendor_screen.dart';
+
 import '../../feature/barcoding/screens/barcoding_screen.dart';
 import '../../feature/crm/screens/customer_info_screen.dart';
 import '../../feature/inventoryManagement/screens/inventoryScreen.dart';
@@ -337,7 +339,19 @@ final goRouter = GoRouter(
               path: '/rm_procument',
               builder: (context, state) {
                 return const RmProcumentSummaryScreen();
+              }),
+          GoRoute(
+              path: '/point_of_sale',
+              builder: (context, state) {
+                return PointOfSaleScreen();
+              }),
+          GoRoute(
+              path: '/transferLocation',
+              builder: (context, state) {
+                return TransferScreen();
               })
         ]),
+
+
   ],
 );

@@ -15,7 +15,7 @@ import 'package:jewlease/providers/image_provider.dart';
 import 'package:jewlease/widgets/image_data.dart';
 
 final masterTypeProvider =
-    StateProvider<List<String?>>((ref) => ['Style', null, null]);
+StateProvider<List<String?>>((ref) => ['Style', null, null]);
 // Define a provider for the checkbox state
 final checkboxProvider = StateProvider<bool>((ref) => false);
 
@@ -24,8 +24,8 @@ class ItemSpecificController extends StateNotifier<bool> {
   final ItemSpecificRepository _itemSpecificRepository;
 
   ItemSpecificController(
-    this._itemSpecificRepository,
-  ) : super(false);
+      this._itemSpecificRepository,
+      ) : super(false);
 
   Future<void> submitMetalItemConfiguration(
       ItemMasterMetal config, BuildContext context, String metal) async {
@@ -34,7 +34,7 @@ class ItemSpecificController extends StateNotifier<bool> {
 
       state = true;
       final response =
-          await _itemSpecificRepository.addMetalItem(config, metal);
+      await _itemSpecificRepository.addMetalItem(config, metal);
       state = false;
       response.fold((l) => Utils.snackBar(l.message, context), (r) {
         Utils.snackBar('New Metal Item Created', context);
@@ -56,7 +56,7 @@ class ItemSpecificController extends StateNotifier<bool> {
 
       state = true;
       final response =
-          await _itemSpecificRepository.addStoneItem(config, stone);
+      await _itemSpecificRepository.addStoneItem(config, stone);
       state = false;
       response.fold((l) => Utils.snackBar(l.message, context), (r) {
         Utils.snackBar('New Stone ($stone) Item Created', context);
@@ -76,7 +76,7 @@ class ItemSpecificController extends StateNotifier<bool> {
     try {
       state = true;
       final response =
-          await _itemSpecificRepository.addStoneVariant(config, stone);
+      await _itemSpecificRepository.addStoneVariant(config, stone);
       state = false;
       response.fold((l) => Utils.snackBar(l.message, context), (r) {
         log('entered in the fold');
@@ -99,7 +99,7 @@ class ItemSpecificController extends StateNotifier<bool> {
     try {
       state = true;
       final response =
-          await _itemSpecificRepository.addMetalVariant(config, metal);
+      await _itemSpecificRepository.addMetalVariant(config, metal);
       state = false;
       response.fold((l) => Utils.snackBar(l.message, context), (r) {
         log('entered in the fold');
@@ -125,7 +125,7 @@ class ItemSpecificController extends StateNotifier<bool> {
       for (ImageModel image in images) {
         log('image data ${image.description}');
         final response =
-            await ref.watch(imageProvider.notifier).uploadImage(image);
+        await ref.watch(imageProvider.notifier).uploadImage(image);
         response.fold((l) => Utils.snackBar(l.message, context), (r) {
           ImageDetail imageDetail = ImageDetail(
               url: r,
@@ -158,7 +158,7 @@ class ItemSpecificController extends StateNotifier<bool> {
       for (ImageModel image in images) {
         log('image data ${image.description}');
         final response =
-            await ref.watch(imageProvider.notifier).uploadImage(image);
+        await ref.watch(imageProvider.notifier).uploadImage(image);
         response.fold((l) => Utils.snackBar(l.message, context), (r) {
           ImageDetail imageDetail = ImageDetail(
               url: r,
@@ -186,7 +186,7 @@ class ItemSpecificController extends StateNotifier<bool> {
 
 // Define a provider for the controller
 final itemSpecificControllerProvider =
-    StateNotifierProvider<ItemSpecificController, bool>((ref) {
+StateNotifierProvider<ItemSpecificController, bool>((ref) {
   final repository = ItemSpecificRepository();
   return ItemSpecificController(repository);
 });
