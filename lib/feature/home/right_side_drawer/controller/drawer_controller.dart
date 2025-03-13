@@ -1,5 +1,7 @@
 import 'dart:developer';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/core/routes/go_router.dart';
 import 'package:jewlease/data/model/departments_model.dart';
 import 'package:jewlease/data/model/drawer_state.dart';
 import 'package:jewlease/data/model/employee_and_location_model.dart';
@@ -7,8 +9,9 @@ import 'package:jewlease/feature/auth/controller/auth_controller.dart';
 
 class DrawerNotifier extends StateNotifier<Session> {
   late Session _initialSession;
+  final Ref ref;
 
-  DrawerNotifier()
+  DrawerNotifier({required this.ref})
       : super(const Session(
           company: 'PBS (Bhagirathi Marketing Pvt. Ltd)',
           location: 'Head Office (HO)',
@@ -58,9 +61,17 @@ class DrawerNotifier extends StateNotifier<Session> {
   void updateSession() {
     // Perform update logic (e.g., API call or local save)
     log('Session updated: $state');
+    goRouter.pop();
 
     // Set the current state as the new initial state
     _initialSession = state;
+    if (state.isDayClose) {
+      SystemNavigator.pop();
+
+      //ref.read(authProvider.notifier).state = null;
+    } else {
+      goRouter.go('/');
+    }
   }
 
   // Function to reset the session to the initial state
@@ -71,16 +82,8 @@ class DrawerNotifier extends StateNotifier<Session> {
 
 // Riverpod provider for the DrawerNotifier
 final drawerProvider = StateNotifierProvider<DrawerNotifier, Session>((ref) {
-  return DrawerNotifier();
+  return DrawerNotifier(ref: ref);
 });
-
-// final locationRepositoryProvider =
-//     Provider((ref) => LocationRepository(ref.read(dioProvider)));
-
-// final locationProvider = FutureProvider<List<Location>>((ref) async {
-//   final repo = ref.watch(locationRepositoryProvider);
-//   return await repo.fetchLocations();
-// });
 
 // Providers to track selected location and department
 final selectedLocationDropdownProvider = StateProvider<Location>((ref) {
@@ -93,17 +96,8 @@ final selectedDepartmentProvider = StateProvider<Departments>((ref) {
   final employee = ref.watch(authProvider);
   final selectedLocation = ref.watch(selectedLocationDropdownProvider);
 
-  // if (selectedLocation == null || selectedLocation.departments.isEmpty) {
-  //   return null; // Prevents Bad State error
-  // }
-
   return selectedLocation.departments.firstWhere(
     (dept) => dept.departmentName == employee!.defaultDepartment,
     orElse: () => selectedLocation.departments.first,
   );
 });
-
-//   return employee!.locations.where((loc) {
-//     return loc.locationName == employee.defaultLocation;
-//   }).first;
-// });

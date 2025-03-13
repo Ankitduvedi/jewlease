@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:jewlease/feature/crm/screens/ledger_data_grid.dart';
 
 import '../../../main.dart';
@@ -33,17 +34,17 @@ class _CustomerInfoScreenState extends ConsumerState<CustomerInfoScreen> {
     screenWidth = MediaQuery.of(context).size.width;
     screenHeight = MediaQuery.of(context).size.height;
     return Container(
-      color: Color(0xffEFF2F4),
-      margin: EdgeInsets.only(top: 60),
-      padding: EdgeInsets.all(10),
+      color: const Color(0xffEFF2F4),
+      margin: const EdgeInsets.only(top: 60),
+      padding: const EdgeInsets.all(10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             "Customer Info",
             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           SizedBox(
@@ -57,7 +58,7 @@ class _CustomerInfoScreenState extends ConsumerState<CustomerInfoScreen> {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    padding: EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
@@ -65,20 +66,22 @@ class _CustomerInfoScreenState extends ConsumerState<CustomerInfoScreen> {
                         Row(
                           // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
+                            const Text(
                               "Sanjay Kumar",
                               style: TextStyle(fontWeight: FontWeight.w600),
                             ),
                             IconButton(
-                              onPressed: () {},
-                              icon: Icon(
+                              onPressed: () {
+                                context.push('/addCustomerScreen');
+                              },
+                              icon: const Icon(
                                 Icons.edit,
                                 size: 15,
                                 color: Colors.green,
                               ),
                             ),
-                            Spacer(),
-                            Text(
+                            const Spacer(),
+                            const Text(
                               "Additional Info",
                               style: TextStyle(
                                   color: Colors.green,
@@ -86,11 +89,11 @@ class _CustomerInfoScreenState extends ConsumerState<CustomerInfoScreen> {
                             )
                           ],
                         ),
-                        Text(
+                        const Text(
                           "183163186",
                           style: TextStyle(fontWeight: FontWeight.w600),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         Row(
@@ -101,15 +104,15 @@ class _CustomerInfoScreenState extends ConsumerState<CustomerInfoScreen> {
                               height: 50,
                               width: 50,
                               decoration: BoxDecoration(
-                                  color: Color(0xffBFBFBF),
+                                  color: const Color(0xffBFBFBF),
                                   borderRadius: BorderRadius.circular(5)),
-                              child: Icon(
+                              child: const Icon(
                                 Icons.person,
                                 color: Colors.white,
                               ),
                             ),
                             // Spacer(),
-                            Column(
+                            const Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
@@ -147,13 +150,13 @@ class _CustomerInfoScreenState extends ConsumerState<CustomerInfoScreen> {
                             )
                           ],
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         Container(
-                          color: Color(0xffBFBFBF),
-                          padding: EdgeInsets.all(7),
-                          child: Row(
+                          color: const Color(0xffBFBFBF),
+                          padding: const EdgeInsets.all(7),
+                          child: const Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [Text("Balance"), Text("Rs. 15000")],
                           ),
@@ -162,7 +165,7 @@ class _CustomerInfoScreenState extends ConsumerState<CustomerInfoScreen> {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 Expanded(
@@ -170,8 +173,8 @@ class _CustomerInfoScreenState extends ConsumerState<CustomerInfoScreen> {
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(10)),
-                    padding: EdgeInsets.all(10),
-                    child: Column(
+                    padding: const EdgeInsets.all(10),
+                    child: const Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
@@ -200,7 +203,7 @@ class _CustomerInfoScreenState extends ConsumerState<CustomerInfoScreen> {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 Expanded(
@@ -209,11 +212,11 @@ class _CustomerInfoScreenState extends ConsumerState<CustomerInfoScreen> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(10)),
                     // color: Colors.white,
-                    padding: EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           "Item Prefrences",
                           style: TextStyle(fontWeight: FontWeight.w600),
                         ),
@@ -229,7 +232,7 @@ class _CustomerInfoScreenState extends ConsumerState<CustomerInfoScreen> {
                                         height: 60,
                                         width: 60,
                                         decoration: BoxDecoration(
-                                            color: Color(0xffBFBFBF),
+                                            color: const Color(0xffBFBFBF),
                                             borderRadius:
                                                 BorderRadius.circular(5)),
                                       ),
@@ -242,7 +245,7 @@ class _CustomerInfoScreenState extends ConsumerState<CustomerInfoScreen> {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 Expanded(
@@ -252,10 +255,10 @@ class _CustomerInfoScreenState extends ConsumerState<CustomerInfoScreen> {
                     children: [
                       Container(
                         decoration: BoxDecoration(
-                            color: Color(0xff003450),
+                            color: const Color(0xff003450),
                             borderRadius: BorderRadius.circular(8)),
-                        padding: EdgeInsets.all(10),
-                        child: Column(
+                        padding: const EdgeInsets.all(10),
+                        child: const Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
@@ -272,10 +275,10 @@ class _CustomerInfoScreenState extends ConsumerState<CustomerInfoScreen> {
                       ),
                       Container(
                         decoration: BoxDecoration(
-                            color: Color(0xff1F552F),
+                            color: const Color(0xff1F552F),
                             borderRadius: BorderRadius.circular(8)),
-                        padding: EdgeInsets.all(10),
-                        child: Column(
+                        padding: const EdgeInsets.all(10),
+                        child: const Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
@@ -296,15 +299,17 @@ class _CustomerInfoScreenState extends ConsumerState<CustomerInfoScreen> {
               ],
             ),
           ),
-          SizedBox(height: 5,),
+          const SizedBox(
+            height: 5,
+          ),
           Container(
               height: screenHeight * 0.06,
               width: double.infinity,
               padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.01),
-              decoration: BoxDecoration(
-                // color: Colors.white,
+              decoration: const BoxDecoration(
+                  // color: Colors.white,
 
-              ),
+                  ),
               child: Container(
                   height: double.infinity,
                   width: double.infinity,
@@ -346,7 +351,7 @@ class _CustomerInfoScreenState extends ConsumerState<CustomerInfoScreen> {
                       );
                     },
                   )))),
-          selectedIndex ==7?LedgerDataGrid():Container()
+          selectedIndex == 7 ? const LedgerDataGrid() : Container()
         ],
       ),
     );

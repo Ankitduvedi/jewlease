@@ -7,6 +7,7 @@ import 'package:jewlease/feature/all_attributes/screen/all_attribute_screen.dart
 import 'package:jewlease/feature/all_attributes/screen/new_attribute_screen.dart';
 import 'package:jewlease/feature/auth/screens/login_screen_owner.dart';
 import 'package:jewlease/feature/barcoding/screens/barCodeGeneration.dart';
+import 'package:jewlease/feature/crm/screens/add_customer.dart';
 import 'package:jewlease/feature/department/screen/add_department_screen.dart';
 import 'package:jewlease/feature/department/screen/department_home_screen.dart';
 import 'package:jewlease/feature/employee/screen/add_employee_screen.dart';
@@ -336,6 +337,11 @@ final goRouter = GoRouter(
                 return const CustomerInfoScreen();
               }),
           GoRoute(
+              path: '/addCustomerScreen',
+              builder: (context, state) {
+                return const AddCustomerScreen();
+              }),
+          GoRoute(
               path: '/rm_procument',
               builder: (context, state) {
                 return const RmProcumentSummaryScreen();
@@ -351,7 +357,5 @@ final goRouter = GoRouter(
                 return TransferScreen();
               })
         ]),
-
-
   ],
 );
