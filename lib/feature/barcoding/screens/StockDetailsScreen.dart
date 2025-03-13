@@ -55,7 +55,7 @@ class _StockDetailsScreenState extends ConsumerState<StockDetailsScreen> {
                         endUrl: 'Barcode/Detail',
                         value: 'Stock ID',
                         keyOfMap: 'Vendor Name',
-                        query: 'Barcode Generation',
+                        // query: 'Barcode Generation',
                         onSelectdRow: (selectedRow) async {
                           print("selected Row $selectedRow");
 
