@@ -102,13 +102,13 @@ class AddMetalItemScreenState extends ConsumerState<AddVendor> {
         ElevatedButton(
           onPressed: () {
             final config = Vendor(
-                gstRegistrationType: 'To be replaced',
+                gstRegistrationType: textFieldvalues['GST Registration Type']!,
                 initials: initial.text,
                 vendorCode: vendorCode.text,
                 vendorName: vendorName.text,
-                defaultCurrency: 'To be replaced',
+                defaultCurrency: textFieldvalues['Default Currency']!,
                 agentName: '',
-                defaultTerms: 'To be replaced',
+                defaultTerms: textFieldvalues['Default Term']!,
                 rowStatus: dropDownValue['Row Status'] ?? 'Active',
                 logoFileName: logoFileName.text,
                 localSalesTaxNo: localSalesTaxNo.text,
@@ -230,6 +230,8 @@ class AddMetalItemScreenState extends ConsumerState<AddVendor> {
   }
 
   Widget parentForm() {
+    final textFieldvalues = ref.watch(dialogSelectionProvider);
+
     return GridView.count(
       crossAxisCount: 6,
       crossAxisSpacing: 10,
@@ -237,7 +239,8 @@ class AddMetalItemScreenState extends ConsumerState<AddVendor> {
       childAspectRatio: 4.5,
       children: [
         ReadOnlyTextFieldWidget(
-          hintText: 'GST Registration',
+          hintText: textFieldvalues['GST Registration Type'] ??
+              'GST Registration Type',
           labelText: 'GST Registration',
           icon: Icons.search,
           onIconPressed: () {
@@ -246,7 +249,7 @@ class AddMetalItemScreenState extends ConsumerState<AddVendor> {
               builder: (context) => const ItemTypeDialogScreen(
                 title: 'GST Registration Type',
                 endUrl: 'Global/GstRegistration',
-                value: 'ConfigValue',
+                value: 'CONFIG CODE',
               ),
             );
           },
@@ -264,7 +267,7 @@ class AddMetalItemScreenState extends ConsumerState<AddVendor> {
           labelText: 'Vendor Name',
         ),
         ReadOnlyTextFieldWidget(
-          hintText: 'Default Currency',
+          hintText: textFieldvalues['Default Currency'] ?? 'Default Currency',
           labelText: 'Default Currency',
           icon: Icons.search,
           onIconPressed: () {
@@ -273,13 +276,13 @@ class AddMetalItemScreenState extends ConsumerState<AddVendor> {
               builder: (context) => const ItemTypeDialogScreen(
                 title: 'Default Currency',
                 endUrl: 'Global/DefaultCurrency',
-                value: 'ConfigValue',
+                value: 'CURRENCY NAME',
               ),
             );
           },
         ),
         ReadOnlyTextFieldWidget(
-          hintText: 'Default Term',
+          hintText: textFieldvalues['Default Term'] ?? 'Default Term',
           labelText: 'Default Term',
           icon: Icons.search,
           onIconPressed: () {
@@ -288,7 +291,7 @@ class AddMetalItemScreenState extends ConsumerState<AddVendor> {
               builder: (context) => const ItemTypeDialogScreen(
                 title: 'Default Term',
                 endUrl: 'Global/TermsMaster',
-                value: 'ConfigValue',
+                value: 'TERMS TYPE',
               ),
             );
           },

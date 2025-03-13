@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+import 'package:jewlease/core/routes/go_router.dart';
 import 'package:jewlease/core/utils/utils.dart';
 import 'package:jewlease/data/model/employee_and_location_model.dart';
 import 'package:jewlease/feature/auth/repository/auth_repository.dart';
@@ -27,8 +27,8 @@ class AuthController extends StateNotifier<bool> {
       response.fold((l) => Utils.snackBar(l.message, context), (employee) {
         log('login successfull employee $employee');
         ref.read(authProvider.notifier).state = employee;
+        goRouter.go('/');
         Utils.snackBar('login successfull', context);
-        context.push('/');
         null;
       });
       // Optionally update the state if necessary after submission
