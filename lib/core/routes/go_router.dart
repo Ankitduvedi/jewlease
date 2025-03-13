@@ -42,6 +42,7 @@ import 'package:jewlease/feature/vendor/screens/new_vendor_screen.dart';
 import 'package:jewlease/feature/vendor/screens/vendor_screen.dart';
 
 import '../../feature/barcoding/screens/barcoding_screen.dart';
+import '../../feature/crm/screens/crm_dashboard.dart';
 import '../../feature/crm/screens/customer_info_screen.dart';
 import '../../feature/inventoryManagement/screens/inventoryScreen.dart';
 import '../../feature/item_specific/screens/add_style_variant.dart';
@@ -334,7 +335,14 @@ final goRouter = GoRouter(
           GoRoute(
               path: '/CustomerInfoScreen',
               builder: (context, state) {
-                return const CustomerInfoScreen();
+                return const
+                // CustomerInfoScreen();
+                CrmDashboard();
+              }),
+          GoRoute(
+              path: '/CustomerDashboard',
+              builder: (context, state) {
+                return CrmDashboard();
               }),
           GoRoute(
               path: '/addCustomerScreen',

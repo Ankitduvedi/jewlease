@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/core/routes/go_router.dart';
 import 'package:jewlease/feature/sub_contracting/issue_controller.dart';
-import 'package:jewlease/feature/transfer/controller/outward_controller.dart';
 // import 'package:jewlease/feature/transfer/screens/widgets/transfer_Inward_dialog.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
@@ -270,6 +270,7 @@ class _TransferInwardScreenState extends ConsumerState<ReturnScreen> {
       print("error in updating summery $e");
     }
   }
+
   //<-----------------------Test Metal In Range-------------------------------->
   bool testForMetal(String variantName, int rowNo, double weight) {
     Map<String, dynamic> rawMaterial = ref
@@ -279,23 +280,27 @@ class _TransferInwardScreenState extends ConsumerState<ReturnScreen> {
     print("raw material $rowNo $rawMaterial");
     if (rawMaterial.isEmpty) return true;
     double rawNetWt = double.parse(rawMaterial["Net Weight"]);
-    print("raw1 $rawNetWt");
+    print("raw material $rawNetWt $weight");
     return rawNetWt >= weight;
   }
+
   //<-----------------------Test Stone In Range-------------------------------->
 
   bool testForStone(String variantName, int rowNo, double weight, int pieces) {
-    Map<String, dynamic> rawMaterial =
-        ref.read(returnRawListProvider.notifier).findMap(variantName, rowNo);
-    print("raw material $rowNo $rawMaterial");
+    Map<String, dynamic> rawMaterial = ref
+        .read(returnRawListProvider.notifier)
+        .findMap(variantName, rowNo + 1);
+    print(
+        "raw materialx $variantName $rowNo ${ref.read(returnRawListProvider)}");
     if (rawMaterial.isEmpty) return true;
     double rawNetWt = double.parse(rawMaterial["Net Weight"]);
-    int rawPieces = rawMaterial["Pieces"];
-    print("raw $rawNetWt $rawPieces");
-    return rawNetWt >= weight && rawPieces >= pieces;
+    int rawPieces = rawMaterial["Dia Pieces"];
+    print("raw stone $pieces $rawPieces");
+    return rawPieces >= pieces;
   }
+
 //<-----------------------Test Raw Material In Range-------------------------------->
-  void testWithInRange(List<Map<String, dynamic>> varientList) {
+  Future<bool> testWithInRange(List<Map<String, dynamic>> varientList) async {
     bool result = true;
     int rowNo = -1;
     String styleVariantName = "";
@@ -322,25 +327,25 @@ class _TransferInwardScreenState extends ConsumerState<ReturnScreen> {
           Utils.snackBar(
               "Range Exceed in Variant $styleVariantName at Row ${rowNo + 1}",
               context);
-          return;
+          return result;
         }
       }
     }
-
-    updateIssueWork(varientList);
+    if (result != false) updateIssueWork(varientList);
+    return result;
   }
-
 
 //<-----------------------Update Raw Issue-------------------------------->
   void updateRawIssue(
       String variantName, int rowNo, double weight, int pieces, bool isStone) {
-    Map<String, dynamic> rawMaterial =
-        ref.read(returnRawListProvider.notifier).findMap(variantName, rowNo+1);
+    Map<String, dynamic> rawMaterial = ref
+        .read(returnRawListProvider.notifier)
+        .findMap(variantName, rowNo + 1);
     print("raw material $rowNo $rawMaterial");
-    String stockId= rawMaterial["Stock ID"];
+    String stockId = rawMaterial["Stock ID"];
     if (rawMaterial.isEmpty) return;
     double rawNetWt = double.parse(rawMaterial["Net Weight"]);
-    int rawPieces = isStone?rawMaterial["Dia Pieces"]: rawMaterial["Pieces"];
+    int rawPieces = isStone ? rawMaterial["Dia Pieces"] : rawMaterial["Pieces"];
     print("raw $rawNetWt $rawPieces");
     // return;
     if (isStone) {
@@ -348,11 +353,11 @@ class _TransferInwardScreenState extends ConsumerState<ReturnScreen> {
         rawMaterial["Net Weight"] = rawNetWt - weight;
         rawMaterial["Dia Pieces"] = rawPieces - pieces;
 
-        Map<String,dynamic>newMap = transformSchema(rawMaterial);
+        Map<String, dynamic> newMap = transformSchema(rawMaterial);
         print("update map1 $newMap");
         ref
             .read(IssueStockControllerProvider.notifier)
-            .updateIssueStock(newMap,stockId);
+            .updateIssueStock(newMap, stockId);
       } else {
         print("update map2 $rawMaterial");
         ref
@@ -363,11 +368,11 @@ class _TransferInwardScreenState extends ConsumerState<ReturnScreen> {
       if (rawNetWt > weight) {
         rawMaterial["Net Weight"] = rawNetWt - weight;
         print("update map3 $rawMaterial");
-        Map<String,dynamic>newMap = transformSchema(rawMaterial);
+        Map<String, dynamic> newMap = transformSchema(rawMaterial);
         print("update map1 $newMap");
         ref
             .read(IssueStockControllerProvider.notifier)
-            .updateIssueStock(rawMaterial,stockId);
+            .updateIssueStock(rawMaterial, stockId);
       } else {
         print("update map4  $rawMaterial");
         ref
@@ -376,6 +381,7 @@ class _TransferInwardScreenState extends ConsumerState<ReturnScreen> {
       }
     }
   }
+
 //<-----------------------Update Issue Raw Material------------------------------->
   void updateIssueWork(List<Map<String, dynamic>> varientList) {
     bool result = true;
@@ -426,28 +432,33 @@ class _TransferInwardScreenState extends ConsumerState<ReturnScreen> {
     List<Map<String, dynamic>> varientList =
         ref.read(procurementVariantProvider);
 
-    testWithInRange(varientList);
+    bool result = await testWithInRange(varientList);
+    if (result) {
+      TransactionModel transaction = createTransaction(varientList);
+      String transactionID = await ref
+              .read(TransactionControllerProvider.notifier)
+              .sentTransaction(transaction) ??
+          "ABC";
+      for (var varient in varientList!) {
+        print("varient $varient");
+        print("tansform schema is ${transformSchema(varient)}");
 
-    TransactionModel transaction = createTransaction(varientList);
-    String transactionID = await ref
-            .read(TransactionControllerProvider.notifier)
-            .sentTransaction(transaction) ??
-        "ABC";
-    for (var varient in varientList!) {
-      print("varient $varient");
-      print("tansform schema is ${transformSchema(varient)}");
-
-      ref.read(procurementControllerProvider.notifier).updateGRN(transformSchema(varient), varient["Stock ID"]);
-      BarcodeDetailModel detailModel =
-          createBarcodeDetail(varient, transactionID);
-      BarcodeHistoryModel historyModel =
-          createBarcodeHistory(varient, transactionID);
-      await ref
-          .read(BarocdeDetailControllerProvider.notifier)
-          .sentBarcodeDetail(detailModel);
-      await ref
-          .read(BarocdeHistoryControllerProvider.notifier)
-          .sentBarcodeHistory(historyModel);
+        ref
+            .read(procurementControllerProvider.notifier)
+            .updateGRN(transformSchema(varient), varient["Stock ID"]);
+        BarcodeDetailModel detailModel =
+            createBarcodeDetail(varient, transactionID);
+        BarcodeHistoryModel historyModel =
+            createBarcodeHistory(varient, transactionID);
+        await ref
+            .read(BarocdeDetailControllerProvider.notifier)
+            .sentBarcodeDetail(detailModel);
+        await ref
+            .read(BarocdeHistoryControllerProvider.notifier)
+            .sentBarcodeHistory(historyModel);
+      }
+      Utils.snackBar("Returned Stocks Succcessfully", context);
+      // goRouter.push('/');
     }
   }
 

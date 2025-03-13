@@ -310,15 +310,15 @@ class InventoryItemModel {
           oldVarient: json['oldVarient'] ?? '',
           stoneMaxWt: json['stoneMaxWt'] ?? 0,
           stoneMinWt: json['stoneMinWt'] ?? 0,
-          styleKarat: json['styleKarat'] ?? 0,
+          styleKarat: json['styleKarat'] ?? '',
           vendorCode: json['vendorCode'] ?? '',
           baseVarient: json['baseVarient'] ?? '',
           codegenSrNo: json['codegenSrNo'] ?? '',
           subCategory: json['subCategory'] ?? '',
           deliveryDays: json['deliveryDays'] ?? 0,
-          imageDetails: json['imageDetails'].length > 0
+          imageDetails: json['imageDetails']!=null?(json['imageDetails'].length > 0
               ? json['imageDetails'][0]["url"]
-              : "" ?? "",
+              : "" ):  "",
           locationCode: json['loactionCode'] ?? '',
           stdBuyingRate: json['stdBuyingRate'] ?? 0,
           vendorVarient: json['vendorVarient'] ?? '',
