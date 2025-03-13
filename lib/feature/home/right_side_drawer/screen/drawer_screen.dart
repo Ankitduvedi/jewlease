@@ -103,11 +103,7 @@ class DrawerScreen extends ConsumerWidget {
                       children: [
                         // Location Dropdown
                         DropdownButton<Location>(
-                          value: selectedLocation ??
-                              employee!.locations.where((loc) {
-                                return loc.locationName ==
-                                    employee.defaultLocation;
-                              }).first,
+                          value: selectedLocation,
                           hint: const Text("Select Location"),
                           isExpanded: true,
                           items: employee!.locations.map((location) {
@@ -120,15 +116,15 @@ class DrawerScreen extends ConsumerWidget {
                             ref
                                 .read(selectedLocationDropdownProvider.notifier)
                                 .state = location!;
-                            if (location != null) {
-                              log("selected location: ${location.locationName}");
-                              ref
-                                      .read(selectedDepartmentProvider.notifier)
-                                      .state =
-                                  (location!.departments!.isNotEmpty
-                                      ? location!.departments!.first
-                                      : null)!;
-                            }
+                            log("selected location: ${location.locationName}");
+                            ref
+                                    .read(selectedDepartmentProvider.notifier)
+                                    .state =
+                                (location.departments.isNotEmpty
+                                    ? location.departments.first
+                                    : null)!;
+                            drawerNotifier.setLocation(location.locationName);
+                            drawerNotifier.setDepartment;
                             // Reset department
                           },
                         ),
@@ -140,18 +136,20 @@ class DrawerScreen extends ConsumerWidget {
                           value: selectedDepartment,
                           hint: const Text("Select Department"),
                           isExpanded: true,
-                          items: selectedLocation?.departments.map((dept) {
-                                return DropdownMenuItem<Departments>(
-                                  value: dept,
-                                  child: Text(dept.departmentName),
-                                );
-                              }).toList() ??
-                              [],
+                          items: selectedLocation.departments.map((dept) {
+                            return DropdownMenuItem<Departments>(
+                              value: dept,
+                              child: Text(dept.departmentName),
+                            );
+                          }).toList(),
+                          // ignore: unnecessary_null_comparison
                           onChanged: selectedLocation != null
                               ? (dept) {
                                   ref
                                       .read(selectedDepartmentProvider.notifier)
                                       .state = dept!;
+                                  drawerNotifier
+                                      .setDepartment(dept.departmentName);
                                 }
                               : null,
                         ),

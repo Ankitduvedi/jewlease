@@ -47,7 +47,7 @@ class ReadOnlyTextFieldWidget extends ConsumerWidget {
             borderRadius: BorderRadius.circular(8.0),
           ),
           contentPadding:
-              EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+              const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
         ));
   }
 }

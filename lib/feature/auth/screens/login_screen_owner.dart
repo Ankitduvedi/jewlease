@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jewlease/feature/auth/controller/auth_controller.dart';
-import 'package:jewlease/feature/auth/repository/auth_repository.dart';
 import 'package:jewlease/feature/splash_screen/splash_view.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -50,7 +49,7 @@ class LoginScreenState extends ConsumerState<LoginScreen>
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    final authController = AuthController(AuthRepository());
+    final authController = ref.watch(authControllerProvider.notifier);
 
     return Scaffold(
       body: SafeArea(
