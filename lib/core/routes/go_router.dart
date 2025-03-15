@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jewlease/core/routes/navigation_const.dart';
+import 'package:jewlease/data/model/customer_model.dart';
 import 'package:jewlease/feature/all_attributes/screen/all_attribute_screen.dart';
 import 'package:jewlease/feature/all_attributes/screen/new_attribute_screen.dart';
 import 'package:jewlease/feature/auth/screens/login_screen_owner.dart';
@@ -335,9 +336,13 @@ final goRouter = GoRouter(
           GoRoute(
               path: '/CustomerInfoScreen',
               builder: (context, state) {
-                return const
-                // CustomerInfoScreen();
-                CrmDashboard();
+                final customer = state.extra as CustomerModel;
+                print("customer info , ${customer.firstName}");
+                return
+                    // CustomerInfoScreen();
+                    CustomerInfoScreen(
+                  customer: customer,
+                );
               }),
           GoRoute(
               path: '/CustomerDashboard',
@@ -347,7 +352,10 @@ final goRouter = GoRouter(
           GoRoute(
               path: '/addCustomerScreen',
               builder: (context, state) {
-                return const AddCustomerScreen();
+                CustomerModel customer = state.extra as CustomerModel;
+                return AddCustomerScreen(
+                  customer: customer,
+                );
               }),
           GoRoute(
               path: '/rm_procument',

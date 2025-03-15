@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:jewlease/data/model/customer_model.dart';
 import 'package:jewlease/feature/crm/screens/ledger_data_grid.dart';
 
 import '../../../main.dart';
@@ -8,7 +9,9 @@ import '../../../main.dart';
 final tabIndexProvider = StateProvider<int>((ref) => 0);
 
 class CustomerInfoScreen extends ConsumerStatefulWidget {
-  const CustomerInfoScreen({super.key});
+  const CustomerInfoScreen({required this.customer, super.key});
+
+  final CustomerModel customer;
 
   @override
   ConsumerState<CustomerInfoScreen> createState() => _CustomerInfoScreenState();
@@ -66,13 +69,14 @@ class _CustomerInfoScreenState extends ConsumerState<CustomerInfoScreen> {
                         Row(
                           // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              "Sanjay Kumar",
+                            Text(
+                              "${widget.customer.firstName} ${widget.customer.lastName}",
                               style: TextStyle(fontWeight: FontWeight.w600),
                             ),
                             IconButton(
                               onPressed: () {
-                                context.push('/addCustomerScreen');
+                                context.push('/addCustomerScreen',
+                                    extra: widget.customer);
                               },
                               icon: const Icon(
                                 Icons.edit,
@@ -112,7 +116,7 @@ class _CustomerInfoScreenState extends ConsumerState<CustomerInfoScreen> {
                               ),
                             ),
                             // Spacer(),
-                            const Column(
+                            Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
@@ -126,7 +130,7 @@ class _CustomerInfoScreenState extends ConsumerState<CustomerInfoScreen> {
                                       width: 5,
                                     ),
                                     Text(
-                                      "a@gmail.com",
+                                      widget.customer.emailId,
                                       style: TextStyle(fontSize: 12),
                                     )
                                   ],
@@ -141,7 +145,8 @@ class _CustomerInfoScreenState extends ConsumerState<CustomerInfoScreen> {
                                       width: 5,
                                     ),
                                     Text(
-                                      "+918077485551",
+                                      widget.customer.mobileNo,
+                                      // widget.customer.phone,
                                       style: TextStyle(fontSize: 12),
                                     )
                                   ],
