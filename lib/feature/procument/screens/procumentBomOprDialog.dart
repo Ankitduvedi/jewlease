@@ -58,7 +58,7 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
         endUrl: 'SubContracting/IssueWork',
         value: 'Stock ID',
         queryMap: value.contains("Stone")
-            ? {"isRawMaterial": 1, "Varient Name": "New DIAMOND-5"}
+            ? {"isRawMaterial": 1,}
             : {"isRawMaterial": 1, "Varient Name": "new"},
         onOptionSelectd: (selectedValue) {
           print("selected value $selectedValue");

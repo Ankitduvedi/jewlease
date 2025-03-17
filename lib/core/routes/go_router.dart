@@ -35,6 +35,7 @@ import 'package:jewlease/feature/item_specific/screens/add_style_item_screen.dar
 import 'package:jewlease/feature/item_specific/screens/load_data_screen.dart';
 import 'package:jewlease/feature/item_specific/screens/master_screen.dart';
 import 'package:jewlease/feature/point_of_sale/screens/point_of_sale_screen.dart';
+import 'package:jewlease/feature/rm_inventory_management/screens/rm_Inventory_management.dart';
 import 'package:jewlease/feature/transfer/screens/transfer_inward_location.dart';
 import 'package:jewlease/feature/transfer/screens/transfer_outward_location.dart';
 import 'package:jewlease/feature/transfer/screens/transfer_screen.dart';
@@ -371,7 +372,10 @@ final goRouter = GoRouter(
               path: '/transferLocation',
               builder: (context, state) {
                 return TransferScreen();
-              })
+              }),
+          GoRoute(path: '//rmInventoryScreen',builder: (context,state){
+            return RmInventoryManagementScreen();
+          })
         ]),
   ],
 );

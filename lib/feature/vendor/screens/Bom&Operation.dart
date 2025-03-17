@@ -238,6 +238,7 @@ class _MyDataGridState extends ConsumerState<MyDataGrid> {
   int? _selectedRowIndex;
   String? _selectedColumnName;
   final FocusNode _focusNode = FocusNode();
+
   void showProcumentdialog(String endUrl, String value) {
     showDialog(
         context: context,
@@ -249,7 +250,11 @@ class _MyDataGridState extends ConsumerState<MyDataGrid> {
                 onDoubleClick: (Map<String, dynamic> intialData) {
                   log("intial data is $intialData");
                   _addNewRowWithItemGroup(
-                      intialData["OPERATION_NAME"] ?? "", value);
+                      intialData["Metal Variant Name"] ??
+                          intialData["Stone Variant Name"] ??
+                          intialData["OPERATION_NAME"] ??
+                          "",
+                      value);
                   Navigator.pop(context);
                   _updateBomSummaryRow();
                 },
@@ -537,10 +542,10 @@ class _MyDataGridState extends ConsumerState<MyDataGrid> {
                             child: SfDataGrid(
                               rowHeight: 40,
                               headerRowHeight: 40,
-                              navigationMode: GridNavigationMode
-                                  .cell, // Enable cell-level navigation
-                              selectionMode: SelectionMode
-                                  .single, // Allow single cell selection
+                              navigationMode: GridNavigationMode.cell,
+                              // Enable cell-level navigation
+                              selectionMode: SelectionMode.single,
+                              // Allow single cell selection
                               allowEditing: true,
 
                               source: _dataGridSource2,
@@ -566,8 +571,8 @@ class _MyDataGridState extends ConsumerState<MyDataGrid> {
                               columns: oprColumns
                                   .map((columnName) => GridColumn(
                                         columnName: columnName,
-                                        width: gridWidth /
-                                            5, // Adjust column width to fit 4-5 columns
+                                        width: gridWidth / 5,
+                                        // Adjust column width to fit 4-5 columns
                                         label: Container(
                                           color: const Color(0xFF003450),
                                           alignment: Alignment.center,
