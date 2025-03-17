@@ -67,6 +67,11 @@ class _BarcodeHeaderState extends ConsumerState<BarcodeHeader> {
   @override
   Widget build(BuildContext context) {
     final stockDetails = ref.watch(stockDetailsProvider);
+    _grossWeightController.text= stockDetails.balMetWt.toString();
+    _physicalQtyController.text= stockDetails.balPcs.toString();
+
+
+
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       decoration: BoxDecoration(
@@ -133,6 +138,7 @@ class _BarcodeHeaderState extends ConsumerState<BarcodeHeader> {
                     width: 120,
                     child: TextField(
                       controller: _grossWeightController,
+
                       decoration: InputDecoration(
                         labelText: 'G. Wt *',
                         labelStyle: const TextStyle(fontSize: 12),
@@ -140,12 +146,15 @@ class _BarcodeHeaderState extends ConsumerState<BarcodeHeader> {
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                       ),
+                      enabled: false,
+
+
                       onSubmitted: (value) {
-                        StockDetailsModel updatedStockDetails = stockDetails;
-                        updatedStockDetails.currentWt = double.parse(value);
-                        ref
-                            .read(stockDetailsProvider.notifier)
-                            .update(updatedStockDetails);
+                        // StockDetailsModel updatedStockDetails = stockDetails;
+                        // updatedStockDetails.currentWt = double.parse(value);
+                        // ref
+                        //     .read(stockDetailsProvider.notifier)
+                        //     .update(updatedStockDetails);
                       },
                     ),
                   ),
@@ -155,6 +164,7 @@ class _BarcodeHeaderState extends ConsumerState<BarcodeHeader> {
                     width: 120,
                     child: TextField(
                       controller: _physicalQtyController,
+                      enabled: false,
                       decoration: InputDecoration(
                         labelText: 'Phy Qty *',
                         labelStyle: const TextStyle(fontSize: 12),

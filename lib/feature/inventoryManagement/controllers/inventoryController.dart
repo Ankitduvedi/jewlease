@@ -37,6 +37,7 @@ class InventoryController extends StateNotifier<bool> {
 
   // Get inventory item at a given index
   InventoryItemModel getItemAt(int index) {
+
     return inventoryItems[index];
 
     // Return null if index is invalid
