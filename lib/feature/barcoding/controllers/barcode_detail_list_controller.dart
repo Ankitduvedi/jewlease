@@ -27,15 +27,14 @@ class BarcodeDetailListController
               postingDate: DateTime.now().toIso8601String())
         ]);
 
-  /// Add a new BarcodeDetailModel to the list and remove the default if present
+  /// Replace entire barcode detail list with new stock's details
+  void setBarcodeDetail(List<BarcodeDetailModel> newDetails) {
+    state = newDetails; // Replaces the list completely
+  }
+
+  /// Add a new BarcodeDetailModel to the list
   void addBarcodeDetail(BarcodeDetailModel detail) {
-    final hasDefault =
-        state.isNotEmpty && state.first.stockId == 'xyx'; // Check for default
-    if (hasDefault) {
-      state = [detail, ...state.skip(1)]; // Replace default with new element
-    } else {
-      state = [...state, detail]; // Append to the existing list
-    }
+    state = [...state, detail]; // Append new detail
   }
 }
 

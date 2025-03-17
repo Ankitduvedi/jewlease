@@ -6,7 +6,7 @@ class VariantDetailsGrid extends StatefulWidget {
   final List<Variant> variants;
   final List<Operation> operations;
 
-  VariantDetailsGrid(
+  const VariantDetailsGrid(
       {Key? key, required this.variants, required this.operations})
       : super(key: key);
 
@@ -48,7 +48,6 @@ class _VariantDetailsGridState extends State<VariantDetailsGrid> {
   ];
   @override
   void initState() {
-    // TODO: implement initState
     _addVariant();
     _addOperation();
     super.initState();
@@ -85,7 +84,7 @@ class _VariantDetailsGridState extends State<VariantDetailsGrid> {
             footerFrozenColumnsCount: 1,
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 5,
         ),
         Container(
@@ -432,7 +431,7 @@ class _VariantDetailsGridState extends State<VariantDetailsGrid> {
           color: Colors.grey,
           width: 0.5,
         ),
-        color: Color(0xFF003450),
+        color: const Color(0xFF003450),
       ),
       child: Text(
         text,
