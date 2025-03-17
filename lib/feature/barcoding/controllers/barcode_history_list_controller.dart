@@ -19,14 +19,17 @@ class BarcodeHistoryListController
         ]);
 
   /// Add a new BarcodeHistoryModel to the existing list
-  void addBarcodeHistory(BarcodeHistoryModel History) {
-    final hasDefault =
-        state.isNotEmpty && state.first.stockId == 'xyx'; // Check for default
-    if (hasDefault) {
-      state = [History, ...state.skip(1)]; // Replace default with new element
+  void addBarcodeHistory(BarcodeHistoryModel history,
+      {bool isNewStock = false}) {
+    if (isNewStock) {
+      state = [history]; // Clears old data and adds the new stock
     } else {
-      state = [...state, History]; // Append to the existing list
+      state = [...state, history]; // Adds to existing data
     }
+  }
+
+  void setBarcodeHistory(List<BarcodeHistoryModel> newHistory) {
+    state = newHistory; // Replaces the entire list with new data
   }
 
   /// Remove a BarcodeHistoryModel from the list by index

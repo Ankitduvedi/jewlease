@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -37,7 +39,7 @@ class _StockDetailsScreenState extends ConsumerState<StockDetailsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
+            const SizedBox(
               height: 5,
             ),
             SizedBox(
@@ -51,78 +53,77 @@ class _StockDetailsScreenState extends ConsumerState<StockDetailsScreen> {
                     showDialog(
                       context: context,
                       builder: (context) => ItemTypeDialogScreen(
-                        title: 'Choose Stock',
-                        endUrl: 'Barcode/Detail',
-                        value: 'Stock ID',
-                        keyOfMap: 'Vendor Name',
-                        // query: 'Barcode Generation',
-                        onSelectdRow: (selectedRow) async {
-                          print("selected Row $selectedRow");
+                          title: 'Choose Stock',
+                          endUrl: 'Barcode/Detail',
+                          value: 'Stock ID',
+                          keyOfMap: 'Vendor Name',
+                          // query: 'Barcode Generation',
+                          onSelectdRow: (selectedRow) async {
+                            log("selected Row $selectedRow");
 
-                          String stockId = selectedRow["Stock ID"];
-                          List<BarcodeHistoryModel> historys = await ref
-                              .read(BarocdeHistoryControllerProvider.notifier)
-                              .fetchBarcodeHistory(stockId);
+                            String stockId = selectedRow["Stock ID"];
 
-                          historys.forEach((history) => ref
-                              .read(barcodeHistoryListProvider.notifier)
-                              .addBarcodeHistory(history));
-                          List<BarcodeDetailModel> details = await ref
-                              .read(BarocdeDetailControllerProvider.notifier)
-                              .fetchBarcodeDetail(stockId);
-                          print("details ${details.length}");
+                            // Fetch barcode history
+                            List<BarcodeHistoryModel> historys = await ref
+                                .read(BarocdeHistoryControllerProvider.notifier)
+                                .fetchBarcodeHistory(stockId);
 
-                          details.forEach((history) => ref
-                              .read(barcodeDetailListProvider.notifier)
-                              .addBarcodeDetail(history));
-                        },
-                      ),
+                            // Replace old history with new stock's history
+                            ref
+                                .read(barcodeHistoryListProvider.notifier)
+                                .setBarcodeHistory(historys);
+
+                            // Fetch barcode details
+                            List<BarcodeDetailModel> details = await ref
+                                .read(BarocdeDetailControllerProvider.notifier)
+                                .fetchBarcodeDetail(stockId);
+                            log("details ${details.length}");
+
+                            // Replace old details with new stock's details
+                            ref
+                                .read(barcodeDetailListProvider.notifier)
+                                .setBarcodeDetail(details);
+                          }),
                     );
                   },
                 )),
+            _buildSection('Barcode Number', history[selectedIndex].stockId),
             _buildSection(
-                'Barcode Number', history[selectedIndex].stockId ?? ''),
-            _buildSection('Stock Code | Group Code',
-                history[selectedIndex].stockId ?? ''),
+                'Stock Code | Group Code', history[selectedIndex].stockId),
             _buildSection('Quantity', '50'),
             _buildSection('Status', 'Active'),
-            Divider(),
+            const Divider(),
             _buildSection('Lying With', 'METAL CONTROL (METAL CONTROL)'),
             _buildSection('Order No', ''),
-            _buildSection('Vendor Name', details[selectedIndex].vendor ?? ''),
+            _buildSection('Vendor Name', details[selectedIndex].vendor),
             _buildSection('Customer', '0'),
             _buildSection('Batch No', ''),
-            _buildSection(
-                'Stock Variant', details[selectedIndex].varient ?? ''),
+            _buildSection('Stock Variant', details[selectedIndex].varient),
             _buildSection('Stack Age', ''),
             _buildSection('Purchase Document',
-                history[selectedIndex].transactionNumber.toString() ?? ''),
+                history[selectedIndex].transactionNumber.toString()),
             _buildSection('Purchase Variant', ''),
             _buildSection('Creation Date', ''),
             _buildSection('HUID', ''),
             _buildSection('CNO', ''),
             _buildSection('Certificate No', ''),
-            _buildSection('Remarks', details[selectedIndex].remark ?? ''),
-            Divider(),
-            _buildSection(
-                'Trans Subtype', details[selectedIndex].transType ?? ''),
+            _buildSection('Remarks', details[selectedIndex].remark),
+            const Divider(),
+            _buildSection('Trans Subtype', details[selectedIndex].transType),
             _buildSection('Trans Category', 'General'),
             _buildSection(
                 'Financial Year',
                 DateFormat('d-M-yyyy')
-                        .format(DateTime.parse(details[selectedIndex].date)) ??
-                    ''),
-            _buildSection('Src Location', details[selectedIndex].source ?? ""),
-            _buildSection(
-                'Dest Location', details[selectedIndex].destination ?? ""),
-            _buildSection('Customer', details[selectedIndex].customer ?? ""),
+                    .format(DateTime.parse(details[selectedIndex].date))),
+            _buildSection('Src Location', details[selectedIndex].source),
+            _buildSection('Dest Location', details[selectedIndex].destination),
+            _buildSection('Customer', details[selectedIndex].customer),
             _buildSection('Vendor Name', details[selectedIndex].vendor),
+            _buildSection('Src Department', details[selectedIndex].sourceDept),
             _buildSection(
-                'Src Department', details[selectedIndex].sourceDept ?? ""),
-            _buildSection('Dest Department',
-                details[selectedIndex].destinationDept ?? ""),
-            _buildSection('Terms', details[selectedIndex].term ?? ""),
-            _buildSection('Currency', details[selectedIndex].currency ?? ""),
+                'Dest Department', details[selectedIndex].destinationDept),
+            _buildSection('Terms', details[selectedIndex].term),
+            _buildSection('Currency', details[selectedIndex].currency),
           ],
         ),
       ),
@@ -139,19 +140,19 @@ class _StockDetailsScreenState extends ConsumerState<StockDetailsScreen> {
             flex: 2,
             child: Text(
               title,
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight: FontWeight.w600,
                 color: Colors.black87,
                 fontSize: 10,
               ),
             ),
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Expanded(
             flex: 3,
             child: Text(
               value.isNotEmpty ? value : '-',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 10,
                 color: Colors.black54,
               ),

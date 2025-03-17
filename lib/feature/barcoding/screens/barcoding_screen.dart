@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -24,7 +26,7 @@ class BarcodingScreen extends ConsumerStatefulWidget {
 }
 
 class _BarcodingScreenState extends ConsumerState<BarcodingScreen> {
-  List<String> _tabs = [
+  final List<String> _tabs = [
     'Batch History',
     'Barcode History',
     'Inventory Transaction',
@@ -36,7 +38,6 @@ class _BarcodingScreenState extends ConsumerState<BarcodingScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
@@ -84,7 +85,7 @@ class _BarcodingScreenState extends ConsumerState<BarcodingScreen> {
                         },
                         child: Container(
                           color: index == tabselectedIndex
-                              ? Color(0xff28713E)
+                              ? const Color(0xff28713E)
                               : Colors.white,
                           margin: EdgeInsets.symmetric(
                               horizontal: screenWidth * 0.01),
@@ -96,8 +97,8 @@ class _BarcodingScreenState extends ConsumerState<BarcodingScreen> {
                                 vertical: screenHeight * 0.005),
                             decoration: BoxDecoration(
                               color: index == tabselectedIndex
-                                  ? Color(0xff28713E)
-                                  : Color(0xffF0F4F8),
+                                  ? const Color(0xff28713E)
+                                  : const Color(0xffF0F4F8),
                               borderRadius: BorderRadius.circular(5),
                             ),
                             child: Center(
@@ -123,18 +124,18 @@ class _BarcodingScreenState extends ConsumerState<BarcodingScreen> {
                     Expanded(
                       flex: 1,
                       child: Container(
-                          margin: EdgeInsets.symmetric(
+                          margin: const EdgeInsets.symmetric(
                               vertical: 10, horizontal: 10),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(15),
                           ),
-                          child: StockDetailsScreen()),
+                          child: const StockDetailsScreen()),
                     ),
                     Expanded(
                       flex: 3,
                       child: Container(
-                        padding: EdgeInsets.all(10),
+                        padding: const EdgeInsets.all(10),
                         child: Column(
                           children: [
                             Expanded(
@@ -146,7 +147,7 @@ class _BarcodingScreenState extends ConsumerState<BarcodingScreen> {
                                       .length,
                                   itemBuilder: (context, index) {
                                     return Container(
-                                      margin: EdgeInsets.only(right: 10),
+                                      margin: const EdgeInsets.only(right: 10),
                                       height: 50,
                                       width: 220,
                                       child: InkWell(
@@ -179,7 +180,7 @@ class _BarcodingScreenState extends ConsumerState<BarcodingScreen> {
                                     );
                                   }),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 10,
                             ),
                             Expanded(
@@ -189,7 +190,7 @@ class _BarcodingScreenState extends ConsumerState<BarcodingScreen> {
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(15),
                                 ),
-                                padding: EdgeInsets.all(10),
+                                padding: const EdgeInsets.all(10),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -199,27 +200,27 @@ class _BarcodingScreenState extends ConsumerState<BarcodingScreen> {
                                           onTap: () {},
                                           child: Container(
                                             decoration: BoxDecoration(
-                                                color: Color(0xff075184),
+                                                color: const Color(0xff075184),
                                                 borderRadius:
                                                     BorderRadius.circular(8)),
-                                            child: Center(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 20, vertical: 5),
+                                            child: const Center(
                                               child: Text(
                                                 "Item Details",
                                                 style: TextStyle(
                                                     color: Colors.white),
                                               ),
                                             ),
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 20, vertical: 5),
                                           ),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 10,
                                         ),
                                         Expanded(child: Container())
                                       ],
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 10,
                                     ),
                                     if (historys[selectedIndex].bom.isNotEmpty)
@@ -239,9 +240,9 @@ class _BarcodingScreenState extends ConsumerState<BarcodingScreen> {
                   ],
                 ))
             : tabselectedIndex == 2
-                ? InvantoryTransactionScreeen()
+                ? const InvantoryTransactionScreeen()
                 : tabselectedIndex == 3
-                    ? FinanacialTransaction()
+                    ? const FinanacialTransaction()
                     : Container());
   }
 }
@@ -281,8 +282,7 @@ class _ItemDetailsState extends State<ItemDetails> {
 
   @override
   void initState() {
-    // TODO: implement initState
-    print("rebuilding item details");
+    log("rebuilding item details");
     initializeBomOpr();
     _bomDataGridSource = procumentBomGridSource(
         _bomRows, _removeRow, _updateBomSummaryRow, showFormula, true);
@@ -293,7 +293,7 @@ class _ItemDetailsState extends State<ItemDetails> {
   }
 
   void initializeBomOpr() {
-    print("bom is ${widget.bom}");
+    log("bom is ${widget.bom}");
     List<dynamic> listOfBoms = widget.bom["data"];
 
     _bomRows = listOfBoms.map((bom) {
@@ -308,11 +308,11 @@ class _ItemDetailsState extends State<ItemDetails> {
         DataGridCell<String>(columnName: 'Sp Char', value: bom[7]),
         DataGridCell<String>(columnName: 'Operation', value: bom[8]),
         DataGridCell<String>(columnName: 'Type', value: bom[9]),
-        DataGridCell<Widget>(columnName: 'Actions', value: null),
+        const DataGridCell<Widget>(columnName: 'Actions', value: null),
       ]);
     }).toList();
     List<dynamic> listOfOperation = widget.operation["data"];
-    print("operation is $listOfOperation");
+    log("operation is $listOfOperation");
     _OpeationRows = listOfOperation.map((opr) {
       return DataGridRow(cells: [
         DataGridCell<String>(columnName: 'Calc Bom', value: opr[0]),
@@ -323,8 +323,8 @@ class _ItemDetailsState extends State<ItemDetails> {
         DataGridCell<dynamic>(columnName: 'Calc Method Value', value: opr[5]),
         DataGridCell<dynamic>(columnName: 'Depd Method', value: opr[6]),
         DataGridCell<dynamic>(columnName: 'Depd Method Value', value: opr[7]),
-        DataGridCell<Widget>(columnName: 'Depd Type', value: null),
-        DataGridCell<Widget>(columnName: 'Depd Qty', value: null),
+        const DataGridCell<Widget>(columnName: 'Depd Type', value: null),
+        const DataGridCell<Widget>(columnName: 'Depd Qty', value: null),
       ]);
     }).toList();
   }
@@ -337,7 +337,7 @@ class _ItemDetailsState extends State<ItemDetails> {
       children: [
         Container(
           width: (gridWidth / 5) * 10,
-          margin: EdgeInsets.symmetric(vertical: 10),
+          margin: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10),
@@ -351,8 +351,8 @@ class _ItemDetailsState extends State<ItemDetails> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
                 child: Text(
                   '   Modify Bom',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -369,14 +369,14 @@ class _ItemDetailsState extends State<ItemDetails> {
             ],
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 10,
         ),
         Flexible(
           // Allows the content to expand only as needed
           fit: FlexFit.loose,
           child: Container(
-            margin: EdgeInsets.symmetric(vertical: 10),
+            margin: const EdgeInsets.symmetric(vertical: 10),
             decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
