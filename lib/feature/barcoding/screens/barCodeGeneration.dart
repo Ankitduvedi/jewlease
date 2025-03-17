@@ -100,18 +100,19 @@ class _BarCodeGenerationState extends ConsumerState<BarCodeGeneration> {
   //<------------------------- Function To update wt   ----------- -------------->
   void _updateWt(String val) {
     print("_upadte wt runs $val");
-    if(_bomRows.length>0) {
-
-    _bomRows[1] = DataGridRow(
-        cells: _bomRows[1].getCells().map((cell) {
-      if (cell.columnName == 'Weight') {
-        return DataGridCell<double>(
-            columnName: 'Weight', value: double.parse(val));
-      }
-      return cell;
-    }).toList());
-    _updateAmount(double.parse(val) * _bomRows[1].getCells()[4].value);
-    _updateBomSummaryRow();}
+    // if(_bomRows.length>0) {
+    //
+    // _bomRows[1] = DataGridRow(
+    //     cells: _bomRows[1].getCells().map((cell) {
+    //   if (cell.columnName == 'Weight') {
+    //     return DataGridCell<double>(
+    //         columnName: 'Weight', value: double.parse(val));
+    //   }
+    //   return cell;
+    // }).toList());
+    // _updateAmount(double.parse(val) * _bomRows[1].getCells()[4].value);
+    // _updateBomSummaryRow();
+    // }
   }
 
   void _updateAmount(double updatedAmount) {

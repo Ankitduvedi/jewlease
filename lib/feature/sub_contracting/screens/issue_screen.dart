@@ -259,7 +259,7 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
       "forWeb": input["For Web"],
       "rowStatus": input["Row Status"],
       "verifiedStatus": input["Verified Status"],
-      "length": input["Length"],
+      "length": -1,
       "codegenSrNo": input["Codegen Sr No"],
       "category": input["CATEGORY"],
       "subCategory": input["Sub-Category"],
@@ -289,7 +289,9 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
       "itemGroup": input["style"] ?? "",
       "metalColor": input["Karat Color"],
       "styleMetalColor": input["Karat Color"],
-      "locationCode": ""
+      "locationCode": "",
+      "isRawMaterial": input["isRawMaterial"],
+      "variant type": input["Variant Type"],
     };
   }
 
@@ -304,10 +306,11 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
         reqBody["vendor"] = ref.read(pocVendorProvider)["Vendor Name"];
         reqBody["issueDate"] = DateTime.now().toIso8601String();
         reqBody["operationName"] = "Alteration";
+
         reqstBodeis.add(reqBody);
+
         print("req $reqBody");
       }
-
 
       TransactionModel transaction = createTransaction(reqstBodeis);
       String? transactionID = await ref
@@ -331,7 +334,7 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
             .read(BarocdeHistoryControllerProvider.notifier)
             .sentBarcodeHistory(history);
 
-        reqBody["length"]=-1;
+        reqBody["length"] = -1;
         await ref
             .read(procurementControllerProvider.notifier)
             .updateGRN(reqBody, stockId);
@@ -452,7 +455,9 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
                                   "isRawMaterial": 1,
                                   "Varient Name": "New DIAMOND-5"
                                 }
-                              : {"isRawMaterial": 1,},
+                              : {
+                                  "isRawMaterial": 1,
+                                },
                           onOptionSelectd: (selectedValue) {
                             print("selected value $selectedValue");
                           },
