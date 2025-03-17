@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/data/model/barcode_detail_model.dart';
-import 'package:jewlease/feature/barcoding/Repository/barcode_detail_repostiory.dart';
+import 'package:jewlease/feature/barcoding/repository/barcode_detail_repostiory.dart';
 
 final dioProvider = Provider((ref) => Dio());
 

@@ -115,9 +115,9 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
         },
         key: const ValueKey('Bar Codr Gneration')),
     _buildTile(
-      title: 'Bar Coding',
-      icon: Icons.people,
-      color: Colors.amberAccent,
+      title: 'BarCode History',
+      icon: Icons.history,
+      color: Colors.blue,
       onTap: () {
         goRouter.push('/barcodingScreen');
       },

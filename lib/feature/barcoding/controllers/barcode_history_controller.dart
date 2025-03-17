@@ -1,8 +1,10 @@
+import 'dart:developer' show log;
+
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../data/model/barcode_historyModel.dart';
-import '../Repository/barcode_history_repository.dart';
+import '../repository/barcode_history_repository.dart';
 
 final dioProvider = Provider((ref) => Dio());
 
@@ -39,17 +41,17 @@ class BarcodeHistoryController extends StateNotifier<AsyncValue<void>> {
     state = const AsyncValue.loading();
     try {
       final response = await _repository.fetchBarcodeHistory(stockCode);
-      print("response ${response.length}");
+      log("response ${response.length}");
       List<BarcodeHistoryModel> NewBarcodeHistorys = [];
       response.forEach((element) {
         NewBarcodeHistorys.add(BarcodeHistoryModel.fromJson(element));
       });
-      print("NewBarcodeHistorys ${NewBarcodeHistorys.length}");
+      log("NewBarcodeHistorys ${NewBarcodeHistorys.length}");
       return NewBarcodeHistorys;
 
       state = const AsyncValue.data(null);
     } catch (e, stackTrace) {
-      print("errro in conversion history model $e");
+      log("errro in conversion history model $e");
       state = AsyncValue.error(e, stackTrace);
       return [];
     }
