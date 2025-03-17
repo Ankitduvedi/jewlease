@@ -197,7 +197,7 @@ class _ProcumentDataGridState extends ConsumerState<RmProcumentSummaryScreen> {
                   print("intial data $intialData");
                   intialData["Varient Name"] = intialData["Stone Variant Name"];
                   if (intialData["Varient Name"] == null) {
-                    intialData["Varient Name"] = intialData["Metal name"];
+                    intialData["Varient Name"] = intialData["Metal Variant Name"];
                   }
                   ref
                       .read(procurementVariantProvider.notifier)
@@ -810,9 +810,9 @@ class RmProcumentDataGridSource extends DataGridSource {
         }
 
         bool isMetalRow = row.getCells().any((cell) =>
-            cell.columnName == 'Variant Name' && cell.value.contains('new'));
+            cell.columnName == 'Variant Name' && cell.value.contains('GL'));
         bool isGoldRow = row.getCells().any((cell) =>
-            cell.columnName == 'Item Group' && cell.value == 'Metal - Gold');
+            cell.columnName == 'Item Group' && cell.value);
         bool isPcsColumn = dataCell.columnName == 'Pieces';
         bool isStonWtCol = dataCell.columnName == 'Stone Wt';
         bool isWtCol = dataCell.columnName == 'Weight';

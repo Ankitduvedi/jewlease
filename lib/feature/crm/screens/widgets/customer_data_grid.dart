@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:jewlease/core/routes/go_router.dart';
+import 'package:jewlease/data/model/customer_model.dart';
+import 'package:jewlease/feature/crm/controller/all_attribute_controller.dart';
+import 'package:jewlease/feature/crm/screens/widgets/customer_data_grid_source.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 import '../../../../main.dart';
-import '../../../procument/screens/procumentSummeryGridSource.dart';
 
 final tabIndexProvider = StateProvider<int>((ref) => 0);
 
@@ -33,7 +37,8 @@ class _CustomerDataGridState extends ConsumerState<CustomerDataGrid> {
     'Order Count',
   ];
   List<DataGridRow> ledgerRows = [];
-  late ProcumentDataGridSource _procumentdataGridSource;
+  List<CustomerModel>customersList=[];
+  late CustomerDataGridSource _procumentdataGridSource;
   final DataGridController InwardDataGridController = DataGridController();
 
   @override
@@ -43,12 +48,54 @@ class _CustomerDataGridState extends ConsumerState<CustomerDataGrid> {
     return (columnName.length * charWidth) + paddingWidth;
   }
 
+  void selectedIndex(int index) {
+    print("selecte $index");
+    context.push('/CustomerInfoScreen',extra: customersList[index]);
+  }
+
   @override
   void initState() {
-    _procumentdataGridSource =
-        ProcumentDataGridSource(ledgerRows, (DataGridRow) {}, () {}, false);
+    _procumentdataGridSource = CustomerDataGridSource(
+      selectedIndex,
+      dataGridRows: ledgerRows,
+    );
     // TODO: implement initState
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    Future.microtask(() {
+      initializeRows();
+    });
+  }
+
+  void initializeRows() async {
+    List<CustomerModel> customers =
+        await ref.read(cRMControllerProvider.notifier).fetchCustomers();
+    setState(() {
+      ledgerRows = customers
+          .map(
+            (customer) => DataGridRow(cells: [
+              DataGridCell(columnName: 'Info', value: '1'),
+              DataGridCell(
+                  columnName: 'Party Name',
+                  value: '${customer.firstName} ${customer.lastName}'),
+              DataGridCell(columnName: 'Email Id', value: customer.emailId),
+              DataGridCell(columnName: 'Mobile No', value: customer.mobileNo),
+              DataGridCell(columnName: 'Purchase Count', value: '3'),
+              DataGridCell(columnName: 'Aov Value', value: '4'),
+              DataGridCell(columnName: 'Order Count', value: '5')
+            ]),
+          )
+          .toList();
+      customersList = customers;
+
+      _procumentdataGridSource =
+          CustomerDataGridSource(selectedIndex, dataGridRows: ledgerRows);
+    });
   }
 
   Widget build(BuildContext context) {

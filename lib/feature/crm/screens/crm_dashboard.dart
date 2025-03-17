@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:jewlease/data/model/customer_model.dart';
 import 'package:jewlease/feature/crm/screens/widgets/customer_age-widget.dart';
 import 'package:jewlease/feature/crm/screens/widgets/customer_data_grid.dart';
 import 'package:jewlease/feature/crm/screens/widgets/customer_walkin.dart';
@@ -16,7 +18,15 @@ class _CrmDashboardState extends State<CrmDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: TextButton(
+            onPressed: () {
+              context.push(
+                '/addCustomerScreen',extra: CustomerModel()
+              );
+            },
+            child: Text("Add Customer")),
+      ),
       backgroundColor: Color(0xffF0F2F4),
       body: Container(
         padding: EdgeInsets.all(15),
@@ -31,7 +41,9 @@ class _CrmDashboardState extends State<CrmDashboard> {
                 InactiveCustomers(),
               ],
             ),
-            SizedBox(height: 10,),
+            SizedBox(
+              height: 10,
+            ),
             Expanded(
               child: Row(
                 children: [
@@ -55,7 +67,9 @@ class _CrmDashboardState extends State<CrmDashboard> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 10,),
+                  SizedBox(
+                    width: 10,
+                  ),
                   Expanded(flex: 7, child: CustomerDataGrid()),
                 ],
               ),

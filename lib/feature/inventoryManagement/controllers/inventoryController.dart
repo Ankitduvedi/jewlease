@@ -25,7 +25,7 @@ class InventoryController extends StateNotifier<bool> {
           .toList()
           .where((item) =>
               item.locationName == locationName &&
-              item.department == deprtmentName)
+              item.department == deprtmentName && item.length>=0)
           .toList();
       state = false;
     } catch (e) {

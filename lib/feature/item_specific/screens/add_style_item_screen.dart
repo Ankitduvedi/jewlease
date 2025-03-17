@@ -127,52 +127,51 @@ class AddStyleItemScreenState extends ConsumerState<AddStyleItemScreen> {
               width: 2.0, // Border width
             ),
           ),
-          child: Expanded(
-              child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      Expanded(child: parentForm()),
-                      Container(
-                        decoration: BoxDecoration(
+          child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Expanded(child: parentForm()),
+                  Container(
+                    decoration: BoxDecoration(
+                      color:
+                          Colors.white, // Background color of the container
+                      borderRadius:
+                          BorderRadius.circular(12.0), // Rounded corners
+                      boxShadow: [
+                        BoxShadow(
                           color:
-                              Colors.white, // Background color of the container
-                          borderRadius:
-                              BorderRadius.circular(12.0), // Rounded corners
-                          boxShadow: [
-                            BoxShadow(
-                              color:
-                                  Colors.black.withOpacity(0.2), // Shadow color
-                              spreadRadius: 1, // How far the shadow spreads
-                              blurRadius: 8, // Softens the shadow
-                              offset: const Offset(4,
-                                  4), // Moves the shadow horizontally and vertically
-                            ),
-                          ],
-                          border: Border.all(
-                            color: const Color.fromARGB(
-                                255, 219, 219, 219), // Outline (border) color
-                            width: 2.0, // Border width
-                          ),
+                              Colors.black.withOpacity(0.2), // Shadow color
+                          spreadRadius: 1, // How far the shadow spreads
+                          blurRadius: 8, // Softens the shadow
+                          offset: const Offset(4,
+                              4), // Moves the shadow horizontally and vertically
                         ),
-                        child: TextButton(
-                          child: const Text('Upload Image'),
-                          onPressed: () {
-                            showDialog(
-                                context: context,
-                                builder: (context) =>
-                                    const ImageUploadDialog());
-                          },
-                        ),
+                      ],
+                      border: Border.all(
+                        color: const Color.fromARGB(
+                            255, 219, 219, 219), // Outline (border) color
+                        width: 2.0, // Border width
                       ),
-                      Flexible(
-                        flex: 2,
-                        child: ImageList(
-                          images: images,
-                        ),
-                      )
-                    ],
-                  ))),
+                    ),
+                    child: TextButton(
+                      child: const Text('Upload Image'),
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) =>
+                                const ImageUploadDialog());
+                      },
+                    ),
+                  ),
+                  Flexible(
+                    flex: 2,
+                    child: ImageList(
+                      images: images,
+                    ),
+                  )
+                ],
+              )),
         ),
       ),
     );
