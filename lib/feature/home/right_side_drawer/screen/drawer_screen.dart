@@ -41,7 +41,7 @@ class DrawerScreen extends ConsumerWidget {
                   children: [
                     const CircleAvatar(
                       radius: 30,
-                      backgroundImage: AssetImage('assets/profile.jpg'),
+                      backgroundImage: AssetImage('assets/images/logo.png'),
                     ),
                     const SizedBox(width: 16),
                     Column(
@@ -137,6 +137,7 @@ class DrawerScreen extends ConsumerWidget {
                           hint: const Text("Select Department"),
                           isExpanded: true,
                           items: selectedLocation.departments.map((dept) {
+                            log("department: ${dept.departmentName}");
                             return DropdownMenuItem<Departments>(
                               value: dept,
                               child: Text(dept.departmentName),
@@ -145,11 +146,12 @@ class DrawerScreen extends ConsumerWidget {
                           // ignore: unnecessary_null_comparison
                           onChanged: selectedLocation != null
                               ? (dept) {
+                                  log('selected department: ${dept!.departmentName}');
                                   ref
                                       .read(selectedDepartmentProvider.notifier)
                                       .state = dept!;
-                                  drawerNotifier
-                                      .setDepartment(dept.departmentName);
+                                  drawerNotifier.setDepartment(
+                                      dept.departmentName.toString());
                                 }
                               : null,
                         ),
@@ -187,13 +189,7 @@ class DrawerScreen extends ConsumerWidget {
                 ),
                 _buildDivider(),
                 // Department Dropdown
-                _buildDropdown(
-                  label: 'Select Department',
-                  value: drawerState.department,
-                  items: ['METAL CONTROL REACT', 'Department B'],
-                  onChanged: drawerNotifier.setDepartment,
-                  suffix: const Text('*', style: TextStyle(color: Colors.red)),
-                ),
+
                 _buildDivider(),
                 // Cash Counter Dropdown
                 _buildDropdown(
@@ -208,16 +204,16 @@ class DrawerScreen extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    ElevatedButton(
-                      onPressed: drawerNotifier.updateSession,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.redAccent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text('Close'),
-                    ),
+                    // ElevatedButton(
+                    //   onPressed: drawerNotifier.updateSession,
+                    //   style: ElevatedButton.styleFrom(
+                    //     backgroundColor: Colors.redAccent,
+                    //     shape: RoundedRectangleBorder(
+                    //       borderRadius: BorderRadius.circular(8),
+                    //     ),
+                    //   ),
+                    //   child: const Text('Close'),
+                    // ),
                     drawerNotifier.hasChanges
                         ? ElevatedButton(
                             onPressed: drawerNotifier.updateSession,
