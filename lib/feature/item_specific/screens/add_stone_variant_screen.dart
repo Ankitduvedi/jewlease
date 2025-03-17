@@ -57,7 +57,7 @@ class AddStoneVariantScreenState extends ConsumerState<AddStoneVariantScreen> {
                   stoneVariantName: '',
                   stoneName: textFieldvalues['Stone code'] ?? 'Stone code',
                   manualCodeGen: '',
-                  variantTypeName: dropDownValue['Variant Type'] ?? 'STYLE',
+                  variantType: masterType[1]!,
                   oldVariant: '',
                   customerVariantName: '',
                   vendorName: textFieldvalues['Vendor Name'] ?? '',

@@ -92,6 +92,7 @@ final selectedLocationDropdownProvider = StateProvider<Location>((ref) {
     return loc.locationName == employee.defaultLocation;
   }).first;
 });
+
 final selectedDepartmentProvider = StateProvider<Departments>((ref) {
   final employee = ref.watch(authProvider);
   final selectedLocation = ref.watch(selectedLocationDropdownProvider);
