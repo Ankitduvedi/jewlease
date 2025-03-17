@@ -14,7 +14,7 @@ class VariantMasterStone {
   String stoneVariantName;
   String stoneName;
   String manualCodeGen;
-  String variantTypeName;
+  String variantType;
   String oldVariant;
   String customerVariantName;
   String vendorName;
@@ -35,7 +35,7 @@ class VariantMasterStone {
     required this.stoneVariantName,
     required this.stoneName,
     required this.manualCodeGen,
-    required this.variantTypeName,
+    required this.variantType,
     required this.oldVariant,
     required this.customerVariantName,
     required this.vendorName,
@@ -58,7 +58,7 @@ class VariantMasterStone {
         stoneVariantName: json["stoneVariantName"],
         stoneName: json["stoneName"],
         manualCodeGen: json["manualCodeGen"],
-        variantTypeName: json["variantTypeName"],
+        variantType: json["Variant type"],
         oldVariant: json["oldVariant"],
         customerVariantName: json["customerVariantName"],
         vendorName: json["vendorName"],
@@ -80,7 +80,7 @@ class VariantMasterStone {
         "stoneVariantName": stoneVariantName,
         "stoneName": stoneName,
         "manualCodeGen": manualCodeGen,
-        "variantTypeName": variantTypeName,
+        "variantType": variantType,
         "oldVariant": oldVariant,
         "customerVariantName": customerVariantName,
         "vendorName": vendorName,
