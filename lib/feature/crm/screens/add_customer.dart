@@ -4,19 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/data/model/customer_model.dart';
 import 'package:jewlease/feature/crm/controller/all_attribute_controller.dart';
+import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
+import 'package:jewlease/providers/dailog_selection_provider.dart';
+import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/widgets/check_box.dart';
 import 'package:jewlease/widgets/drop_down_text_field.dart';
-import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
-import 'package:jewlease/widgets/app_bar_buttons.dart';
-import 'package:jewlease/providers/dailog_selection_provider.dart';
 import 'package:jewlease/widgets/read_only_date_picker_widget.dart';
 import 'package:jewlease/widgets/read_only_textfield_widget.dart';
 import 'package:jewlease/widgets/search_dailog_widget.dart';
 import 'package:jewlease/widgets/text_field_widget.dart';
 
 class AddCustomerScreen extends ConsumerStatefulWidget {
-  const AddCustomerScreen({super.key});
+  const AddCustomerScreen({super.key, required this.customer});
+
   @override
+  final CustomerModel? customer;
+
   ConsumerState<ConsumerStatefulWidget> createState() {
     return AddCustomerScreenState();
   }
@@ -76,6 +79,42 @@ class AddCustomerScreenState extends ConsumerState<AddCustomerScreen> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    intializeRows();
+    super.initState();
+  }
+
+  void intializeRows() {
+    if (widget.customer != null) {
+      print("fname ${widget.customer!.firstName}");
+      setState(() {
+        firstName.text = widget.customer!.firstName;
+        lastName.text = widget.customer!.lastName;
+        email.text = widget.customer!.emailId;
+        phoneNo.text = widget.customer!.mobileNo;
+        aadharNo.text = widget.customer!.aadharNo;
+        panNO.text = widget.customer!.panNo;
+        remark.text = widget.customer!.remarks;
+        otherNo.text = widget.customer!.otherNo;
+        // legalName.text =widget.customer!
+        billingAddr1.text = widget.customer!.billingAdd1;
+        billingAddr2.text = widget.customer!.billingAdd2;
+        billingCity.text= widget.customer!.billingCity;
+        billingPanNo.text = widget.customer!.billingPanNo;
+        billingGstNo.text = widget.customer!.billingGstNo;
+        shippingCity.text = widget.customer!.shippingCity;
+        shippingAddr1.text =widget.customer!.shippingAdd1;
+        shippingAddr2.text =widget.customer!.shippingAdd2;
+        shippingPinCode.text =widget.customer!.shippingPincode;
+        shippingMobNo.text = widget.customer!.shipMobileNo;
+
+      });
+
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final isChecked = ref.watch(chechkBoxSelectionProvider);
     //final textFieldvalues = ref.watch(dialogSelectionProvider);
@@ -86,7 +125,7 @@ class AddCustomerScreenState extends ConsumerState<AddCustomerScreen> {
       persistentFooterButtons: [
         ElevatedButton(
           onPressed: () {
-            final config = Customer(
+            final config = CustomerModel(
                 creationDate: DateTime.timestamp(),
                 firstName: firstName.text,
                 lastName: lastName.text,
@@ -167,7 +206,7 @@ class AddCustomerScreenState extends ConsumerState<AddCustomerScreen> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
               backgroundColor: const Color.fromARGB(255, 40, 112, 62)),
-          child: !ref.watch(cRMControllerProvider)
+          child: !ref.watch(cRMControllerProvider).isLoading
               ? const Text(
                   'Save',
                   style: TextStyle(color: Colors.white),

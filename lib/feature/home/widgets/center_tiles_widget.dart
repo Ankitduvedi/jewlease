@@ -138,7 +138,7 @@ class ReorderableTilesScreenState extends State<ReorderableTilesScreen> {
       color: Colors.cyan,
       key: const ValueKey('Loyalty'),
       onTap: () {
-        goRouter.push('/CustomerInfoScreen');
+        goRouter.push('/CustomerDashboard');
       },
     ),
     _buildTile(

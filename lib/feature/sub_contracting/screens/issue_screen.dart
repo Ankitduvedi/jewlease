@@ -452,7 +452,7 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
                                   "isRawMaterial": 1,
                                   "Varient Name": "New DIAMOND-5"
                                 }
-                              : {"isRawMaterial": 1, "Varient Name": "new"},
+                              : {"isRawMaterial": 1,},
                           onOptionSelectd: (selectedValue) {
                             print("selected value $selectedValue");
                           },

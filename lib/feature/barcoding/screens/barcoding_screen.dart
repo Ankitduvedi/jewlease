@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:jewlease/feature/barcoding/controllers/barcode_detail_list_controller.dart';
 import 'package:jewlease/feature/barcoding/controllers/barcode_history_list_controller.dart';
+import 'package:jewlease/feature/barcoding/screens/finanacial_transaction.dart';
 import 'package:jewlease/feature/barcoding/screens/status%20Card.dart';
 import 'package:jewlease/main.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
@@ -114,131 +115,136 @@ class _BarcodingScreenState extends ConsumerState<BarcodingScreen> {
                     },
                   )))),
         ),
-        body: tabselectedIndex==0?
-        Container(
-            color: Colors.grey.shade200,
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: StockDetailsScreen()),
-                ),
-                Expanded(
-                  flex: 3,
-                  child: Container(
-                    padding: EdgeInsets.all(10),
-                    child: Column(
-                      children: [
-                        Expanded(
-                          flex: 1,
-                          child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount:
-                                  ref.watch(barcodeDetailListProvider).length,
-                              itemBuilder: (context, index) {
-                                return Container(
-                                  margin: EdgeInsets.only(right: 10),
-                                  height: 50,
-                                  width: 220,
-                                  child: InkWell(
-                                    onTap: () {
-                                      ref
-                                          .read(barcodeIndexProvider.notifier)
-                                          .state = index;
-                                    },
-                                    child: StatusCard(
-                                      date: DateFormat('d-M-yyyy').format(
-                                          DateTime.parse(ref
+        body: tabselectedIndex == 0
+            ? Container(
+                color: Colors.grey.shade200,
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                          margin: EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: StockDetailsScreen()),
+                    ),
+                    Expanded(
+                      flex: 3,
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        child: Column(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: ref
+                                      .watch(barcodeDetailListProvider)
+                                      .length,
+                                  itemBuilder: (context, index) {
+                                    return Container(
+                                      margin: EdgeInsets.only(right: 10),
+                                      height: 50,
+                                      width: 220,
+                                      child: InkWell(
+                                        onTap: () {
+                                          ref
+                                              .read(
+                                                  barcodeIndexProvider.notifier)
+                                              .state = index;
+                                        },
+                                        child: StatusCard(
+                                          date: DateFormat('d-M-yyyy').format(
+                                              DateTime.parse(ref
+                                                  .watch(barcodeDetailListProvider)[
+                                                      index]
+                                                  .date)),
+                                          documentId: ref
                                               .watch(barcodeDetailListProvider)[
                                                   index]
-                                              .date)),
-                                      documentId: ref
-                                          .watch(barcodeDetailListProvider)[index]
-                                          .transNo
-                                          .toString(),
-                                      note: ref
-                                          .watch(barcodeDetailListProvider)[index]
-                                          .transType,
-                                      status1: 'Verified',
-                                      status2: 'Active',
-                                      isSelected: index == selectedIndex,
-                                    ),
-                                  ),
-                                );
-                              }),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Expanded(
-                          flex: 5,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(15),
+                                              .transNo
+                                              .toString(),
+                                          note: ref
+                                              .watch(barcodeDetailListProvider)[
+                                                  index]
+                                              .transType,
+                                          status1: 'Verified',
+                                          status2: 'Active',
+                                          isSelected: index == selectedIndex,
+                                        ),
+                                      ),
+                                    );
+                                  }),
                             ),
-                            padding: EdgeInsets.all(10),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Expanded(
+                              flex: 5,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                padding: EdgeInsets.all(10),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    InkWell(
-                                      onTap: () {},
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                            color: Color(0xff075184),
-                                            borderRadius:
-                                                BorderRadius.circular(8)),
-                                        child: Center(
-                                          child: Text(
-                                            "Item Details",
-                                            style: TextStyle(color: Colors.white),
+                                    Row(
+                                      children: [
+                                        InkWell(
+                                          onTap: () {},
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                                color: Color(0xff075184),
+                                                borderRadius:
+                                                    BorderRadius.circular(8)),
+                                            child: Center(
+                                              child: Text(
+                                                "Item Details",
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ),
+                                            ),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 20, vertical: 5),
                                           ),
                                         ),
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 20, vertical: 5),
-                                      ),
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        Expanded(child: Container())
+                                      ],
                                     ),
                                     SizedBox(
-                                      width: 10,
+                                      height: 10,
                                     ),
-
-                                    Expanded(child: Container())
+                                    if (historys[selectedIndex].bom.isNotEmpty)
+                                      Expanded(
+                                          child: ItemDetails(
+                                              bom: historys[selectedIndex].bom,
+                                              operation: historys[selectedIndex]
+                                                  .operation)),
                                   ],
                                 ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                if (historys[selectedIndex].bom.isNotEmpty)
-                                  Expanded(
-                                      child: ItemDetails(
-                                          bom: historys[selectedIndex].bom,
-                                          operation:
-                                              historys[selectedIndex].operation)),
-                              ],
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                )
-              ],
-            )):
-        InvantoryTransactionScreeen()
-
-        );
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                ))
+            : tabselectedIndex == 2
+                ? InvantoryTransactionScreeen()
+                : tabselectedIndex == 3
+                    ? FinanacialTransaction()
+                    : Container());
   }
 }
-
-
 
 class ItemDetails extends StatefulWidget {
   const ItemDetails({super.key, required this.bom, required this.operation});
@@ -330,7 +336,7 @@ class _ItemDetailsState extends State<ItemDetails> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: (gridWidth/5)*10,
+          width: (gridWidth / 5) * 10,
           margin: EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
               color: Colors.white,
@@ -366,7 +372,8 @@ class _ItemDetailsState extends State<ItemDetails> {
         SizedBox(
           width: 10,
         ),
-        Flexible( // Allows the content to expand only as needed
+        Flexible(
+          // Allows the content to expand only as needed
           fit: FlexFit.loose,
           child: Container(
             margin: EdgeInsets.symmetric(vertical: 10),

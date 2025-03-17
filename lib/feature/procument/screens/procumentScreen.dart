@@ -113,9 +113,10 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
       goRouter.go("/");
       return true;
     } catch (e) {
-      Utils.snackBar("error: $e", context);
+      Utils.snackBar(e.toString(), context);
       return false;
     }
+
     // Navigator.pop(context);\\
   }
 
@@ -242,7 +243,6 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
       date: DateTime.now().toIso8601String(),
       transNo: transactionID!,
       transType: "GRN",
-
       destination: "MHCASH",
       customer: "Ashish",
       vendor: "A",
@@ -282,7 +282,6 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
         transCategory: "GENERAL",
         docNo: "bsjbcs",
         transDate: DateTime.now().toIso8601String(),
-
         destination: "MH_CASH",
         customer: "ankit",
         source: ref.watch(selectedDepartmentProvider).locationName,
@@ -332,8 +331,8 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
       "imageDetails": input["Image Details"],
       "formulaDetails": input["Formula Details"],
       "pieces": input["Pieces"],
-      "weight": (double.parse(input["Weight"] ?? 0)) -
-          (double.parse(input["Stone Wt"]) ?? 0),
+      "weight":
+          covertToDouble(input["Weight"]) - covertToDouble(input["Stone Wt"]),
       "netWeight": input["Weight"] ?? 0,
       "diaWeight": input["Stone Wt"] ?? 0,
       "diaPieces": input["Stone Pieces"] ?? 0,
@@ -344,6 +343,19 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
       "itemGroup": input["Style"],
       "metalColor": input["Karat Color"],
       "styleMetalColor": input["Karat Color"],
+      "isRawMaterial": 0,
     };
+  }
+
+  double covertToDouble(dynamic value) {
+    if (value is double) {
+      return value;
+    } else if (value is int) {
+      return value.toDouble();
+    } else if (value is String) {
+      return double.tryParse(value) ?? 0.0;
+    } else {
+      return 0.0; // Default for unexpected types
+    }
   }
 }

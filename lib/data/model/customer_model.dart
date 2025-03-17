@@ -1,14 +1,11 @@
-// To parse this JSON data, do
-//
-//     final customer = customerFromJson(jsonString);
-
 import 'dart:convert';
 
-Customer customerFromJson(String str) => Customer.fromJson(json.decode(str));
+CustomerModel customerFromJson(String str) =>
+    CustomerModel.fromJson(json.decode(str));
 
-String customerToJson(Customer data) => json.encode(data.toJson());
+String customerToJson(CustomerModel data) => json.encode(data.toJson());
 
-class Customer {
+class CustomerModel {
   DateTime creationDate;
   String firstName;
   String lastName;
@@ -60,60 +57,66 @@ class Customer {
   DateTime partyAnniversary;
   bool nriCustomer;
 
-  Customer({
-    required this.creationDate,
-    required this.firstName,
-    required this.lastName,
-    required this.mobileNo,
-    required this.emailId,
-    required this.partyCode,
-    required this.customerGroup,
-    required this.title,
-    required this.birthDate,
-    required this.parentCustomer,
-    required this.anniversaryDate,
-    required this.schemeCustomer,
-    required this.aadharNo,
-    required this.panNo,
-    required this.panNoUrl,
-    required this.gstNo,
-    required this.defaultCurrency,
-    required this.remarks,
-    required this.status,
-    required this.giftApplicable,
-    required this.reverseCharges,
-    required this.billingAdd1,
-    required this.salesNature,
-    required this.subCategorySales,
-    required this.billingAdd2,
-    required this.billingPincode,
-    required this.billingCountry,
-    required this.billingState,
-    required this.otherNo,
-    required this.billingCity,
-    required this.billingPanNo,
-    required this.billingGstNo,
-    required this.copyBillingAddress,
-    required this.shippingAdd1,
-    required this.shippingAdd2,
-    required this.shippingPincode,
-    required this.shippingCountry,
-    required this.shippingState,
-    required this.shippingCity,
-    required this.shipMobileNo,
-    required this.cardType,
-    required this.cardNo,
-    required this.terms,
-    required this.religion,
-    required this.terms2,
-    required this.motherBirthday,
-    required this.fatherBirthday,
-    required this.spouseBirthday,
-    required this.partyAnniversary,
-    required this.nriCustomer,
-  });
+  CustomerModel({
+    DateTime? creationDate,
+    this.firstName = '',
+    this.lastName = '',
+    this.mobileNo = '',
+    this.emailId = '',
+    this.partyCode = '',
+    this.customerGroup = '',
+    this.title = '',
+    DateTime? birthDate,
+    this.parentCustomer = '',
+    DateTime? anniversaryDate,
+    this.schemeCustomer = '',
+    this.aadharNo = '',
+    this.panNo = '',
+    this.panNoUrl = '',
+    this.gstNo = '',
+    this.defaultCurrency = '',
+    this.remarks = '',
+    this.status = '',
+    this.giftApplicable = false,
+    this.reverseCharges = '',
+    this.billingAdd1 = '',
+    this.salesNature = '',
+    this.subCategorySales = '',
+    this.billingAdd2 = '',
+    this.billingPincode = '',
+    this.billingCountry = '',
+    this.billingState = '',
+    this.otherNo = '',
+    this.billingCity = '',
+    this.billingPanNo = '',
+    this.billingGstNo = '',
+    this.copyBillingAddress = '',
+    this.shippingAdd1 = '',
+    this.shippingAdd2 = '',
+    this.shippingPincode = '',
+    this.shippingCountry = '',
+    this.shippingState = '',
+    this.shippingCity = '',
+    this.shipMobileNo = '',
+    this.cardType = '',
+    this.cardNo = '',
+    this.terms = '',
+    this.religion = '',
+    this.terms2 = '',
+    DateTime? motherBirthday,
+    DateTime? fatherBirthday,
+    DateTime? spouseBirthday,
+    DateTime? partyAnniversary,
+    this.nriCustomer = false,
+  })  : creationDate = creationDate ?? DateTime.now(),
+        birthDate = birthDate ?? DateTime.now(),
+        anniversaryDate = anniversaryDate ?? DateTime.now(),
+        motherBirthday = motherBirthday ?? DateTime.now(),
+        fatherBirthday = fatherBirthday ?? DateTime.now(),
+        spouseBirthday = spouseBirthday ?? DateTime.now(),
+        partyAnniversary = partyAnniversary ?? DateTime.now();
 
-  Customer copyWith({
+  CustomerModel copyWith({
     DateTime? creationDate,
     String? firstName,
     String? lastName,
@@ -165,7 +168,7 @@ class Customer {
     DateTime? partyAnniversary,
     bool? nriCustomer,
   }) =>
-      Customer(
+      CustomerModel(
         creationDate: creationDate ?? this.creationDate,
         firstName: firstName ?? this.firstName,
         lastName: lastName ?? this.lastName,
@@ -218,57 +221,57 @@ class Customer {
         nriCustomer: nriCustomer ?? this.nriCustomer,
       );
 
-  factory Customer.fromJson(Map<String, dynamic> json) => Customer(
-        creationDate: DateTime.parse(json["creationDate"]),
-        firstName: json["firstName"],
-        lastName: json["lastName"],
-        mobileNo: json["mobileNo"],
-        emailId: json["emailId"],
-        partyCode: json["partyCode"],
-        customerGroup: json["customerGroup"],
-        title: json["title"],
-        birthDate: DateTime.parse(json["birthDate"]),
-        parentCustomer: json["parentCustomer"],
-        anniversaryDate: DateTime.parse(json["anniversaryDate"]),
-        schemeCustomer: json["schemeCustomer"],
-        aadharNo: json["aadharNo"],
-        panNo: json["panNo"],
-        panNoUrl: json["panNoUrl"],
-        gstNo: json["gstNo"],
-        defaultCurrency: json["defaultCurrency"],
-        remarks: json["remarks"],
-        status: json["status"],
-        giftApplicable: json["giftApplicable"],
-        reverseCharges: json["reverseCharges"],
-        billingAdd1: json["billingAdd1"],
-        salesNature: json["salesNature"],
-        subCategorySales: json["subCategorySales"],
-        billingAdd2: json["billingAdd2"],
-        billingPincode: json["billingPincode"],
-        billingCountry: json["billingCountry"],
-        billingState: json["billingState"],
-        otherNo: json["otherNo"],
-        billingCity: json["billingCity"],
-        billingPanNo: json["billingPanNo"],
-        billingGstNo: json["billingGstNo"],
-        copyBillingAddress: json["copyBillingAddress"],
-        shippingAdd1: json["shippingAdd1"],
-        shippingAdd2: json["shippingAdd2"],
-        shippingPincode: json["shippingPincode"],
-        shippingCountry: json["shippingCountry"],
-        shippingState: json["shippingState"],
-        shippingCity: json["shippingCity"],
-        shipMobileNo: json["shipMobileNo"],
-        cardType: json["cardType"],
-        cardNo: json["cardNo"],
-        terms: json["terms"],
-        religion: json["religion"],
-        terms2: json["terms2"],
-        motherBirthday: DateTime.parse(json["motherBirthday"]),
-        fatherBirthday: DateTime.parse(json["fatherBirthday"]),
-        spouseBirthday: DateTime.parse(json["spouseBirthday"]),
-        partyAnniversary: DateTime.parse(json["partyAnniversary"]),
-        nriCustomer: json["nriCustomer"],
+  factory CustomerModel.fromJson(Map<String, dynamic> json) => CustomerModel(
+        creationDate: _parseDateTime(json["Creation Date"]),
+        firstName: json["First Name"] ?? '',
+        lastName: json["Last Name"] ?? '',
+        mobileNo: json["Mobile No"] ?? '',
+        emailId: json["Email ID"] ?? '',
+        partyCode: json["Party Code"] ?? '',
+        customerGroup: json["Customer Group"] ?? '',
+        title: json["Title"] ?? '',
+        birthDate: _parseDateTime(json["Birth Date"]),
+        parentCustomer: json["Parent Customer"] ?? '',
+        anniversaryDate: _parseDateTime(json["Anniversary Date"]),
+        schemeCustomer: json["Scheme Customer"] ?? '',
+        aadharNo: json["Aadhar No"] ?? '',
+        panNo: json["Pan No"] ?? '',
+        panNoUrl: json["Pan No Url"] ?? '',
+        gstNo: json["Gst No"] ?? '',
+        defaultCurrency: json["Default Currency"] ?? '',
+        remarks: json["Remarks"] ?? '',
+        status: json["Status"] ?? '',
+        giftApplicable: json["Gift Applicable"] == 1,
+        reverseCharges: json["Reverse Charges"] ?? '',
+        billingAdd1: json["Billing Add 1"] ?? '',
+        salesNature: json["Sales Nature"] ?? '',
+        subCategorySales: json["Sub Category Sales"] ?? '',
+        billingAdd2: json["Billing Add 2"] ?? '',
+        billingPincode: json["Billing Pincode"] ?? '',
+        billingCountry: json["Billing Country"] ?? '',
+        billingState: json["Billing State"] ?? '',
+        otherNo: json["Other No"] ?? '',
+        billingCity: json["Billing City"] ?? '',
+        billingPanNo: json["Billing Pan No"] ?? '',
+        billingGstNo: json["Billing Gst No"] ?? '',
+        copyBillingAddress: json["Copy Billing Address"],
+        shippingAdd1: json["Shipping Add 1"] ?? '',
+        shippingAdd2: json["Shipping Add 2"] ?? '',
+        shippingPincode: json["Shipping Pincode"] ?? '',
+        shippingCountry: json["Shipping Country"] ?? '',
+        shippingState: json["Shipping State"] ?? '',
+        shippingCity: json["Shipping City"] ?? '',
+        shipMobileNo: json["Ship Mobile No"] ?? '',
+        cardType: json["Card Type"] ?? '',
+        cardNo: json["Card No"] ?? '',
+        terms: json["Terms"] ?? '',
+        religion: json["Religion"] ?? '',
+        terms2: json["Terms 2"] ?? '',
+        motherBirthday: _parseDateTime(json["Mother Birthday"]),
+        fatherBirthday: _parseDateTime(json["Father Birthday"]),
+        spouseBirthday: _parseDateTime(json["Spouse Birthday"]),
+        partyAnniversary: _parseDateTime(json["Party Anniversary"]),
+        nriCustomer: json["NRI Customer"] == 1,
       );
 
   Map<String, dynamic> toJson() => {
@@ -330,4 +333,13 @@ class Customer {
             "${partyAnniversary.year.toString().padLeft(4, '0')}-${partyAnniversary.month.toString().padLeft(2, '0')}-${partyAnniversary.day.toString().padLeft(2, '0')}",
         "nriCustomer": nriCustomer,
       };
+
+  static DateTime? _parseDateTime(dynamic value) {
+    if (value == null || value.toString().isEmpty) {
+      return DateTime.now();
+    }
+    return DateTime.tryParse(value.toString());
+  }
+
+// Helper function to format DateTime to JSON
 }
