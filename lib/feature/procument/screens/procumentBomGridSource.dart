@@ -23,13 +23,13 @@ class procumentBomGridSource extends DataGridSource {
 
   // Method to recalculate all 'Wt' values
   void recalculateWt() {
-    for (int rowIndex = 0; rowIndex < dataGridRows.length; rowIndex++) {
+    for (int rowIndex = 1; rowIndex < dataGridRows.length; rowIndex++) {
       DataGridRow row = dataGridRows[rowIndex];
       var x = row.getCells().firstWhere((c) => c.columnName == "Weight").value;
       var y = row.getCells().firstWhere((c) => c.columnName == "Pieces").value;
       var z =
           row.getCells().firstWhere((c) => c.columnName == "Avg Wt(Pcs)").value;
-      print("recalculate wt index $rowIndex $x $y $z");
+      print("recalculate wt index $rowIndex $y $x $z");
       int pcsValue = row
               .getCells()
               .firstWhere((c) => c.columnName == "Pieces")
@@ -90,7 +90,7 @@ class procumentBomGridSource extends DataGridSource {
   }
 
   void recalculateAmount() {
-    for (int i = 0; i < dataGridRows.length; i++) {
+    for (int i = 1; i < dataGridRows.length; i++) {
       double wt = dataGridRows[i]
                   .getCells()
                   .where((cell) => cell.columnName == 'Weight')
@@ -105,13 +105,16 @@ class procumentBomGridSource extends DataGridSource {
                   .value *
               1.0 ??
           0;
-      int pieces = dataGridRows[i]
-              .getCells()
-              .where((cell) => cell.columnName == 'Pieces')
-              .first
-              .value
-              .toInt() ??
-          1;
+      int pieces = max(
+          dataGridRows[i]
+                  .getCells()
+                  .where((cell) => cell.columnName == 'Pieces')
+                  .first
+                  .value
+                  .toInt() ??
+              1,
+          1);
+      print("amount1 ${rate * wt * pieces}");
       dataGridRows[i] = DataGridRow(
           cells: dataGridRows[i].getCells().map((cell) {
         if (cell.columnName == 'Amount')
@@ -276,37 +279,23 @@ class procumentBomGridSource extends DataGridSource {
                               .getCells()[1]
                               .value
                               .contains("Diamond");
+                          print("is diamond $isDiamond $rowIndex");
                           if (isDiamond && dataCell.columnName == 'Weight')
                             parsedValue = parsedValue * 0.2;
 
                           // Update the _rows list directly
                           dataGridRows[rowIndex] = DataGridRow(cells: [
                             for (var cell in row.getCells())
-                              if (cell == dataCell)
+                              if (cell.columnName == dataCell.columnName)
                                 DataGridCell(
                                     columnName: cell.columnName,
                                     value: parsedValue)
-                              else if (cell.columnName == "Weight")
-                                // Recalculate Wt as Pcs * Avg Wt(Pcs)
-                                DataGridCell<double>(
-                                  columnName: cell.columnName,
-                                  value: max<double>(
-                                          row
-                                                  .getCells()
-                                                  .firstWhere((c) =>
-                                                      c.columnName == "Pieces")
-                                                  .value *
-                                              1.0,
-                                          1.0) *
-                                      row
-                                          .getCells()
-                                          .firstWhere((c) =>
-                                              c.columnName == "Avg Wt(Pcs)")
-                                          .value,
-                                )
                               else
-                                cell,
+                                cell
                           ]);
+
+                          for(var cell in dataGridRows[rowIndex].getCells())
+                            print("cell name ${cell.columnName} value ${cell.value}");
 
                           recalculateWt();
                           recalculateAmount();

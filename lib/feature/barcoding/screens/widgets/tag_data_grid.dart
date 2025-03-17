@@ -53,7 +53,7 @@ class _TagListUIState extends ConsumerState<TagListUI> {
     'Order Variant',
   ];
 
-  void updateStock(StockDetailsModel newStockDetails) {
+  StockDetailsModel updateStock(StockDetailsModel newStockDetails) {
     newStockDetails.rate = 0;
     newStockDetails.balMetWt = newStockDetails.balMetWt -
         (newStockDetails.currentNetWt - newStockDetails.currentStoneWt);
@@ -63,16 +63,22 @@ class _TagListUIState extends ConsumerState<TagListUI> {
     newStockDetails.stockQty--;
     newStockDetails.tagCreated++;
     newStockDetails.remaining--;
+    newStockDetails.currentNetWt=0;
+    newStockDetails.currentStoneWt=0;
+    newStockDetails.currentWt=0;
+    return newStockDetails;
   }
 
   void addTagRow() async {
     print("adding row");
-    InventoryItemModel currentStock =
+    InventoryItemModel currentTotalStock =
         ref.read(inventoryControllerProvider.notifier).getCurrentItem()!;
+    print("current item ${currentTotalStock.varientName}");
     try {
-      StockDetailsModel newStockDetails = ref.read(stockDetailsProvider);
+      StockDetailsModel newChildStockDetails = ref.read(stockDetailsProvider);
       File? imgFile = ref.read(tagImgListProvider);
-      TagRow tag = createTag(newStockDetails, currentStock, imgFile);
+      // return ;
+      TagRow tag = createTag(newChildStockDetails, currentTotalStock, imgFile);
       final response = await ref.watch(imageProvider.notifier).uploadImage(
           ImageModel(
               imageData: tag.image!.readAsBytesSync(),
@@ -87,7 +93,7 @@ class _TagListUIState extends ConsumerState<TagListUI> {
       });
       tagRows.add(tag);
       Map<String, dynamic> tagrRqsBody =
-          convertToSchema(tag, currentStock, "xyz");
+          convertToSchema(tag, currentTotalStock, "xyz");
       print("tagrRqsBody is $tagrRqsBody");
       tagrRqsBody.remove("Stock ID");
 
@@ -113,18 +119,19 @@ class _TagListUIState extends ConsumerState<TagListUI> {
       //<--------------------api to update current grn------------------>
       if (ref.read(stockDetailsProvider).stockQty > 0) {
         print(
-            "update grn is1 ${updateCurrentInveryItem(currentStock, tag, imageUrl).toJson()}");
+            "update grn is1 ${updateCurrentInveryItem(currentTotalStock, tag, imageUrl).toJson()}");
         await ref.read(procurementControllerProvider.notifier).updateGRN(
-            updateCurrentInveryItem(currentStock, tag, imageUrl).toJson(),
-            currentStock.stockCode);
+            updateCurrentInveryItem(currentTotalStock, tag, imageUrl).toJson(),
+            currentTotalStock.stockCode);
       } else {
         await ref
             .read(procurementControllerProvider.notifier)
-            .deleteGRN(currentStock.stockCode);}
+            .deleteGRN(currentTotalStock.stockCode);
+      }
 
       ref.read(tagRowsProvider.notifier).addTag(tag);
-      updateStock(newStockDetails);
-      ref.read(stockDetailsProvider.notifier).update(newStockDetails);
+      StockDetailsModel updateParentStock = updateStock(newChildStockDetails);
+      ref.read(stockDetailsProvider.notifier).update(updateParentStock);
       ref.read(tagImgListProvider.notifier).addFile(File(''));
 
       print("added row");
@@ -252,20 +259,21 @@ class _TagListUIState extends ConsumerState<TagListUI> {
       "itemGroup": stock.itemGroup,
       "metalColor": stock.metalColor,
       "styleMetalColor": stock.styleMetalColor,
+      "isRawMaterial":0
     };
   }
 
   InventoryItemModel updateCurrentInveryItem(
-      InventoryItemModel item, TagRow tag, String imageFile) {
-    item.pieces = item.pieces - 1;
+      InventoryItemModel totalStock, TagRow tag, String imageFile) {
+    totalStock.pieces = totalStock.pieces - 1;
 
-    item.metalWeight = item.metalWeight - tag.wt;
-    item.diaWeight = item.diaWeight - tag.diaWt;
-    item.diaPieces = max(item.diaPieces - tag.pcs, 0);
-    item.imageDetails = imageFile;
-    item.netWeight = item.netWeight - tag.netWt;
-    item.stonePiece = item.stonePiece - tag.pcs;
-    return item;
+    totalStock.metalWeight = totalStock.metalWeight - tag.wt;
+    totalStock.diaWeight = totalStock.diaWeight - tag.diaWt;
+    totalStock.diaPieces = max(totalStock.diaPieces - tag.pcs, 0);
+    // totalStock.imageDetails = imageFile;
+    totalStock.netWeight = totalStock.netWeight - tag.netWt;
+    totalStock.stonePiece = totalStock.stonePiece - tag.pcs;
+    return totalStock;
   }
 
     TransactionModel createTransaction(Map<String, dynamic> varient) {
