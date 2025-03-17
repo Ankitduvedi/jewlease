@@ -112,6 +112,7 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                           ref
                               .read(dialogSelectionProvider.notifier)
                               .clearSelection(widget.title);
+                          ref.invalidate(itemTypeFutureProvider);
                         },
                         label: const Text(
                           'Reload',
@@ -151,7 +152,7 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
 
                     items = item.where((item) {
                       return widget.queryMap!.entries.every((queryEntry) =>
-                      item.containsKey(queryEntry.key) &&
+                          item.containsKey(queryEntry.key) &&
                           item[queryEntry.key] == queryEntry.value);
                     }).toList();
                     print("query map2 ${items}");
@@ -189,11 +190,11 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                           false;
                     }
                   }).toList();
-                 // for(Map<String,dynamic>item in _filteredItems)
-                 //   item["Stock ID"] ="STC- ${_filteredItems.indexOf(item)}";
-                 //
-                 //
-                 //  print("filtered items ${_filteredItems.length}");
+                  // for(Map<String,dynamic>item in _filteredItems)
+                  //   item["Stock ID"] ="STC- ${_filteredItems.indexOf(item)}";
+                  //
+                  //
+                  //  print("filtered items ${_filteredItems.length}");
 
                   return SingleChildScrollView(
                     scrollDirection: Axis.horizontal,

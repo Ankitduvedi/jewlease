@@ -59,7 +59,7 @@ class AddMetalVariantScreenState extends ConsumerState<AddMetalVariantScreen> {
                   createdDate: DateTime.timestamp(),
                   updateDate: DateTime.timestamp(),
                   metalName: textFieldvalues['Metal code']!,
-                  variantType: dropDownValue['Variant Type'] ?? 'STYLE',
+                  variantType: masterType[1]!,
                   baseMetalVariant: '24Kt',
                   stdSellingRate: double.parse(stdSellingRate.text),
                   stdBuyingRate: double.parse(stdBuyingRate.text),
@@ -214,11 +214,11 @@ class AddMetalVariantScreenState extends ConsumerState<AddMetalVariantScreen> {
             );
           },
         ),
-        const DropDownTextFieldWidget(
-          initialValue: 'STYLE',
-          items: ['STYLE', 'STYLEDESIGN'],
-          labelText: 'Variant Type',
-        ),
+        // const DropDownTextFieldWidget(
+        //   initialValue: 'STYLE',
+        //   items: ['STYLE', 'STYLEDESIGN'],
+        //   labelText: 'Variant Type',
+        // ),
         const ReadOnlyTextFieldWidget(
           hintText: '24Kt',
           labelText: 'Base Metal Variant',
