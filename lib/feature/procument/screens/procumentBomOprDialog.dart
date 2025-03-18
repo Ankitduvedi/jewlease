@@ -58,8 +58,8 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
         endUrl: 'SubContracting/IssueWork',
         value: 'Stock ID',
         queryMap: value.contains("Stone")
-            ? {"isRawMaterial": 1,"Variant Type": "Gold"}
-            : {"isRawMaterial": 1, "Varient Type": "Diamond"},
+            ? {"isRawMaterial": 1, "Variant Type": "Diamond"}
+            : {"isRawMaterial": 1, "Variant Type": null},
         onOptionSelectd: (selectedValue) {
           print("selected value $selectedValue");
         },
@@ -158,6 +158,7 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
                                 if (widget.canEdit == false) return;
 
                                 if (widget.isFromSubContracting) {
+                                  print("enter here");
                                   showRawMaterialDialog(value);
                                 } else {
                                   if (value.contains('Gold')) {
@@ -389,7 +390,7 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
           DataGridCell(columnName: 'Amount', value: 0),
           DataGridCell<String>(columnName: 'Sp Char', value: ''),
           DataGridCell<String>(columnName: 'Operation', value: ''),
-          DataGridCell<String>(columnName: 'Type', value: ''),
+          DataGridCell<String>(columnName: 'Type', value: rawMaterialData["Variant Type"]),
           DataGridCell<Widget>(columnName: 'Actions', value: null),
         ]),
       );
