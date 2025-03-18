@@ -95,10 +95,14 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
   }
 
   void addNewRowRawMaterial(Map<String, dynamic> varient, bool isStone) {
-    String netWt = double.parse(varient["Net Weight"]) == 0.0
+    ref.read(procurementVariantProvider.notifier).addItem(varient);
+
+    log("after editiog $varient");
+
+    String netWt = double.parse(varient["Weight"]) == 0.0
         ? varient["Dia Weight"]
-        : varient["Net Weight"];
-    print("net wt $netWt");
+        : varient["Weight"];
+    print("net wt $varient");
     setState(() {
       outwardRows.add(
         DataGridRow(cells: [
@@ -174,7 +178,7 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
       );
       _procumentdataGridSource.updateDataGridSource();
       setState(() {});
-      _otwardSummery({});
+      _otwardSummery(varient);
       _updateSummaryRow();
     });
   }
@@ -201,6 +205,8 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
 
   void _otwardSummery(Map<String, dynamic> updatedVarient) {
     setState(() {});
+    if (updatedVarient == null || updatedVarient.isEmpty) return;
+    print("updated varient $updatedVarient");
     try {
       otwardSummery['Wt'] = 0;
       otwardSummery['Total Amt'] = 0;
@@ -270,7 +276,7 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
       "imageDetails": input["Image Details"],
       "pieces": input["Pieces"],
       "weight": (input["Weight"] ?? 0),
-      "netWeight": input["Weight"] ?? 0,
+      "netWeight": input["Net Weight"] ?? 0,
       "diaWeight": input["Dia Weight"] ?? 0,
       "diaPieces": input["Dia Pieces"] ?? 0,
       "itemGroup": "Gold",
@@ -291,7 +297,7 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
       "styleMetalColor": input["Karat Color"],
       "locationCode": "",
       "isRawMaterial": input["isRawMaterial"],
-      "variant type": input["Variant Type"],
+      "variantType": input["Variant Type"],
     };
   }
 
@@ -308,9 +314,11 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
         reqBody["operationName"] = "Alteration";
 
         reqstBodeis.add(reqBody);
-
+        // print("--"*30);
         print("req $reqBody");
+        // print("--"*30);
       }
+      // return "";
 
       TransactionModel transaction = createTransaction(reqstBodeis);
       String? transactionID = await ref
@@ -321,8 +329,9 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
       for (Map<String, dynamic> reqBody in reqstBodeis) {
         String? stockId = reqBody["stockId"];
         print("stockId $stockId $reqBody");
+        log("sent req $reqBody");
 
-        ref.read(IssueStockControllerProvider.notifier).sentIssueStock(reqBody);
+        // ref.read(IssueStockControllerProvider.notifier).sentIssueStock(reqBody);
         BarcodeHistoryModel history =
             createHistory(reqBody, stockId!, transactionID!);
         BarcodeDetailModel detail =
@@ -333,8 +342,11 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
         await ref
             .read(BarocdeHistoryControllerProvider.notifier)
             .sentBarcodeHistory(history);
+        log("final req $reqBody");
+        if (reqBody["weight"] == reqBody["netWeight"]) reqBody["length"] = -1 ;
+        reqBody["netWeight"] = double.parse(reqBody["netWeight"]) -
+            double.parse(reqBody["weight"]);
 
-        reqBody["length"] = -1;
         await ref
             .read(procurementControllerProvider.notifier)
             .updateGRN(reqBody, stockId);
@@ -467,7 +479,7 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
                             // Navigator.of(context).pop(); // Close first dialog
                             if (value.contains("Stone")) {
                               addNewRowRawMaterial(selectedRow, true);
-                            } else
+                            } else {
                               Future.delayed(Duration(milliseconds: 200), () {
                                 showDialog(
                                   context: context,
@@ -479,10 +491,8 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
                                           addRow: addNewRowRawMaterial)),
                                 );
                               });
-
-                            ref
-                                .read(procurementVariantProvider.notifier)
-                                .addItem(selectedRow);
+                            }
+                            ;
                           },
                         ),
                       );

@@ -318,9 +318,9 @@ class _TransferInwardScreenState extends ConsumerState<ReturnScreen> {
         double weight = row[3] * 1.0;
         int pieces = row[2].toInt();
         print("bom row $row");
-        if (row[0] == "new") {
+        if (row[1].contains("Metal")) {
           result = testForMetal(styleVariantName, rowNo, weight);
-        } else if (row[0].contains("New DIAMOND-5")) {
+        } else if (row[1].contains("Stone")) {
           result = testForStone(styleVariantName, rowNo, weight, pieces);
         }
         if (result == false) {
@@ -347,7 +347,7 @@ class _TransferInwardScreenState extends ConsumerState<ReturnScreen> {
     double rawNetWt = double.parse(rawMaterial["Net Weight"]);
     int rawPieces = isStone ? rawMaterial["Dia Pieces"] : rawMaterial["Pieces"];
     print("raw $rawNetWt $rawPieces");
-    // return;
+    return;
     if (isStone) {
       if (rawPieces > pieces) {
         rawMaterial["Net Weight"] = rawNetWt - weight;
@@ -433,6 +433,8 @@ class _TransferInwardScreenState extends ConsumerState<ReturnScreen> {
         ref.read(procurementVariantProvider);
 
     bool result = await testWithInRange(varientList);
+    print("result is $result");
+    return;
     if (result) {
       TransactionModel transaction = createTransaction(varientList);
       String transactionID = await ref

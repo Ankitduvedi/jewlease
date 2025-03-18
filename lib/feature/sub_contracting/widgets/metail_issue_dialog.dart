@@ -105,6 +105,8 @@ class _metalIssueDialogState extends State<metalIssueDialog> {
               children: [
                 GestureDetector(
                   onTap: () {
+                    widget.row["Weight"]= widget.metalWeightController.text;
+                    // widget.row["Net Weight"] = widget.row["Weight"];
                     widget.addRow(widget.row, false);
                     Navigator.of(context).pop();
                   },
