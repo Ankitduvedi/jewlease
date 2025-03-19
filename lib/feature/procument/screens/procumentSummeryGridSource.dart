@@ -32,8 +32,22 @@ class ProcumentDataGridSource extends DataGridSource {
         .getCells()
         .firstWhere((cell) => cell.columnName == 'Rate')
         .value;
+    double stnWt = double.parse(dataGridRows[updateRowIndex]
+        .getCells()
+        .firstWhere((cell) => cell.columnName == 'Stone Wt')
+        .value);
     print(
         'final amount is ${rate.runtimeType} ${weight.runtimeType} ${pieces.runtimeType}');
+    if(pieces.runtimeType!=int) {
+      pieces= int.parse(pieces);
+    }
+    if(weight.runtimeType!=int) {
+      weight = int.parse(weight);
+    }
+
+    if(rate.runtimeType!=int) {
+      rate = int.parse(rate);
+    }
     dataGridRows[updateRowIndex] = DataGridRow(
         cells: dataGridRows[updateRowIndex].getCells().map((cell) {
       if (cell.columnName == 'Amount')
@@ -48,8 +62,13 @@ class ProcumentDataGridSource extends DataGridSource {
                 : int.parse(pieces) *
                     weight *
                     (rate.runtimeType == int ? rate : int.parse(rate)));
-      else
-        return cell;
+      else if (cell.columnName == "Weight") {
+        return DataGridCell(columnName: cell.columnName, value: pieces*weight);
+      }
+      else if (cell.columnName == "Stone Wt") {
+        return DataGridCell(columnName: cell.columnName, value: pieces*stnWt);
+      }
+      return cell;
     }).toList());
   }
 
@@ -96,7 +115,7 @@ class ProcumentDataGridSource extends DataGridSource {
             (cell) => cell.columnName == 'Item Group' && cell.value == 'Metal');
         bool isGoldRow = row.getCells().any((cell) =>
             cell.columnName == 'Item Group' && cell.value == 'Metal - Gold');
-        bool isPcsColumn = dataCell.columnName == 'Pcs';
+        bool isPcsColumn = dataCell.columnName == 'Pieces';
 
         return Builder(
           builder: (BuildContext context) {
@@ -122,10 +141,10 @@ class ProcumentDataGridSource extends DataGridSource {
                           ),
                           padding: EdgeInsets.all(16),
                           child: procumentBomOprDialog(
-                            dataCell.value,
-                            dataGridRows.indexOf(row),
-                            canEdit,isFromSubContracting
-                          ),
+                              dataCell.value,
+                              dataGridRows.indexOf(row),
+                              canEdit,
+                              isFromSubContracting),
                         ),
                       );
                     },
@@ -166,7 +185,8 @@ class ProcumentDataGridSource extends DataGridSource {
                           ? Colors.blue.shade900
                           : Colors.black),
                   keyboardType: TextInputType.number,
-                  enabled: canEdit ? !(isGoldRow && isPcsColumn) : false,
+                  enabled:
+                  false,
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     isDense: true,

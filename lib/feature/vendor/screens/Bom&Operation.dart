@@ -1,6 +1,7 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
 
 import 'dart:developer';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +11,7 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import '../../../main.dart';
 import '../../../widgets/data_widget.dart';
 import '../../../widgets/search_dailog_widget.dart';
+import '../../procument/screens/procumentBomGridSource.dart';
 import '../controller/bom_controller.dart';
 
 class MyDataGrid extends ConsumerStatefulWidget {
@@ -24,7 +26,7 @@ class _MyDataGridState extends ConsumerState<MyDataGrid> {
   final DataGridController _dataGridController2 = DataGridController();
   List<DataGridRow> _rows = [];
   final List<DataGridRow> _rows2 = [];
-  late MyDataGridSource _dataGridSource;
+  late procumentBomGridSource _dataGridSource;
 
   late OperationGridSource _dataGridSource2;
 
@@ -59,7 +61,8 @@ class _MyDataGridState extends ConsumerState<MyDataGrid> {
   void initState() {
     super.initState();
     _initializeRows();
-    _dataGridSource = MyDataGridSource(_rows, _removeRow, _updateBomSummaryRow);
+    _dataGridSource = procumentBomGridSource(
+        _rows, _removeRow, _updateBomSummaryRow,(String, int) {},true);
     _dataGridSource2 =
         OperationGridSource(_rows2, _removeRow, onEditOperation, context);
     _dataGridController2.addListener(() {
@@ -78,7 +81,8 @@ class _MyDataGridState extends ConsumerState<MyDataGrid> {
         DataGridRow(cells: [
           DataGridCell<String>(columnName: 'Variant Name', value: variantName),
           DataGridCell<String>(columnName: 'Item Group', value: itemGroup),
-          const DataGridCell<int>(columnName: 'Pieces', value: 0),
+          DataGridCell<int>(
+              columnName: 'Pieces', value: itemGroup.contains("Stone") ? 1 : 0),
           const DataGridCell<double>(columnName: 'Weight', value: 0.0),
           const DataGridCell(columnName: 'Rate', value: 0.0),
           const DataGridCell<double>(columnName: 'Avg Wt(Pcs)', value: 0.0),
@@ -184,8 +188,12 @@ class _MyDataGridState extends ConsumerState<MyDataGrid> {
     double totalAmount = 0.0;
 
     for (var i = 1; i < _rows.length; i++) {
-      totalPcs += _rows[i].getCells()[2].value as int;
-      totalWt += _rows[i].getCells()[3].value * 1.0 as double;
+      totalPcs += _rows[i].getCells()[2].value.toInt() as int;
+      if (_rows[i].getCells()[1].value.contains("Stone")) {
+        totalWt += (_rows[i].getCells()[3].value * 1.0 as double) * 0.2;
+      } else {
+        totalWt += _rows[i].getCells()[3].value * 1.0 as double;
+      }
     }
 
     double avgWtPcs = totalPcs > 0 ? totalWt / totalPcs : 0.0;
@@ -195,7 +203,7 @@ class _MyDataGridState extends ConsumerState<MyDataGrid> {
         const DataGridCell<String>(
             columnName: 'Variant Name', value: 'Summary'),
         const DataGridCell<String>(columnName: 'Item Group', value: ''),
-        DataGridCell<int>(columnName: 'Pieces', value: totalPcs),
+        DataGridCell<int>(columnName: 'Pieces', value: 1),
         DataGridCell<double>(columnName: 'Weight', value: totalWt),
         DataGridCell(columnName: 'Rate', value: totalRate),
         DataGridCell<double>(columnName: 'Avg Wt(Pcs)', value: avgWtPcs),
@@ -616,6 +624,43 @@ class MyDataGridSource extends DataGridSource {
   List<DataGridRow> get rows => dataGridRows;
 
   // Method to recalculate all 'Weight' values
+  void recalculateAmount() {
+    for (int i = 1; i < dataGridRows.length; i++) {
+      double wt = dataGridRows[i]
+                  .getCells()
+                  .where((cell) => cell.columnName == 'Weight')
+                  .first
+                  .value *
+              1.0 ??
+          0;
+      double rate = dataGridRows[i]
+                  .getCells()
+                  .where((cell) => cell.columnName == 'Rate')
+                  .first
+                  .value *
+              1.0 ??
+          0;
+      int pieces = math.max(
+          dataGridRows[i]
+                  .getCells()
+                  .where((cell) => cell.columnName == 'Pieces')
+                  .first
+                  .value
+                  .toInt() ??
+              1,
+          1);
+      print("amount1 ${rate * wt * pieces}");
+      dataGridRows[i] = DataGridRow(
+          cells: dataGridRows[i].getCells().map((cell) {
+        if (cell.columnName == 'Amount')
+          return DataGridCell(
+              columnName: cell.columnName, value: rate * wt * pieces);
+        else
+          return cell;
+      }).toList());
+    }
+  }
+
   void recalculateWt() {
     for (int rowIndex = 0; rowIndex < dataGridRows.length; rowIndex++) {
       final row = dataGridRows[rowIndex];
@@ -718,36 +763,31 @@ class MyDataGridSource extends DataGridSource {
           alignment: Alignment.center,
           child: TextField(
             onSubmitted: (value) {
-              int parsedValue = int.tryParse(value) ?? 0;
+              double parsedValue = double.tryParse(value) ?? 0;
               int rowIndex = dataGridRows.indexOf(row);
+              bool isDiamond = dataGridRows[rowIndex]
+                  .getCells()[1]
+                  .value
+                  .contains("Diamond");
+              print("is diamond $isDiamond $rowIndex");
+              // if (isDiamond && dataCell.columnName == 'Weight')
+              //   parsedValue = parsedValue * 0.2;
 
               // Update the _rows list directly
               dataGridRows[rowIndex] = DataGridRow(cells: [
                 for (var cell in row.getCells())
-                  if (cell == dataCell)
-                    DataGridCell<int>(
-                      columnName: cell.columnName,
-                      value: parsedValue,
-                    )
-                  else if (cell.columnName == "Wt")
-                    // Recalculate Wt as Pcs * Avg Wt(Pcs)
-                    DataGridCell<double>(
-                      columnName: cell.columnName,
-                      value: row
-                              .getCells()
-                              .firstWhere((c) => c.columnName == "Pcs")
-                              .value *
-                          1.0 *
-                          row
-                              .getCells()
-                              .firstWhere((c) => c.columnName == "Avg Wt(Pcs)")
-                              .value,
-                    )
+                  if (cell.columnName == dataCell.columnName)
+                    DataGridCell(
+                        columnName: cell.columnName, value: parsedValue)
                   else
-                    cell,
+                    cell
               ]);
 
+              for (var cell in dataGridRows[rowIndex].getCells())
+                print("cell name ${cell.columnName} value ${cell.value}");
+
               recalculateWt();
+              recalculateAmount();
               onEdit();
             },
             controller: TextEditingController(

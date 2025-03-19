@@ -42,4 +42,7 @@ class ProcurementVariantNotifier
       return item; // Leave other items unchanged
     }).toList();
   }
+  void resetAllVariants() {
+    state =[];
+  }
 }

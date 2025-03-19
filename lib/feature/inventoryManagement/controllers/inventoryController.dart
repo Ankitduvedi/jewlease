@@ -14,7 +14,10 @@ class InventoryController extends StateNotifier<bool> {
   InventoryController(this._inventoryRepository) : super(false);
 
   // Fetch all inventory items
-  Future<void> fetchAllStocks( {required String locationName, required String deprtmentName}) async {
+  Future<void> fetchAllStocks(
+      {required String locationName,
+      required String deprtmentName,
+      required bool isRawMaterial}) async {
     try {
       state = true;
       final response = await _inventoryRepository.fetchInventory();
@@ -25,7 +28,9 @@ class InventoryController extends StateNotifier<bool> {
           .toList()
           .where((item) =>
               item.locationName == locationName &&
-              item.department == deprtmentName && item.length>=0)
+              item.department == deprtmentName &&
+              item.length >= 0 &&
+              item.isRawMaterial == (isRawMaterial == true?1:0))
           .toList();
       state = false;
     } catch (e) {
@@ -37,7 +42,6 @@ class InventoryController extends StateNotifier<bool> {
 
   // Get inventory item at a given index
   InventoryItemModel getItemAt(int index) {
-
     return inventoryItems[index];
 
     // Return null if index is invalid

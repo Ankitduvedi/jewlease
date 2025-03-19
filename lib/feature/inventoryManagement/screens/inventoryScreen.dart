@@ -5,6 +5,7 @@ import 'package:jewlease/feature/inventoryManagement/screens/inventorySummery.da
 import 'package:jewlease/main.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
+import '../../../providers/dailog_selection_provider.dart';
 import '../../home/right_side_drawer/controller/drawer_controller.dart';
 import '../controllers/inventoryController.dart';
 import '../controllers/inventorySummery.dart';
@@ -24,11 +25,8 @@ class _InventoryManagementScreenState
     extends ConsumerState<InventoryManagementScreen> {
   @override
   void initState() {
-    // TODO: implement initState
-
-    addInventoryItem();
-
     super.initState();
+    addInventoryItem();
   }
 
   @override
@@ -110,12 +108,19 @@ class _InventoryManagementScreenState
   List<InventoryItemModel> inventoryItems = [];
 
   void addInventoryItem() async {
+    setState(() {
+      inventoryItems = [];
+    });
     Future.delayed(Duration(seconds: 0), () async {
       String locationName = ref.watch(selectedDepartmentProvider).locationName;
+      final isChecked = ref.watch(chechkBoxSelectionProvider);
+
       String departmentName =
           ref.watch(selectedDepartmentProvider).departmentName;
       await ref.read(inventoryControllerProvider.notifier).fetchAllStocks(
-          locationName: locationName, deprtmentName: departmentName);
+          locationName: locationName,
+          deprtmentName: departmentName,
+          isRawMaterial: isChecked["Raw Material"]!);
       List<InventoryItemModel> allStocks =
           ref.read(inventoryControllerProvider.notifier).inventoryItems;
 
@@ -155,10 +160,24 @@ class _InventoryManagementScreenState
     ref.read(inventoryControllerProvider.notifier).setCurrentIndex(index);
   }
 
+  bool isFetched = false;
+
+  @override
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
     bool showGraph = ref.watch(showGraphProvider);
+    final isChecked = ref.watch(chechkBoxSelectionProvider);
+
+    // Watch the checkbox state and fetch inventory items when it changes
+    ref.listen<bool>(
+        chechkBoxSelectionProvider.select((value) => value["Raw Material"]!),
+        (previous, next) {
+      if (previous != next) {
+        addInventoryItem();
+      }
+    });
+
     return Scaffold(
       body: Container(
         color: Colors.grey.shade200,
@@ -192,11 +211,10 @@ class _InventoryManagementScreenState
                                     border: Border.all(color: Colors.grey),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.black.withOpacity(0.2),
-                                        spreadRadius: 1,
-                                        blurRadius: 2,
-                                        offset: const Offset(0, 2),
-                                      ),
+                                          color: Colors.black.withOpacity(0.2),
+                                          spreadRadius: 1,
+                                          blurRadius: 2,
+                                          offset: const Offset(0, 2)),
                                     ],
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(8),
