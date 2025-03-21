@@ -59,7 +59,7 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
         value: 'Stock ID',
         queryMap: value.contains("Stone")
             ? {"isRawMaterial": 1, "Variant Type": "Diamond"}
-            : {"isRawMaterial": 1, "Variant Type": null},
+            : {"isRawMaterial": 1, "Variant Type": "Gold"},
         onOptionSelectd: (selectedValue) {
           print("selected value $selectedValue");
         },
@@ -68,6 +68,11 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
           print("selected raw material row $selectedRow");
           selectedRow["styleVariant"] = widget.VarientName;
           selectedRow["rowNo"] = _bomRows.length + 1;
+          if(selectedRow["Variant Type"]=="Diamond") {
+            selectedRow["Net Weight"]=selectedRow["Dia Weight"];
+
+          }
+
           ref.read(returnRawListProvider.notifier).addMap(selectedRow);
 
           _addNewRowBomRawMaterial(selectedRow, value);
@@ -379,12 +384,15 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
           DataGridCell<String>(columnName: 'Item Group', value: itemGroup),
           DataGridCell<int>(
               columnName: 'Pieces',
-              value: rawMaterialData['Dia Pieces'] == 0
+              value: rawMaterialData['Dia Pieces'] == 0 &&
+                      rawMaterialData["Pieces"] <= 1
                   ? 0
-                  : rawMaterialData['Dia Pieces']),
+                  : rawMaterialData['Pieces']),
           DataGridCell<double>(
               columnName: 'Weight',
-              value: double.parse(rawMaterialData["Net Weight"])),
+              value: rawMaterialData["Variant Type"] == "Gold"
+                  ? double.parse(rawMaterialData["Net Weight"])
+                  : double.parse(rawMaterialData["Dia Weight"])),
           DataGridCell(columnName: 'Rate', value: 0.0),
           DataGridCell<double>(columnName: 'Avg Wt(Pcs)', value: 0.0),
           DataGridCell(columnName: 'Amount', value: 0),
@@ -512,10 +520,11 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
         DataGridCell<String>(columnName: 'Variant Name', value: 'Summary'),
         DataGridCell<String>(columnName: 'Item Group', value: ''),
         DataGridCell<int>(
-            columnName: 'Pieces', value: (_bomRows[0].getCells()[2].value).toInt()),
+            columnName: 'Pieces',
+            value: (_bomRows[0].getCells()[2].value).toInt()),
         DataGridCell<double>(columnName: 'Weight', value: totalWt),
         DataGridCell<double>(columnName: 'Rate', value: totalRate),
-        DataGridCell<double>(columnName: 'Avg Wt(Pcs)', value:totalAVg),
+        DataGridCell<double>(columnName: 'Avg Wt(Pcs)', value: totalAVg),
         DataGridCell(columnName: 'Amount', value: totalAmount),
         DataGridCell<String>(columnName: 'Sp Char', value: ''),
         DataGridCell<String>(columnName: 'Operation', value: ''),
@@ -558,7 +567,7 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
     double stonePieces = 0;
     for (var row in _bomRows) {
       if (row.getCells()[1].value.contains('Diamond')) {
-        stoneWeight += row.getCells()[3].value *0.2;
+        stoneWeight += row.getCells()[3].value * 0.2;
         stonePieces += row.getCells()[2].value * 1.0;
       }
       print("stone pieces ${row.getCells()[2].value}");

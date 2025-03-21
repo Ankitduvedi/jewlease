@@ -120,7 +120,8 @@ class _InventoryManagementScreenState
       await ref.read(inventoryControllerProvider.notifier).fetchAllStocks(
           locationName: locationName,
           deprtmentName: departmentName,
-          isRawMaterial: isChecked["Raw Material"]!);
+          isRawMaterial: isChecked["Raw Material"]??false
+      );
       List<InventoryItemModel> allStocks =
           ref.read(inventoryControllerProvider.notifier).inventoryItems;
 

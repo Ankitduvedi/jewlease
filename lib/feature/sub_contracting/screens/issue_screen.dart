@@ -14,15 +14,19 @@ import '../../../data/model/transaction_model.dart';
 import '../../../main.dart';
 import '../../../widgets/app_bar_buttons.dart';
 import '../../../widgets/search_dailog_widget.dart';
+import '../../barcoding/controllers/barcode_detail_controller.dart';
+import '../../barcoding/controllers/barcode_history_controller.dart';
 import '../../formula/controller/formula_prtocedure_controller.dart';
 import '../../home/right_side_drawer/controller/drawer_controller.dart';
 import '../../procument/controller/procumentVendorDailog.dart';
+import '../../procument/controller/procumentcController.dart';
 import '../../procument/screens/procumentFloatingBar.dart';
 import '../../procument/screens/procumentScreen.dart';
 import '../../procument/screens/procumentSummeryGridSource.dart';
 import '../../procument/screens/procumentVendorDialog.dart';
 import '../../transaction/controller/transaction_controller.dart';
 import '../../vendor/controller/procumentVendor_controller.dart';
+import '../issue_controller.dart';
 import '../widgets/metail_issue_dialog.dart';
 
 class IssueScreen extends ConsumerStatefulWidget {
@@ -113,10 +117,7 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
           DataGridCell<String>(columnName: 'Stock Status', value: ""),
           DataGridCell(columnName: 'Group Item', value: varient["Item Group"]),
           DataGridCell<String>(
-              columnName: 'Pieces',
-              value: isStone
-                  ? varient['Dia Pieces'].toString()
-                  : varient['Pieces'].toString()),
+              columnName: 'Pieces', value: varient['Pieces'].toString()),
           DataGridCell<String>(columnName: 'Weight', value: netWt),
           DataGridCell<String>(
               columnName: 'Rate', value: varient["Std Buying Rate"]),
@@ -326,38 +327,43 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
       for (Map<String, dynamic> reqBody in reqstBodeis) {
         String? stockId = reqBody["stockId"];
         Map<String, dynamic> issueStockBody = jsonDecode(jsonEncode(reqBody));
-        print("weight ${issueStockBody["weight"]} nwtwt ${issueStockBody["netWeight"]}");
+        print(
+            "weight ${issueStockBody["weight"]} nwtwt ${issueStockBody["netWeight"]}");
 
         if (issueStockBody["weight"] != issueStockBody["netWeight"]) {
           issueStockBody["netWeight"] = issueStockBody["weight"];
         }
         print("issue update $issueStockBody");
 
-        // ref
-        //     .read(IssueStockControllerProvider.notifier)
-        //     .sentIssueStock(issueStockBody);
-        // BarcodeHistoryModel history =
-        //     createHistory(reqBody, stockId!, transactionID!);
-        // BarcodeDetailModel detail =
-        //     createDetail(reqBody, stockId, transactionID!);
-        // await ref
-        //     .read(BarocdeDetailControllerProvider.notifier)
-        //     .sentBarcodeDetail(detail);
-        // await ref
-        //     .read(BarocdeHistoryControllerProvider.notifier)
-        //     .sentBarcodeHistory(history);
+        ref
+            .read(IssueStockControllerProvider.notifier)
+            .sentIssueStock(issueStockBody);
+        BarcodeHistoryModel history =
+            createHistory(reqBody, stockId!, transactionID!);
+        BarcodeDetailModel detail =
+            createDetail(reqBody, stockId, transactionID!);
+        await ref
+            .read(BarocdeDetailControllerProvider.notifier)
+            .sentBarcodeDetail(detail);
+        await ref
+            .read(BarocdeHistoryControllerProvider.notifier)
+            .sentBarcodeHistory(history);
         print("grn update1 $reqBody");
-        if (reqBody["weight"] == reqBody["netWeight"])
+        // print("weight ${.runtimeType} net wt ${reqBody["netWeight"].runtimeType}");
+        if (double.parse(reqBody["weight"]) ==
+            double.parse(reqBody["netWeight"]))
           reqBody["length"] = -1;
+        else
+          reqBody["length"] = null;
 
         reqBody["netWeight"] = double.parse(reqBody["netWeight"]) -
             double.parse(reqBody["weight"]);
         reqBody["weight"] = reqBody["netWeight"];
         print("grn update $reqBody");
 
-        // await ref
-        //     .read(procurementControllerProvider.notifier)
-        //     .updateGRN(reqBody, stockId);
+        await ref
+            .read(procurementControllerProvider.notifier)
+            .updateGRN(reqBody, stockId);
         ref.read(procurementVariantProvider.notifier).resetAllVariants();
       }
       return "Successfully issues stocks";
@@ -477,10 +483,15 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
                           queryMap: value == "Stone"
                               ? {
                                   "isRawMaterial": 1,
-                                  "Varient Name": "New DIAMOND-5",
+                                  // "Varient Name": "New DIAMOND-5",
+                                  "Variant Type": "Diamond",
                                   "Length": null
                                 }
-                              : {"isRawMaterial": 1, "Length": null},
+                              : {
+                                  "isRawMaterial": 1,
+                                  "Length": null,
+                                  "Variant Type": "Gold"
+                                },
                           onOptionSelectd: (selectedValue) {
                             print("selected value $selectedValue");
                           },
