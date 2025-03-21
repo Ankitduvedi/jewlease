@@ -112,7 +112,7 @@ class _RmInventoryManagementScreenState
 
   void addInventoryItem() async {
     Future.delayed(Duration(seconds: 1), () async {
-      await ref.read(RmInventoryControllerProvider.notifier).fetchAllStocks();
+      // await ref.read(RmInventoryControllerProvider.notifier).fetchAllStocks();
       List<RmInventoryItemModel> allStocks =
           ref.read(RmInventoryControllerProvider.notifier).RmInventoryItems;
 

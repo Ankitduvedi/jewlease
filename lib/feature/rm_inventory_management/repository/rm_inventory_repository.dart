@@ -9,7 +9,7 @@ class RmInventoryRepository {
   RmInventoryRepository(this._dio);
 
   Future<List<Map<String, dynamic>>> fetchRmInventory() async {
-    final response = await _dio.get('$url2/Procurement/RawMaterial');
+    final response = await _dio.get('$url2/Procurement/GRN');
     try {
       if (response.statusCode == 200) {
         final data = response.data as List;
@@ -22,6 +22,7 @@ class RmInventoryRepository {
       return [];
     }
   }
+
   Future<String> sendGRN(Map<String, dynamic> data) async {
     print("uploading rmgrn $data");
     print("encoded rmgrn is ${jsonEncode(data)}");

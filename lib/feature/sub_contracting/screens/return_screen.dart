@@ -434,7 +434,7 @@ class _TransferInwardScreenState extends ConsumerState<ReturnScreen> {
 
     bool result = await testWithInRange(varientList);
     print("result is $result");
-    return;
+    // return;
     if (result) {
       TransactionModel transaction = createTransaction(varientList);
       String transactionID = await ref

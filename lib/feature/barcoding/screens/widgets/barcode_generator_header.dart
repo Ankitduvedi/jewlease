@@ -59,7 +59,7 @@ class _BarcodeHeaderState extends ConsumerState<BarcodeHeader> {
         currentWt: currentStock.metalWeight);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(stockDetailsProvider.notifier).initialize(stockDetails);
-      _grossWeightController.text = stockDetails.balMetWt.toString();
+      _grossWeightController.text = stockDetails.balFindWt.toString();
       _physicalQtyController.text = stockDetails.stockQty.toString();
     });
   }
@@ -67,8 +67,8 @@ class _BarcodeHeaderState extends ConsumerState<BarcodeHeader> {
   @override
   Widget build(BuildContext context) {
     final stockDetails = ref.watch(stockDetailsProvider);
-    _grossWeightController.text= stockDetails.balMetWt.toString();
-    _physicalQtyController.text= stockDetails.balPcs.toString();
+    _grossWeightController.text= stockDetails.balWt.toString();
+    _physicalQtyController.text= stockDetails.stockQty.toString();
 
 
 
@@ -105,7 +105,7 @@ class _BarcodeHeaderState extends ConsumerState<BarcodeHeader> {
                 HeaderItemWidget(
                     title: 'Remaining', value: stockDetails.remaining * 1.0),
                 HeaderItemWidget(
-                    title: 'Bal Pcs', value: stockDetails.balPcs * 1.0),
+                    title: 'Bal Pcs', value: stockDetails.stockQty * 1.0),
                 HeaderItemWidget(title: 'Bal Wt', value: stockDetails.balWt),
                 HeaderItemWidget(
                     title: 'Bal Met Wt', value: stockDetails.balMetWt),

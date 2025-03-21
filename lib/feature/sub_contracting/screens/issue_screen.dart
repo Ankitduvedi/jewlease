@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -84,13 +85,13 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
 
     _procumentdataGridSource =
         ProcumentDataGridSource(outwardRows, (DataGridRow) {}, () {}, false);
-    Future.delayed(
-      Duration(milliseconds: 500),
-      () => showDialog(
+    Future.delayed(Duration(milliseconds: 500), () {
+      ref.read(procurementVariantProvider.notifier).resetAllVariants();
+      showDialog(
         context: context,
         builder: (context) => Dialog(child: procumentVendorDialog()),
-      ),
-    );
+      );
+    });
     super.initState();
   }
 
@@ -116,10 +117,7 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
           DataGridCell<String>(columnName: 'Stock Status', value: ""),
           DataGridCell(columnName: 'Group Item', value: varient["Item Group"]),
           DataGridCell<String>(
-              columnName: 'Pieces',
-              value: isStone
-                  ? varient['Dia Pieces'].toString()
-                  : varient['Pieces'].toString()),
+              columnName: 'Pieces', value: varient['Pieces'].toString()),
           DataGridCell<String>(columnName: 'Weight', value: netWt),
           DataGridCell<String>(
               columnName: 'Rate', value: varient["Std Buying Rate"]),
@@ -328,10 +326,18 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
 
       for (Map<String, dynamic> reqBody in reqstBodeis) {
         String? stockId = reqBody["stockId"];
-        print("stockId $stockId $reqBody");
-        log("sent req $reqBody");
+        Map<String, dynamic> issueStockBody = jsonDecode(jsonEncode(reqBody));
+        print(
+            "weight ${issueStockBody["weight"]} nwtwt ${issueStockBody["netWeight"]}");
 
-        // ref.read(IssueStockControllerProvider.notifier).sentIssueStock(reqBody);
+        if (issueStockBody["weight"] != issueStockBody["netWeight"]) {
+          issueStockBody["netWeight"] = issueStockBody["weight"];
+        }
+        print("issue update $issueStockBody");
+
+        ref
+            .read(IssueStockControllerProvider.notifier)
+            .sentIssueStock(issueStockBody);
         BarcodeHistoryModel history =
             createHistory(reqBody, stockId!, transactionID!);
         BarcodeDetailModel detail =
@@ -342,14 +348,23 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
         await ref
             .read(BarocdeHistoryControllerProvider.notifier)
             .sentBarcodeHistory(history);
-        log("final req $reqBody");
-        if (reqBody["weight"] == reqBody["netWeight"]) reqBody["length"] = -1 ;
+        print("grn update1 $reqBody");
+        // print("weight ${.runtimeType} net wt ${reqBody["netWeight"].runtimeType}");
+        if (double.parse(reqBody["weight"]) ==
+            double.parse(reqBody["netWeight"]))
+          reqBody["length"] = -1;
+        else
+          reqBody["length"] = null;
+
         reqBody["netWeight"] = double.parse(reqBody["netWeight"]) -
             double.parse(reqBody["weight"]);
+        reqBody["weight"] = reqBody["netWeight"];
+        print("grn update $reqBody");
 
         await ref
             .read(procurementControllerProvider.notifier)
             .updateGRN(reqBody, stockId);
+        ref.read(procurementVariantProvider.notifier).resetAllVariants();
       }
       return "Successfully issues stocks";
     } catch (e) {
@@ -380,6 +395,9 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
                 String compltionMsg = await saveIssueStock();
                 print("completion msh $compltionMsg");
                 Utils.snackBar(compltionMsg, context);
+                ref
+                    .read(procurementVariantProvider.notifier)
+                    .resetAllVariants();
                 goRouter.go("/");
               },
               () {
@@ -465,10 +483,14 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
                           queryMap: value == "Stone"
                               ? {
                                   "isRawMaterial": 1,
-                                  "Varient Name": "New DIAMOND-5"
+                                  // "Varient Name": "New DIAMOND-5",
+                                  "Variant Type": "Diamond",
+                                  "Length": null
                                 }
                               : {
                                   "isRawMaterial": 1,
+                                  "Length": null,
+                                  "Variant Type": "Gold"
                                 },
                           onOptionSelectd: (selectedValue) {
                             print("selected value $selectedValue");

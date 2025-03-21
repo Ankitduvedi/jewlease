@@ -40,37 +40,56 @@ class _BarCodeGenerationState extends ConsumerState<BarCodeGeneration> {
     });
   }
 
+  Map<String, dynamic> newBomMap() {
+    List<String> headers =
+        _bomRows[0].getCells().map((cell) => cell.columnName).toList();
+    List<List<dynamic>> data = _bomRows
+        .map((row) => row.getCells().map((cell) => cell.value).toList())
+        .toList();
+    return {"headers": headers, "data": data};
+  }
+
   //<------------------------- Function To Update Bom Summary Row  ----------- -------------->
 
   void _updateBomSummaryRow() {
     print("fun call");
-    int totalPcs = 0;
+    int totalPcs = _bomRows[0].getCells()[2].value.toInt();
     double totalWt = 0.0;
     double totalRate = 0.0;
     double totalAmount = 0.0;
     double totalStoneWt = 0.0;
 
     double prevTotalAmount = _bomRows[0].getCells()[6].value * 1.0;
+    double totalavgWt = 0.0;
+    int totalDiaPieces = 0;
 
     for (var i = 1; i < _bomRows.length; i++) {
       if (_bomRows[i].getCells()[2].value is num) {
         num value = _bomRows[i].getCells()[2].value;
-        totalPcs += value is int ? value : value.toInt();
+        // totalPcs += value is int ? value : value.toInt();
       } else {
         throw Exception(
             'Invalid value type: ${_bomRows[i].getCells()[2].value.runtimeType}');
       }
+      bool isMetal = _bomRows[i].getCells()[1].value.contains("Metal");
+      print("row $i isMetal $isMetal");
+      if (isMetal) {
+        totalWt += _bomRows[i].getCells()[3].value ?? 0 * 1.0 as double;
+      } else {
+        totalWt += (_bomRows[i].getCells()[3].value ?? 0) * 0.2 as double;
+      }
+      totalavgWt += (_bomRows[i].getCells()[5].value ?? 0) * 1.0 as double;
+      totalDiaPieces += (_bomRows[i].getCells()[2].value.toInt() ?? 0) as int;
 
-      totalWt += _bomRows[i].getCells()[3].value ?? 0 * 1.0 as double;
       print("wt is ${_bomRows[i].getCells()[3].value}");
       totalRate += _bomRows[i].getCells()[4].value ?? 0 * 1.0 as double;
       totalAmount += _bomRows[i].getCells()[6].value ?? 0.0 as double;
-      if (_bomRows[i].getCells()[1].value.contains("Diamond")) {
-        totalStoneWt += _bomRows[i].getCells()[3].value ?? 0 * 1.0 as double;
+      if (_bomRows[i].getCells()[1].value.contains("Stone")) {
+        totalStoneWt += (_bomRows[i].getCells()[3].value ?? 0) * 0.2 as double;
       }
     }
 
-    double avgWtPcs = totalPcs > 0 ? totalWt / totalPcs : 0.0;
+    // double avgWtPcs = totalPcs > 0 ? totalWt / totalPcs : 0.0;
 
     setState(() {
       _bomRows[0] = DataGridRow(cells: [
@@ -79,7 +98,7 @@ class _BarCodeGenerationState extends ConsumerState<BarCodeGeneration> {
         DataGridCell<int>(columnName: 'Pieces', value: totalPcs),
         DataGridCell<double>(columnName: 'Weight', value: totalWt),
         DataGridCell<double>(columnName: 'Rate', value: totalRate),
-        DataGridCell<double>(columnName: 'Avg Wt(Pcs)', value: avgWtPcs),
+        DataGridCell<double>(columnName: 'Avg Wt(Pcs)', value: totalavgWt),
         DataGridCell(columnName: 'Amount', value: totalAmount),
         DataGridCell<String>(columnName: 'Sp Char', value: ''),
         DataGridCell<String>(columnName: 'Operation', value: ''),
@@ -88,13 +107,28 @@ class _BarCodeGenerationState extends ConsumerState<BarCodeGeneration> {
       ]);
     });
     print("current stone wt $totalStoneWt $totalWt ");
+    Map<String, dynamic> bom = {};
+
+    print(
+        "current-> $totalPcs $totalDiaPieces $totalStoneWt $totalWt $totalAmount");
+
+    Map<String, dynamic> newBom = newBomMap();
+    print("updated bom $newBom");
 
     StockDetailsModel prevStockDetails = ref.read(stockDetailsProvider);
     StockDetailsModel updatedStockDetails = prevStockDetails.copyWith(
-        rate: totalAmount, currentStoneWt: totalStoneWt, currentNetWt: totalWt);
-    print("prevTotalAmount $prevTotalAmount totalAmount $totalAmount");
-    if (prevTotalAmount != totalAmount)
-      ref.read(stockDetailsProvider.notifier).update(updatedStockDetails);
+        rate: totalAmount,
+        currentStoneWt: totalStoneWt,
+        currentNetWt: totalWt,
+        currentAmount: totalAmount,
+        currentPieces: totalPcs,
+        currentDiaPieces: totalDiaPieces,
+        currentBom: newBom);
+    print(
+      "prevTotalAmount $prevTotalAmount totalAmount $totalAmount",
+    );
+    // if (prevTotalAmount != totalAmount)
+    ref.read(stockDetailsProvider.notifier).update(updatedStockDetails);
   }
 
   //<------------------------- Function To update wt   ----------- -------------->
@@ -142,8 +176,7 @@ class _BarCodeGenerationState extends ConsumerState<BarCodeGeneration> {
   void initializeBomOpr() {
     InventoryItemModel currentStock =
         ref.read(inventoryControllerProvider.notifier).getCurrentItem()!;
-    if(currentStock.bom.isEmpty)
-      return;
+    if (currentStock.bom.isEmpty) return;
     print("bom is ${currentStock.bom}");
 
     List<dynamic> listOfBoms = currentStock.bom["data"];
