@@ -56,11 +56,11 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
     try {
       List<Map<String, dynamic>>? varientList =
           ref.read(procurementVariantProvider);
-      print("varientList = $varientList ");
+      // print("varientList = $varientList ");
 
       Map<dynamic, dynamic> allFormualMap = ref.read(varientAllFormulaProvider);
 
-      print("allFormulas = $allFormualMap");
+      // print("allFormulas = $allFormualMap");
 
       List<Map<String, dynamic>> reqstBodeis = [];
 
@@ -84,6 +84,7 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
         print("req body is $reuestBody");
         reqstBodeis.add(reuestBody);
       }
+      // return false;
 
       TransactionModel transaction = createTransaction(reqstBodeis);
       String? transactionID = await ref

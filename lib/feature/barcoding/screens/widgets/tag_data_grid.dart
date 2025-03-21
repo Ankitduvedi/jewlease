@@ -7,16 +7,17 @@ import 'package:jewlease/data/model/barcode_detail_model.dart';
 import 'package:jewlease/data/model/inventoryItem.dart';
 import 'package:jewlease/data/model/stock_details_model.dart';
 import 'package:jewlease/data/model/transaction_model.dart';
-import 'package:jewlease/feature/barcoding/controllers/barcode_detail_controller.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 import '../../../../core/utils/utils.dart';
 import '../../../../data/model/barcode_historyModel.dart';
 import '../../../../providers/image_provider.dart';
 import '../../../../widgets/image_data.dart';
+import '../../../home/right_side_drawer/controller/drawer_controller.dart';
 import '../../../inventoryManagement/controllers/inventoryController.dart';
 import '../../../procument/controller/procumentcController.dart';
 import '../../../transaction/controller/transaction_controller.dart';
+import '../../controllers/barcode_detail_controller.dart';
 import '../../controllers/barcode_history_controller.dart';
 import '../../controllers/stockController.dart';
 import '../../controllers/tag_image_controller.dart';
@@ -60,13 +61,43 @@ class _TagListUIState extends ConsumerState<TagListUI> {
     newStockDetails.balStoneWt =
         newStockDetails.balStoneWt - newStockDetails.currentStoneWt;
     newStockDetails.balWt = newStockDetails.balWt - newStockDetails.currentWt;
-    newStockDetails.stockQty--;
+    newStockDetails.stockQty -= newStockDetails.currentPieces;
+    newStockDetails.balStonePcs -= newStockDetails.currentDiaPieces;
     newStockDetails.tagCreated++;
     newStockDetails.remaining--;
-    newStockDetails.currentNetWt=0;
-    newStockDetails.currentStoneWt=0;
-    newStockDetails.currentWt=0;
+    newStockDetails.currentNetWt = 0;
+    newStockDetails.currentStoneWt = 0;
+    newStockDetails.currentWt = 0;
+
     return newStockDetails;
+  }
+
+  Map<String, dynamic> updatedBomTotal(
+      Map<String, dynamic> totalBom, Map<String, dynamic> tagBom) {
+    Map<String, dynamic> newBom = {};
+    newBom["headers"] = totalBom["headers"];
+    print("total bom $totalBom");
+    print("tag bom $tagBom");
+    List<dynamic> totalDataRow = totalBom["data"];
+    List<List<dynamic>> totalData =
+        totalDataRow.map((row) => row as List<dynamic>).toList();
+
+    List<dynamic> tagDataRow = tagBom["data"];
+    List<List<dynamic>> tagData =
+        tagDataRow.map((row) => row as List<dynamic>).toList();
+
+    for (int i = 0; i < totalData.length; i++) {
+      for (int j = 0; j < totalData[i].length; j++) {
+        if ((totalData[i][j].runtimeType == int || totalData[i][j] == double) &&
+            j != 4) {
+          print("i $i j-< $j ${totalData[i][j]}");
+          totalData[i][j] -= tagData[i][j];
+          print("i $i j-> $j ${totalData[i][j]}");
+        }
+      }
+    }
+    newBom["data"] = totalData;
+    return newBom;
   }
 
   void addTagRow() async {
@@ -74,76 +105,86 @@ class _TagListUIState extends ConsumerState<TagListUI> {
     InventoryItemModel currentTotalStock =
         ref.read(inventoryControllerProvider.notifier).getCurrentItem()!;
     print("current item ${currentTotalStock.varientName}");
-    try {
-      StockDetailsModel newChildStockDetails = ref.read(stockDetailsProvider);
-      File? imgFile = ref.read(tagImgListProvider);
-      // return ;
-      TagRow tag = createTag(newChildStockDetails, currentTotalStock, imgFile);
-      final response = await ref.watch(imageProvider.notifier).uploadImage(
-          ImageModel(
-              imageData: tag.image!.readAsBytesSync(),
-              type: 'Tag',
-              description: tag.stockCode));
-      String imageUrl = "";
-      response.fold((l) => Utils.snackBar(l.message, context), (r) {
-        print("image url1 is $r");
-        setState(() {
-          imageUrl = r;
-        });
+    // return;
+    // try {
+    StockDetailsModel newChildStockDetails = ref.read(stockDetailsProvider);
+    File? imgFile = ref.read(tagImgListProvider);
+    // return ;
+    TagRow tag = createTag(newChildStockDetails, currentTotalStock, imgFile);
+    final response = await ref.watch(imageProvider.notifier).uploadImage(
+        ImageModel(
+            imageData: tag.image!.readAsBytesSync(),
+            type: 'Tag',
+            description: tag.stockCode));
+    String imageUrl = "";
+    response.fold((l) => Utils.snackBar(l.message, context), (r) {
+      print("image url1 is $r");
+      setState(() {
+        imageUrl = r;
       });
-      tagRows.add(tag);
-      Map<String, dynamic> tagrRqsBody =
-          convertToSchema(tag, currentTotalStock, "xyz");
-      print("tagrRqsBody is $tagrRqsBody");
-      tagrRqsBody.remove("Stock ID");
+    });
+    tagRows.add(tag);
+    Map<String, dynamic> tagrRqsBody =
+        convertToSchema(tag, currentTotalStock, "xyz");
+    // print("tagrRqsBody is $tagrRqsBody");
+    tagrRqsBody.remove("Stock ID");
+    Map<String, dynamic> updatedTotalBom =
+        updatedBomTotal(currentTotalStock.bom, tag.bom);
+    print("updated total Bom $updatedTotalBom");
+    // return;
 
-      //<---------------api to create a new tag---------------->
-      String newTagStockCode = await ref
+    //<---------------api to create a new tag---------------->
+    String newTagStockCode = await ref
+        .read(procurementControllerProvider.notifier)
+        .sendGRN(tagrRqsBody);
+    TransactionModel transaction = createTransaction(tagrRqsBody);
+    String? transactionId = await ref
+        .read(TransactionControllerProvider.notifier)
+        .sentTransaction(transaction);
+    BarcodeDetailModel detailModel =
+        createBarcodeDetail(newTagStockCode, tagrRqsBody, transactionId);
+    BarcodeHistoryModel historyModel =
+        createBarcodeHistory(newTagStockCode, tagrRqsBody, transactionId);
+
+    await ref
+        .read(BarocdeDetailControllerProvider.notifier)
+        .sentBarcodeDetail(detailModel);
+    await ref
+        .read(BarocdeHistoryControllerProvider.notifier)
+        .sentBarcodeHistory(historyModel);
+    //<--------------------api to update current grn------------------>
+    if (ref.read(stockDetailsProvider).stockQty > 0) {
+
+      await ref.read(procurementControllerProvider.notifier).updateGRN(
+          updateCurrentInveryItem(
+                  currentTotalStock, tag, imageUrl, updatedTotalBom)
+              .toJson(),
+          currentTotalStock.stockCode);
+    } else {
+      await ref
           .read(procurementControllerProvider.notifier)
-          .sendGRN(tagrRqsBody);
-      TransactionModel transaction = createTransaction(tagrRqsBody);
-      String? transactionId = await ref
-          .read(TransactionControllerProvider.notifier)
-          .sentTransaction(transaction);
-      BarcodeDetailModel detailModel =
-          createBarcodeDetail(newTagStockCode, tagrRqsBody, transactionId);
-      BarcodeHistoryModel historyModel =
-          createBarcodeHistory(newTagStockCode, tagrRqsBody, transactionId);
-
-      await ref
-          .read(BarocdeDetailControllerProvider.notifier)
-          .sentBarcodeDetail(detailModel);
-      await ref
-          .read(BarocdeHistoryControllerProvider.notifier)
-          .sentBarcodeHistory(historyModel);
-      //<--------------------api to update current grn------------------>
-      if (ref.read(stockDetailsProvider).stockQty > 0) {
-        print(
-            "update grn is1 ${updateCurrentInveryItem(currentTotalStock, tag, imageUrl).toJson()}");
-        await ref.read(procurementControllerProvider.notifier).updateGRN(
-            updateCurrentInveryItem(currentTotalStock, tag, imageUrl).toJson(),
-            currentTotalStock.stockCode);
-      } else {
-        await ref
-            .read(procurementControllerProvider.notifier)
-            .deleteGRN(currentTotalStock.stockCode);
-      }
-
-      ref.read(tagRowsProvider.notifier).addTag(tag);
-      StockDetailsModel updateParentStock = updateStock(newChildStockDetails);
-      ref.read(stockDetailsProvider.notifier).update(updateParentStock);
-      ref.read(tagImgListProvider.notifier).addFile(File(''));
-
-      print("added row");
-    } catch (e) {
-      print("error in addTagRow: $e");
+          .deleteGRN(currentTotalStock.stockCode);
     }
+
+    ref.read(tagRowsProvider.notifier).addTag(tag);
+    StockDetailsModel updateParentStock = updateStock(newChildStockDetails);
+    print(
+        "stock quantity ${updateParentStock.stockQty} ${newChildStockDetails.currentPieces}");
+
+    ref.read(stockDetailsProvider.notifier).update(updateParentStock);
+    ref.read(tagImgListProvider.notifier).addFile(File(''));
+
+    print("added row");
+    // } catch (e) {
+    //   print("error in addTagRow: $e");
+    // }
   }
 
   @override
   Widget build(BuildContext context) {
     ref.listen<bool>(isTagUpdateProvider, (previous, next) {
       // Trigger your function here
+
       addTagRow();
     });
     return Scaffold(
@@ -244,62 +285,64 @@ class _TagListUIState extends ConsumerState<TagListUI> {
       "codegenSrNo": stock.codegenSrNo,
       "hsnSacCode": stock.hsnSacCode,
       "lineOfBusiness": stock.lineOfBusiness,
-      "bom": stock.bom,
+      "bom": tag.bom,
       "operation": stock.operation,
       "imageDetails": image,
       "formulaDetails": stock.formulaDetails,
       "pieces": tag.pcs,
       "weight": tag.wt,
-      "netWeight": tag.diaWt + tag.wt,
+      "netWeight": tag.netWt,
       "diaWeight": tag.diaWt,
-      "diaPieces": tag.pcs,
+      "diaPieces": tag.diaPieces,
       "loactionCode": stock.locationName,
       "vendorCode": stock.vendorCode,
-      "location": stock.locationName,
+      "location": ref.watch(selectedDepartmentProvider).locationName,
+      "department": ref.watch(selectedDepartmentProvider).departmentName,
       "itemGroup": stock.itemGroup,
       "metalColor": stock.metalColor,
       "styleMetalColor": stock.styleMetalColor,
-      "isRawMaterial":0
+      "isRawMaterial": stock.isRawMaterial
     };
   }
 
-  InventoryItemModel updateCurrentInveryItem(
-      InventoryItemModel totalStock, TagRow tag, String imageFile) {
-    totalStock.pieces = totalStock.pieces - 1;
+  InventoryItemModel updateCurrentInveryItem(InventoryItemModel totalStock,
+      TagRow tag, String imageFile, Map<String, dynamic> updatedBom) {
+    totalStock.pieces = totalStock.pieces - tag.pcs;
 
     totalStock.metalWeight = totalStock.metalWeight - tag.wt;
     totalStock.diaWeight = totalStock.diaWeight - tag.diaWt;
     totalStock.diaPieces = max(totalStock.diaPieces - tag.pcs, 0);
     // totalStock.imageDetails = imageFile;
     totalStock.netWeight = totalStock.netWeight - tag.netWt;
-    totalStock.stonePiece = totalStock.stonePiece - tag.pcs;
+    totalStock.stonePiece = totalStock.stonePiece - tag.diaPieces;
+    totalStock.bom = updatedBom;
     return totalStock;
   }
 
-    TransactionModel createTransaction(Map<String, dynamic> varient) {
-      TransactionModel transaction = TransactionModel(
-          transType: "Barcode Generation",
-          subType: "BG",
-          transCategory: "GENERAL",
-          docNo: "bsjbcs",
-          transDate: DateTime.now().toIso8601String(),
-          source: "WareHouse",
-          destination: "MH_CASH",
-          customer: "ankit",
-          sourceDept: "Warehouse",
-          destinationDept: "MH_CASH",
-          exchangeRate: "0.0",
-          currency: "RS",
-          salesPerson: "Arun",
-          term: "term",
-          remark: "Creating GRN",
-          createdBy: DateTime.now().toIso8601String(),
-          postingDate: DateTime.now().toIso8601String(),
-          varients: [varient]);
-      return transaction;
+  TransactionModel createTransaction(Map<String, dynamic> varient) {
+    TransactionModel transaction = TransactionModel(
+        transType: "Barcode Generation",
+        subType: "BG",
+        transCategory: "GENERAL",
+        docNo: "bsjbcs",
+        transDate: DateTime.now().toIso8601String(),
+        source: "WareHouse",
+        destination: "MH_CASH",
+        customer: "ankit",
+        sourceDept: "Warehouse",
+        destinationDept: "MH_CASH",
+        exchangeRate: "0.0",
+        currency: "RS",
+        salesPerson: "Arun",
+        term: "term",
+        remark: "Creating GRN",
+        createdBy: DateTime.now().toIso8601String(),
+        postingDate: DateTime.now().toIso8601String(),
+        varients: [varient]);
+    return transaction;
 
-      // print("transactionID is $transactionID");
-    }
+    // print("transactionID is $transactionID");
+  }
 
   BarcodeDetailModel createBarcodeDetail(String newStockCode,
       Map<String, dynamic> tagrRqsBody, String? transactionID) {
@@ -341,12 +384,13 @@ class _TagListUIState extends ConsumerState<TagListUI> {
 
   TagRow createTag(StockDetailsModel newStockDetails,
       InventoryItemModel currentStock, File? imgFile) {
+    print("current bom ${newStockDetails.currentBom}");
     TagRow tag = TagRow(
       checkbox: false,
       image: imgFile,
       variant: '${currentStock.varientName}',
       stockCode: '${currentStock.stockCode}#${newStockDetails.tagCreated + 1}',
-      pcs: 1,
+      pcs: newStockDetails.currentPieces,
       wt: newStockDetails.currentNetWt - newStockDetails.currentStoneWt,
       netWt: newStockDetails.currentNetWt,
       clsWt: 0.0,
@@ -357,10 +401,13 @@ class _TagListUIState extends ConsumerState<TagListUI> {
       fixMrp: newStockDetails.rate,
       making: 0.0,
       rate: newStockDetails.rate,
-      amount: newStockDetails.rate,
+      amount: newStockDetails.currentAmount,
       lineRemark: 'lineRemark',
       huid: 'huid',
       orderVariant: 'orderVariant',
+      diaPieces: newStockDetails.currentDiaPieces,
+      bom: newStockDetails.currentBom,
+      operation: newStockDetails.currentOperation,
     );
     return tag;
   }

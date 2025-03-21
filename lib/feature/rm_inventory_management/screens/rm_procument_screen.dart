@@ -51,11 +51,13 @@ class _ProcumentDataGridState extends ConsumerState<RmProcumentSummaryScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(
-        Duration(milliseconds: 500),
-        () => showDialog(
-            context: context,
-            builder: (context) => Dialog(child: procumentVendorDialog())));
+    Future.delayed(Duration(milliseconds: 500), () {
+      showDialog(
+        context: context,
+        builder: (context) => Dialog(child: procumentVendorDialog()),
+      );
+      ref.read(procurementVariantProvider.notifier).resetAllVariants();
+    });
     _initializeRows();
     _RmProcumentDataGridSource = RmProcumentDataGridSource(
         _RmProcumentRows, _removeRow, _updateSummaryRow, true);
@@ -263,7 +265,7 @@ class _ProcumentDataGridState extends ConsumerState<RmProcumentSummaryScreen> {
       "operation": {},
       "formulaDetails": {},
       "isRawMaterial": true,
-      "variantType" :input["Variant Type"],
+      "variantType": input["Variant Type"],
     };
   }
 
@@ -287,91 +289,90 @@ class _ProcumentDataGridState extends ConsumerState<RmProcumentSummaryScreen> {
             ontap: [
               () {},
               () async {
-              try {
-                List<Map<String, dynamic>>? varientList =
-                ref.read(procurementVariantProvider);
-                print("varientList = $varientList ");
+                try {
+                  List<Map<String, dynamic>>? varientList =
+                      ref.read(procurementVariantProvider);
+                  print("varientList = $varientList ");
 
-                //
-                List<Map<String, dynamic>> reqstBodeis = [];
-                //
-                for (int i = 0; i < varientList!.length; i++) {
-                  print("varientList is ${varientList[i]}");
-                  Map<String, dynamic> reuestBody =
-                  convertToSchema(varientList[i]);
-                  reuestBody["vendor"] =
-                  ref.read(pocVendorProvider)["Vendor Name"];
+                  //
+                  List<Map<String, dynamic>> reqstBodeis = [];
+                  //
+                  // return;
+                  for (int i = 0; i < varientList!.length; i++) {
+                    print("varientList is ${varientList[i]}");
+                    Map<String, dynamic> reuestBody =
+                        convertToSchema(varientList[i]);
+                    reuestBody["vendor"] =
+                        ref.read(pocVendorProvider)["Vendor Name"];
 
-                  reuestBody["vendorCode"] =
-                  ref.read(pocVendorProvider)["Vendor Code"];
-                  reuestBody["location"] =
-                      ref
-                          .watch(selectedDepartmentProvider)
-                          .locationName;
-                  reuestBody["department"] =
-                      ref
-                          .watch(selectedDepartmentProvider)
-                          .departmentName;
-                  reuestBody["itemGroup"] = reuestBody["style"];
-                  reuestBody["metalColor"] = reuestBody["Karat Color"];
-                  reuestBody["styleMetalColor"] = reuestBody["Karat Color"];
+                    reuestBody["vendorCode"] =
+                        ref.read(pocVendorProvider)["Vendor Code"];
+                    reuestBody["location"] =
+                        ref.watch(selectedDepartmentProvider).locationName;
+                    reuestBody["department"] =
+                        ref.watch(selectedDepartmentProvider).departmentName;
+                    reuestBody["itemGroup"] = reuestBody["style"];
+                    reuestBody["metalColor"] = reuestBody["Karat Color"];
+                    reuestBody["styleMetalColor"] = reuestBody["Karat Color"];
 
-                  print("req body is $reuestBody");
-                  print('--' * 55);
+                    print("req body is $reuestBody");
+                    print('--' * 55);
 
-                  reqstBodeis.add(reuestBody);
+                    reqstBodeis.add(reuestBody);
+                  }
+                  // return;
+
+                  TransactionModel transaction = TransactionModel(
+                      transType: "Opening Stock",
+                      subType: "OPS",
+                      transCategory: "GENERAL",
+                      docNo: "bsjbcs",
+                      transDate: DateTime.now().toIso8601String(),
+                      source: "WareHouse",
+                      destination: "MH_CASH",
+                      customer: "ankit",
+                      sourceDept: "Warehouse",
+                      destinationDept: "MH_CASH",
+                      exchangeRate: "0.0",
+                      currency: "RS",
+                      salesPerson: "Arun",
+                      term: "term",
+                      remark: "Creating GRN",
+                      createdBy: "Arpit",
+                      postingDate: DateTime.now().toIso8601String(),
+                      varients: reqstBodeis);
+                  String? transactionID = await ref
+                      .read(TransactionControllerProvider.notifier)
+                      .sentTransaction(transaction);
+                  print("transactionID is $transactionID");
+                  //
+                  for (var reqstBody in reqstBodeis) {
+                    print("reqst body $reqstBody");
+                    print("-------------------------------------");
+                    reqstBody["inwardDoc"] = transactionID;
+                    String stockId = await ref
+                        .read(procurementControllerProvider.notifier)
+                        .sendGRN(reqstBody);
+                    BarcodeHistoryModel history =
+                        createHistory(reqstBody, stockId, transactionID!);
+                    BarcodeDetailModel detail =
+                        createDetail(reqstBody, stockId, transactionID!);
+                    await ref
+                        .read(BarocdeDetailControllerProvider.notifier)
+                        .sentBarcodeDetail(detail);
+                    await ref
+                        .read(BarocdeHistoryControllerProvider.notifier)
+                        .sentBarcodeHistory(history);
+                  }
+                  //
+                  ref
+                      .read(procurementVariantProvider.notifier)
+                      .resetAllVariants();
+                  Utils.snackBar("Raw Materail Added", context);
+                  goRouter.go("/");
+                } catch (e) {
+                  Utils.snackBar(e.toString(), context);
                 }
-                // return;
-
-                TransactionModel transaction = TransactionModel(
-                    transType: "Opening Stock",
-                    subType: "OPS",
-                    transCategory: "GENERAL",
-                    docNo: "bsjbcs",
-                    transDate: DateTime.now().toIso8601String(),
-                    source: "WareHouse",
-                    destination: "MH_CASH",
-                    customer: "ankit",
-                    sourceDept: "Warehouse",
-                    destinationDept: "MH_CASH",
-                    exchangeRate: "0.0",
-                    currency: "RS",
-                    salesPerson: "Arun",
-                    term: "term",
-                    remark: "Creating GRN",
-                    createdBy: "Arpit",
-                    postingDate: DateTime.now().toIso8601String(),
-                    varients: reqstBodeis);
-                String? transactionID = await ref
-                    .read(TransactionControllerProvider.notifier)
-                    .sentTransaction(transaction);
-                print("transactionID is $transactionID");
-                //
-                for (var reqstBody in reqstBodeis) {
-                  print("reqst body $reqstBody");
-                  print("-------------------------------------");
-                  reqstBody["inwardDoc"] = transactionID;
-                  String stockId = await ref
-                      .read(procurementControllerProvider.notifier)
-                      .sendGRN(reqstBody);
-                  BarcodeHistoryModel history =
-                  createHistory(reqstBody, stockId, transactionID!);
-                  BarcodeDetailModel detail =
-                  createDetail(reqstBody, stockId, transactionID!);
-                  await ref
-                      .read(BarocdeDetailControllerProvider.notifier)
-                      .sentBarcodeDetail(detail);
-                  await ref
-                      .read(BarocdeHistoryControllerProvider.notifier)
-                      .sentBarcodeHistory(history);
-                }
-                //
-                Utils.snackBar("Raw Materail Added", context);
-                goRouter.go("/");
-              }
-              catch(e) {
-                Utils.snackBar(e.toString(), context);
-              }
                 // Navigator.pop(context);\\
               },
               () {},
@@ -896,6 +897,7 @@ class RmProcumentDataGridSource extends DataGridSource {
       bool isMetalRow, bool isPcsColumn, bool isStonWtCol, isWtCol) {
     if (isMetalRow) {
       if (isStonWtCol) return false;
+      if (isPcsColumn) return false;
       return true;
     } else {
       if (isWtCol) return false;

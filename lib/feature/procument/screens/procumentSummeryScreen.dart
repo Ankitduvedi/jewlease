@@ -40,7 +40,9 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
   @override
   void initState() {
     super.initState();
+
     _initializeRows();
+
     _procumentdataGridSource = ProcumentDataGridSource(
         _Procumentrows, _removeRow, _updateSummaryRow, true);
     setState(() {});
@@ -106,7 +108,7 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
           DataGridCell<String>(
               columnName: 'Amount',
               value: (int.parse(varient["BOM"]["data"][0][3].toString()) *
-                      int.parse(varient["Std Buying Rate"] ?? 0))
+                  int.parse(varient["Std Buying Rate"] ?? 0))
                   .toString()),
           DataGridCell<String>(columnName: 'Wastage', value: "0"),
         ]),
@@ -121,6 +123,9 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
   void _initializeRows() {
     print("intilizing start");
     _Procumentrows = [];
+    Future.delayed(Duration(seconds: 1), () {
+      ref.read(procurementVariantProvider.notifier).resetAllVariants();
+    });
   }
 
   void _removeRow(DataGridRow row) {
@@ -155,13 +160,13 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
     int varientIndex = updatedVarient["varientIndex"];
     _Procumentrows[varientIndex] = DataGridRow(
         cells: _Procumentrows[varientIndex].getCells().map((cell) {
-      if (updatedVarient[cell.columnName] != null)
-        return DataGridCell(
-            columnName: cell.columnName,
-            value: updatedVarient[cell.columnName]);
-      else
-        return cell;
-    }).toList());
+          if (updatedVarient[cell.columnName] != null)
+            return DataGridCell(
+                columnName: cell.columnName,
+                value: updatedVarient[cell.columnName]);
+          else
+            return cell;
+        }).toList());
     setState(() {});
     print("updated varient proc summery is $updatedVarient");
 
@@ -179,25 +184,32 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
   void showProcumentdialog(String endUrl, String value) {
     showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          content: ItemDataScreen(
-            title: '',
-            endUrl: endUrl,
-            canGo: true,
-            onDoubleClick: (Map<String, dynamic> intialData) {
-              print("intial data $intialData");
-              // _addNewRowBom(intialData["OPERATION_NAME"] ?? "", value);
-              // Navigator.pop(context);
-              // _updateBomSummaryRow();
-            },
-          ),
-        ));
+        builder: (context) =>
+            AlertDialog(
+              content: ItemDataScreen(
+                title: '',
+                endUrl: endUrl,
+                canGo: true,
+                onDoubleClick: (Map<String, dynamic> intialData) {
+                  print("intial data $intialData");
+                  // _addNewRowBom(intialData["OPERATION_NAME"] ?? "", value);
+                  // Navigator.pop(context);
+                  // _updateBomSummaryRow();
+                },
+              ),
+            ));
   }
 
   @override
   Widget build(BuildContext context) {
-    screenWidth = MediaQuery.of(context).size.width;
-    screenHeight = MediaQuery.of(context).size.height;
+    screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
+    screenHeight = MediaQuery
+        .of(context)
+        .size
+        .height;
     double gridWidth =
         screenWidth * 0.6; // Set grid width to 50% of screen width
     print("widht ${screenWidth} ${screenWidth * 0.9}");
@@ -226,26 +238,27 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                     onTap: () {
                       showDialog(
                         context: context,
-                        builder: (context) => ItemTypeDialogScreen(
-                          title: 'Add Varient',
-                          endUrl: 'ItemMasterAndVariants/Style/Style/Variant',
-                          value: 'Varient Name',
-                          onOptionSelectd: (selectedValue) {
-                            print("selected value $selectedValue");
-                          },
-                          onSelectdRow: (selectedRow) {
-                            ref
-                                .read(procurementVariantProvider.notifier)
-                                .addItem(selectedRow);
-                            Map<dynamic, dynamic>? selected = ref
-                                .read(procurementVariantProvider.notifier)
-                                .getItemByVariant(selectedRow['Varient']);
-                            print(
-                                "selected $selected selectedRow $selectedRow");
-                            _addNewRowWithItemGroup(selectedRow);
-                            setState(() {});
-                          },
-                        ),
+                        builder: (context) =>
+                            ItemTypeDialogScreen(
+                              title: 'Add Varient',
+                              endUrl: 'ItemMasterAndVariants/Style/Style/Variant',
+                              value: 'Varient Name',
+                              onOptionSelectd: (selectedValue) {
+                                print("selected value $selectedValue");
+                              },
+                              onSelectdRow: (selectedRow) {
+                                ref
+                                    .read(procurementVariantProvider.notifier)
+                                    .addItem(selectedRow);
+                                Map<dynamic, dynamic>? selected = ref
+                                    .read(procurementVariantProvider.notifier)
+                                    .getItemByVariant(selectedRow['Varient']);
+                                print(
+                                    "selected $selected selectedRow $selectedRow");
+                                _addNewRowWithItemGroup(selectedRow);
+                                setState(() {});
+                              },
+                            ),
                       );
                     },
                     child: Container(
@@ -256,10 +269,10 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                             borderRadius: BorderRadius.circular(5)),
                         child: Center(
                             child: Text(
-                          "Add Varients",
-                          style: TextStyle(color: Colors.white, fontSize: 18),
-                        )))),
-
+                              "Add Varients",
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 18),
+                            )))),
               ],
             ),
             Container(
@@ -295,9 +308,9 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                   child: Theme(
                       data: ThemeData(
                         cardColor:
-                            Colors.transparent, // Background color for DataGrid
+                        Colors.transparent, // Background color for DataGrid
                         shadowColor:
-                            Colors.transparent, // Removes shadow if any
+                        Colors.transparent, // Removes shadow if any
                       ),
                       child: SfDataGrid(
                         rowHeight: 40,
@@ -484,8 +497,8 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
       floatingActionButton: _Procumentrows.length == 0
           ? Container()
           : SummaryDetails(
-              Summery: procumentSummery,
-            ),
+        Summery: procumentSummery,
+      ),
     );
   }
 }

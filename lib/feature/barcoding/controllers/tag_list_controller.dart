@@ -39,28 +39,33 @@ class TagRow {
   String lineRemark;
   String huid;
   String orderVariant;
+  int diaPieces;
+  Map<String, dynamic> bom;
+  Map<String, dynamic> operation;
 
-  TagRow({
-    this.checkbox = false,
-    this.image = null,
-    this.variant = '',
-    this.stockCode = '',
-    this.pcs = 0,
-    this.wt = 0.0,
-    this.netWt = 0.0,
-    this.clsWt = 0.0,
-    this.diaWt = 0.0,
-    this.stoneAmt = 0.0,
-    this.metalAmt = 0.0,
-    this.wstg = 0.0,
-    this.fixMrp = 0.0,
-    this.making = 0.0,
-    this.rate = 0.0,
-    this.amount = 0.0,
-    this.lineRemark = '',
-    this.huid = '',
-    this.orderVariant = '',
-  });
+  TagRow(
+      {this.checkbox = false,
+      this.image = null,
+      this.variant = '',
+      this.stockCode = '',
+      this.pcs = 0,
+      this.wt = 0.0,
+      this.netWt = 0.0,
+      this.clsWt = 0.0,
+      this.diaWt = 0.0,
+      this.stoneAmt = 0.0,
+      this.metalAmt = 0.0,
+      this.wstg = 0.0,
+      this.fixMrp = 0.0,
+      this.making = 0.0,
+      this.rate = 0.0,
+      this.amount = 0.0,
+      this.lineRemark = '',
+      this.huid = '',
+      this.orderVariant = '',
+      this.diaPieces = 0,
+      this.bom = const {},
+      this.operation = const {}});
 }
 
 class IsTagUpdateNotifier extends Notifier<bool> {
