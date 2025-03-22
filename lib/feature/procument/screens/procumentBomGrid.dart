@@ -19,7 +19,6 @@ class ProcumentBomGrid extends StatefulWidget {
 }
 
 class _ProcumentBomGridState extends State<ProcumentBomGrid> {
-  @override
   List<String> bomColumn = [
     'Variant Name',
     'Item Group',
@@ -37,7 +36,8 @@ class _ProcumentBomGridState extends State<ProcumentBomGrid> {
   Widget build(BuildContext context) {
     screenWidth = MediaQuery.of(context).size.width;
     screenHeight = MediaQuery.of(context).size.height;
-    return  Flexible( // Allows the content to expand only as needed
+    return Flexible(
+      // Allows the content to expand only as needed
       fit: FlexFit.loose,
       child: ClipRRect(
         borderRadius:

@@ -45,9 +45,9 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
     super.initState();
     initializeBomOpr();
     _bomDataGridSource = procumentBomGridSource(_bomRows, _removeRow,
-        _updateBomSummaryRow, showFormula, widget.canEdit);
+        _updateBomSummaryRow, showFormula, widget.canEdit, ref);
     _oprDataGridSource = procumentBomGridSource(_OpeationRows, _removeRow,
-        _updateBomSummaryRow, showFormula, widget.canEdit);
+        _updateBomSummaryRow, showFormula, widget.canEdit, ref);
   }
 
   void showRawMaterialDialog(String value) {
@@ -68,9 +68,8 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
           print("selected raw material row $selectedRow");
           selectedRow["styleVariant"] = widget.VarientName;
           selectedRow["rowNo"] = _bomRows.length + 1;
-          if(selectedRow["Variant Type"]=="Diamond") {
-            selectedRow["Net Weight"]=selectedRow["Dia Weight"];
-
+          if (selectedRow["Variant Type"] == "Diamond") {
+            selectedRow["Net Weight"] = selectedRow["Dia Weight"];
           }
 
           ref.read(returnRawListProvider.notifier).addMap(selectedRow);

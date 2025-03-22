@@ -1,14 +1,17 @@
-import 'dart:math';
+// ignore_for_file: curly_braces_in_flow_control_structures
 
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/data/variables/variable.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 import '../../../widgets/search_dailog_widget.dart';
 
 class procumentBomGridSource extends DataGridSource {
   procumentBomGridSource(this.dataGridRows, this.onDelete, this.onEdit,
-      this.showFormulaDialog, this.canEdit)
+      this.showFormulaDialog, this.canEdit, this.ref)
       : _editingRows = dataGridRows;
 
   final List<DataGridRow> dataGridRows;
@@ -16,6 +19,7 @@ class procumentBomGridSource extends DataGridSource {
   final Function(DataGridRow) onDelete;
   final Function() onEdit;
   final Function(String, int) showFormulaDialog;
+  final WidgetRef ref;
   bool canEdit;
 
   @override
@@ -23,13 +27,13 @@ class procumentBomGridSource extends DataGridSource {
 
   DataGridRow recalulateWt(DataGridRow row) {
     double wt = row.getCells()[3].value as double;
-    double pieces = row.getCells()[2].value*1.0 as double;
+    double pieces = row.getCells()[2].value * 1.0 as double;
     double rate = row.getCells()[4].value * 1.0 as double;
     return DataGridRow(
         cells: row.getCells().map((cell) {
-      if (cell.columnName == "Avg Wt(Pcs)")
+      if (cell.columnName == "Avg Wt(Pcs)") {
         return DataGridCell(columnName: cell.columnName, value: wt / pieces);
-      else if (cell.columnName == "Amount") {
+      } else if (cell.columnName == "Amount") {
         return DataGridCell(columnName: cell.columnName, value: wt * rate);
       } else
         return cell;
@@ -42,10 +46,11 @@ class procumentBomGridSource extends DataGridSource {
     print("rate->$rate weight->$wt");
     return DataGridRow(
         cells: row.getCells().map((cell) {
-      if (cell.columnName == "Amount")
+      if (cell.columnName == "Amount") {
         return DataGridCell(columnName: cell.columnName, value: rate * wt);
-      else
+      } else {
         return cell;
+      }
     }).toList());
   }
 
@@ -57,10 +62,11 @@ class procumentBomGridSource extends DataGridSource {
 
     return DataGridRow(
         cells: row.getCells().map((cell) {
-      if (cell.columnName == "Avg Wt(Pcs)")
+      if (cell.columnName == "Avg Wt(Pcs)") {
         return DataGridCell(columnName: cell.columnName, value: wt / pieces);
-      else
+      } else {
         return cell;
+      }
     }).toList());
   }
 
@@ -72,11 +78,11 @@ class procumentBomGridSource extends DataGridSource {
     for (int i = 1; i < dataGridRows.length; i++) {
       newData.add(DataGridRow(
           cells: dataGridRows[i].getCells().map((cell) {
-        if (cell.columnName == "Pieces")
+        if (cell.columnName == "Pieces") {
           return DataGridCell(
               columnName: cell.columnName,
               value: (cell.value / oldSummeryPieces) * currentPieces);
-        else if (cell.columnName == "Weight")
+        } else if (cell.columnName == "Weight")
           return DataGridCell(
               columnName: cell.columnName,
               value: (cell.value / oldSummeryPieces) * currentPieces);
@@ -92,7 +98,7 @@ class procumentBomGridSource extends DataGridSource {
       }).toList()));
     }
     for (int i = 0; i < newData.length; i++) {
-      dataGridRows[i+1] = newData[i];
+      dataGridRows[i + 1] = newData[i];
     }
   }
 
@@ -152,11 +158,12 @@ class procumentBomGridSource extends DataGridSource {
       print("amount1 ${rate * wt * pieces}");
       dataGridRows[i] = DataGridRow(
           cells: dataGridRows[i].getCells().map((cell) {
-        if (cell.columnName == 'Amount')
+        if (cell.columnName == 'Amount') {
           return DataGridCell(
               columnName: cell.columnName, value: rate * wt * pieces);
-        else
+        } else {
           return cell;
+        }
       }).toList());
     }
   }
@@ -196,7 +203,7 @@ class procumentBomGridSource extends DataGridSource {
       cells: row.getCells().map<Widget>((dataCell) {
         if (dataCell.columnName == 'Actions') {
           return IconButton(
-            icon: Icon(Icons.delete),
+            icon: const Icon(Icons.delete),
             onPressed: () => onDelete(row),
           );
         }
@@ -292,14 +299,14 @@ class procumentBomGridSource extends DataGridSource {
                               items: [
                                 PopupMenuItem(
                                   value: 'show_formula',
-                                  child: Text('Show Formula'),
+                                  child: const Text('Show Formula'),
                                   onTap: () {
                                     showFormulaDialog(itemGroup, rowIndex);
                                   },
                                 ),
                                 PopupMenuItem(
                                   value: 'Show Operation',
-                                  child: Text('Show Operation'),
+                                  child: const Text('Show Operation'),
                                   onTap: () {
                                     showFormulaDialog(itemGroup, rowIndex);
                                   },
@@ -307,11 +314,14 @@ class procumentBomGridSource extends DataGridSource {
                               ],
                             );
                           },
-                          child: Icon(Icons.more_vert)),
+                          child: const Icon(Icons.more_vert)),
                     Expanded(
                       child: TextField(
                         onSubmitted: (value) {
-                          double parsedValue = double.tryParse(value) ?? 0;
+                          Pieces pieces =
+                              Pieces(double.tryParse(value) ?? 0, ref);
+                          print("pieces ${pieces.pieces}");
+                          //double parsedValue = double.tryParse(value) ?? 0;
                           int rowIndex = dataGridRows.indexOf(row);
 
                           bool isDiamond = dataGridRows[rowIndex]
@@ -334,7 +344,7 @@ class procumentBomGridSource extends DataGridSource {
                               if (cell.columnName == dataCell.columnName)
                                 DataGridCell(
                                     columnName: cell.columnName,
-                                    value: parsedValue)
+                                    value: pieces.pieces)
                               else
                                 cell
                           ]);
@@ -350,7 +360,7 @@ class procumentBomGridSource extends DataGridSource {
                         enabled: canEdit
                             ? (noneditableCell == true ? false : true)
                             : false,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           border: InputBorder.none,
                           isDense: true,
                         ),

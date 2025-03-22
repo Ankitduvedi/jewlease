@@ -62,7 +62,7 @@ class _MyDataGridState extends ConsumerState<MyDataGrid> {
     super.initState();
     _initializeRows();
     _dataGridSource = procumentBomGridSource(
-        _rows, _removeRow, _updateBomSummaryRow,(String, int) {},true);
+        _rows, _removeRow, _updateBomSummaryRow, (String, int) {}, true, ref);
     _dataGridSource2 =
         OperationGridSource(_rows2, _removeRow, onEditOperation, context);
     _dataGridController2.addListener(() {
@@ -203,7 +203,7 @@ class _MyDataGridState extends ConsumerState<MyDataGrid> {
         const DataGridCell<String>(
             columnName: 'Variant Name', value: 'Summary'),
         const DataGridCell<String>(columnName: 'Item Group', value: ''),
-        DataGridCell<int>(columnName: 'Pieces', value: 1),
+        const DataGridCell<int>(columnName: 'Pieces', value: 1),
         DataGridCell<double>(columnName: 'Weight', value: totalWt),
         DataGridCell(columnName: 'Rate', value: totalRate),
         DataGridCell<double>(columnName: 'Avg Wt(Pcs)', value: avgWtPcs),
@@ -282,329 +282,323 @@ class _MyDataGridState extends ConsumerState<MyDataGrid> {
         screenWidth * 0.6; // Set grid width to 50% of screen width
 
     return SingleChildScrollView(
-      child: Container(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                height: screenHeight * 0.4,
-                margin: const EdgeInsets.only(top: 80, left: 20),
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(15)),
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black
-                          .withOpacity(0.2), // Shadow color with opacity
-                      spreadRadius: 2,
-                      blurRadius: 6,
-                      offset: const Offset(0, 4), // Offset only on the bottom
-                    ),
-                  ],
-                ),
-                // height: screenHeight * 0.5,
-                width: screenWidth * 0.65,
-                child: Column(
-                  children: [
-                    // Header Row
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              height: screenHeight * 0.4,
+              margin: const EdgeInsets.only(top: 80, left: 20),
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.all(Radius.circular(15)),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black
+                        .withOpacity(0.2), // Shadow color with opacity
+                    spreadRadius: 2,
+                    blurRadius: 6,
+                    offset: const Offset(0, 4), // Offset only on the bottom
+                  ),
+                ],
+              ),
+              // height: screenHeight * 0.5,
+              width: screenWidth * 0.65,
+              child: Column(
+                children: [
+                  // Header Row
 
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            'BOM',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                          Row(
-                            children: [
-                              TextButton(
-                                onPressed: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                            content: ItemDataScreen(
-                                              title: '',
-                                              endUrl: 'Global/operations/',
-                                              canGo: true,
-                                              onDoubleClick:
-                                                  (Map<String, dynamic>
-                                                      intialData) {
-                                                log("intial data is: $intialData");
-                                                _addNewRowWithOperation(
-                                                    intialData[
-                                                            "OPERATION_NAME"] ??
-                                                        "");
-                                                Navigator.pop(context);
-                                              },
-                                            ),
-                                          ));
-                                },
-                                child: const Text('+ Add Operation',
-                                    style: TextStyle(color: Color(0xff28713E))),
-                              ),
-                              // Inside the build method, replace the "+ Add Bom" button with a PopupMenuButton:
-                              PopupMenuButton<String>(
-                                onSelected: (String value) {
-                                  // When an item is selected, add a new row with the item group
-                                  log("choosen Item $value");
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'BOM',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        Row(
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                          content: ItemDataScreen(
+                                            title: '',
+                                            endUrl: 'Global/operations/',
+                                            canGo: true,
+                                            onDoubleClick: (Map<String, dynamic>
+                                                intialData) {
+                                              log("intial data is: $intialData");
+                                              _addNewRowWithOperation(
+                                                  intialData[
+                                                          "OPERATION_NAME"] ??
+                                                      "");
+                                              Navigator.pop(context);
+                                            },
+                                          ),
+                                        ));
+                              },
+                              child: const Text('+ Add Operation',
+                                  style: TextStyle(color: Color(0xff28713E))),
+                            ),
+                            // Inside the build method, replace the "+ Add Bom" button with a PopupMenuButton:
+                            PopupMenuButton<String>(
+                              onSelected: (String value) {
+                                // When an item is selected, add a new row with the item group
+                                log("choosen Item $value");
 
-                                  if (value.contains('Gold')) {
-                                    showProcumentdialog(
-                                        "ItemMasterAndVariants/Metal/Gold/Variant/",
-                                        value);
-                                  } else if (value.contains('Silver'))
-                                    showProcumentdialog(
-                                        "ItemMasterAndVariants/Metal/Silver/Variant/",
-                                        value);
-                                  else if (value.contains('Diamond'))
-                                    showProcumentdialog(
-                                        "ItemMasterAndVariants/Stone/Diamond/Variant/",
-                                        value);
-                                  else if (value.contains('Bronze'))
-                                    showProcumentdialog(
-                                        "ItemMasterAndVariants/Metal/Bronze/Variant/",
-                                        value);
-                                },
-                                itemBuilder: (BuildContext context) =>
-                                    <PopupMenuEntry<String>>[
-                                  PopupMenuItem<String>(
-                                    value: 'Metal - Gold',
-                                    child: ExpansionTile(
-                                      title: const Text('Metal'),
-                                      children: <Widget>[
-                                        ListTile(
-                                          title: const Text('Gold'),
-                                          onTap: () {
-                                            Navigator.pop(
-                                                context, 'Metal - Gold');
-                                          },
-                                        ),
-                                        ListTile(
-                                          title: const Text('Silver'),
-                                          onTap: () {
-                                            Navigator.pop(
-                                                context, 'Metal - Silver');
-                                          },
-                                        ),
-                                        ListTile(
-                                          title: const Text('Bronze'),
-                                          onTap: () {
-                                            Navigator.pop(
-                                                context, 'Metal - Bronze');
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  PopupMenuItem<String>(
-                                    value: 'Stone - Diamond',
-                                    child: ExpansionTile(
-                                      title: const Text('Stone'),
-                                      children: <Widget>[
-                                        ListTile(
-                                          title: const Text('Diamond'),
-                                          onTap: () {
-                                            Navigator.pop(
-                                                context, 'Stone - Diamond');
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  PopupMenuItem<String>(
-                                    value: 'Consumables',
-                                    child: ListTile(
-                                      title: const Text('Consumables'),
-                                      onTap: () {
-                                        Navigator.pop(context, 'Consumables');
-                                      },
-                                    ),
-                                  ),
-                                  PopupMenuItem<String>(
-                                    value: 'Packing Material',
-                                    child: ListTile(
-                                      title: const Text('Packing Material'),
-                                      onTap: () {
-                                        Navigator.pop(
-                                            context, 'Packing Material');
-                                      },
-                                    ),
-                                  ),
-                                ],
-                                child: const TextButton(
-                                  onPressed: null,
-                                  child: Text(
-                                    '+ Add Bom',
-                                    style: TextStyle(color: Color(0xff28713E)),
+                                if (value.contains('Gold')) {
+                                  showProcumentdialog(
+                                      "ItemMasterAndVariants/Metal/Gold/Variant/",
+                                      value);
+                                } else if (value.contains('Silver'))
+                                  showProcumentdialog(
+                                      "ItemMasterAndVariants/Metal/Silver/Variant/",
+                                      value);
+                                else if (value.contains('Diamond'))
+                                  showProcumentdialog(
+                                      "ItemMasterAndVariants/Stone/Diamond/Variant/",
+                                      value);
+                                else if (value.contains('Bronze'))
+                                  showProcumentdialog(
+                                      "ItemMasterAndVariants/Metal/Bronze/Variant/",
+                                      value);
+                              },
+                              itemBuilder: (BuildContext context) =>
+                                  <PopupMenuEntry<String>>[
+                                PopupMenuItem<String>(
+                                  value: 'Metal - Gold',
+                                  child: ExpansionTile(
+                                    title: const Text('Metal'),
+                                    children: <Widget>[
+                                      ListTile(
+                                        title: const Text('Gold'),
+                                        onTap: () {
+                                          Navigator.pop(
+                                              context, 'Metal - Gold');
+                                        },
+                                      ),
+                                      ListTile(
+                                        title: const Text('Silver'),
+                                        onTap: () {
+                                          Navigator.pop(
+                                              context, 'Metal - Silver');
+                                        },
+                                      ),
+                                      ListTile(
+                                        title: const Text('Bronze'),
+                                        onTap: () {
+                                          Navigator.pop(
+                                              context, 'Metal - Bronze');
+                                        },
+                                      ),
+                                    ],
                                   ),
                                 ),
+                                PopupMenuItem<String>(
+                                  value: 'Stone - Diamond',
+                                  child: ExpansionTile(
+                                    title: const Text('Stone'),
+                                    children: <Widget>[
+                                      ListTile(
+                                        title: const Text('Diamond'),
+                                        onTap: () {
+                                          Navigator.pop(
+                                              context, 'Stone - Diamond');
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                PopupMenuItem<String>(
+                                  value: 'Consumables',
+                                  child: ListTile(
+                                    title: const Text('Consumables'),
+                                    onTap: () {
+                                      Navigator.pop(context, 'Consumables');
+                                    },
+                                  ),
+                                ),
+                                PopupMenuItem<String>(
+                                  value: 'Packing Material',
+                                  child: ListTile(
+                                    title: const Text('Packing Material'),
+                                    onTap: () {
+                                      Navigator.pop(
+                                          context, 'Packing Material');
+                                    },
+                                  ),
+                                ),
+                              ],
+                              child: const TextButton(
+                                onPressed: null,
+                                child: Text(
+                                  '+ Add Bom',
+                                  style: TextStyle(color: Color(0xff28713E)),
+                                ),
                               ),
+                            ),
 
-                              TextButton(
-                                onPressed: () {},
-                                child: const Text('Summary',
-                                    style: TextStyle(color: Color(0xff28713E))),
-                              ),
-                            ],
-                          ),
-                        ],
+                            TextButton(
+                              onPressed: () {},
+                              child: const Text('Summary',
+                                  style: TextStyle(color: Color(0xff28713E))),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: SizedBox(
+                        width: gridWidth,
+                        // Set the grid width to 50% of the screen width
+                        child: SfDataGrid(
+                          rowHeight: 40,
+                          headerRowHeight: 40,
+                          source: _dataGridSource,
+                          controller: _dataGridController,
+                          footerFrozenColumnsCount: 1,
+                          // Freeze the last column
+                          columns: bomColumn
+                              .map((columnName) => GridColumn(
+                                    columnName: columnName,
+                                    width: gridWidth / 5,
+                                    label: Container(
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFF003450),
+                                        borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(
+                                                bomColumn.indexOf(columnName) ==
+                                                        0
+                                                    ? 10
+                                                    : 0),
+                                            topRight: Radius.circular(
+                                                bomColumn.indexOf(columnName) ==
+                                                        bomColumn.length - 1
+                                                    ? 10
+                                                    : 0)),
+                                      ),
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        columnName,
+                                        style: const TextStyle(
+                                            color: Colors.white),
+                                      ),
+                                    ),
+                                  ))
+                              .toList(),
+                          gridLinesVisibility: GridLinesVisibility.both,
+                          headerGridLinesVisibility: GridLinesVisibility.both,
+                        ),
                       ),
                     ),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Container(
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              height: screenHeight * 0.4,
+              margin: const EdgeInsets.only(top: 20, left: 20),
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.all(Radius.circular(15)),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black
+                        .withOpacity(0.2), // Shadow color with opacity
+                    spreadRadius: 2,
+                    blurRadius: 6,
+                    offset: const Offset(0, 4), // Offset only on the bottom
+                  ),
+                ],
+              ),
+              // height: screenHeight * 0.5,
+              width: screenWidth * 0.65,
+              child: Column(
+                children: [
+                  // Header Row
+
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Operation',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: SizedBox(
                           width: gridWidth,
                           // Set the grid width to 50% of the screen width
                           child: SfDataGrid(
                             rowHeight: 40,
                             headerRowHeight: 40,
-                            source: _dataGridSource,
-                            controller: _dataGridController,
+                            navigationMode: GridNavigationMode.cell,
+                            // Enable cell-level navigation
+                            selectionMode: SelectionMode.single,
+                            // Allow single cell selection
+                            allowEditing: true,
+
+                            source: _dataGridSource2,
+                            controller: _dataGridController2,
                             footerFrozenColumnsCount: 1,
+                            onCellTap: (details) {
+                              log("device type ins${details.kind}");
+                            },
+                            onCellDoubleTap:
+                                (DataGridCellDoubleTapDetails details) {
+                              log("Column Index: ${details.rowColumnIndex.columnIndex}");
+                              log("Row Index: ${details.rowColumnIndex.rowIndex}");
+                              log("Column Name: ${details.column.columnName}");
+                              setState(() {
+                                _selectedRowIndex =
+                                    details.rowColumnIndex.rowIndex;
+                                _selectedColumnName = details.column.columnName;
+                              });
+                            },
+
                             // Freeze the last column
-                            columns: bomColumn
+                            columns: oprColumns
                                 .map((columnName) => GridColumn(
                                       columnName: columnName,
                                       width: gridWidth / 5,
+                                      // Adjust column width to fit 4-5 columns
                                       label: Container(
-                                        decoration: BoxDecoration(
-                                          color: Color(0xFF003450),
-                                          borderRadius: BorderRadius.only(
-                                              topLeft: Radius.circular(
-                                                  bomColumn.indexOf(
-                                                              columnName) ==
-                                                          0
-                                                      ? 10
-                                                      : 0),
-                                              topRight: Radius.circular(
-                                                  bomColumn.indexOf(
-                                                              columnName) ==
-                                                          bomColumn.length - 1
-                                                      ? 10
-                                                      : 0)),
-                                        ),
+                                        color: const Color(0xFF003450),
                                         alignment: Alignment.center,
                                         child: Text(
                                           columnName,
-                                          style: TextStyle(color: Colors.white),
+                                          style: const TextStyle(
+                                              color: Colors.white),
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
                                     ))
                                 .toList(),
+
                             gridLinesVisibility: GridLinesVisibility.both,
                             headerGridLinesVisibility: GridLinesVisibility.both,
-                          ),
-                        ),
-                      ),
+                          )),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              Container(
-                height: screenHeight * 0.4,
-                margin: const EdgeInsets.only(top: 20, left: 20),
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(15)),
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black
-                          .withOpacity(0.2), // Shadow color with opacity
-                      spreadRadius: 2,
-                      blurRadius: 6,
-                      offset: const Offset(0, 4), // Offset only on the bottom
-                    ),
-                  ],
-                ),
-                // height: screenHeight * 0.5,
-                width: screenWidth * 0.65,
-                child: Column(
-                  children: [
-                    // Header Row
-
-                    const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Operation',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Container(
-                            width: gridWidth,
-                            // Set the grid width to 50% of the screen width
-                            child: SfDataGrid(
-                              rowHeight: 40,
-                              headerRowHeight: 40,
-                              navigationMode: GridNavigationMode.cell,
-                              // Enable cell-level navigation
-                              selectionMode: SelectionMode.single,
-                              // Allow single cell selection
-                              allowEditing: true,
-
-                              source: _dataGridSource2,
-                              controller: _dataGridController2,
-                              footerFrozenColumnsCount: 1,
-                              onCellTap: (details) {
-                                log("device type ins${details.kind}");
-                              },
-                              onCellDoubleTap:
-                                  (DataGridCellDoubleTapDetails details) {
-                                log("Column Index: ${details.rowColumnIndex.columnIndex}");
-                                log("Row Index: ${details.rowColumnIndex.rowIndex}");
-                                log("Column Name: ${details.column.columnName}");
-                                setState(() {
-                                  _selectedRowIndex =
-                                      details.rowColumnIndex.rowIndex;
-                                  _selectedColumnName =
-                                      details.column.columnName;
-                                });
-                              },
-
-                              // Freeze the last column
-                              columns: oprColumns
-                                  .map((columnName) => GridColumn(
-                                        columnName: columnName,
-                                        width: gridWidth / 5,
-                                        // Adjust column width to fit 4-5 columns
-                                        label: Container(
-                                          color: const Color(0xFF003450),
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            columnName,
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ))
-                                  .toList(),
-
-                              gridLinesVisibility: GridLinesVisibility.both,
-                              headerGridLinesVisibility:
-                                  GridLinesVisibility.both,
-                            )),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
