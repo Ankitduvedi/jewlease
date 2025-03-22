@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/core/routes/go_router.dart';
+import 'package:jewlease/data/variables/variable.dart';
 import 'package:jewlease/feature/home/drawer/drawer_toogle_button.dart';
 import 'package:jewlease/feature/home/right_side_drawer/controller/drawer_controller.dart';
 import 'package:jewlease/feature/search_box/screen/search_box_screen.dart';
@@ -66,7 +67,22 @@ class Appbar extends ConsumerWidget implements PreferredSizeWidget {
             onPressed: () {}, icon: const Icon(Icons.shopping_basket_outlined)),
         IconButton(
             onPressed: () {}, icon: const Icon(Icons.dashboard_outlined)),
-        IconButton(onPressed: () {}, icon: const Icon(Icons.settings)),
+        IconButton(
+            onPressed: () {
+              const amount = -1000.0;
+              Price(
+                amount,
+                ref,
+              );
+              // final price = ref.read(validationServiceProvider).createPrice(
+              //       amount,
+              //     );
+
+              // if (price != null) {
+              //   // Handle valid price
+              // }
+            },
+            icon: const Icon(Icons.settings)),
         IconButton(
             onPressed: () {
               log('button pressed');

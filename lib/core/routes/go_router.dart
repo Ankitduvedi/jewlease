@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jewlease/core/routes/navigation_const.dart';
 import 'package:jewlease/data/model/customer_model.dart';
+import 'package:jewlease/data/variables/error_handler_widget.dart';
 import 'package:jewlease/feature/all_attributes/screen/all_attribute_screen.dart';
 import 'package:jewlease/feature/all_attributes/screen/new_attribute_screen.dart';
 import 'package:jewlease/feature/auth/screens/login_screen_owner.dart';
@@ -107,7 +108,7 @@ final goRouter = GoRouter(
             path: '/',
             pageBuilder: (context, state) => CustomTransitionPage(
               key: state.pageKey,
-              child: const HomeScreen(),
+              child: const ErrorHandler(child: HomeScreen()),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) {
                 const curve = Curves.easeInOut;
@@ -344,7 +345,7 @@ final goRouter = GoRouter(
           GoRoute(
               path: '/CustomerDashboard',
               builder: (context, state) {
-                return CrmDashboard();
+                return const CrmDashboard();
               }),
           GoRoute(
               path: '/addCustomerScreen',
@@ -362,16 +363,18 @@ final goRouter = GoRouter(
           GoRoute(
               path: '/point_of_sale',
               builder: (context, state) {
-                return PointOfSaleScreen();
+                return const PointOfSaleScreen();
               }),
           GoRoute(
               path: '/transferLocation',
               builder: (context, state) {
-                return TransferScreen();
+                return const TransferScreen();
               }),
-          GoRoute(path: '//rmInventoryScreen',builder: (context,state){
-            return RmInventoryManagementScreen();
-          })
+          GoRoute(
+              path: '//rmInventoryScreen',
+              builder: (context, state) {
+                return const RmInventoryManagementScreen();
+              })
         ]),
   ],
 );
