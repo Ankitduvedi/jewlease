@@ -160,6 +160,28 @@ class formulaProcedureController extends StateNotifier<bool> {
     }
     return {};
   }
+
+  Future<void> addFormulaMapping(Map<String,dynamic>reqstBody) async {
+    // try {
+    //   state = true;
+    //   final response =
+    //       await _formulaProcedureRepository.addFormulaMapping(reqBody);
+    //   state = false;
+    //
+    //   response.fold((l) => Utils.snackBar(l.message, context), (r) {
+    //     Utils.snackBar('New Range Masster Excel Addded', context);
+    //     context.pop();
+    //     null;
+    //   });
+    //   // Optionally update the state if necessary after submission
+    // } catch (e) {
+    //   state = false;
+    // }
+    // return null;
+  }
+
+
+
 }
 
 // Define a provider for the controller

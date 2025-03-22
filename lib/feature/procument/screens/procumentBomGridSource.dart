@@ -9,6 +9,20 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 import '../../../widgets/search_dailog_widget.dart';
 
+class Pieces {
+  double pieces;
+
+  Pieces(
+    this.pieces,
+  ) {
+    if (pieces < 0) {
+      print("Pieces cannot be negative");
+      pieces = 1;
+    }
+    print('pieces: $pieces');
+  }
+}
+
 class procumentBomGridSource extends DataGridSource {
   procumentBomGridSource(this.dataGridRows, this.onDelete, this.onEdit,
       this.showFormulaDialog, this.canEdit, this.ref)
@@ -318,9 +332,8 @@ class procumentBomGridSource extends DataGridSource {
                     Expanded(
                       child: TextField(
                         onSubmitted: (value) {
-                          Pieces pieces = Pieces(int.tryParse(value) ?? 0, ref);
-                          print("pieces ${pieces.pieces}");
-                          //double parsedValue = double.tryParse(value) ?? 0;
+
+                          double parsedValue = double.tryParse(value) ?? 0;
                           int rowIndex = dataGridRows.indexOf(row);
 
                           bool isDiamond = dataGridRows[rowIndex]
@@ -343,7 +356,8 @@ class procumentBomGridSource extends DataGridSource {
                               if (cell.columnName == dataCell.columnName)
                                 DataGridCell(
                                     columnName: cell.columnName,
-                                    value: pieces.pieces)
+
+                                    value: parsedValue)
                               else
                                 cell
                           ]);
