@@ -318,8 +318,7 @@ class procumentBomGridSource extends DataGridSource {
                     Expanded(
                       child: TextField(
                         onSubmitted: (value) {
-                          Pieces pieces =
-                              Pieces(double.tryParse(value) ?? 0, ref);
+                          Pieces pieces = Pieces(int.tryParse(value) ?? 0, ref);
                           print("pieces ${pieces.pieces}");
                           //double parsedValue = double.tryParse(value) ?? 0;
                           int rowIndex = dataGridRows.indexOf(row);
