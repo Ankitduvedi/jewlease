@@ -256,6 +256,21 @@ class AddFormulaMappingScreenState
           ],
           labelText: 'Trans Category',
         ),
+        ReadOnlyTextFieldWidget(
+          hintText: textFieldvalues['Procedure Name'] ?? 'Formula Procedure Name',
+          labelText: 'Procedure Name',
+          icon: Icons.search,
+          onIconPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) => const ItemTypeDialogScreen(
+                title: 'Procedure Name',
+                endUrl: 'FormulaProcedures/table',
+                value: 'Formula Procedure Name',
+              ),
+            );
+          },
+        ),
       ],
     );
   }

@@ -294,11 +294,7 @@ final goRouter = GoRouter(
               builder: (context, state) {
                 return procumentScreen();
               }),
-          GoRoute(
-              path: '/DataGrid',
-              builder: (context, state) {
-                return const MyDataGrid();
-              }),
+
           GoRoute(
               path: '/barcodingScreen',
               builder: (context, state) {

@@ -198,4 +198,22 @@ class formulaProcedureRepository {
     }
     return {};
   }
+
+  Future<Map<String, dynamic>> addFormulaMapping(
+      Map<String, dynamic> requestBody) async {
+    // print("fomula procedure is $FormulaProcedureName");
+    try {
+      final response =
+          await _dio.get(url2 + '/FormulaProcedures/FormulaMapping',
+              data: jsonEncode(requestBody),
+              options: Options(
+                headers: {'Content-Type': 'application/json'},
+              ));
+      return response.data;
+      print("response formula Excel ${response.data}");
+    } catch (e) {
+      print("err response formula Excel ${e}");
+    }
+    return {};
+  }
 }

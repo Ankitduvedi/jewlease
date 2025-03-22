@@ -6,6 +6,20 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 import '../../../widgets/search_dailog_widget.dart';
 
+class Pieces {
+  double pieces;
+
+  Pieces(
+    this.pieces,
+  ) {
+    if (pieces < 0) {
+      print("Pieces cannot be negative");
+      pieces = 1;
+    }
+    print('pieces: $pieces');
+  }
+}
+
 class procumentBomGridSource extends DataGridSource {
   procumentBomGridSource(this.dataGridRows, this.onDelete, this.onEdit,
       this.showFormulaDialog, this.canEdit)
@@ -23,7 +37,7 @@ class procumentBomGridSource extends DataGridSource {
 
   DataGridRow recalulateWt(DataGridRow row) {
     double wt = row.getCells()[3].value as double;
-    double pieces = row.getCells()[2].value*1.0 as double;
+    double pieces = row.getCells()[2].value * 1.0 as double;
     double rate = row.getCells()[4].value * 1.0 as double;
     return DataGridRow(
         cells: row.getCells().map((cell) {
@@ -92,7 +106,7 @@ class procumentBomGridSource extends DataGridSource {
       }).toList()));
     }
     for (int i = 0; i < newData.length; i++) {
-      dataGridRows[i+1] = newData[i];
+      dataGridRows[i + 1] = newData[i];
     }
   }
 
@@ -312,6 +326,9 @@ class procumentBomGridSource extends DataGridSource {
                       child: TextField(
                         onSubmitted: (value) {
                           double parsedValue = double.tryParse(value) ?? 0;
+                          Pieces piece = Pieces(
+                            parsedValue,
+                          );
                           int rowIndex = dataGridRows.indexOf(row);
 
                           bool isDiamond = dataGridRows[rowIndex]
@@ -334,7 +351,7 @@ class procumentBomGridSource extends DataGridSource {
                               if (cell.columnName == dataCell.columnName)
                                 DataGridCell(
                                     columnName: cell.columnName,
-                                    value: parsedValue)
+                                    value: piece.pieces)
                               else
                                 cell
                           ]);

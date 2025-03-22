@@ -18,14 +18,20 @@ import '../controller/procumentFormulaController.dart';
 import 'formulaGrid.dart';
 
 class procumentBomOprDialog extends ConsumerStatefulWidget {
-  procumentBomOprDialog(this.VarientName, this.VairentIndex, this.canEdit,
-      this.isFromSubContracting,
-      {super.key});
+  procumentBomOprDialog(
+    this.VarientName,
+    this.VairentIndex,
+    this.canEdit,
+    this.isFromSubContracting, {
+    super.key,
+    this.isHorizonatal = true,
+  });
 
   final String VarientName;
   final int VairentIndex;
   final bool canEdit;
   final bool isFromSubContracting;
+  final bool isHorizonatal;
 
   @override
   _procumentGridState createState() => _procumentGridState();
@@ -68,9 +74,8 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
           print("selected raw material row $selectedRow");
           selectedRow["styleVariant"] = widget.VarientName;
           selectedRow["rowNo"] = _bomRows.length + 1;
-          if(selectedRow["Variant Type"]=="Diamond") {
-            selectedRow["Net Weight"]=selectedRow["Dia Weight"];
-
+          if (selectedRow["Variant Type"] == "Diamond") {
+            selectedRow["Net Weight"] = selectedRow["Dia Weight"];
           }
 
           ref.read(returnRawListProvider.notifier).addMap(selectedRow);
@@ -97,135 +102,275 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
       print("end updating bom from formula1");
     }
     return Container(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Expanded(
-            child: Container(
-              width: screenWidth * 0.45,
-              // height: screenHeight * 0.4,
-              margin: EdgeInsets.only(top: 20, left: 20),
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-                color: Colors.white,
-              ),
-              // height: screenHeight * 0.5,
-              // width: screenWidth * 0.,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  // Header Row
-
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: widget.isHorizonatal
+          ? Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Expanded(
+                  child: Container(
+                    width: screenWidth * 0.45,
+                    // height: screenHeight * 0.4,
+                    // margin: EdgeInsets.only(top: 20, left: 20),
+                    // padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      color: Colors.white,
+                    ),
+                    // height: screenHeight * 0.5,
+                    // width: screenWidth * 0.,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text(
-                          'Bom',
-                          style: TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.bold),
-                        ),
-                        Row(
-                          children: [
-                            TextButton(
-                              onPressed: () {
-                                if (widget.canEdit == false) return;
-                                showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                          content: ItemDataScreen(
-                                            title: '',
-                                            endUrl: 'Global/operations/',
-                                            canGo: true,
-                                            onDoubleClick: (Map<String, dynamic>
-                                                intialData) {
-                                              print(
-                                                  "intial data is $intialData");
-                                              _addNewRowOpr(intialData[
-                                                      "OPERATION_NAME"] ??
-                                                  "");
-                                              Navigator.pop(context);
-                                            },
-                                          ),
-                                        ));
-                              },
-                              child: Text('+ Add Operation',
-                                  style: TextStyle(color: Color(0xff28713E))),
-                            ),
-                            // Inside the build method, replace the "+ Add Bom" button with a PopupMenuButton:
-                            PopupMenuButton<String>(
-                              onSelected: (String value) {
-                                // When an item is selected, add a new row with the item group
-                                log("choosen Item $value");
-                                if (widget.canEdit == false) return;
+                        // Header Row
 
-                                if (widget.isFromSubContracting) {
-                                  print("enter here");
-                                  showRawMaterialDialog(value);
-                                } else {
-                                  if (value.contains('Gold')) {
-                                    showProcumentdialog(
-                                        "ItemMasterAndVariants/Metal/Gold/Variant/",
-                                        value);
-                                  } else if (value.contains('Silver'))
-                                    showProcumentdialog(
-                                        "ItemMasterAndVariants/Metal/Silver/Variant/",
-                                        value);
-                                  else if (value.contains('Diamond'))
-                                    showProcumentdialog(
-                                        "ItemMasterAndVariants/Stone/Diamond/Variant/",
-                                        value);
-                                  else if (value.contains('Bronze'))
-                                    showProcumentdialog(
-                                        "ItemMasterAndVariants/Metal/Bronze/Variant/",
-                                        value);
-                                }
-                              },
-                              itemBuilder: (BuildContext context) =>
-                                  bomPopUpItem(),
-                              child: TextButton(
-                                onPressed: null,
-                                child: Text(
-                                  '+ Add Bom',
-                                  style: TextStyle(color: Color(0xff28713E)),
-                                ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4,horizontal: 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Bom',
+                                style: TextStyle(
+                                    fontSize: 15, fontWeight: FontWeight.bold),
                               ),
-                            ),
+                              Row(
+                                children: [
+                                  TextButton(
+                                    onPressed: () {
+                                      if (widget.canEdit == false) return;
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) => AlertDialog(
+                                                content: ItemDataScreen(
+                                                  title: '',
+                                                  endUrl: 'Global/operations/',
+                                                  canGo: true,
+                                                  onDoubleClick:
+                                                      (Map<String, dynamic>
+                                                          intialData) {
+                                                    print(
+                                                        "intial data is $intialData");
+                                                    _addNewRowOpr(intialData[
+                                                            "OPERATION_NAME"] ??
+                                                        "");
+                                                    Navigator.pop(context);
+                                                  },
+                                                ),
+                                              ));
+                                    },
+                                    child: Text('+ Add Operation',
+                                        style: TextStyle(
+                                            color: Color(0xff28713E))),
+                                  ),
+                                  // Inside the build method, replace the "+ Add Bom" button with a PopupMenuButton:
+                                  PopupMenuButton<String>(
+                                    onSelected: (String value) {
+                                      // When an item is selected, add a new row with the item group
+                                      log("choosen Item $value");
+                                      if (widget.canEdit == false) return;
 
-                            TextButton(
-                              onPressed: () {},
-                              child: Text('Summary',
-                                  style: TextStyle(color: Color(0xff28713E))),
-                            ),
-                          ],
+                                      if (widget.isFromSubContracting) {
+                                        print("enter here");
+                                        showRawMaterialDialog(value);
+                                      } else {
+                                        if (value.contains('Gold')) {
+                                          showProcumentdialog(
+                                              "ItemMasterAndVariants/Metal/Gold/Variant/",
+                                              value);
+                                        } else if (value.contains('Silver'))
+                                          showProcumentdialog(
+                                              "ItemMasterAndVariants/Metal/Silver/Variant/",
+                                              value);
+                                        else if (value.contains('Diamond'))
+                                          showProcumentdialog(
+                                              "ItemMasterAndVariants/Stone/Diamond/Variant/",
+                                              value);
+                                        else if (value.contains('Bronze'))
+                                          showProcumentdialog(
+                                              "ItemMasterAndVariants/Metal/Bronze/Variant/",
+                                              value);
+                                      }
+                                    },
+                                    itemBuilder: (BuildContext context) =>
+                                        bomPopUpItem(),
+                                    child: TextButton(
+                                      onPressed: null,
+                                      child: Text(
+                                        '+ Add Bom',
+                                        style:
+                                            TextStyle(color: Color(0xff28713E)),
+                                      ),
+                                    ),
+                                  ),
+
+                                  TextButton(
+                                    onPressed: () {},
+                                    child: Text('Summary',
+                                        style: TextStyle(
+                                            color: Color(0xff28713E))),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
+                        ProcumentBomGrid(
+                          bomDataGridSource: _bomDataGridSource,
+                          dataGridController: _dataGridController,
+                          gridWidth: gridWidth,
+                        )
                       ],
                     ),
                   ),
-                  ProcumentBomGrid(
-                    bomDataGridSource: _bomDataGridSource,
-                    dataGridController: _dataGridController,
-                    gridWidth: gridWidth,
+                ),
+                SizedBox(width: 20,),
+                if (isShowFormula)
+                  FormulaDataGrid(widget.VarientName, widget.VairentIndex),
+                if (!isShowFormula)
+                  Expanded(
+                    child: ProcumentOperationGrid(
+                        operationType: 'Operation',
+                        gridWidth: gridWidth,
+                        dataGridController: _dataGridController,
+                        oprDataGridSource: _oprDataGridSource),
                   )
-                ],
-              ),
-            ),
-          ),
-          if (isShowFormula)
-            FormulaDataGrid(widget.VarientName, widget.VairentIndex),
-          if (!isShowFormula)
-            Expanded(
-              child: ProcumentOperationGrid(
-                  operationType: 'Operation',
-                  gridWidth: gridWidth,
-                  dataGridController: _dataGridController,
-                  oprDataGridSource: _oprDataGridSource),
+              ],
             )
-        ],
-      ),
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Expanded(
+                  child: Container(
+                    // width: screenWidth * 0.45,
+                    // height: screenHeight * 0.4,
+                    // margin: EdgeInsets.only(top: 20, left: 20),
+                    // padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      color: Colors.white,
+                    ),
+                    // height: screenHeight * 0.5,
+                    // width: screenWidth * 0.,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        // Header Row
+
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Bom',
+                                style: TextStyle(
+                                    fontSize: 15, fontWeight: FontWeight.bold),
+                              ),
+                              Row(
+                                children: [
+                                  TextButton(
+                                    onPressed: () {
+                                      if (widget.canEdit == false) return;
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) => AlertDialog(
+                                                content: ItemDataScreen(
+                                                  title: '',
+                                                  endUrl: 'Global/operations/',
+                                                  canGo: true,
+                                                  onDoubleClick:
+                                                      (Map<String, dynamic>
+                                                          intialData) {
+                                                    print(
+                                                        "intial data is $intialData");
+                                                    _addNewRowOpr(intialData[
+                                                            "OPERATION_NAME"] ??
+                                                        "");
+                                                    Navigator.pop(context);
+                                                  },
+                                                ),
+                                              ));
+                                    },
+                                    child: Text('+ Add Operation',
+                                        style: TextStyle(
+                                            color: Color(0xff28713E))),
+                                  ),
+                                  // Inside the build method, replace the "+ Add Bom" button with a PopupMenuButton:
+                                  PopupMenuButton<String>(
+                                    onSelected: (String value) {
+                                      // When an item is selected, add a new row with the item group
+                                      log("choosen Item $value");
+                                      if (widget.canEdit == false) return;
+
+                                      if (widget.isFromSubContracting) {
+                                        print("enter here");
+                                        showRawMaterialDialog(value);
+                                      } else {
+                                        if (value.contains('Gold')) {
+                                          showProcumentdialog(
+                                              "ItemMasterAndVariants/Metal/Gold/Variant/",
+                                              value);
+                                        } else if (value.contains('Silver'))
+                                          showProcumentdialog(
+                                              "ItemMasterAndVariants/Metal/Silver/Variant/",
+                                              value);
+                                        else if (value.contains('Diamond'))
+                                          showProcumentdialog(
+                                              "ItemMasterAndVariants/Stone/Diamond/Variant/",
+                                              value);
+                                        else if (value.contains('Bronze'))
+                                          showProcumentdialog(
+                                              "ItemMasterAndVariants/Metal/Bronze/Variant/",
+                                              value);
+                                      }
+                                    },
+                                    itemBuilder: (BuildContext context) =>
+                                        bomPopUpItem(),
+                                    child: TextButton(
+                                      onPressed: null,
+                                      child: Text(
+                                        '+ Add Bom',
+                                        style:
+                                            TextStyle(color: Color(0xff28713E)),
+                                      ),
+                                    ),
+                                  ),
+
+                                  TextButton(
+                                    onPressed: () {},
+                                    child: Text('Summary',
+                                        style: TextStyle(
+                                            color: Color(0xff28713E))),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        ProcumentBomGrid(
+                          bomDataGridSource: _bomDataGridSource,
+                          dataGridController: _dataGridController,
+                          gridWidth: gridWidth,
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                if (isShowFormula)
+                  FormulaDataGrid(widget.VarientName, widget.VairentIndex),
+                if (!isShowFormula)
+                  Expanded(
+                    child: ProcumentOperationGrid(
+                        operationType: 'Operation',
+                        gridWidth: gridWidth,
+                        dataGridController: _dataGridController,
+                        oprDataGridSource: _oprDataGridSource),
+                  )
+              ],
+            ),
     );
   }
 
@@ -433,9 +578,50 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
     });
   }
 
+  //<------------------------- Function To intialize Bom & Opr with Empty Row --------------->
+
+  void intializeBomOprEmpty() {
+    setState(() {
+      _bomRows = [
+        DataGridRow(cells: [
+          DataGridCell<String>(columnName: 'Variant Name', value: 'Summery'),
+          DataGridCell<String>(columnName: 'Item Group', value: ""),
+          DataGridCell(columnName: 'Pieces', value: 1),
+          DataGridCell(columnName: 'Weight', value: 0.0),
+          DataGridCell(columnName: 'Rate', value: 0.0),
+          DataGridCell<double>(columnName: 'Avg Wt(Pcs)', value: 0.0),
+          DataGridCell(columnName: 'Amount', value: 0.0),
+          DataGridCell<String>(columnName: 'Sp Char', value: ''),
+          DataGridCell<String>(columnName: 'Operation', value: ''),
+          DataGridCell<String>(columnName: 'Type', value: ''),
+          DataGridCell<Widget>(columnName: 'Actions', value: null)
+        ]),
+      ];
+      _OpeationRows = [
+        DataGridRow(cells: [
+          DataGridCell<String>(columnName: 'Calc Bom', value: ''),
+          DataGridCell<String>(columnName: 'Operation', value: ''),
+          DataGridCell<int>(columnName: 'Calc Qty', value: 0),
+          DataGridCell<dynamic>(columnName: 'Type', value: ''),
+          DataGridCell<dynamic>(columnName: 'Calc Method', value: ''),
+          DataGridCell<dynamic>(columnName: 'Calc Method Value', value: ''),
+          DataGridCell<dynamic>(columnName: 'Depd Method', value: ''),
+          DataGridCell<dynamic>(columnName: 'Depd Method Value', value: ''),
+          DataGridCell<Widget>(columnName: 'Depd Type', value: null),
+          DataGridCell<Widget>(columnName: 'Depd Qty', value: null),
+        ])
+      ];
+    });
+  }
+
   //<------------------------- Function To Intialize Bom &  Opr ----------- -------------->
 
   void initializeBomOpr() {
+
+    if(widget.VarientName=="" ) {
+      intializeBomOprEmpty();
+      return;
+    }
     print("widget.VarientName ${widget.VarientName}");
     Map<dynamic, dynamic>? varientData = ref
         .read(procurementVariantProvider.notifier)
