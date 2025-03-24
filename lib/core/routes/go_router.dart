@@ -40,7 +40,6 @@ import 'package:jewlease/feature/rm_inventory_management/screens/rm_Inventory_ma
 import 'package:jewlease/feature/transfer/screens/transfer_inward_location.dart';
 import 'package:jewlease/feature/transfer/screens/transfer_outward_location.dart';
 import 'package:jewlease/feature/transfer/screens/transfer_screen.dart';
-import 'package:jewlease/feature/vendor/screens/Bom&Operation.dart';
 import 'package:jewlease/feature/vendor/screens/new_vendor_screen.dart';
 import 'package:jewlease/feature/vendor/screens/vendor_screen.dart';
 
@@ -295,7 +294,6 @@ final goRouter = GoRouter(
               builder: (context, state) {
                 return procumentScreen();
               }),
-
           GoRoute(
               path: '/barcodingScreen',
               builder: (context, state) {

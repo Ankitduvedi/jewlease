@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/feature/procument/controller/procumentBomProcController.dart';
@@ -16,10 +18,10 @@ class ProcumentSummaryScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  _ProcumentDataGridState createState() => _ProcumentDataGridState();
+  ProcumentDataGridState createState() => ProcumentDataGridState();
 }
 
-class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
+class ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
   final DataGridController _dataGridController = DataGridController();
   List<DataGridRow> _Procumentrows = [];
   late ProcumentDataGridSource _procumentdataGridSource;
@@ -56,9 +58,9 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
       procumentSummery['Pieces'] = 0;
       procumentSummery["Stone Wt"] = 0.0;
       procumentSummery["Stone Amt"] = updatedVarient["Stone Pieces"] ?? 0.0;
-      print("updating procument summery");
+      log("updating procument summery");
 
-      _Procumentrows.forEach((element) {
+      for (var element in _Procumentrows) {
         element.getCells().forEach((cell) {
           if (cell.columnName == 'Weight') {
             procumentSummery["Wt"] += cell.value.runtimeType == double
@@ -69,33 +71,34 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                 ? cell.value
                 : int.parse(cell.value.toString()) * 1.0;
           } else if (cell.columnName == 'Stone Wt') {
-            print("stone wt runtype ${cell.value.runtimeType}");
+            log("stone wt runtype ${cell.value.runtimeType}");
             procumentSummery["Stone Wt"] += cell.value.runtimeType == String
                 ? int.parse(cell.value)
                 : cell.value;
-          } else if (cell.columnName == 'Pieces')
+          } else if (cell.columnName == 'Pieces') {
             procumentSummery['Pieces'] = cell.value;
+          }
         });
-      });
+      }
       procumentSummery["Metal Wt"] =
           procumentSummery["Wt"] - procumentSummery["Stone Wt"];
     } catch (e) {
-      print("error in updating summery $e");
+      log("error in updating summery $e");
     }
   }
 
   void _addNewRowWithItemGroup(Map<dynamic, dynamic> varient) {
-    // print("varient $varient ${varient["BOM"]["data"][0][3]}");
-    print("varient $varient");
+    // log("varient $varient ${varient["BOM"]["data"][0][3]}");
+    log("varient $varient");
     setState(() {
       _Procumentrows.add(
         DataGridRow(cells: [
-          DataGridCell<String>(columnName: 'Ref Document', value: ''),
-          DataGridCell<String>(columnName: 'Line No', value: ''),
-          DataGridCell<int>(columnName: 'Stock Code', value: 0),
+          const DataGridCell<String>(columnName: 'Ref Document', value: ''),
+          const DataGridCell<String>(columnName: 'Line No', value: ''),
+          const DataGridCell<int>(columnName: 'Stock Code', value: 0),
           DataGridCell<String>(
               columnName: 'Variant Name', value: varient['Varient Name']),
-          DataGridCell<double>(columnName: 'Stock Status', value: 0.0),
+          const DataGridCell<double>(columnName: 'Stock Status', value: 0.0),
           DataGridCell<String>(
               columnName: 'Stone Wt', value: varient["Stone Min Wt"]),
           DataGridCell<String>(
@@ -108,9 +111,9 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
           DataGridCell<String>(
               columnName: 'Amount',
               value: (int.parse(varient["BOM"]["data"][0][3].toString()) *
-                  int.parse(varient["Std Buying Rate"] ?? 0))
+                      int.parse(varient["Std Buying Rate"] ?? 0))
                   .toString()),
-          DataGridCell<String>(columnName: 'Wastage', value: "0"),
+          const DataGridCell<String>(columnName: 'Wastage', value: "0"),
         ]),
       );
       _procumentdataGridSource.updateDataGridSource();
@@ -121,9 +124,9 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
   }
 
   void _initializeRows() {
-    print("intilizing start");
+    log("intilizing start");
     _Procumentrows = [];
-    Future.delayed(Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 1), () {
       ref.read(procurementVariantProvider.notifier).resetAllVariants();
     });
   }
@@ -142,11 +145,9 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
     ///
     ///
     for (var row in _Procumentrows) {
-      Map<String, dynamic> updatedVarient = Map.fromIterable(
-        row.getCells(),
-        key: (cell) => "${cell.columnName}",
-        value: (cell) => cell.value,
-      );
+      Map<String, dynamic> updatedVarient = {
+        for (var cell in row.getCells()) cell.columnName: cell.value
+      };
       String varientName = row.getCells()[3].value;
       ref
           .read(procurementVariantProvider.notifier)
@@ -160,19 +161,20 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
     int varientIndex = updatedVarient["varientIndex"];
     _Procumentrows[varientIndex] = DataGridRow(
         cells: _Procumentrows[varientIndex].getCells().map((cell) {
-          if (updatedVarient[cell.columnName] != null)
-            return DataGridCell(
-                columnName: cell.columnName,
-                value: updatedVarient[cell.columnName]);
-          else
-            return cell;
-        }).toList());
+      if (updatedVarient[cell.columnName] != null) {
+        return DataGridCell(
+            columnName: cell.columnName,
+            value: updatedVarient[cell.columnName]);
+      } else {
+        return cell;
+      }
+    }).toList());
     setState(() {});
-    print("updated varient proc summery is $updatedVarient");
+    log("updated varient proc summery is $updatedVarient");
 
     _procumentSummery(updatedVarient);
     _Procumentrows[varientIndex].getCells().forEach((element) {
-      print("updated varient row ${element.columnName} ${element.value}");
+      log("updated varient row ${element.columnName} ${element.value}");
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(BomProcProvider.notifier).updateAction(updatedVarient, false);
@@ -184,14 +186,13 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
   void showProcumentdialog(String endUrl, String value) {
     showDialog(
         context: context,
-        builder: (context) =>
-            AlertDialog(
+        builder: (context) => AlertDialog(
               content: ItemDataScreen(
                 title: '',
                 endUrl: endUrl,
                 canGo: true,
                 onDoubleClick: (Map<String, dynamic> intialData) {
-                  print("intial data $intialData");
+                  log("intial data $intialData");
                   // _addNewRowBom(intialData["OPERATION_NAME"] ?? "", value);
                   // Navigator.pop(context);
                   // _updateBomSummaryRow();
@@ -202,20 +203,14 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
-    screenHeight = MediaQuery
-        .of(context)
-        .size
-        .height;
+    screenWidth = MediaQuery.of(context).size.width;
+    screenHeight = MediaQuery.of(context).size.height;
     double gridWidth =
         screenWidth * 0.6; // Set grid width to 50% of screen width
-    print("widht ${screenWidth} ${screenWidth * 0.9}");
+    log("widht $screenWidth ${screenWidth * 0.9}");
     final varientAction = ref.watch(BomProcProvider);
     if (varientAction['trigger'] == true) {
-      print("varientAction $varientAction");
+      log("varientAction $varientAction");
       updateVarientRow(varientAction["data"]);
     }
 
@@ -231,58 +226,55 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                   'Goods Reciept Note',
                   style: TextStyle(fontSize: 25),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 40,
                 ),
                 InkWell(
                     onTap: () {
                       showDialog(
                         context: context,
-                        builder: (context) =>
-                            ItemTypeDialogScreen(
-                              title: 'Add Varient',
-                              endUrl: 'ItemMasterAndVariants/Style/Style/Variant',
-                              value: 'Varient Name',
-                              onOptionSelectd: (selectedValue) {
-                                print("selected value $selectedValue");
-                              },
-                              onSelectdRow: (selectedRow) {
-                                ref
-                                    .read(procurementVariantProvider.notifier)
-                                    .addItem(selectedRow);
-                                Map<dynamic, dynamic>? selected = ref
-                                    .read(procurementVariantProvider.notifier)
-                                    .getItemByVariant(selectedRow['Varient']);
-                                print(
-                                    "selected $selected selectedRow $selectedRow");
-                                _addNewRowWithItemGroup(selectedRow);
-                                setState(() {});
-                              },
-                            ),
+                        builder: (context) => ItemTypeDialogScreen(
+                          title: 'Add Varient',
+                          endUrl: 'ItemMasterAndVariants/Style/Style/Variant',
+                          value: 'Varient Name',
+                          onOptionSelectd: (selectedValue) {
+                            log("selected value $selectedValue");
+                          },
+                          onSelectdRow: (selectedRow) {
+                            ref
+                                .read(procurementVariantProvider.notifier)
+                                .addItem(selectedRow);
+                            Map<dynamic, dynamic>? selected = ref
+                                .read(procurementVariantProvider.notifier)
+                                .getItemByVariant(selectedRow['Varient']);
+                            log("selected $selected selectedRow $selectedRow");
+                            _addNewRowWithItemGroup(selectedRow);
+                            setState(() {});
+                          },
+                        ),
                       );
                     },
                     child: Container(
                         width: screenWidth * 0.1,
                         height: 35,
                         decoration: BoxDecoration(
-                            color: Color(0xff003450),
+                            color: const Color(0xff003450),
                             borderRadius: BorderRadius.circular(5)),
-                        child: Center(
+                        child: const Center(
                             child: Text(
-                              "Add Varients",
-                              style: TextStyle(
-                                  color: Colors.white, fontSize: 18),
-                            )))),
+                          "Add Varients",
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        )))),
               ],
             ),
             Container(
               height: screenHeight * 0.6,
 
-              margin: EdgeInsets.only(top: 10, left: 0),
+              margin: const EdgeInsets.only(top: 10, left: 0),
               // padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
                 // border: Border.all(color: Colors.pink),
-                borderRadius: BorderRadius.all(Radius.circular(15)),
+                borderRadius: const BorderRadius.all(Radius.circular(15)),
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
@@ -290,7 +282,7 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                         .withOpacity(0.2), // Shadow color with opacity
                     spreadRadius: 2,
                     blurRadius: 6,
-                    offset: Offset(0, 4), // Offset only on the bottom
+                    offset: const Offset(0, 4), // Offset only on the bottom
                   ),
                 ],
               ),
@@ -299,7 +291,7 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Container(
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     // border: Border.all(color: Colors.orange),
                     borderRadius: BorderRadius.all(Radius.circular(15)),
                   ),
@@ -308,9 +300,9 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                   child: Theme(
                       data: ThemeData(
                         cardColor:
-                        Colors.transparent, // Background color for DataGrid
+                            Colors.transparent, // Background color for DataGrid
                         shadowColor:
-                        Colors.transparent, // Removes shadow if any
+                            Colors.transparent, // Removes shadow if any
                       ),
                       child: SfDataGrid(
                         rowHeight: 40,
@@ -325,7 +317,7 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                             width: gridWidth /
                                 5, // Adjust column width to fit 4-5 columns
                             label: Container(
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                   color: Color(0xFF003450),
                                   border: Border(
                                       right: BorderSide(color: Colors.grey)),
@@ -333,7 +325,7 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                                       topRight: Radius.circular(0),
                                       topLeft: Radius.circular(15))),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 'Ref Document',
                                 style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
@@ -344,13 +336,13 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                             columnName: 'Stock Code',
                             width: gridWidth / 5,
                             label: Container(
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 color: Color(0xFF003450),
                                 border: Border(
                                     right: BorderSide(color: Colors.grey)),
                               ),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 'Stock Code',
                                 style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
@@ -361,9 +353,9 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                             columnName: 'Line No',
                             width: gridWidth / 5,
                             label: Container(
-                              color: Color(0xFF003450),
+                              color: const Color(0xFF003450),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 'Line No',
                                 style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
@@ -374,9 +366,9 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                             columnName: 'Variant Name',
                             width: gridWidth / 5,
                             label: Container(
-                              color: Color(0xFF003450),
+                              color: const Color(0xFF003450),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 'Variant Name',
                                 style: TextStyle(color: Colors.green),
                                 overflow: TextOverflow.ellipsis,
@@ -391,9 +383,9 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                                 Navigator.pop(context);
                               },
                               child: Container(
-                                color: Color(0xFF003450),
+                                color: const Color(0xFF003450),
                                 alignment: Alignment.center,
-                                child: Text(
+                                child: const Text(
                                   'Stock Status',
                                   style: TextStyle(color: Colors.green),
                                   overflow: TextOverflow.ellipsis,
@@ -405,9 +397,9 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                             columnName: 'Stone Wt',
                             width: gridWidth / 5,
                             label: Container(
-                              color: Color(0xFF003450),
+                              color: const Color(0xFF003450),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 'Stone Wt',
                                 style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
@@ -418,9 +410,9 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                             columnName: 'Pieces',
                             width: gridWidth / 5,
                             label: Container(
-                              color: Color(0xFF003450),
+                              color: const Color(0xFF003450),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 'Pieces',
                                 style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
@@ -431,9 +423,9 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                             columnName: 'Weight',
                             width: gridWidth / 5,
                             label: Container(
-                              color: Color(0xFF003450),
+                              color: const Color(0xFF003450),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 'Weight',
                                 style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
@@ -444,9 +436,9 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                             columnName: 'Rate',
                             width: gridWidth / 5,
                             label: Container(
-                              color: Color(0xFF003450),
+                              color: const Color(0xFF003450),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 'Rate',
                                 style: TextStyle(color: Colors.white),
                               ),
@@ -457,9 +449,9 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                             width: gridWidth /
                                 5, // Adjust column width to fit 4-5 columns
                             label: Container(
-                              color: Color(0xFF003450),
+                              color: const Color(0xFF003450),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 'Amount',
                                 style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
@@ -471,12 +463,12 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                             width: gridWidth /
                                 5, // Adjust column width to fit 4-5 columns
                             label: Container(
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                   color: Color(0xFF003450),
                                   borderRadius: BorderRadius.only(
                                       topRight: Radius.circular(15))),
                               alignment: Alignment.center,
-                              child: Text(
+                              child: const Text(
                                 'Wastage',
                                 style: TextStyle(color: Colors.white),
                                 overflow: TextOverflow.ellipsis,
@@ -494,11 +486,11 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: _Procumentrows.length == 0
+      floatingActionButton: _Procumentrows.isEmpty
           ? Container()
           : SummaryDetails(
-        Summery: procumentSummery,
-      ),
+              Summery: procumentSummery,
+            ),
     );
   }
 }

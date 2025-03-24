@@ -285,13 +285,20 @@ class AddStyleVariantScreenState extends ConsumerState<AddStyleVariantScreen> {
                               },
                             ],
                           )
-                        : procumentBomOprDialog(
-                          "",
-                          0,
-                          true,
-                          false,
-                          isHorizonatal: false,
-                        ),
+                        : const ProcurementBomDialog(
+                            variantName: "",
+                            variantIndex: 0,
+                            canEdit: true,
+                            isFromSubContracting: false,
+                            isHorizontal: false,
+                          ),
+                // procumentBomOprDialog(
+                //   "",
+                //   0,
+                //   true,
+                //   false,
+                //   isHorizonatal: false,
+                // ),
               )),
             ],
           ),

@@ -1,91 +1,98 @@
 import 'package:flutter/material.dart';
+import 'package:jewlease/feature/procument/screens/procumentBomGridSource.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 import '../../../main.dart';
 
-class ProcumentBomGrid extends StatefulWidget {
-  const ProcumentBomGrid(
-      {super.key,
-      required this.bomDataGridSource,
-      required this.gridWidth,
-      required this.dataGridController});
-
-  final DataGridSource bomDataGridSource;
-  final double gridWidth;
+class ProcumentBomGrid extends StatelessWidget {
+  final ProcurementBomGridSource bomDataGridSource;
   final DataGridController dataGridController;
+  final double gridWidth;
+
+  const ProcumentBomGrid({
+    Key? key,
+    required this.bomDataGridSource,
+    required this.dataGridController,
+    required this.gridWidth,
+  }) : super(key: key);
 
   @override
-  State<ProcumentBomGrid> createState() => _ProcumentBomGridState();
-}
-
-class _ProcumentBomGridState extends State<ProcumentBomGrid> {
-  List<String> bomColumn = [
-    'Variant Name',
-    'Item Group',
-    'Pieces',
-    'Weight',
-    'Rate',
-    'Avg Wt(Pcs)',
-    'Amount',
-    'Sp Char',
-    'Operation',
-    'Type',
-    'Actions'
-  ];
-
   Widget build(BuildContext context) {
-    screenWidth = MediaQuery.of(context).size.width;
-    screenHeight = MediaQuery.of(context).size.height;
-    return Flexible(
-      // Allows the content to expand only as needed
-      fit: FlexFit.loose,
-      child: ClipRRect(
-        borderRadius:
-            BorderRadius.circular(10), // Adjust this for desired roundness
-        child: Container(
-          // width: screenWidth * 0.42,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            border:
-            Border.fromBorderSide(BorderSide(color: Colors.grey)),
+    return SfDataGrid(
+      source: bomDataGridSource,
+      controller: dataGridController,
+      columns: _buildGridColumns(),
+      columnWidthMode: ColumnWidthMode.auto,
+      allowEditing: true,
+    );
+  }
 
-          ),
-          child: SfDataGrid(
-            rowHeight: 35,
-            headerRowHeight: 40,
-            source: widget.bomDataGridSource,
-            controller: widget.dataGridController,
-            footerFrozenColumnsCount: 1,
-            // Freeze the last column
-            columns: bomColumn
-                .map((columnName) => GridColumn(
-                      columnName: columnName,
-                      width: widget.gridWidth / 5,
-                      label: Container(
-                        decoration: BoxDecoration(
-                          color: Color(0xFF003450),
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(
-                                  bomColumn.indexOf(columnName) == 0 ? 10 : 0),
-                              topRight: Radius.circular(
-                                  bomColumn.indexOf(columnName) ==
-                                          bomColumn.length - 1
-                                      ? 10
-                                      : 0)),
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          columnName,
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ))
-                .toList(),
-            gridLinesVisibility: GridLinesVisibility.both,
-            headerGridLinesVisibility: GridLinesVisibility.both,
-          ),
+  List<GridColumn> _buildGridColumns() {
+    return [
+      GridColumn(
+        columnName: 'Variant Name',
+        label: Container(
+          padding: const EdgeInsets.all(8),
+          alignment: Alignment.center,
+          child: const Text('Variant Name'),
         ),
       ),
-    );
+      GridColumn(
+        columnName: 'Item Group',
+        label: Container(
+          padding: const EdgeInsets.all(8),
+          alignment: Alignment.center,
+          child: const Text('Item Group'),
+        ),
+      ),
+      GridColumn(
+        columnName: 'Pieces',
+        label: Container(
+          padding: const EdgeInsets.all(8),
+          alignment: Alignment.center,
+          child: const Text('Pieces'),
+        ),
+      ),
+      GridColumn(
+        columnName: 'Weight',
+        label: Container(
+          padding: const EdgeInsets.all(8),
+          alignment: Alignment.center,
+          child: const Text('Weight'),
+        ),
+      ),
+      GridColumn(
+        columnName: 'Rate',
+        label: Container(
+          padding: const EdgeInsets.all(8),
+          alignment: Alignment.center,
+          child: const Text('Rate'),
+        ),
+      ),
+      GridColumn(
+        columnName: 'Avg Wt(Pcs)',
+        label: Container(
+          padding: const EdgeInsets.all(8),
+          alignment: Alignment.center,
+          child: const Text('Avg Wt(Pcs)'),
+        ),
+      ),
+      GridColumn(
+        columnName: 'Amount',
+        label: Container(
+          padding: const EdgeInsets.all(8),
+          alignment: Alignment.center,
+          child: const Text('Amount'),
+        ),
+      ),
+      GridColumn(
+        columnName: 'Actions',
+        label: Container(
+          padding: const EdgeInsets.all(8),
+          alignment: Alignment.center,
+          child: const Text('Actions'),
+        ),
+      ),
+    ];
   }
 }

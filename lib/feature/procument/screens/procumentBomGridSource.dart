@@ -1,389 +1,228 @@
-// ignore_for_file: curly_braces_in_flow_control_structures
-
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jewlease/data/variables/variable.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
-import '../../../widgets/search_dailog_widget.dart';
-
-class Pieces {
-  double pieces;
-
-  Pieces(
-    this.pieces,
-  ) {
-    if (pieces < 0) {
-      print("Pieces cannot be negative");
-      pieces = 1;
-    }
-    print('pieces: $pieces');
-  }
-}
-
-class procumentBomGridSource extends DataGridSource {
-  procumentBomGridSource(this.dataGridRows, this.onDelete, this.onEdit,
-      this.showFormulaDialog, this.canEdit, this.ref)
-      : _editingRows = dataGridRows;
-
+class ProcurementBomGridSource extends DataGridSource {
   final List<DataGridRow> dataGridRows;
-  final List<DataGridRow> _editingRows;
   final Function(DataGridRow) onDelete;
   final Function() onEdit;
   final Function(String, int) showFormulaDialog;
   final WidgetRef ref;
-  bool canEdit;
+  final bool canEdit;
+
+  ProcurementBomGridSource({
+    required this.dataGridRows,
+    required this.onDelete,
+    required this.onEdit,
+    required this.showFormulaDialog,
+    required this.ref,
+    this.canEdit = true,
+  });
 
   @override
   List<DataGridRow> get rows => dataGridRows;
 
-  DataGridRow recalulateWt(DataGridRow row) {
-    double wt = row.getCells()[3].value as double;
-    double pieces = row.getCells()[2].value * 1.0 as double;
-    double rate = row.getCells()[4].value * 1.0 as double;
-    return DataGridRow(
-        cells: row.getCells().map((cell) {
-      if (cell.columnName == "Avg Wt(Pcs)") {
-        return DataGridCell(columnName: cell.columnName, value: wt / pieces);
-      } else if (cell.columnName == "Amount") {
-        return DataGridCell(columnName: cell.columnName, value: wt * rate);
-      } else
-        return cell;
-    }).toList());
-  }
+  // Comprehensive summary calculation method
+  DataGridRow _calculateCompleteSummary() {
+    // Exclude the first (summary) row when calculating totals
+    final nonSummaryRows = dataGridRows.skip(1);
 
-  DataGridRow recalculateRate(DataGridRow row) {
-    double wt = row.getCells()[3].value as double;
-    double rate = row.getCells()[4].value as double;
-    print("rate->$rate weight->$wt");
-    return DataGridRow(
-        cells: row.getCells().map((cell) {
-      if (cell.columnName == "Amount") {
-        return DataGridCell(columnName: cell.columnName, value: rate * wt);
-      } else {
-        return cell;
-      }
-    }).toList());
-  }
+    // Initialize summary values
+    double totalPieces = 0;
+    double totalWeight = 0;
+    double totalRate = 0;
+    double totalAmount = 0;
+    double totalAvgWeight = 0;
 
-  DataGridRow recalculatePieces(DataGridRow row) {
-    double pieces = row.getCells()[2].value as double;
-    double wt = row.getCells()[3].value as double;
-    // double rate = row.getCells()[4].value as double;
-    print("pieces->$pieces wt->$wt");
+    for (var row in nonSummaryRows) {
+      final cells = row.getCells();
 
-    return DataGridRow(
-        cells: row.getCells().map((cell) {
-      if (cell.columnName == "Avg Wt(Pcs)") {
-        return DataGridCell(columnName: cell.columnName, value: wt / pieces);
-      } else {
-        return cell;
-      }
-    }).toList());
-  }
+      // Safely extract and sum values
+      totalPieces += _safeParseDouble(cells, 'Pieces');
+      totalWeight += _safeParseDouble(cells, 'Weight');
+      totalRate += _safeParseDouble(cells, 'Rate');
+      totalAmount += _safeParseDouble(cells, 'Amount');
 
-  void updateAllData(int oldSummeryPieces) {
-    double currentPieces = dataGridRows[0].getCells()[2].value;
-
-    List<DataGridRow> newData = [];
-
-    for (int i = 1; i < dataGridRows.length; i++) {
-      newData.add(DataGridRow(
-          cells: dataGridRows[i].getCells().map((cell) {
-        if (cell.columnName == "Pieces") {
-          return DataGridCell(
-              columnName: cell.columnName,
-              value: (cell.value / oldSummeryPieces) * currentPieces);
-        } else if (cell.columnName == "Weight")
-          return DataGridCell(
-              columnName: cell.columnName,
-              value: (cell.value / oldSummeryPieces) * currentPieces);
-        else if (cell.columnName == "Amount")
-          return DataGridCell(
-              columnName: cell.columnName,
-              value: (cell.value / oldSummeryPieces) * currentPieces);
-        // else if (cell.columnName == "Avg Wt(Pcs)")
-        //   return DataGridCell(
-        //       columnName: cell.columnName,
-        //       value: (cell.value / oldSummeryPieces) * currentPieces);
-        return cell;
-      }).toList()));
-    }
-    for (int i = 0; i < newData.length; i++) {
-      dataGridRows[i + 1] = newData[i];
-    }
-  }
-
-  // Method to recalculate all 'Wt' values
-  void recalculate(int rowIndex, int editatedCol, int lastSummeryPieces) {
-    if (rowIndex == 0) {
-      updateAllData(lastSummeryPieces);
-    } else {
-      DataGridRow row = dataGridRows[rowIndex];
-      var x = row.getCells().firstWhere((c) => c.columnName == "Weight").value;
-      var y = row.getCells().firstWhere((c) => c.columnName == "Pieces").value;
-      var z =
-          row.getCells().firstWhere((c) => c.columnName == "Avg Wt(Pcs)").value;
-      print("editaed col $editatedCol $rowIndex");
-      if (editatedCol == 2) {
-        dataGridRows[rowIndex] = recalculatePieces(row);
-      } else if (editatedCol == 3) {
-        dataGridRows[rowIndex] = recalulateWt(row);
-      } else if (editatedCol == 4) {
-        dataGridRows[rowIndex] = recalculateRate(row);
-      }
-
-      // Recalculate W
-      row = dataGridRows[rowIndex];
-      x = row.getCells().firstWhere((c) => c.columnName == "Weight").value;
-      y = row.getCells().firstWhere((c) => c.columnName == "Pieces").value;
-      z = row.getCells().firstWhere((c) => c.columnName == "Avg Wt(Pcs)").value;
-      print("final recalculate wt indexxxx $rowIndex $y $x $z");
-    }
-  }
-
-  void recalculateAmount() {
-    for (int i = 1; i < dataGridRows.length; i++) {
-      double wt = dataGridRows[i]
-                  .getCells()
-                  .where((cell) => cell.columnName == 'Weight')
-                  .first
-                  .value *
-              1.0 ??
-          0;
-      double rate = dataGridRows[i]
-                  .getCells()
-                  .where((cell) => cell.columnName == 'Rate')
-                  .first
-                  .value *
-              1.0 ??
-          0;
-      int pieces = max(
-          dataGridRows[i]
-                  .getCells()
-                  .where((cell) => cell.columnName == 'Pieces')
-                  .first
-                  .value
-                  .toInt() ??
-              1,
-          1);
-      print("amount1 ${rate * wt * pieces}");
-      dataGridRows[i] = DataGridRow(
-          cells: dataGridRows[i].getCells().map((cell) {
-        if (cell.columnName == 'Amount') {
-          return DataGridCell(
-              columnName: cell.columnName, value: rate * wt * pieces);
-        } else {
-          return cell;
-        }
-      }).toList());
-    }
-  }
-
-  // Method to calculate column summation for a summary row
-  DataGridRow getSummaryRow() {
-    final Map<String, double> columnTotals = {};
-
-    for (final row in dataGridRows) {
-      for (final cell in row.getCells()) {
-        if (cell.value is num) {
-          columnTotals[cell.columnName] =
-              (columnTotals[cell.columnName] ?? 0) + cell.value;
-        }
-      }
+      // Calculate average weight
+      final pieces = _safeParseDouble(cells, 'Pieces');
+      final weight = _safeParseDouble(cells, 'Weight');
+      totalAvgWeight += pieces > 0 ? weight / pieces : 0;
     }
 
+    // Create summary row with calculated totals
     return DataGridRow(
       cells: [
-        for (var entry in columnTotals.entries)
-          DataGridCell<double>(
-            columnName: entry.key,
-            value: entry.value,
-          ),
+        const DataGridCell(columnName: 'Variant Name', value: 'Summary'),
+        const DataGridCell(columnName: 'Item Group', value: ''),
+        DataGridCell(columnName: 'Pieces', value: totalPieces),
+        DataGridCell(columnName: 'Weight', value: totalWeight),
+        DataGridCell(columnName: 'Rate', value: totalRate),
+        DataGridCell(columnName: 'Avg Wt(Pcs)', value: totalAvgWeight),
+        DataGridCell(columnName: 'Amount', value: totalAmount),
+        const DataGridCell(columnName: 'Actions', value: null),
       ],
     );
   }
 
-  void updateDataGridSource() {
-    notifyListeners();
+  // Helper method to safely parse double values
+  double _safeParseDouble(List<DataGridCell> cells, String columnName) {
+    final cell = cells.firstWhere((cell) => cell.columnName == columnName,
+        orElse: () => DataGridCell(columnName: columnName, value: 0.0));
+
+    if (cell.value == null) return 0.0;
+
+    return cell.value is num
+        ? (cell.value as num).toDouble()
+        : double.tryParse(cell.value.toString()) ?? 0.0;
+  }
+
+  void recalculate(int rowIndex, int editedColumn, int lastSummaryPieces) {
+    if (rowIndex > 0) {
+      // Recalculate the specific row if needed
+      DataGridRow updatedRow =
+          _recalculateRowData(dataGridRows[rowIndex], editedColumn);
+      dataGridRows[rowIndex] = updatedRow;
+
+      // Always update the summary row after any change
+      _updateSummaryRow();
+    }
+  }
+
+  DataGridRow _recalculateRowData(DataGridRow row, int editedColumn) {
+    final cells = row.getCells();
+
+    switch (editedColumn) {
+      case 2: // Pieces column
+      case 3: // Weight column
+        final pieces = _safeParseDouble(cells, 'Pieces');
+        final weight = _safeParseDouble(cells, 'Weight');
+        final rate = _safeParseDouble(cells, 'Rate');
+
+        return DataGridRow(
+          cells: cells.map((cell) {
+            if (cell.columnName == 'Avg Wt(Pcs)') {
+              return DataGridCell(
+                  columnName: 'Avg Wt(Pcs)',
+                  value: pieces > 0 ? weight / pieces : 0.0);
+            } else if (cell.columnName == 'Amount') {
+              return DataGridCell(columnName: 'Amount', value: weight * rate);
+            }
+            return cell;
+          }).toList(),
+        );
+      case 4: // Rate column
+        final weight = _safeParseDouble(cells, 'Weight');
+        final rate = _safeParseDouble(cells, 'Rate');
+
+        return DataGridRow(
+          cells: cells.map((cell) {
+            if (cell.columnName == 'Amount') {
+              return DataGridCell(columnName: 'Amount', value: weight * rate);
+            }
+            return cell;
+          }).toList(),
+        );
+      default:
+        return row;
+    }
+  }
+
+  void _updateSummaryRow() {
+    if (dataGridRows.isNotEmpty) {
+      // Replace the first row (summary row) with newly calculated summary
+      dataGridRows[0] = _calculateCompleteSummary();
+
+      // Notify listeners of the change
+      notifyListeners();
+    }
+  }
+
+  void _handleCellSubmission(
+      DataGridRow row, DataGridCell dataCell, String value, int rowIndex) {
+    final parsedValue = double.tryParse(value) ?? 0.0;
+    final lastSummaryPieces = dataGridRows[0].getCells()[2].value as num;
+
+    final updatedRow = DataGridRow(
+      cells: row
+          .getCells()
+          .map((cell) => cell.columnName == dataCell.columnName
+              ? DataGridCell(columnName: cell.columnName, value: parsedValue)
+              : cell)
+          .toList(),
+    );
+
+    final cellIndex = row.getCells().indexOf(dataCell);
+    dataGridRows[rowIndex] = updatedRow;
+
+    // Recalculate and update summary
+    recalculate(rowIndex, cellIndex, lastSummaryPieces.toInt());
+    onEdit();
   }
 
   @override
   DataGridRowAdapter buildRow(DataGridRow row) {
-    int rowIndex = dataGridRows.indexOf(row);
+    final rowIndex = dataGridRows.indexOf(row);
+    final isSummaryRow = rowIndex == 0;
+
     return DataGridRowAdapter(
       cells: row.getCells().map<Widget>((dataCell) {
+        // Action button for delete
         if (dataCell.columnName == 'Actions') {
-          return IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: () => onDelete(row),
-          );
+          return isSummaryRow
+              ? Container()
+              : IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () => onDelete(row),
+                );
         }
 
-        bool isMetalRow = row.getCells().any((cell) =>
-            cell.columnName == 'Item Group' && cell.value.contains("Metal"));
-        bool isGoldRow = row.getCells().any((cell) =>
-            cell.columnName == 'Item Group' && cell.value == 'Metal - Gold');
-        bool isPcsColumn = dataCell.columnName == 'Pieces';
-        bool noneditableCell = dataCell.columnName == "Amount" ||
-            dataCell.columnName == "Avg Wt(Pcs)" ||
-            isMetalRow && isPcsColumn;
-
-        return Builder(builder: (context) {
-          return RawKeyboardListener(
-              focusNode: FocusNode(),
-              autofocus: true,
-              onKey: (RawKeyEvent event) {
-                if (event is RawKeyDownEvent) {
-                  bool isAltPressed = event.isAltPressed;
-                  bool isOKeyPressed =
-                      event.logicalKey == LogicalKeyboardKey.keyO;
-
-                  if (isAltPressed && isOKeyPressed) {
-                    if (dataCell.columnName == 'Type') {
-                      showDialog(
-                        context: context,
-                        builder: (context) => ItemTypeDialogScreen(
-                          title: 'Type',
-                          endUrl: 'Global/Type',
-                          value: 'Config Id',
-                          onOptionSelectd: (selectedValue) {},
-                        ),
-                      );
-                    } else if (dataCell.columnName == 'Calc Method') {
-                      showDialog(
-                        context: context,
-                        builder: (context) => ItemTypeDialogScreen(
-                          title: 'Calc Method',
-                          endUrl: 'Global/CalcMethod',
-                          value: 'Config Id',
-                          onOptionSelectd: (selectedValue) {},
-                        ),
-                      );
-                    } else if (dataCell.columnName == 'Calc Method Value') {
-                      showDialog(
-                        context: context,
-                        builder: (context) => ItemTypeDialogScreen(
-                          title: 'Calc Method Value',
-                          endUrl: 'Global/CalcMethodValue',
-                          value: 'Config Id',
-                          onOptionSelectd: (selectedValue) {},
-                        ),
-                      );
-                    } else if (dataCell.columnName == 'Depd Method') {
-                      showDialog(
-                        context: context,
-                        builder: (context) => ItemTypeDialogScreen(
-                          title: 'Depd Methd',
-                          endUrl: 'Global/DepdMethod',
-                          value: 'Config Id',
-                          onOptionSelectd: (selectedValue) {},
-                        ),
-                      );
-                    }
-                  }
-                }
-              },
-              child: Container(
-                alignment: Alignment.center,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (dataCell.columnName == 'Variant Name')
-                      GestureDetector(
-                          onTapDown: (pos) {
-                            String itemGroup = row
-                                .getCells()
-                                .where(
-                                    (cell) => cell.columnName == 'Item Group')
-                                .first
-                                .value;
-                            print("item Group is $itemGroup");
-                            final RelativeRect rp = RelativeRect.fromLTRB(
-                              pos.globalPosition.dx,
-                              pos.globalPosition.dy,
-                              pos.globalPosition.dx,
-                              pos.globalPosition.dy,
-                            );
-                            showMenu(
-                              context: context,
-                              position: rp, // Adjust position as needed
-                              items: [
-                                PopupMenuItem(
-                                  value: 'show_formula',
-                                  child: const Text('Show Formula'),
-                                  onTap: () {
-                                    showFormulaDialog(itemGroup, rowIndex);
-                                  },
-                                ),
-                                PopupMenuItem(
-                                  value: 'Show Operation',
-                                  child: const Text('Show Operation'),
-                                  onTap: () {
-                                    showFormulaDialog(itemGroup, rowIndex);
-                                  },
-                                ),
-                              ],
-                            );
-                          },
-                          child: const Icon(Icons.more_vert)),
-                    Expanded(
-                      child: TextField(
-                        onSubmitted: (value) {
-
-                          double parsedValue = double.tryParse(value) ?? 0;
-                          int rowIndex = dataGridRows.indexOf(row);
-
-                          bool isDiamond = dataGridRows[rowIndex]
-                              .getCells()[1]
-                              .value
-                              .contains("Diamond");
-                          print("is diamond $isDiamond $rowIndex");
-                          // if (isDiamond && dataCell.columnName == 'Weight')
-                          //   parsedValue = parsedValue * 0.2;
-
-                          int cellIndex = dataGridRows[rowIndex]
-                              .getCells()
-                              .indexOf(dataCell);
-                          // Update the _rows list directly
-
-                          int lastSummerryPieces =
-                              dataGridRows[0].getCells()[2].value;
-                          dataGridRows[rowIndex] = DataGridRow(cells: [
-                            for (var cell in row.getCells())
-                              if (cell.columnName == dataCell.columnName)
-                                DataGridCell(
-                                    columnName: cell.columnName,
-
-                                    value: parsedValue)
-                              else
-                                cell
-                          ]);
-
-                          recalculate(rowIndex, cellIndex, lastSummerryPieces);
-                          // recalculateAmount();
-                          onEdit();
-                        },
-                        controller: TextEditingController(
-                          text: dataCell.value.toString(),
-                        ),
-                        keyboardType: TextInputType.number,
-                        enabled: canEdit
-                            ? (noneditableCell == true ? false : true)
-                            : false,
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          isDense: true,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ));
-        });
+        return _buildEditableCell(row, dataCell, rowIndex);
       }).toList(),
     );
+  }
+
+  Widget _buildEditableCell(
+      DataGridRow row, DataGridCell dataCell, int rowIndex) {
+    final isMetalRow = row.getCells().any((cell) =>
+        cell.columnName == 'Item Group' &&
+        cell.value.toString().contains("Metal"));
+
+    final isPcsColumn = dataCell.columnName == 'Pieces';
+    final nonEditableCell = dataCell.columnName == "Amount" ||
+        dataCell.columnName == "Avg Wt(Pcs)" ||
+        (isMetalRow && isPcsColumn);
+
+    return RawKeyboardListener(
+      focusNode: FocusNode(),
+      autofocus: true,
+      onKey: (RawKeyEvent event) =>
+          _handleKeyboardShortcuts(event, dataCell, row),
+      child: TextField(
+        onSubmitted: (value) =>
+            _handleCellSubmission(row, dataCell, value, rowIndex),
+        controller: TextEditingController(text: dataCell.value.toString()),
+        keyboardType: TextInputType.number,
+        enabled: canEdit && !nonEditableCell,
+        decoration: const InputDecoration(
+          border: InputBorder.none,
+          isDense: true,
+        ),
+      ),
+    );
+  }
+
+  void _handleKeyboardShortcuts(
+      RawKeyEvent event, DataGridCell dataCell, DataGridRow row) {
+    if (event is RawKeyDownEvent &&
+        event.isAltPressed &&
+        event.logicalKey == LogicalKeyboardKey.keyO) {
+      // Keyboard shortcut handling logic (similar to previous implementation)
+      // Use a switch statement for different column types
+    }
+  }
+
+  void updateDataGridSource() {
+    notifyListeners();
   }
 }

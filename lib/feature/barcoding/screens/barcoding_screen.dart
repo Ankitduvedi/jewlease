@@ -259,8 +259,8 @@ class ItemDetails extends ConsumerStatefulWidget {
 
 class _ItemDetailsState extends ConsumerState<ItemDetails> {
   final DataGridController _dataGridController = DataGridController();
-  late procumentBomGridSource _bomDataGridSource;
-  late procumentBomGridSource _oprDataGridSource;
+  late ProcurementBomGridSource _bomDataGridSource;
+  late ProcurementBomGridSource _oprDataGridSource;
   List<DataGridRow> _bomRows = [];
   List<DataGridRow> _OpeationRows = [];
 
@@ -284,10 +284,10 @@ class _ItemDetailsState extends ConsumerState<ItemDetails> {
   void initState() {
     log("rebuilding item details");
     initializeBomOpr();
-    _bomDataGridSource = procumentBomGridSource(
-        _bomRows, _removeRow, _updateBomSummaryRow, showFormula, true, ref);
-    _oprDataGridSource = procumentBomGridSource(_OpeationRows, _removeRow,
-        _updateBomSummaryRow, showFormula, true, ref);
+    // _bomDataGridSource = procumentBomGridSource(
+    //     _bomRows, _removeRow, _updateBomSummaryRow, showFormula, true, ref);
+    // _oprDataGridSource = procumentBomGridSource(_OpeationRows, _removeRow,
+    //     _updateBomSummaryRow, showFormula, true, ref);
 
     super.initState();
   }

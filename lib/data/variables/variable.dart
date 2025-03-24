@@ -1,18 +1,18 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:jewlease/data/variables/error_provider.dart';
+import 'package:jewlease/data/variables/numeric_operator.dart';
 
 void showError(String message, WidgetRef ref) {
   ref.read(errorStateProvider.notifier).state = message;
 }
 
-class Pieces {
+class Pieces extends NumericValue {
   int pieces;
 
   Pieces(
     this.pieces,
     WidgetRef ref,
-  ) {
+  ) : super(0.0) {
     if (pieces < 0) {
       showError("Pieces cannot be negative : $pieces", ref);
       pieces = 1;
@@ -20,11 +20,11 @@ class Pieces {
   }
 }
 
-class Price {
+class Price extends NumericValue {
   final double amount;
   final String currency;
 
-  Price(this.amount, WidgetRef ref, {this.currency = "\$"}) {
+  Price(this.amount, WidgetRef ref, {this.currency = "\$"}) : super(0.0) {
     if (amount < 0) {
       showError("Price cannot be negative : $amount", ref);
     }
@@ -34,112 +34,112 @@ class Price {
   String toString() => "$currency$amount";
 }
 
-class Weight {
+class Weight extends NumericValue {
   final double weight;
 
-  Weight(this.weight, WidgetRef ref) {
+  Weight(this.weight, WidgetRef ref) : super(0.0) {
     if (weight < 0) {
       showError("Weight cannot be negative : $weight", ref);
     }
   }
 }
 
-class ItemWeight {
+class ItemWeight extends NumericValue {
   final double itemWeight;
 
-  ItemWeight(this.itemWeight, WidgetRef ref) {
+  ItemWeight(this.itemWeight, WidgetRef ref) : super(0.0) {
     if (itemWeight < 0) {
       showError("ItemWeight cannot be negative : $itemWeight", ref);
     }
   }
 }
 
-class MetalWeight {
+class MetalWeight extends NumericValue {
   final double metalWeight;
 
-  MetalWeight(this.metalWeight, WidgetRef ref) {
+  MetalWeight(this.metalWeight, WidgetRef ref) : super(0.0) {
     if (metalWeight < 0) {
       showError("Metal weight cannot be negative : $metalWeight", ref);
     }
   }
 }
 
-class StoneWeight {
+class StoneWeight extends NumericValue {
   final double stoneWeight;
 
-  StoneWeight(this.stoneWeight, WidgetRef ref) {
+  StoneWeight(this.stoneWeight, WidgetRef ref) : super(0.0) {
     if (stoneWeight < 0) {
       showError("Stone weight cannot be negative : $stoneWeight", ref);
     }
   }
 }
 
-class AvgWeight {
+class AvgWeight extends NumericValue {
   final double kg;
 
-  AvgWeight(this.kg, WidgetRef ref) {
+  AvgWeight(this.kg, WidgetRef ref) : super(0.0) {
     if (kg < 0) {
       showError("AvgWeight cannot be negative : $kg", ref);
     }
   }
 }
 
-class GrossWeight {
+class GrossWeight extends NumericValue {
   final double grossWeight;
 
-  GrossWeight(this.grossWeight, WidgetRef ref) {
+  GrossWeight(this.grossWeight, WidgetRef ref) : super(0.0) {
     if (grossWeight < 0) {
       showError("GrossWeight  cannot be negative : $grossWeight", ref);
     }
   }
 }
 
-class Rate {
+class Rate extends NumericValue {
   final double rate;
 
   Rate(
     this.rate,
     WidgetRef ref,
-  ) {
+  ) : super(0.0) {
     if (rate < 0) {
       showError("Rate cannot be negative : $rate", ref);
     }
   }
 }
 
-class Amount {
+class Amount extends NumericValue {
   final double amount;
 
   Amount(
     this.amount,
     WidgetRef ref,
-  ) {
+  ) : super(0.0) {
     if (amount < 0) {
       showError("Amount cannot be negative : $amount", ref);
     }
   }
 }
 
-class Total {
+class Total extends NumericValue {
   final double total;
 
   Total(
     this.total,
     WidgetRef ref,
-  ) {
+  ) : super(0.0) {
     if (total < 0) {
       showError("Total cannot be negative : $total", ref);
     }
   }
 }
 
-class SubTotal {
+class SubTotal extends NumericValue {
   final double subTotal;
 
   SubTotal(
     this.subTotal,
     WidgetRef ref,
-  ) {
+  ) : super(0.0) {
     if (subTotal < 0) {
       showError("SubTotal cannot be negative : $subTotal", ref);
     }
@@ -287,4 +287,20 @@ class IGSTAmount {
       showError("IGSTAmount cannot be negative : $iGSTAmount", ref);
     }
   }
+}
+
+class VariantName {
+  final String value;
+
+  VariantName(
+    this.value,
+  );
+}
+
+class ItemGroup {
+  final String value;
+
+  ItemGroup(
+    this.value,
+  );
 }

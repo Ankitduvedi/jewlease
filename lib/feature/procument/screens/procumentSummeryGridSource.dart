@@ -3,80 +3,65 @@ import 'package:jewlease/feature/procument/screens/procumentBomOprDialog.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 class ProcumentDataGridSource extends DataGridSource {
-  ProcumentDataGridSource(
-      this.dataGridRows, this.onDelete, this.onEdit, this.canEdit,
-      {this.isFromSubContracting = false})
-      : _editingRows = dataGridRows;
-
-  final List<DataGridRow> dataGridRows;
-  final List<DataGridRow> _editingRows;
+  final List<DataGridRow> _dataGridRows;
   final Function(DataGridRow) onDelete;
   final Function() onEdit;
   final bool canEdit;
   final bool isFromSubContracting;
 
+  ProcumentDataGridSource(
+    this._dataGridRows,
+    this.onDelete,
+    this.onEdit,
+    this.canEdit, {
+    this.isFromSubContracting = false,
+  });
+
   @override
-  List<DataGridRow> get rows => dataGridRows;
+  List<DataGridRow> get rows => _dataGridRows;
 
-  // Method to recalculate all 'Wt' values
+  // Optimized method to recalculate values
   void recalculateWt(int updateRowIndex) {
-    var pieces = dataGridRows[updateRowIndex]
-        .getCells()
-        .firstWhere((cell) => cell.columnName == 'Pieces')
-        .value;
-    var weight = dataGridRows[updateRowIndex]
-        .getCells()
-        .firstWhere((cell) => cell.columnName == 'Weight')
-        .value;
-    var rate = dataGridRows[updateRowIndex]
-        .getCells()
-        .firstWhere((cell) => cell.columnName == 'Rate')
-        .value;
-    double stnWt = double.parse(dataGridRows[updateRowIndex]
-        .getCells()
-        .firstWhere((cell) => cell.columnName == 'Stone Wt')
-        .value);
-    print(
-        'final amount is ${rate.runtimeType} ${weight.runtimeType} ${pieces.runtimeType}');
-    if(pieces.runtimeType!=int) {
-      pieces= int.parse(pieces);
-    }
-    if(weight.runtimeType!=int) {
-      weight = int.parse(weight);
-    }
+    final row = _dataGridRows[updateRowIndex];
+    final cells = row.getCells();
 
-    if(rate.runtimeType!=int) {
-      rate = int.parse(rate);
-    }
-    dataGridRows[updateRowIndex] = DataGridRow(
-        cells: dataGridRows[updateRowIndex].getCells().map((cell) {
-      if (cell.columnName == 'Amount')
-        return DataGridCell(
-            columnName: 'Amount',
-            value: pieces.runtimeType == int
-                ? pieces *
-                    (weight.runtimeType == String
-                        ? int.parse(weight)
-                        : weight) *
-                    (rate.runtimeType == String ? int.parse(rate) : rate)
-                : int.parse(pieces) *
-                    weight *
-                    (rate.runtimeType == int ? rate : int.parse(rate)));
-      else if (cell.columnName == "Weight") {
-        return DataGridCell(columnName: cell.columnName, value: pieces*weight);
-      }
-      else if (cell.columnName == "Stone Wt") {
-        return DataGridCell(columnName: cell.columnName, value: pieces*stnWt);
-      }
-      return cell;
-    }).toList());
+    final pieces = _parseNumeric(
+        cells.firstWhere((cell) => cell.columnName == 'Pieces').value);
+    final weight = _parseNumeric(
+        cells.firstWhere((cell) => cell.columnName == 'Weight').value);
+    final rate = _parseNumeric(
+        cells.firstWhere((cell) => cell.columnName == 'Rate').value);
+    final stnWt = double.parse(
+        cells.firstWhere((cell) => cell.columnName == 'Stone Wt').value);
+
+    _dataGridRows[updateRowIndex] = DataGridRow(
+      cells: cells.map((cell) {
+        switch (cell.columnName) {
+          case 'Amount':
+            return DataGridCell(
+                columnName: 'Amount', value: pieces * weight * rate);
+          case 'Weight':
+            return DataGridCell(columnName: 'Weight', value: pieces * weight);
+          case 'Stone Wt':
+            return DataGridCell(columnName: 'Stone Wt', value: pieces * stnWt);
+          default:
+            return cell;
+        }
+      }).toList(),
+    );
   }
 
-  // Method to calculate column summation for a summary row
-  DataGridRow getSummaryRow() {
-    final Map<String, double> columnTotals = {};
+  // Helper method to parse numeric values consistently
+  num _parseNumeric(dynamic value) {
+    if (value is num) return value;
+    return num.tryParse(value.toString()) ?? 0;
+  }
 
-    for (final row in dataGridRows) {
+  // Simplified summary row calculation
+  DataGridRow getSummaryRow() {
+    final columnTotals = <String, double>{};
+
+    for (final row in _dataGridRows) {
       for (final cell in row.getCells()) {
         if (cell.value is num) {
           columnTotals[cell.columnName] =
@@ -86,117 +71,121 @@ class ProcumentDataGridSource extends DataGridSource {
     }
 
     return DataGridRow(
-      cells: [
-        for (var entry in columnTotals.entries)
-          DataGridCell<double>(
-            columnName: entry.key,
-            value: entry.value,
-          ),
-      ],
+      cells: columnTotals.entries
+          .map((entry) =>
+              DataGridCell<double>(columnName: entry.key, value: entry.value))
+          .toList(),
     );
   }
 
-  void updateDataGridSource() {
-    notifyListeners();
-  }
+  void updateDataGridSource() => notifyListeners();
 
   @override
   DataGridRowAdapter buildRow(DataGridRow row) {
     return DataGridRowAdapter(
       cells: row.getCells().map<Widget>((dataCell) {
+        // Action column handler
         if (dataCell.columnName == 'Actions') {
           return IconButton(
-            icon: Icon(Icons.delete),
+            icon: const Icon(Icons.delete),
             onPressed: () => onDelete(row),
           );
         }
 
-        bool isMetalRow = row.getCells().any(
-            (cell) => cell.columnName == 'Item Group' && cell.value == 'Metal');
-        bool isGoldRow = row.getCells().any((cell) =>
-            cell.columnName == 'Item Group' && cell.value == 'Metal - Gold');
-        bool isPcsColumn = dataCell.columnName == 'Pieces';
-
-        return Builder(
-          builder: (BuildContext context) {
-            return InkWell(
-              onDoubleTap: () {
-                print("double tap");
-                if (dataCell.columnName == 'Variant Name') {
-                  print("duble tap ${dataCell.value}");
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return Dialog(
-                        alignment: Alignment.bottomCenter,
-                        backgroundColor: Colors.transparent,
-                        child: Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height * 0.35,
-                          // 45% of screen height
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius:
-                                BorderRadius.vertical(top: Radius.circular(16)),
-                          ),
-                          padding: EdgeInsets.all(16),
-                          child: procumentBomOprDialog(
-                              dataCell.value,
-                              dataGridRows.indexOf(row),
-                              canEdit,
-                              isFromSubContracting),
-                        ),
-                      );
-                    },
-                  );
-                }
-              },
-              child: Container(
-                alignment: Alignment.center,
-                child: TextField(
-                  onSubmitted: (value) {
-                    int parsedValue = int.tryParse(value) ?? 0;
-                    int rowIndex = dataGridRows.indexOf(row);
-
-                    // Update the _rows list directly
-                    dataGridRows[rowIndex] = DataGridRow(cells: [
-                      for (var cell in row.getCells())
-                        if (cell == dataCell)
-                          DataGridCell<int>(
-                            columnName: cell.columnName,
-                            value: parsedValue,
-                          )
-                        else
-                          cell,
-                    ]);
-
-                    recalculateWt(rowIndex);
-                    onEdit();
-                  },
-                  controller: TextEditingController(
-                    text: dataCell.value.toString(),
-                  ),
-                  style: TextStyle(
-                      decoration: dataCell.columnName == 'Variant Name'
-                          ? TextDecoration.underline
-                          : TextDecoration.none,
-                      decorationColor: Colors.blue.shade900,
-                      color: dataCell.columnName == 'Variant Name'
-                          ? Colors.blue.shade900
-                          : Colors.black),
-                  keyboardType: TextInputType.number,
-                  enabled:
-                  false,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    isDense: true,
-                  ),
-                ),
-              ),
-            );
-          },
-        );
+        return _buildEditableCell(row, dataCell);
       }).toList(),
+    );
+  }
+
+  Widget _buildEditableCell(DataGridRow row, DataGridCell dataCell) {
+    return Builder(
+      builder: (BuildContext context) {
+        return InkWell(
+          onDoubleTap: () => _handleDoubleTap(context, row, dataCell),
+          child: Container(
+            alignment: Alignment.center,
+            child: TextField(
+              onSubmitted: (value) => _updateCellValue(row, dataCell, value),
+              controller: TextEditingController(
+                text: dataCell.value.toString(),
+              ),
+              style: _getCellTextStyle(dataCell),
+              keyboardType: TextInputType.number,
+              enabled: false,
+              decoration: const InputDecoration(
+                border: InputBorder.none,
+                isDense: true,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _handleDoubleTap(
+      BuildContext context, DataGridRow row, DataGridCell dataCell) {
+    if (dataCell.columnName == 'Variant Name') {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) =>
+            _buildVariantDialog(context, row, dataCell),
+      );
+    }
+  }
+
+  Dialog _buildVariantDialog(
+      BuildContext context, DataGridRow row, DataGridCell dataCell) {
+    return Dialog(
+      alignment: Alignment.bottomCenter,
+      backgroundColor: Colors.transparent,
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height * 0.65,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        ),
+        padding: const EdgeInsets.all(16),
+        child: ProcurementBomDialog(
+          variantName: dataCell.value,
+          variantIndex: _dataGridRows.indexOf(row),
+          canEdit: canEdit,
+          isFromSubContracting: isFromSubContracting,
+        ),
+      ),
+    );
+  }
+
+  void _updateCellValue(DataGridRow row, DataGridCell dataCell, String value) {
+    int parsedValue = int.tryParse(value) ?? 0;
+    int rowIndex = _dataGridRows.indexOf(row);
+
+    _dataGridRows[rowIndex] = DataGridRow(
+      cells: row
+          .getCells()
+          .map((cell) => cell == dataCell
+              ? DataGridCell<int>(
+                  columnName: cell.columnName,
+                  value: parsedValue,
+                )
+              : cell)
+          .toList(),
+    );
+
+    recalculateWt(rowIndex);
+    onEdit();
+  }
+
+  TextStyle _getCellTextStyle(DataGridCell dataCell) {
+    return TextStyle(
+      decoration: dataCell.columnName == 'Variant Name'
+          ? TextDecoration.underline
+          : TextDecoration.none,
+      decorationColor: Colors.blue.shade900,
+      color: dataCell.columnName == 'Variant Name'
+          ? Colors.blue.shade900
+          : Colors.black,
     );
   }
 }
