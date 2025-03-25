@@ -6,6 +6,9 @@ import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:jewlease/core/routes/constant.dart';
 import 'package:jewlease/data/model/failure.dart';
+import 'package:jewlease/data/model/formula_mapping_model.dart';
+
+import '../../../providers/post_request.dart';
 
 class formulaProcedureRepository {
   final Dio _dio;
@@ -199,21 +202,11 @@ class formulaProcedureRepository {
     return {};
   }
 
-  Future<Map<String, dynamic>> addFormulaMapping(
-      Map<String, dynamic> requestBody) async {
-    // print("fomula procedure is $FormulaProcedureName");
-    try {
-      final response =
-          await _dio.get(url2 + '/FormulaProcedures/FormulaMapping',
-              data: jsonEncode(requestBody),
-              options: Options(
-                headers: {'Content-Type': 'application/json'},
-              ));
-      return response.data;
-      print("response formula Excel ${response.data}");
-    } catch (e) {
-      print("err response formula Excel ${e}");
-    }
-    return {};
+  Future<Either<Failure, String>> addFormulaMapping(
+      FormulaMappigModel config) async {
+    return postRequest(
+      endpoint: '$url2/FormulaProcedures/FormulaMapping/',
+      data: config.toJson(),
+    );
   }
 }

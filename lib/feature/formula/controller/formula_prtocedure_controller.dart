@@ -1,9 +1,12 @@
 // Define a provider to manage the state of the selected master type
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jewlease/core/utils/utils.dart';
+import 'package:jewlease/data/model/formula_mapping_model.dart';
 import 'package:jewlease/data/model/item_master_metal.dart';
 import 'package:jewlease/feature/formula/repository/formula_Procedue_repository.dart';
 
@@ -161,27 +164,28 @@ class formulaProcedureController extends StateNotifier<bool> {
     return {};
   }
 
-  Future<void> addFormulaMapping(Map<String,dynamic>reqstBody) async {
-    // try {
-    //   state = true;
-    //   final response =
-    //       await _formulaProcedureRepository.addFormulaMapping(reqBody);
-    //   state = false;
-    //
-    //   response.fold((l) => Utils.snackBar(l.message, context), (r) {
-    //     Utils.snackBar('New Range Masster Excel Addded', context);
-    //     context.pop();
-    //     null;
-    //   });
-    //   // Optionally update the state if necessary after submission
-    // } catch (e) {
-    //   state = false;
-    // }
-    // return null;
+  Future<void> addFormulaMapping(
+        FormulaMappigModel config,BuildContext context) async {
+    try {
+      state = true;
+
+      final response =
+      await _formulaProcedureRepository.addFormulaMapping(config);
+      state = false;
+      response.fold((l) => Utils.snackBar(l.message, context), (r) {
+        log('entered in the fold');
+
+        Utils.snackBar('Formula Mapping Added', context);
+        context.pop();
+        null;
+      });
+      // Optionally update the state if necessary after submission
+    } catch (e) {
+      log('entered in the error');
+
+      state = false;
+    }
   }
-
-
-
 }
 
 // Define a provider for the controller
