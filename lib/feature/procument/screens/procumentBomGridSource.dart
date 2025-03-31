@@ -1,10 +1,8 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
 
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jewlease/data/variables/variable.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 import '../../../widgets/search_dailog_widget.dart';
@@ -46,9 +44,11 @@ class procumentBomGridSource extends DataGridSource {
     return DataGridRow(
         cells: row.getCells().map((cell) {
       if (cell.columnName == "Avg Wt(Pcs)") {
-        return DataGridCell(columnName: cell.columnName, value: wt / pieces);
+        return DataGridCell<double>(
+            columnName: cell.columnName, value: wt / pieces);
       } else if (cell.columnName == "Amount") {
-        return DataGridCell(columnName: cell.columnName, value: wt * rate);
+        return DataGridCell<double>(
+            columnName: cell.columnName, value: wt * rate);
       } else
         return cell;
     }).toList());
@@ -61,7 +61,8 @@ class procumentBomGridSource extends DataGridSource {
     return DataGridRow(
         cells: row.getCells().map((cell) {
       if (cell.columnName == "Amount") {
-        return DataGridCell(columnName: cell.columnName, value: rate * wt);
+        return DataGridCell<double>(
+            columnName: cell.columnName, value: rate * wt);
       } else {
         return cell;
       }
@@ -77,14 +78,15 @@ class procumentBomGridSource extends DataGridSource {
     return DataGridRow(
         cells: row.getCells().map((cell) {
       if (cell.columnName == "Avg Wt(Pcs)") {
-        return DataGridCell(columnName: cell.columnName, value: wt / pieces);
+        return DataGridCell<double>(
+            columnName: cell.columnName, value: wt / pieces);
       } else {
         return cell;
       }
     }).toList());
   }
 
-  void updateAllData(int oldSummeryPieces) {
+  void updateAllData(double oldSummeryPieces) {
     double currentPieces = dataGridRows[0].getCells()[2].value;
 
     List<DataGridRow> newData = [];
@@ -93,21 +95,17 @@ class procumentBomGridSource extends DataGridSource {
       newData.add(DataGridRow(
           cells: dataGridRows[i].getCells().map((cell) {
         if (cell.columnName == "Pieces") {
-          return DataGridCell(
+          return DataGridCell<double>(
               columnName: cell.columnName,
               value: (cell.value / oldSummeryPieces) * currentPieces);
         } else if (cell.columnName == "Weight")
-          return DataGridCell(
+          return DataGridCell<double>(
               columnName: cell.columnName,
               value: (cell.value / oldSummeryPieces) * currentPieces);
         else if (cell.columnName == "Amount")
-          return DataGridCell(
+          return DataGridCell<double>(
               columnName: cell.columnName,
               value: (cell.value / oldSummeryPieces) * currentPieces);
-        // else if (cell.columnName == "Avg Wt(Pcs)")
-        //   return DataGridCell(
-        //       columnName: cell.columnName,
-        //       value: (cell.value / oldSummeryPieces) * currentPieces);
         return cell;
       }).toList()));
     }
@@ -117,16 +115,11 @@ class procumentBomGridSource extends DataGridSource {
   }
 
   // Method to recalculate all 'Wt' values
-  void recalculate(int rowIndex, int editatedCol, int lastSummeryPieces) {
+  void recalculate(int rowIndex, int editatedCol, double lastSummeryPieces) {
     if (rowIndex == 0) {
       updateAllData(lastSummeryPieces);
     } else {
       DataGridRow row = dataGridRows[rowIndex];
-      var x = row.getCells().firstWhere((c) => c.columnName == "Weight").value;
-      var y = row.getCells().firstWhere((c) => c.columnName == "Pieces").value;
-      var z =
-          row.getCells().firstWhere((c) => c.columnName == "Avg Wt(Pcs)").value;
-      print("editaed col $editatedCol $rowIndex");
       if (editatedCol == 2) {
         dataGridRows[rowIndex] = recalculatePieces(row);
       } else if (editatedCol == 3) {
@@ -134,51 +127,7 @@ class procumentBomGridSource extends DataGridSource {
       } else if (editatedCol == 4) {
         dataGridRows[rowIndex] = recalculateRate(row);
       }
-
-      // Recalculate W
       row = dataGridRows[rowIndex];
-      x = row.getCells().firstWhere((c) => c.columnName == "Weight").value;
-      y = row.getCells().firstWhere((c) => c.columnName == "Pieces").value;
-      z = row.getCells().firstWhere((c) => c.columnName == "Avg Wt(Pcs)").value;
-      print("final recalculate wt indexxxx $rowIndex $y $x $z");
-    }
-  }
-
-  void recalculateAmount() {
-    for (int i = 1; i < dataGridRows.length; i++) {
-      double wt = dataGridRows[i]
-                  .getCells()
-                  .where((cell) => cell.columnName == 'Weight')
-                  .first
-                  .value *
-              1.0 ??
-          0;
-      double rate = dataGridRows[i]
-                  .getCells()
-                  .where((cell) => cell.columnName == 'Rate')
-                  .first
-                  .value *
-              1.0 ??
-          0;
-      int pieces = max(
-          dataGridRows[i]
-                  .getCells()
-                  .where((cell) => cell.columnName == 'Pieces')
-                  .first
-                  .value
-                  .toInt() ??
-              1,
-          1);
-      print("amount1 ${rate * wt * pieces}");
-      dataGridRows[i] = DataGridRow(
-          cells: dataGridRows[i].getCells().map((cell) {
-        if (cell.columnName == 'Amount') {
-          return DataGridCell(
-              columnName: cell.columnName, value: rate * wt * pieces);
-        } else {
-          return cell;
-        }
-      }).toList());
     }
   }
 
@@ -332,38 +281,24 @@ class procumentBomGridSource extends DataGridSource {
                     Expanded(
                       child: TextField(
                         onSubmitted: (value) {
-
-                          double parsedValue = double.tryParse(value) ?? 0;
+                          double parsedValue = double.tryParse(value) ?? 0.0;
                           int rowIndex = dataGridRows.indexOf(row);
-
-                          bool isDiamond = dataGridRows[rowIndex]
-                              .getCells()[1]
-                              .value
-                              .contains("Diamond");
-                          print("is diamond $isDiamond $rowIndex");
-                          // if (isDiamond && dataCell.columnName == 'Weight')
-                          //   parsedValue = parsedValue * 0.2;
-
                           int cellIndex = dataGridRows[rowIndex]
                               .getCells()
                               .indexOf(dataCell);
-                          // Update the _rows list directly
 
-                          int lastSummerryPieces =
+                          double lastSummerryPieces =
                               dataGridRows[0].getCells()[2].value;
                           dataGridRows[rowIndex] = DataGridRow(cells: [
                             for (var cell in row.getCells())
                               if (cell.columnName == dataCell.columnName)
                                 DataGridCell(
                                     columnName: cell.columnName,
-
                                     value: parsedValue)
                               else
                                 cell
                           ]);
-
                           recalculate(rowIndex, cellIndex, lastSummerryPieces);
-                          // recalculateAmount();
                           onEdit();
                         },
                         controller: TextEditingController(

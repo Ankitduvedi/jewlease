@@ -19,7 +19,7 @@ class ProcurementVariantNotifier
   // Get an item from the list where the 'variant' key matches the given value
   Map<String, dynamic>? getItemByVariant(String variantValue) {
     return state.firstWhere(
-      (item) => item['Varient Name'] == variantValue,
+      (item) => item['Variant Name'] == variantValue,
       orElse: () => {},
     );
   }
@@ -27,13 +27,13 @@ class ProcurementVariantNotifier
   // Delete an item from the list where the 'variant' key matches the given value
   void deleteItemByVariant(String variantValue) {
     state =
-        state.where((item) => item['Varient Name'] != variantValue).toList();
+        state.where((item) => item['Variant Name'] != variantValue).toList();
   }
 
   // Update the variant based on the 'Varient Name'
   void updateVariant(String variantName, Map<String, dynamic> newValues) {
     state = state.map((item) {
-      if (item['Varient Name'] == variantName) {
+      if (item['Variant Name'] == variantName) {
         // Replace values in item with those from newValues
         Map<dynamic, dynamic> map = {...item, ...newValues};
         print("updated map: $map");

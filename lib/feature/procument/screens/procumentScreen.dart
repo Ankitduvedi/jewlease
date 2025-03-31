@@ -63,7 +63,7 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
 
       for (int i = 0; i < varientList!.length; i++) {
         List<dynamic> allFormulas = [];
-        String formulaName = "$i${varientList[i]["Varient Name"]}";
+        String formulaName = "$i${varientList[i]["Variant Name"]}";
         for (String formula in allFormualMap.keys) {
           if (formula.contains(formulaName)) {
             allFormulas.add(allFormualMap[formula]);
@@ -83,10 +83,10 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
       }
       // return false;
 
-      TransactionModel transaction = createTransaction(reqstBodeis);
-      String? transactionID = await ref
-          .read(TransactionControllerProvider.notifier)
-          .sentTransaction(transaction);
+      // TransactionModel transaction = createTransaction(reqstBodeis);
+      // String? transactionID = await ref
+      //     .read(TransactionControllerProvider.notifier)
+      //     .sentTransaction(transaction);
 
       Utils.snackBar("Varient Aadded", context);
       goRouter.go("/");
@@ -266,7 +266,7 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
       "varient": input["Varient"],
       "hsnSacCode": input["HSN - SAC CODE"],
       "lineOfBusiness": input["LINE OF BUSINESS"],
-      "bom": input["BOM"],
+      "bom data": input["BOM Data"],
       "operation": input["Operation"],
       "imageDetails": input["Image Details"],
       "formulaDetails": input["Formula Details"],

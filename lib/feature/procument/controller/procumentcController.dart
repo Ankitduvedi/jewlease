@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/data/model/bom_model.dart';
 
 import '../repository/procument_Repositoy.dart';
 
@@ -75,6 +76,18 @@ class ProcurementController extends StateNotifier<AsyncValue<void>> {
       state = const AsyncValue.data(null);
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
+    }
+  }
+
+  Future<List<BomRowModel>> fetchBom(String bomId) async {
+    state = const AsyncValue.loading();
+    try {
+      final response = await _repository.fetchBom(bomId);
+      return await response.map((row) => BomRowModel.fromJson(row)).toList();
+      state = const AsyncValue.data(null);
+    } catch (e, stackTrace) {
+      state = AsyncValue.error(e, stackTrace);
+      return [];
     }
   }
 }

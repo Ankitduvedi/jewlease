@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/data/model/bom_model.dart';
 import 'package:jewlease/feature/procument/controller/procumentBomProcController.dart';
 import 'package:jewlease/feature/procument/screens/procumentFloatingBar.dart';
 import 'package:jewlease/feature/procument/screens/procumentSummeryGridSource.dart';
@@ -23,8 +24,21 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
   final DataGridController _dataGridController = DataGridController();
   List<DataGridRow> _Procumentrows = [];
   late ProcumentDataGridSource _procumentdataGridSource;
+  List<String> procumentColumns = [
+    'Ref Document',
+    'Stock Code',
+    'Line No',
+    'Variant Name',
+    'Stock Status',
+    'Stone Wt',
+    'Pieces',
+    'Weight',
+    'Rate',
+    'Amount',
+    'Wastage'
+  ];
   Map<String, dynamic> procumentSummery = {
-    "Pieces": 0,
+    "Pieces": 0.0,
     "Wt": 0.0,
     "Metal Wt": 0.0,
     "Metal Amt": 0.0,
@@ -48,31 +62,24 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
     setState(() {});
   }
 
+  //done
   void _procumentSummery(Map<String, dynamic> updatedVarient) {
     setState(() {});
     try {
-      procumentSummery['Wt'] = 0;
-      procumentSummery['Total Amt'] = 0;
-      procumentSummery['Pieces'] = 0;
+      procumentSummery['Wt'] = 0.0;
+      procumentSummery['Total Amt'] = 0.0;
+      procumentSummery['Pieces'] = 0.0;
       procumentSummery["Stone Wt"] = 0.0;
       procumentSummery["Stone Amt"] = updatedVarient["Stone Pieces"] ?? 0.0;
-      print("updating procument summery");
 
       _Procumentrows.forEach((element) {
         element.getCells().forEach((cell) {
           if (cell.columnName == 'Weight') {
-            procumentSummery["Wt"] += cell.value.runtimeType == double
-                ? cell.value
-                : int.parse(cell.value.toString()) * 1.0;
+            procumentSummery["Wt"] += cell.value;
           } else if (cell.columnName == 'Amount') {
-            procumentSummery["Total Amt"] += cell.value.runtimeType == double
-                ? cell.value
-                : int.parse(cell.value.toString()) * 1.0;
+            procumentSummery["Total Amt"] += cell.value;
           } else if (cell.columnName == 'Stone Wt') {
-            print("stone wt runtype ${cell.value.runtimeType}");
-            procumentSummery["Stone Wt"] += cell.value.runtimeType == String
-                ? int.parse(cell.value)
-                : cell.value;
+            procumentSummery["Stone Wt"] += cell.value;
           } else if (cell.columnName == 'Pieces')
             procumentSummery['Pieces'] = cell.value;
         });
@@ -84,9 +91,12 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
     }
   }
 
+//done
   void _addNewRowWithItemGroup(Map<dynamic, dynamic> varient) {
     // print("varient $varient ${varient["BOM"]["data"][0][3]}");
     print("varient $varient");
+    List<dynamic> mapBomRows = varient!["BOM Data"];
+    BomRowModel bomSummeryRow = BomRowModel.fromJson(mapBomRows[0]);
     setState(() {
       _Procumentrows.add(
         DataGridRow(cells: [
@@ -94,29 +104,21 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
           DataGridCell<String>(columnName: 'Line No', value: ''),
           DataGridCell<int>(columnName: 'Stock Code', value: 0),
           DataGridCell<String>(
-              columnName: 'Variant Name', value: varient['Varient Name']),
+              columnName: 'Variant Name', value: varient['Variant Name']),
           DataGridCell<double>(columnName: 'Stock Status', value: 0.0),
           DataGridCell<String>(
               columnName: 'Stone Wt', value: varient["Stone Min Wt"]),
-          DataGridCell<String>(
-              columnName: 'Pieces', value: varient['Pieces'] ?? "1"),
-          DataGridCell<String>(
-              columnName: 'Weight',
-              value: varient["BOM"]["data"][0][3].toString()),
-          DataGridCell<String>(
-              columnName: 'Rate', value: varient["Std Buying Rate"]),
-          DataGridCell<String>(
-              columnName: 'Amount',
-              value: (int.parse(varient["BOM"]["data"][0][3].toString()) *
-                  int.parse(varient["Std Buying Rate"] ?? 0))
-                  .toString()),
+          DataGridCell<double>(
+              columnName: 'Pieces', value: bomSummeryRow.pieces),
+          DataGridCell<double>(
+              columnName: 'Weight', value: bomSummeryRow.weight),
+          DataGridCell<double>(columnName: 'Rate', value: bomSummeryRow.rate),
+          DataGridCell<double>(
+              columnName: 'Amount', value: bomSummeryRow.amount),
           DataGridCell<String>(columnName: 'Wastage', value: "0"),
         ]),
       );
       _procumentdataGridSource.updateDataGridSource();
-      setState(() {});
-      _procumentSummery({});
-      // _updateSummaryRow();
     });
   }
 
@@ -137,10 +139,6 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
   }
 
   void _updateSummaryRow() {
-    ///first update stored preocument vairent as update from text field
-    ///
-    ///
-    ///
     for (var row in _Procumentrows) {
       Map<String, dynamic> updatedVarient = Map.fromIterable(
         row.getCells(),
@@ -160,13 +158,13 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
     int varientIndex = updatedVarient["varientIndex"];
     _Procumentrows[varientIndex] = DataGridRow(
         cells: _Procumentrows[varientIndex].getCells().map((cell) {
-          if (updatedVarient[cell.columnName] != null)
-            return DataGridCell(
-                columnName: cell.columnName,
-                value: updatedVarient[cell.columnName]);
-          else
-            return cell;
-        }).toList());
+      if (updatedVarient[cell.columnName] != null)
+        return DataGridCell(
+            columnName: cell.columnName,
+            value: updatedVarient[cell.columnName]);
+      else
+        return cell;
+    }).toList());
     setState(() {});
     print("updated varient proc summery is $updatedVarient");
 
@@ -184,8 +182,7 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
   void showProcumentdialog(String endUrl, String value) {
     showDialog(
         context: context,
-        builder: (context) =>
-            AlertDialog(
+        builder: (context) => AlertDialog(
               content: ItemDataScreen(
                 title: '',
                 endUrl: endUrl,
@@ -202,17 +199,9 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
-    screenHeight = MediaQuery
-        .of(context)
-        .size
-        .height;
-    double gridWidth =
-        screenWidth * 0.6; // Set grid width to 50% of screen width
-    print("widht ${screenWidth} ${screenWidth * 0.9}");
+    screenWidth = MediaQuery.of(context).size.width;
+    screenHeight = MediaQuery.of(context).size.height;
+    double gridWidth = screenWidth * 0.6;
     final varientAction = ref.watch(BomProcProvider);
     if (varientAction['trigger'] == true) {
       print("varientAction $varientAction");
@@ -235,49 +224,44 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                   width: 40,
                 ),
                 InkWell(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) =>
-                            ItemTypeDialogScreen(
-                              title: 'Add Varient',
-                              endUrl: 'ItemMasterAndVariants/Style/Style/Variant',
-                              value: 'Varient Name',
-                              onOptionSelectd: (selectedValue) {
-                                print("selected value $selectedValue");
-                              },
-                              onSelectdRow: (selectedRow) {
-                                ref
-                                    .read(procurementVariantProvider.notifier)
-                                    .addItem(selectedRow);
-                                Map<dynamic, dynamic>? selected = ref
-                                    .read(procurementVariantProvider.notifier)
-                                    .getItemByVariant(selectedRow['Varient']);
-                                print(
-                                    "selected $selected selectedRow $selectedRow");
-                                _addNewRowWithItemGroup(selectedRow);
-                                setState(() {});
-                              },
-                            ),
-                      );
-                    },
-                    child: Container(
-                        width: screenWidth * 0.1,
-                        height: 35,
-                        decoration: BoxDecoration(
-                            color: Color(0xff003450),
-                            borderRadius: BorderRadius.circular(5)),
-                        child: Center(
-                            child: Text(
-                              "Add Varients",
-                              style: TextStyle(
-                                  color: Colors.white, fontSize: 18),
-                            )))),
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => ItemTypeDialogScreen(
+                        title: 'Add Varient',
+                        endUrl: 'ItemMasterAndVariants/Style/Style/Variant',
+                        value: 'Variant Name',
+                        onOptionSelectd: (selectedValue) async {
+                          print("selected value $selectedValue");
+                        },
+                        onSelectdRow: (selectedRow) async {
+                          ref
+                              .read(procurementVariantProvider.notifier)
+                              .addItem(selectedRow);
+                          _addNewRowWithItemGroup(selectedRow);
+                          setState(() {});
+                        },
+                      ),
+                    );
+                  },
+                  child: Container(
+                    width: screenWidth * 0.1,
+                    height: 35,
+                    decoration: BoxDecoration(
+                        color: Color(0xff003450),
+                        borderRadius: BorderRadius.circular(5)),
+                    child: Center(
+                      child: Text(
+                        "Add Varients",
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
             Container(
               height: screenHeight * 0.6,
-
               margin: EdgeInsets.only(top: 10, left: 0),
               // padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -308,9 +292,9 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                   child: Theme(
                       data: ThemeData(
                         cardColor:
-                        Colors.transparent, // Background color for DataGrid
+                            Colors.transparent, // Background color for DataGrid
                         shadowColor:
-                        Colors.transparent, // Removes shadow if any
+                            Colors.transparent, // Removes shadow if any
                       ),
                       child: SfDataGrid(
                         rowHeight: 40,
@@ -319,171 +303,37 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                         controller: _dataGridController,
                         footerFrozenColumnsCount: 1,
                         // Freeze the last column
-                        columns: <GridColumn>[
-                          GridColumn(
-                            columnName: 'Ref Document',
-                            width: gridWidth /
-                                5, // Adjust column width to fit 4-5 columns
-                            label: Container(
-                              decoration: BoxDecoration(
-                                  color: Color(0xFF003450),
-                                  border: Border(
-                                      right: BorderSide(color: Colors.grey)),
-                                  borderRadius: BorderRadius.only(
-                                      topRight: Radius.circular(0),
-                                      topLeft: Radius.circular(15))),
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Ref Document',
-                                style: TextStyle(color: Colors.white),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
-                          GridColumn(
-                            columnName: 'Stock Code',
-                            width: gridWidth / 5,
-                            label: Container(
-                              decoration: BoxDecoration(
-                                color: Color(0xFF003450),
-                                border: Border(
-                                    right: BorderSide(color: Colors.grey)),
-                              ),
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Stock Code',
-                                style: TextStyle(color: Colors.white),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
-                          GridColumn(
-                            columnName: 'Line No',
-                            width: gridWidth / 5,
-                            label: Container(
-                              color: Color(0xFF003450),
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Line No',
-                                style: TextStyle(color: Colors.white),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
-                          GridColumn(
-                            columnName: 'Variant Name',
-                            width: gridWidth / 5,
-                            label: Container(
-                              color: Color(0xFF003450),
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Variant Name',
-                                style: TextStyle(color: Colors.green),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
-                          GridColumn(
-                            columnName: 'Stock Status',
-                            width: gridWidth / 5,
-                            label: InkWell(
-                              onTap: () {
-                                Navigator.pop(context);
-                              },
-                              child: Container(
-                                color: Color(0xFF003450),
-                                alignment: Alignment.center,
-                                child: Text(
-                                  'Stock Status',
-                                  style: TextStyle(color: Colors.green),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ),
-                          ),
-                          GridColumn(
-                            columnName: 'Stone Wt',
-                            width: gridWidth / 5,
-                            label: Container(
-                              color: Color(0xFF003450),
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Stone Wt',
-                                style: TextStyle(color: Colors.white),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
-                          GridColumn(
-                            columnName: 'Pieces',
-                            width: gridWidth / 5,
-                            label: Container(
-                              color: Color(0xFF003450),
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Pieces',
-                                style: TextStyle(color: Colors.white),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
-                          GridColumn(
-                            columnName: 'Weight',
-                            width: gridWidth / 5,
-                            label: Container(
-                              color: Color(0xFF003450),
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Weight',
-                                style: TextStyle(color: Colors.white),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
-                          GridColumn(
-                            columnName: 'Rate',
-                            width: gridWidth / 5,
-                            label: Container(
-                              color: Color(0xFF003450),
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Rate',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                          ),
-                          GridColumn(
-                            columnName: 'Amount',
-                            width: gridWidth /
-                                5, // Adjust column width to fit 4-5 columns
-                            label: Container(
-                              color: Color(0xFF003450),
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Amount',
-                                style: TextStyle(color: Colors.white),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
-                          GridColumn(
-                            columnName: 'Wastage',
-                            width: gridWidth /
-                                5, // Adjust column width to fit 4-5 columns
-                            label: Container(
-                              decoration: BoxDecoration(
-                                  color: Color(0xFF003450),
-                                  borderRadius: BorderRadius.only(
-                                      topRight: Radius.circular(15))),
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Wastage',
-                                style: TextStyle(color: Colors.white),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
-                        ],
+                        columns: procumentColumns
+                            .map((columnName) => GridColumn(
+                                  columnName: columnName,
+                                  width: gridWidth /
+                                      5, // Adjust column width to fit 4-5 columns
+                                  label: Container(
+                                    decoration: BoxDecoration(
+                                        color: Color(0xFF003450),
+                                        border: Border(
+                                            right:
+                                                BorderSide(color: Colors.grey)),
+                                        borderRadius: BorderRadius.only(
+                                            topRight: procumentColumns
+                                                        .indexOf(columnName) ==
+                                                    procumentColumns.length - 1
+                                                ? Radius.circular(15)
+                                                : Radius.circular(0),
+                                            topLeft: procumentColumns
+                                                        .indexOf(columnName) ==
+                                                    0
+                                                ? Radius.circular(15)
+                                                : Radius.circular(0))),
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      columnName,
+                                      style: TextStyle(color: Colors.white),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ))
+                            .toList(),
                         gridLinesVisibility: GridLinesVisibility.both,
                         headerGridLinesVisibility: GridLinesVisibility.none,
                       )),
@@ -497,8 +347,8 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
       floatingActionButton: _Procumentrows.length == 0
           ? Container()
           : SummaryDetails(
-        Summery: procumentSummery,
-      ),
+              Summery: procumentSummery,
+            ),
     );
   }
 }
