@@ -244,13 +244,14 @@ class _InvantoryTransactionScreeenState
                                       InkWell(
                                         onTap: () {
                                           return;
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) => Dialog(
-                                              child: FormulaDialog(
-                                                  item.formulaDetails),
-                                            ),
-                                          );
+
+                                          // showDialog(
+                                          //   context: context,
+                                          //   builder: (context) => Dialog(
+                                          //     child: FormulaDialog(
+                                          //         item.formulaDetails),
+                                          //   ),
+                                          // );
                                         },
                                         child: Container(
                                           margin: const EdgeInsets.symmetric(

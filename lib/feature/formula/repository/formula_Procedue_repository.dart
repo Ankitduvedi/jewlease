@@ -202,11 +202,48 @@ class formulaProcedureRepository {
     return {};
   }
 
+  Future<Map<String, dynamic>> fetchFormulaByAttribute(
+      Map<String, dynamic> attributes) async {
+    try {
+      final response = await _dio.post(
+        url2 + '/FormulaProcedures/FindExcelDetail',
+        data: jsonEncode(attributes),
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+      return response.data;
+      print("response formula Excel ${response.data}");
+    } catch (e) {
+      print("err response formula Excel ${e}");
+    }
+    return {};
+  }
+
   Future<Either<Failure, String>> addFormulaMapping(
       FormulaMappigModel config) async {
     return postRequest(
       endpoint: '$url2/FormulaProcedures/FormulaMapping/',
       data: config.toJson(),
     );
+  }
+
+  Future<String?> getFormulaId(List<Map<String, dynamic>> formulaRows) async {
+    print("formulaSchema $formulaRows");
+    try {
+      final response = await _dio.post(
+        url2 + '/Formulaprocedures/Formuladetails',
+        data: jsonEncode(formulaRows),
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+      print("response ${response.data}");
+      return response.data["formulaId"];
+      print("response formula Excel ${response.data}");
+    } catch (e) {
+      print("err response formula Excel ${e}");
+    }
+    return null;
   }
 }

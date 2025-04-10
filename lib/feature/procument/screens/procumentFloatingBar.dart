@@ -115,7 +115,8 @@ class TotalHeader extends StatelessWidget {
                       borderRadius: BorderRadius.circular(15)),
                   child: Container(
                     height: screenHeight * 0.35,
-                    child: TransactionFormulaDataGrid("GPSKC21736776984049", 0),
+                    child:Container()
+                    // TransactionFormulaDataGrid("GPSKC21736776984049", 0),
                   ),
                 ),
               );

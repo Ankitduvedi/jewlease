@@ -271,7 +271,7 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                           selectedRow = _filteredItems.firstWhere(
                             (map) {
                               print("map $map");
-                              return map["Varient Name"].toString() ==
+                              return map["Variant Name"].toString() ==
                                   selectedItemID.toString();
                             },
                             orElse: () => {},

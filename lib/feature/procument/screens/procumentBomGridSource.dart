@@ -7,19 +7,6 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 import '../../../widgets/search_dailog_widget.dart';
 
-class Pieces {
-  double pieces;
-
-  Pieces(
-    this.pieces,
-  ) {
-    if (pieces < 0) {
-      print("Pieces cannot be negative");
-      pieces = 1;
-    }
-    print('pieces: $pieces');
-  }
-}
 
 class procumentBomGridSource extends DataGridSource {
   procumentBomGridSource(this.dataGridRows, this.onDelete, this.onEdit,
