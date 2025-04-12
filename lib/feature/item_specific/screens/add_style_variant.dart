@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/data/model/style_variant_model.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
-import 'package:jewlease/feature/vendor/screens/Bom&Operation.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
 import 'package:jewlease/providers/image_provider.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
@@ -18,10 +17,12 @@ import 'package:jewlease/widgets/read_only_textfield_widget.dart';
 import 'package:jewlease/widgets/search_dailog_widget.dart';
 import 'package:jewlease/widgets/text_field_widget.dart';
 
+import '../../procument/screens/procumentBomOprDialog.dart';
 import '../../vendor/controller/bom_controller.dart';
 
 class AddStyleVariantScreen extends ConsumerStatefulWidget {
   const AddStyleVariantScreen({super.key});
+
   @override
   ConsumerState<ConsumerStatefulWidget> createState() {
     return AddStyleVariantScreenState();
@@ -50,6 +51,7 @@ class AddStyleVariantScreenState extends ConsumerState<AddStyleVariantScreen> {
     'Item Attribute',
     'BOM & Operation',
   ];
+
   @override
   Widget build(BuildContext context) {
     final selectedContent = ref.watch(formSequenceProvider);
@@ -283,9 +285,13 @@ class AddStyleVariantScreenState extends ConsumerState<AddStyleVariantScreen> {
                               },
                             ],
                           )
-                        : const SingleChildScrollView(
-                            scrollDirection: Axis.vertical,
-                            child: MyDataGrid()),
+                        : procumentBomOprDialog(
+                          "",
+                          0,
+                          true,
+                          false,
+                          isHorizonatal: false,
+                        ),
               )),
             ],
           ),

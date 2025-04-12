@@ -1,0 +1,23 @@
+{
+  "VariantName": "DIA-BAN-BAN-GEN-18KT-1",
+  "CalcBOM": "DIA-BAN-BAN-GEN-18KT-1",
+  "CalcCF": 0.0,
+  "CalcMethod": "WT-CUS",
+  "CalcMethodVal": "METAL WT + FINDING WT",
+  "CalcQty": 26.6,
+  "CalculateFormula": "s",
+  "DepdBOM": null,
+  "DepdMethod": null,
+  "DepdMethodVal": 0.0,
+  "DepdQty": 0.0,
+  "LabourAmount": 0.0,
+  "LabourAmountLocal": 0.0,
+  "LabourRate": 0.0,
+  "MaxRateValue": 0.0,
+  "MinRateValue": 0.0,
+  "Operation": "MAKING CHARGES PER GRAM",
+  "OperationType": null,
+  "RateAsPerFormula": 0.0,
+  "RowStatus": 1,
+  "Rate_Edit_Ind": 0
+}

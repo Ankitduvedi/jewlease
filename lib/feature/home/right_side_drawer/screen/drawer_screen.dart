@@ -7,11 +7,15 @@ import 'package:jewlease/data/model/employee_and_location_model.dart';
 import 'package:jewlease/feature/auth/controller/auth_controller.dart';
 import 'package:jewlease/feature/home/right_side_drawer/controller/drawer_controller.dart';
 
+import '../../../formula/controller/meta_rate_controller.dart';
+
 class DrawerScreen extends ConsumerWidget {
   const DrawerScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final currentRate = ref.watch(metalRateProvider);
+    final controller = TextEditingController(text: currentRate.toStringAsFixed(2));
     final drawerState = ref.watch(drawerProvider);
     final drawerNotifier = ref.read(drawerProvider.notifier);
 
@@ -228,6 +232,34 @@ class DrawerScreen extends ConsumerWidget {
                         : const SizedBox(),
                   ],
                 ),
+
+                TextField(
+                  controller: controller,
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(
+                    labelText: 'Metal Rate',
+                    prefixIcon: Icon(Icons.monetization_on),
+                    suffixText: 'per gram',
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    // final rate = double.tryParse(value);
+                    // if (rate != null && rate >= 0) {
+                    //   ref.read(metalRateProvider.notifier).updateRate(rate);
+                    // }
+                  },
+                  onSubmitted: (value) {
+                    final rate = double.parse(value);
+                    print("rate is $rate");
+                    if (rate>0) {
+                      print("start update rate $rate");
+                      // Reset to valid value if input is invalid
+                      controller.text =
+                          ref.read(metalRateProvider).toStringAsFixed(2);
+                      ref.read(metalRateProvider.notifier).updateRate(rate);
+                    }
+                  },
+                )
               ],
             ),
           ),

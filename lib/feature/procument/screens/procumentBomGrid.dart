@@ -19,7 +19,6 @@ class ProcumentBomGrid extends StatefulWidget {
 }
 
 class _ProcumentBomGridState extends State<ProcumentBomGrid> {
-  @override
   List<String> bomColumn = [
     'Variant Name',
     'Item Group',
@@ -37,7 +36,8 @@ class _ProcumentBomGridState extends State<ProcumentBomGrid> {
   Widget build(BuildContext context) {
     screenWidth = MediaQuery.of(context).size.width;
     screenHeight = MediaQuery.of(context).size.height;
-    return  Flexible( // Allows the content to expand only as needed
+    return Flexible(
+      // Allows the content to expand only as needed
       fit: FlexFit.loose,
       child: ClipRRect(
         borderRadius:
@@ -46,8 +46,9 @@ class _ProcumentBomGridState extends State<ProcumentBomGrid> {
           // width: screenWidth * 0.42,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            // border: Border.fromBorderSide(BorderSide(color: Colors.red),
-            // ),
+            border:
+            Border.fromBorderSide(BorderSide(color: Colors.grey)),
+
           ),
           child: SfDataGrid(
             rowHeight: 35,

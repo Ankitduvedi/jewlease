@@ -12,6 +12,8 @@ import '../controllers/inventorySummery.dart';
 import 'inventoryDataSource.dart';
 import 'inventoryTopHeader.dart';
 
+//testing
+
 class InventoryManagementScreen extends ConsumerStatefulWidget {
   const InventoryManagementScreen({super.key});
 
@@ -120,8 +122,7 @@ class _InventoryManagementScreenState
       await ref.read(inventoryControllerProvider.notifier).fetchAllStocks(
           locationName: locationName,
           deprtmentName: departmentName,
-          isRawMaterial: isChecked["Raw Material"]??false
-      );
+          isRawMaterial: isChecked["Raw Material"] ?? false);
       List<InventoryItemModel> allStocks =
           ref.read(inventoryControllerProvider.notifier).inventoryItems;
 

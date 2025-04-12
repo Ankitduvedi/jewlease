@@ -168,9 +168,9 @@ class _BarCodeGenerationState extends ConsumerState<BarCodeGeneration> {
     super.initState();
     initializeBomOpr();
     _bomDataGridSource = procumentBomGridSource(
-        _bomRows, _removeRow, _updateBomSummaryRow, showFormula, true);
-    _oprDataGridSource = procumentBomGridSource(
-        _OpeationRows, _removeRow, _updateBomSummaryRow, showFormula, true);
+        _bomRows, _removeRow, _updateBomSummaryRow, showFormula, true, ref);
+    _oprDataGridSource = procumentBomGridSource(_OpeationRows, _removeRow,
+        _updateBomSummaryRow, showFormula, true, ref);
   }
 
   void initializeBomOpr() {

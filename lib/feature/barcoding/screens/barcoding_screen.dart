@@ -247,17 +247,17 @@ class _BarcodingScreenState extends ConsumerState<BarcodingScreen> {
   }
 }
 
-class ItemDetails extends StatefulWidget {
+class ItemDetails extends ConsumerStatefulWidget {
   const ItemDetails({super.key, required this.bom, required this.operation});
 
   final Map<String, dynamic> bom;
   final Map<String, dynamic> operation;
 
   @override
-  State<ItemDetails> createState() => _ItemDetailsState();
+  ConsumerState<ItemDetails> createState() => _ItemDetailsState();
 }
 
-class _ItemDetailsState extends State<ItemDetails> {
+class _ItemDetailsState extends ConsumerState<ItemDetails> {
   final DataGridController _dataGridController = DataGridController();
   late procumentBomGridSource _bomDataGridSource;
   late procumentBomGridSource _oprDataGridSource;
@@ -285,9 +285,9 @@ class _ItemDetailsState extends State<ItemDetails> {
     log("rebuilding item details");
     initializeBomOpr();
     _bomDataGridSource = procumentBomGridSource(
-        _bomRows, _removeRow, _updateBomSummaryRow, showFormula, true);
-    _oprDataGridSource = procumentBomGridSource(
-        _OpeationRows, _removeRow, _updateBomSummaryRow, showFormula, true);
+        _bomRows, _removeRow, _updateBomSummaryRow, showFormula, true, ref);
+    _oprDataGridSource = procumentBomGridSource(_OpeationRows, _removeRow,
+        _updateBomSummaryRow, showFormula, true, ref);
 
     super.initState();
   }

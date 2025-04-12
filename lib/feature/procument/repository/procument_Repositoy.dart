@@ -80,4 +80,20 @@ class ProcurementRepository {
       return "";
     }
   }
+
+  Future<List<Map<String, dynamic>>> fetchBom(String bomId) async {
+    try {
+      final response = await _dio.get(
+        "$url2/ItemMasterAndVariants/Style/Style/Variant/$bomId",
+        options: Options(
+          headers: {"Content-Type": "application/json"},
+        ),
+      );
+      final data = jsonDecode(response.data);
+      return data;
+    } catch (e) {
+      print("error is $e");
+      return [];
+    }
+  }
 }

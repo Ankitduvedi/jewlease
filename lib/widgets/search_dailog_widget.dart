@@ -267,11 +267,11 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                           },
                           orElse: () => {},
                         );
-                        if (widget.title == "Add Varient") {
+                        if (widget.title == "Add Variant") {
                           selectedRow = _filteredItems.firstWhere(
                             (map) {
                               print("map $map");
-                              return map["Varient Name"].toString() ==
+                              return map["Variant Name"].toString() ==
                                   selectedItemID.toString();
                             },
                             orElse: () => {},

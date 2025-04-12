@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/data/model/formula_model.dart';
 import 'package:jewlease/feature/item_configuration/controller/item_configuration_controller.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
@@ -183,7 +184,7 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
     await Future.delayed(
         const Duration(seconds: 1)); // Allow time for JS to load
     List<DataGridRow> datagridRows = outwardRows;
-    List<List<dynamic>> newlist = [];
+    List<FomulaRowModel> newlist = [];
 
     int lastEditedRow = -1;
     int lastEditedColumn = -1;
@@ -206,10 +207,34 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
       for (int j = 0; j < lastEditedColumn + 1; j++) {
         row.add(datagridRows[i].getCells()[j].value ?? "");
       }
+      print("4 ${row[4]}");
+      FomulaRowModel newRow = FomulaRowModel(
+          editableInd: int.parse(row[6]),
+          hideDefaultValueInd: int.parse(row[7]),
+          attribTypeAndAttribId: 0,
+          maxRateValue: 0,
+          minRateValue: 0,
+          mrpInd: 0,
+          rangeDtl: null,
+          rowDescription: row[1],
+          rowExpression: row[4],
+          rowExpressionId: i,
+          rowExpressionValue: "0",
+          rowNo: i,
+          rowStatus: row[7],
+          rowType: row[1],
+          rowValue: 0,
+          validateExpression: "",
+          variantId: 0,
+          visibleInd: int.parse(row[7]),
+          rateAsPerFormula: 0,
+          id: i,
+          dataType: row[2]);
       if (row.length != 0) {
-        newlist.add(row);
+        newlist.add(newRow);
       }
     }
+
     Map<String, dynamic> excelReqBody = {
       "procedureType": procedureTy.text,
       "formulaProcedureName": formulaProcdureNa.text,
@@ -218,30 +243,14 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
       "minRangeType": minimumValue.text,
       "maximumValueBasedOn": maxValue.text,
       "maxRangeType": maxRangeTy.text,
-      "excelDetail": {
-        "sheetName": formulaProcdureNa.text,
-        "headers": [
-          'Row',
-          'Description',
-          'Data Type',
-          'Row Type',
-          'Formula',
-          'Range Value',
-          'Editable',
-          'Visible',
-          'Round Off',
-          'Account Name',
-        ],
-        "datagridRows": newlist
-      }
+      "excelDetail": newlist.map((formula) => formula.toJson()).toList()
     };
-    print("Req body is $excelReqBody");
+    // Utils.printJsonFormat(excelReqBody);
 
     ref
         .read(formulaProcedureControllerProvider.notifier)
         .addFormulaExcel(excelReqBody, context);
 
-    print("datagridRows is3 $newlist");
   }
 
   Map<String, String> excelMap = {

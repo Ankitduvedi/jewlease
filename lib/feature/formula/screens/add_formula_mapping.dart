@@ -1,17 +1,18 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jewlease/data/model/item_master_metal.dart';
+import 'package:jewlease/data/model/formula_mapping_model.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
-import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
+import 'package:jewlease/widgets/app_bar_buttons.dart';
 import 'package:jewlease/widgets/drop_down_text_field.dart';
 import 'package:jewlease/widgets/read_only_textfield_widget.dart';
 import 'package:jewlease/widgets/search_dailog_widget.dart';
-import 'package:jewlease/widgets/text_field_widget.dart';
+
+import '../controller/formula_prtocedure_controller.dart';
 
 class AddFormulaMappingScreen extends ConsumerStatefulWidget {
   const AddFormulaMappingScreen({super.key});
+
   @override
   ConsumerState<ConsumerStatefulWidget> createState() {
     return AddFormulaMappingScreenState();
@@ -33,6 +34,11 @@ class AddFormulaMappingScreenState
   final List<String> content = [
     'Parent Form',
   ];
+  String attributeValue = "";
+  String attributeType = "";
+  String  operaion = "";
+  String operationType = "";
+
   @override
   Widget build(BuildContext context) {
     final isChecked = ref.watch(chechkBoxSelectionProvider);
@@ -44,21 +50,23 @@ class AddFormulaMappingScreenState
       persistentFooterButtons: [
         ElevatedButton(
           onPressed: () {
-            final config = ItemMasterMetal(
-                metalCode: setCode.text,
-                exclusiveIndicator: isChecked['Exclusive Indicator'] ?? false,
-                description: description.text,
-                rowStatus: dropDownValue['Row Status'] ?? 'Active',
-                createdDate: DateTime.timestamp(),
-                updateDate: DateTime.timestamp(),
-                attributeType: 'HSN - SAC CODE',
-                attributeValue: textFieldvalues['HSN - SAC CODE']!);
-
-            log(config.toJson().toString());
-
+            FormulaMappigModel config = FormulaMappigModel(
+                procedureType: dropDownValue['Procedure Type']!,
+                transactionType: textFieldvalues["Transaction Type"]!,
+                documentType: textFieldvalues['Document Type']!,
+                transactionCategory: dropDownValue['Trans Category']!,
+                partyName: "",
+                variantName: "",
+                itemGroup: dropDownValue["Item Group"]!,
+                attributeType: attributeType,
+                attributeValue: attributeValue,
+                operation: operaion,
+                operationType: operationType,
+                procedureName: textFieldvalues['Procedure Name']??"",
+                transType: "");
             ref
-                .read(itemSpecificControllerProvider.notifier)
-                .submitMetalItemConfiguration(config, context, masterType[1]!);
+                .read(formulaProcedureControllerProvider.notifier)
+                .addFormulaMapping(config, context);
           },
           style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.fromLTRB(50, 20, 50, 20),
@@ -218,10 +226,16 @@ class AddFormulaMappingScreenState
           onIconPressed: () {
             showDialog(
               context: context,
-              builder: (context) => const ItemTypeDialogScreen(
+              builder: (context) => ItemTypeDialogScreen(
                 title: 'Attribute Code',
                 endUrl: 'AllAttribute/',
                 value: 'AttributeCode',
+                onSelectdRow: (selectedRow) {
+                  setState(() {
+                    attributeType = selectedRow["AttributeType"];
+                    attributeValue = selectedRow["AttributeCode"];
+                  });
+                },
               ),
             );
           },
@@ -233,10 +247,17 @@ class AddFormulaMappingScreenState
           onIconPressed: () {
             showDialog(
               context: context,
-              builder: (context) => const ItemTypeDialogScreen(
+              builder: (context) =>  ItemTypeDialogScreen(
                 title: 'Operation',
                 endUrl: 'Global/operations/',
                 value: 'OPERATION_NAME',
+                onSelectdRow: (selectedRow) {
+                  setState(() {
+                    operaion= selectedRow["OPERATION_NAME"];
+                    operationType = selectedRow["OPERATION_TYPE"];
+                  });
+
+                },
               ),
             );
           },
@@ -255,6 +276,22 @@ class AddFormulaMappingScreenState
             'Ghantan',
           ],
           labelText: 'Trans Category',
+        ),
+        ReadOnlyTextFieldWidget(
+          hintText:
+              textFieldvalues['Procedure Name'] ?? 'Formula Procedure Name',
+          labelText: 'Procedure Name',
+          icon: Icons.search,
+          onIconPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) => const ItemTypeDialogScreen(
+                title: 'Procedure Name',
+                endUrl: 'FormulaProcedures/table',
+                value: 'Formula Procedure Name',
+              ),
+            );
+          },
         ),
       ],
     );

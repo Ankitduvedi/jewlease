@@ -1,9 +1,16 @@
+import 'dart:convert';
+
 import 'package:another_flushbar/flushbar.dart';
 import 'package:another_flushbar/flushbar_route.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class Utils {
+  static void printJsonFormat(Map<String,dynamic>json) {
+    final jsonString = JsonEncoder.withIndent('  ').convert(json);
+    print("json schema $jsonString");
+  }
+
   static fieldFocusChange(
       BuildContext context, FocusNode current, FocusNode nextFocus) {
     current.unfocus();
