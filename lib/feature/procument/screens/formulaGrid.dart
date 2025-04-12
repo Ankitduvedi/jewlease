@@ -5,6 +5,7 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 import '../../../main.dart';
 import '../../formula/controller/formula_prtocedure_controller.dart';
+import '../../formula/controller/meta_rate_controller.dart';
 import '../../vendor/controller/procumentVendor_controller.dart';
 import '../controller/procumentFormualaBomController.dart';
 import '../controller/procumentFormulaController.dart';
@@ -30,6 +31,8 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
   List<String> formulas = [];
   List<FomulaRowModel> formulaExcel = [];
   Map<dynamic, dynamic> rangeExcelData = {};
+  late int selectedBomRowIndex;
+
   List<String> formulaGridHeaders = [
     'Row No',
     'Description',
@@ -43,6 +46,7 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
   @override
   void initState() {
     // fetchVarientAttributes();
+    selectedBomRowIndex = ref.read(showFormulaProvider);
     super.initState();
     _formulaGridSource = formulaGridSource(_rows, _removeRow, _updateSummaryRow,
         formulaExcel, [], rangeExcelData, varientAttribute);
@@ -61,52 +65,53 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
   }
 
   void _updateSummaryRow(List<DataGridRow> newRows) {
-    print("updating summary row");
-
-    _rows = newRows;
-
-    double updatedMetalRate = _rows[0]
-        .getCells()
-        .where((cell) => cell.columnName == 'Row Value')
-        .first
-        .value;
-
-    ref.read(formulaBomOprProvider.notifier).updateAction({
-      "data": {
-        "Rate": updatedMetalRate,
-        "varientName": "${widget.varientName}",
-        "varientIndex": "${widget.varientIndex}"
+    try {
+      _rows = newRows;
+      String formulaName = "${widget.varientName}_${selectedBomRowIndex}";
+      print("formulaName $formulaName");
+      Map<String, FormulaModel> allFormula =
+          ref.read(allVariantFormulasProvider2);
+      FormulaModel? formulaModel;
+      for (String formulaKeys in allFormula.keys) {
+        if (formulaKeys.contains(formulaName)) {
+          formulaModel = allFormula[formulaKeys];
+        }
       }
-    }, true);
-    List<dynamic> formula_rows = [];
-    for (int i = 0; i < _rows.length; i++) {
-      List<dynamic> rowValues = [];
-      for (var cell in _rows[i].getCells()) {
-        rowValues.add(cell.value);
+      if (formulaModel == null) return;
+      if (!formulaModel.isUpdated) formulaModel.isUpdated = true;
+      for (var row in newRows) {
+        int index = newRows.indexOf(row);
+        formulaModel.formulaRows[index].rowValue = row
+            .getCells()
+            .firstWhere((cell) => cell.columnName == "Row Value")
+            .value;
       }
-      formula_rows.add(rowValues);
+      print("updating summary rowxcc");
+      ref
+          .read(allVariantFormulasProvider2.notifier)
+          .update(formulaName, formulaModel);
+
+      double updatedMetalRate = formulaModel.formulaRows
+          .firstWhere((row) => row.rowType == "MEATAL RATE")
+          .rowValue;
+      print("updated metal rate is $updatedMetalRate");
+
+      ref.read(formulaBomOprProvider.notifier).updateAction({
+        "data": {
+          "Rate": updatedMetalRate,
+          "varientName": "${widget.varientName}",
+          "varientIndex": "${widget.varientIndex}"
+        }
+      }, true);
+    } catch (e) {
+      print("error is $e");
     }
-    int selectedBomRow = ref.read(showFormulaProvider);
-
-    //<------------------add formula rows to the varientAllFormulaProvider---------------->
-    ref.read(varientAllFormulaProvider.notifier).update(
-        "${widget.varientIndex}${widget.varientName}${selectedBomRow}",
-        formula_rows);
-
-    // ref.read(formulaBomOprProvider.notifier).updateAction({
-    //   "data": {
-    //     "Rate": updatedMetalRate,
-    //     "varientName": "${widget.varientName}",
-    //     "varientIndex": "${widget.varientIndex}"
-    //   }
-    // }, false);
   }
 
   void _initializeRows() async {
-    int selectedBomRow = ref.read(showFormulaProvider);
     Map<String, FormulaModel> allFormula =
         ref.read(allVariantFormulasProvider2);
-    String formulaName = "${widget.varientName}_${selectedBomRow}";
+    String formulaName = "${widget.varientName}_${selectedBomRowIndex}";
     FormulaModel? formula;
     for (String formulaKeys in allFormula.keys) {
       if (formulaKeys.contains(formulaName)) {
@@ -114,33 +119,61 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
       }
     }
     if (formula == null) return;
-    rangeExcelData = await ref
-        .read(formulaProcedureControllerProvider.notifier)
-        .fetchRangeMasterExcel('15 jan', context);
+
     for (int i = 0; i < formula.formulaRows.length; i++) {
+      FomulaRowModel formulaRow = formula.formulaRows[i];
+      if (formulaRow.dataType == "Range") {
+        String rangeKey = "15 jan";
+        // formulaRow.rowExpression;
+        Map<dynamic, dynamic> rangeValue = await ref
+            .read(formulaProcedureControllerProvider.notifier)
+            .fetchRangeMasterExcel(rangeKey, context);
+        rangeExcelData[rangeKey] = rangeValue;
+      }
       _rows.add(
         DataGridRow(cells: [
-          DataGridCell<int>(
-              columnName: 'Row No', value: formula.formulaRows[i].rowNo),
+          DataGridCell<int>(columnName: 'Row No', value: formulaRow.rowNo),
           DataGridCell<String>(
-              columnName: 'Description ',
-              value: formula.formulaRows[i].rowDescription),
+              columnName: 'Description ', value: formulaRow.rowDescription),
           DataGridCell<String>(
             columnName: 'Row Type',
-            value: formula.formulaRows[i].rowType,
+            value: formulaRow.rowType,
           ),
           DataGridCell<String>(
-              columnName: 'Data Type', value: formula.formulaRows[i].dataType),
+              columnName: 'Data Type', value: formulaRow.dataType),
           DataGridCell<double>(
-              columnName: 'Row Value', value: formula.formulaRows[i].rowValue),
-          DataGridCell<double>(columnName: 'Range', value: 0),
+            columnName: 'Row Value',
+            value: assignMetalRate(formulaRow.rowType, formulaRow.rowValue),
+          ),
+          DataGridCell<String>(
+              columnName: 'Range',
+              value: formulaRow.dataType == "Range"
+                  ? formulaRow.rowExpression
+                  : "0"),
         ]),
       );
     }
+
     formulaExcel = formula.formulaRows;
     _formulaGridSource = formulaGridSource(_rows, _removeRow, _updateSummaryRow,
         formulaExcel, formulaGridHeaders, rangeExcelData, varientAttribute);
     setState(() {});
+  }
+
+  double assignMetalRate(String rowType, double rowValue) {
+    print("rowType is $rowType");
+    final metalRate = ref.watch(metalRateProvider);
+    if (rowType == "MEATAL RATE") {
+      return metalRate;
+    } else if (rowType == "METAL FINENESS") {
+      return assignMetalFiness();
+    } else {
+      return rowValue;
+    }
+  }
+
+  double assignMetalFiness() {
+    return 0.998;
   }
 
   @override

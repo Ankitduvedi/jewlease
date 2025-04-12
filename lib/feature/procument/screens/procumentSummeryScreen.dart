@@ -95,7 +95,9 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
     }
   }
 
-  void fetchFormulas(Map<String, dynamic> variant,) async {
+  void fetchFormulas(
+    Map<String, dynamic> variant,
+  ) async {
     String variantName = variant['Variant Name'];
     List<FormulaModel> bomFormulas = [];
 
@@ -104,10 +106,7 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
         .map((row) => BomRowModel.fromJson(row as Map<String, dynamic>))
         .toList();
 
-    Map<String, dynamic> attributes =
-
-
-    {
+    Map<String, dynamic> attributes = {
       "procedureType": "Transaction",
       "transactionType": "STONE ASSORTMENT",
       "documentType": "TRANSFER OUTWARD ( DEPARTMENT )",
@@ -122,7 +121,6 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
       "transType": ""
     };
 
-
     final data = await ref
         .read(formulaProcedureControllerProvider.notifier)
         .fetchFormulaByAttribute(attributes, context);
@@ -132,10 +130,10 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
       List<dynamic> rows = data["data"]["excelDetail"];
       List<FomulaRowModel> formulaRows = rows
           .map((formula) =>
-          FomulaRowModel.fromJson2(formula as Map<String, dynamic>))
+              FomulaRowModel.fromJson2(formula as Map<String, dynamic>))
           .toList();
-      FormulaModel formulaModel =
-      FormulaModel(formulaId: "", formulaRows: formulaRows);
+      FormulaModel formulaModel = FormulaModel(
+          formulaId: "", formulaRows: formulaRows, isUpdated: false);
       bomFormulas.add(formulaModel);
       ref
           .read(allVariantFormulasProvider2.notifier)
@@ -213,13 +211,13 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
     int varientIndex = updatedVarient["varientIndex"];
     _Procumentrows[varientIndex] = DataGridRow(
         cells: _Procumentrows[varientIndex].getCells().map((cell) {
-          if (updatedVarient[cell.columnName] != null)
-            return DataGridCell(
-                columnName: cell.columnName,
-                value: updatedVarient[cell.columnName]);
-          else
-            return cell;
-        }).toList());
+      if (updatedVarient[cell.columnName] != null)
+        return DataGridCell(
+            columnName: cell.columnName,
+            value: updatedVarient[cell.columnName]);
+      else
+        return cell;
+    }).toList());
     setState(() {});
     print("updated varient proc summery is $updatedVarient");
 
@@ -237,8 +235,7 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
   void showProcumentdialog(String endUrl, String value) {
     showDialog(
         context: context,
-        builder: (context) =>
-            AlertDialog(
+        builder: (context) => AlertDialog(
               content: ItemDataScreen(
                 title: '',
                 endUrl: endUrl,
@@ -255,14 +252,8 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
-    screenHeight = MediaQuery
-        .of(context)
-        .size
-        .height;
+    screenWidth = MediaQuery.of(context).size.width;
+    screenHeight = MediaQuery.of(context).size.height;
     double gridWidth = screenWidth * 0.6;
     final varientAction = ref.watch(BomProcProvider);
     if (varientAction['trigger'] == true) {
@@ -289,25 +280,23 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                   onTap: () {
                     showDialog(
                       context: context,
-                      builder: (context) =>
-                          ItemTypeDialogScreen(
-                            title: 'Add Variant',
-                            endUrl: 'ItemMasterAndVariants/Style/Style/Variant',
-                            value: 'Variant Name',
-                            onOptionSelectd: (selectedValue) async {
-                              print("selected value $selectedValue");
-                            },
-
-                            onSelectdRow: (selectedRow) async {
-                              print("selected Row $selectedRow");
-                              ref
-                                  .read(procurementVariantProvider.notifier)
-                                  .addItem(selectedRow);
-                              fetchFormulas(selectedRow);
-                              _addNewRowWithItemGroup(selectedRow);
-                              setState(() {});
-                            },
-                          ),
+                      builder: (context) => ItemTypeDialogScreen(
+                        title: 'Add Variant',
+                        endUrl: 'ItemMasterAndVariants/Style/Style/Variant',
+                        value: 'Variant Name',
+                        onOptionSelectd: (selectedValue) async {
+                          print("selected value $selectedValue");
+                        },
+                        onSelectdRow: (selectedRow) async {
+                          print("selected Row $selectedRow");
+                          ref
+                              .read(procurementVariantProvider.notifier)
+                              .addItem(selectedRow);
+                          fetchFormulas(selectedRow);
+                          _addNewRowWithItemGroup(selectedRow);
+                          setState(() {});
+                        },
+                      ),
                     );
                   },
                   child: Container(
@@ -358,9 +347,9 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                   child: Theme(
                       data: ThemeData(
                         cardColor:
-                        Colors.transparent, // Background color for DataGrid
+                            Colors.transparent, // Background color for DataGrid
                         shadowColor:
-                        Colors.transparent, // Removes shadow if any
+                            Colors.transparent, // Removes shadow if any
                       ),
                       child: SfDataGrid(
                         rowHeight: 40,
@@ -370,36 +359,35 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                         footerFrozenColumnsCount: 1,
                         // Freeze the last column
                         columns: procumentColumns
-                            .map((columnName) =>
-                            GridColumn(
-                              columnName: columnName,
-                              width: gridWidth /
-                                  5, // Adjust column width to fit 4-5 columns
-                              label: Container(
-                                decoration: BoxDecoration(
-                                    color: Color(0xFF003450),
-                                    border: Border(
-                                        right:
-                                        BorderSide(color: Colors.grey)),
-                                    borderRadius: BorderRadius.only(
-                                        topRight: procumentColumns
-                                            .indexOf(columnName) ==
-                                            procumentColumns.length - 1
-                                            ? Radius.circular(15)
-                                            : Radius.circular(0),
-                                        topLeft: procumentColumns
-                                            .indexOf(columnName) ==
-                                            0
-                                            ? Radius.circular(15)
-                                            : Radius.circular(0))),
-                                alignment: Alignment.center,
-                                child: Text(
-                                  columnName,
-                                  style: TextStyle(color: Colors.white),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ))
+                            .map((columnName) => GridColumn(
+                                  columnName: columnName,
+                                  width: gridWidth /
+                                      5, // Adjust column width to fit 4-5 columns
+                                  label: Container(
+                                    decoration: BoxDecoration(
+                                        color: Color(0xFF003450),
+                                        border: Border(
+                                            right:
+                                                BorderSide(color: Colors.grey)),
+                                        borderRadius: BorderRadius.only(
+                                            topRight: procumentColumns
+                                                        .indexOf(columnName) ==
+                                                    procumentColumns.length - 1
+                                                ? Radius.circular(15)
+                                                : Radius.circular(0),
+                                            topLeft: procumentColumns
+                                                        .indexOf(columnName) ==
+                                                    0
+                                                ? Radius.circular(15)
+                                                : Radius.circular(0))),
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      columnName,
+                                      style: TextStyle(color: Colors.white),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ))
                             .toList(),
                         gridLinesVisibility: GridLinesVisibility.both,
                         headerGridLinesVisibility: GridLinesVisibility.none,
@@ -414,8 +402,8 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
       floatingActionButton: _Procumentrows.length == 0
           ? Container()
           : SummaryDetails(
-        Summery: procumentSummery,
-      ),
+              Summery: procumentSummery,
+            ),
     );
   }
 }

@@ -11,6 +11,7 @@ import 'package:jewlease/feature/formula/controller/formula_prtocedure_controlle
 import 'package:jewlease/main.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 
+import '../../../core/routes/go_router.dart';
 import '../../home/right_side_drawer/controller/drawer_controller.dart';
 import '../../transaction/controller/transaction_controller.dart';
 import '../../vendor/controller/procumentVendor_controller.dart';
@@ -48,19 +49,26 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
 
   String? selectedValue = 'Variant';
 
-  Future<Map<String, dynamic>> updateBomFormula(
+  Future<Map<String, dynamic>?> updateBomFormula(
       Map<String, dynamic> variant) async {
     Map<dynamic, dynamic> allFormualMap = ref.read(allVariantFormulasProvider2);
+
     List<FormulaModel> bomRowsFormula = [];
     String formulaName = "${variant["Variant Name"]}";
-    for (String formulaKeys in allFormualMap.keys) {
-      if (formulaKeys.contains(formulaName)) {
-        FormulaModel formulaModel = allFormualMap[formulaKeys];
+    for (String formulaKey in allFormualMap.keys) {
+      if (formulaKey.contains(formulaName)) {
+        FormulaModel formulaModel = allFormualMap[formulaKey];
+        if (!formulaModel.isUpdated) {
+          Utils.snackBar(
+              "Rate is not added in variant ${variant["Variant Name"]}",
+              context);
+          return null;
+        }
         bomRowsFormula.add(formulaModel);
       }
     }
+    List<dynamic> bomDataRows = variant["Bom Data"];
 
-    List<dynamic> bomDataRows = variant["BOM Data"];
     for (int i = 0; i < bomDataRows.length; i++) {
       bomDataRows[i]["formulaId"] = await ref
           .read(formulaProcedureControllerProvider.notifier)
@@ -90,25 +98,34 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
 
       List<Map<String, dynamic>> reqstBodeis = [];
 
+      if (varientList == null) return false;
+
       for (int i = 0; i < varientList!.length; i++) {
-        varientList[i] = await updateBomFormula(varientList[i]);
+        Map<String,dynamic>?updatedVariant = await updateBomFormula(varientList[i]);
+        if(updatedVariant==null){
+          return false;
+        }
+        else {
+          varientList[i]=updatedVariant;
+        }
         varientList[i] = await addVariantFormula(varientList[i]);
         Map<String, dynamic> reuestBody = convertToGRNSchema(varientList[i]);
 
         // print("req body is $jsonString");
+
         reqstBodeis.add(reuestBody);
       }
-      // return false;
 
       TransactionModel transaction = createTransaction(reqstBodeis);
-      final jsonString = JsonEncoder.withIndent('  ').convert(transaction.toJson());
+      final jsonString =
+          JsonEncoder.withIndent('  ').convert(transaction.toJson());
       print("transaction schema $jsonString");
       String? transactionID = await ref
           .read(TransactionControllerProvider.notifier)
           .sentTransaction(transaction);
 
-      // Utils.snackBar("Varient Aadded", context);
-      // goRouter.go("/");
+      Utils.snackBar("Variant Aadded", context);
+      goRouter.go("/");
       return true;
     } catch (e) {
       Utils.snackBar(e.toString(), context);

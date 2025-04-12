@@ -6,9 +6,11 @@ import 'dart:convert';
 
 class FormulaModel {
   final String formulaId;
+   bool isUpdated;
   final List<FomulaRowModel> formulaRows;
 
   FormulaModel({
+    required this.isUpdated,
     required this.formulaId,
     required this.formulaRows,
   });
@@ -17,8 +19,10 @@ class FormulaModel {
   FormulaModel copyWith({
     String? formulaId,
     List<FomulaRowModel>? formulaRows,
+    bool? isUpdated
   }) {
     return FormulaModel(
+      isUpdated: isUpdated?? this.isUpdated,
       formulaId: formulaId ?? this.formulaId,
       formulaRows: formulaRows ?? this.formulaRows,
     );

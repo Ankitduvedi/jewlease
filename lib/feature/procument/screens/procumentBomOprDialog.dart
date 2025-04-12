@@ -299,26 +299,20 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
 
   void updateBomFromFormula(Map<dynamic, dynamic> data) {
     int updatedRowIndex = ref.read(showFormulaProvider);
-    double rate = _bomRows[updatedRowIndex]
-        .getCells()
-        .where((cell) => cell.columnName == 'Rate')
-        .first
-        .value;
     double weight = _bomRows[updatedRowIndex]
         .getCells()
         .where((cell) => cell.columnName == 'Weight')
         .first
         .value;
-    print("updated Amount ${rate * weight}");
+    double updatedRate = data["data"]["Rate"];
     _bomRows[updatedRowIndex] = DataGridRow(
         cells: _bomRows[updatedRowIndex].getCells().map((cell) {
       if (cell.columnName == 'Rate')
         return DataGridCell<double>(
-            columnName: 'Rate'.toString(), value: data["data"]["Rate"]);
+            columnName: 'Rate'.toString(), value: updatedRate);
       else if (cell.columnName == 'Amount') {
         return DataGridCell<double>(
-            columnName: 'Amount'.toString(),
-            value: data["data"]["Rate"] * weight);
+            columnName: 'Amount'.toString(), value: updatedRate * weight);
       } else
         return cell;
     }).toList());
@@ -550,7 +544,9 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
         DataGridCell<double>(
             columnName: 'Pieces', value: (_bomRows[0].getCells()[2].value)),
         DataGridCell<double>(columnName: 'Weight', value: totalWt),
-        DataGridCell<double>(columnName: 'Rate', value: totalRate),
+        DataGridCell<double>(
+            columnName: 'Rate',
+            value: totalAmount / _bomRows[0].getCells()[2].value),
         DataGridCell<double>(columnName: 'Avg Wt(Pcs)', value: totalAVg),
         DataGridCell<double>(columnName: 'Amount', value: totalAmount),
         DataGridCell<String>(columnName: 'Sp Char', value: ''),
@@ -586,7 +582,7 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
         return cell.value;
       }).toList());
     }
-    //<------------------updatin the varient after updating bom summery row------------------>
+    //<------------------updating the varient after updating bom summery row------------------>
     Map<String, dynamic> updatedVarient = Map.fromIterable(
       _bomRows[0].getCells(),
       key: (cell) => "${cell.columnName}",

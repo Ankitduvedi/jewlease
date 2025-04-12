@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
+import '../../../core/utils/utils.dart';
 import '../../../widgets/search_dailog_widget.dart';
 
 
@@ -273,6 +274,11 @@ class procumentBomGridSource extends DataGridSource {
                           int cellIndex = dataGridRows[rowIndex]
                               .getCells()
                               .indexOf(dataCell);
+
+                          if(cellIndex==4) {
+                            Utils.snackBar("Rate can be changed by formula", context);
+                            return;
+                          }
 
                           double lastSummerryPieces =
                               dataGridRows[0].getCells()[2].value;
