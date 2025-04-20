@@ -194,13 +194,14 @@ class formulaProcedureController extends StateNotifier<bool> {
       response.fold((l) => Utils.snackBar(l.message, context), (r) {
         log('entered in the fold');
 
+
         Utils.snackBar('Formula Mapping Added', context);
         context.pop();
         null;
       });
       // Optionally update the state if necessary after submission
     } catch (e) {
-      log('entered in the error');
+      log('entered in the error $e');
 
       state = false;
     }

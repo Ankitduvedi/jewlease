@@ -132,7 +132,7 @@ class ProcumentDataGridSource extends DataGridSource {
                         backgroundColor: Colors.transparent,
                         child: Container(
                           width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height * 0.35,
+                          height: MediaQuery.of(context).size.height * 0.41,
                           // 45% of screen height
                           decoration: BoxDecoration(
                             color: Colors.white,

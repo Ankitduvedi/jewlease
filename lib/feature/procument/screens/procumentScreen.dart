@@ -58,16 +58,16 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
     for (String formulaKey in allFormualMap.keys) {
       if (formulaKey.contains(formulaName)) {
         FormulaModel formulaModel = allFormualMap[formulaKey];
-        if (!formulaModel.isUpdated) {
-          Utils.snackBar(
-              "Rate is not added in variant ${variant["Variant Name"]}",
-              context);
-          return null;
-        }
+        // if (!formulaModel.isUpdated) {
+        //   Utils.snackBar(
+        //       "Rate is not added in variant ${variant["Variant Name"]}",
+        //       context);
+        //   return null;
+        // }
         bomRowsFormula.add(formulaModel);
       }
     }
-    List<dynamic> bomDataRows = variant["Bom Data"];
+    List<dynamic> bomDataRows = variant["BOM Data"];
 
     for (int i = 0; i < bomDataRows.length; i++) {
       bomDataRows[i]["formulaId"] = await ref
@@ -92,7 +92,7 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
   }
 
   Future<bool> saveProcument() async {
-    try {
+
       List<Map<String, dynamic>>? varientList =
           ref.read(procurementVariantProvider);
 
@@ -101,22 +101,26 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
       if (varientList == null) return false;
 
       for (int i = 0; i < varientList!.length; i++) {
-        Map<String,dynamic>?updatedVariant = await updateBomFormula(varientList[i]);
-        if(updatedVariant==null){
+        Utils.printJsonFormat(varientList[i]);
+        Map<String, dynamic>? updatedVariant =
+            await updateBomFormula(varientList[i]);
+        if (updatedVariant == null) {
           return false;
-        }
-        else {
-          varientList[i]=updatedVariant;
+        } else {
+          varientList[i] = updatedVariant;
         }
         varientList[i] = await addVariantFormula(varientList[i]);
         Map<String, dynamic> reuestBody = convertToGRNSchema(varientList[i]);
 
         // print("req body is $jsonString");
+        Utils.printJsonFormat(reuestBody);
 
         reqstBodeis.add(reuestBody);
       }
+      // return false;
 
       TransactionModel transaction = createTransaction(reqstBodeis);
+
       final jsonString =
           JsonEncoder.withIndent('  ').convert(transaction.toJson());
       print("transaction schema $jsonString");
@@ -127,10 +131,10 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
       Utils.snackBar("Variant Aadded", context);
       goRouter.go("/");
       return true;
-    } catch (e) {
-      Utils.snackBar(e.toString(), context);
-      return false;
-    }
+    // } catch (e) {
+    //   Utils.snackBar(e.toString(), context);
+    //   return false;
+    // }
 
     // Navigator.pop(context);\\
   }
@@ -274,6 +278,29 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
   }
 
   Map<String, dynamic> convertToGRNSchema(Map<String, dynamic> input) {
+    Map<String, dynamic> operationMap = {
+      "VariantName": "DIA-BAN-BAN-GEN-18KT-1",
+      "CalcBOM": "DIA-BAN-BAN-GEN-18KT-1",
+      "CalcCF": 0.0,
+      "CalcMethod": "WT-CUS",
+      "CalcMethodVal": "METAL WT + FINDING WT",
+      "CalcQty": 26.6,
+      "CalculateFormula": "s",
+      "DepdBOM": null,
+      "DepdMethod": null,
+      "DepdMethodVal": 0.0,
+      "DepdQty": 0.0,
+      "LabourAmount": 0.0,
+      "LabourAmountLocal": 0.0,
+      "LabourRate": 0.0,
+      "MaxRateValue": 0.0,
+      "MinRateValue": 0.0,
+      "Operation": "MAKING CHARGES PER GRAM",
+      "OperationType": null,
+      "RateAsPerFormula": 0.0,
+      "RowStatus": 1,
+      "Rate_Edit_Ind": 0
+    };
     return {
       "style": input["Style"],
       "variantName": input["Variant Name"],
@@ -303,7 +330,7 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
       "hsnSacCode": input["HSN - SAC CODE"],
       "lineOfBusiness": input["LINE OF BUSINESS"],
       "bomData": input["bomData"],
-      "operation": input["Operation"],
+      "operation": [operationMap, operationMap, operationMap, operationMap],
       "imageDetails": input["Image Details"],
       "formulaDetails": input["Formula Details"],
       "pieces": input["Pieces"],

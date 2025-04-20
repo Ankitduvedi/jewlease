@@ -3,6 +3,8 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/data/model/bom_model.dart';
+import 'package:jewlease/data/model/operation_model.dart';
+import 'package:jewlease/feature/procument/screens/operationGridSource.dart';
 import 'package:jewlease/feature/procument/screens/procumenOprGrid.dart';
 import 'package:jewlease/feature/procument/screens/procumentBomGrid.dart';
 import 'package:jewlease/feature/procument/screens/procumentBomGridSource.dart';
@@ -41,9 +43,9 @@ class procumentBomOprDialog extends ConsumerStatefulWidget {
 class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
   final DataGridController _dataGridController = DataGridController();
   List<DataGridRow> _bomRows = [];
-  List<DataGridRow> _OpeationRows = [];
-  late procumentBomGridSource _bomDataGridSource;
-  late procumentBomGridSource _oprDataGridSource;
+  List<DataGridRow> OpeationRows = [];
+  late procumentBomGridSource bomDataGridSource;
+  late procumentOperationGridSource oprDataGridSource;
   bool isShowFormula = false;
   int selectedBomForRow = -1;
 
@@ -51,10 +53,10 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
   void initState() {
     super.initState();
     initializeBomOpr();
-    _bomDataGridSource = procumentBomGridSource(_bomRows, _removeRow,
+    bomDataGridSource = procumentBomGridSource(_bomRows, _removeRow,
         _updateBomSummaryRow, showFormula, widget.canEdit, ref);
-    _oprDataGridSource = procumentBomGridSource(_OpeationRows, _removeRow,
-        _updateBomSummaryRow, showFormula, widget.canEdit, ref);
+    oprDataGridSource = procumentOperationGridSource(OpeationRows, _removeRow,
+        updateOperationSummeryRow, showFormula, widget.canEdit, ref);
   }
 
   void showRawMaterialDialog(String value) {
@@ -103,105 +105,101 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
     return ListView(
       scrollDirection: widget.isHorizonatal ? Axis.horizontal : Axis.vertical,
       children: [
-        Expanded(
-          child: Container(
-            width: screenWidth * 0.45,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-              color: Colors.white,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Bom',
-                        style: TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.bold),
-                      ),
-                      Row(
-                        children: [
-                          TextButton(
-                            onPressed: () {
-                              if (widget.canEdit == false) return;
-                              showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                        content: ItemDataScreen(
-                                          title: '',
-                                          endUrl: 'Global/operations/',
-                                          canGo: true,
-                                          onDoubleClick: (Map<String, dynamic>
-                                              intialData) {
-                                            print("intial data is $intialData");
-                                            _addNewRowOpr(
-                                                intialData["OPERATION_NAME"] ??
-                                                    "");
-                                            Navigator.pop(context);
-                                          },
-                                        ),
-                                      ));
-                            },
-                            child: Text('+ Add Operation',
-                                style: TextStyle(color: Color(0xff28713E))),
-                          ),
-                          PopupMenuButton<String>(
-                            onSelected: (String value) {
-                              log("Chosen Item: $value");
-                              if (widget.canEdit == false) return;
+        Container(
+          width: screenWidth * 0.45,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+            color: Colors.white,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Bom',
+                      style:
+                          TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                    ),
+                    Row(
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            if (widget.canEdit == false) return;
+                            showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                      content: ItemDataScreen(
+                                        title: '',
+                                        endUrl: 'Global/operations/',
+                                        canGo: true,
+                                        onDoubleClick:
+                                            (Map<String, dynamic> intialData) {
+                                          print("intial data is $intialData");
+                                          _addNewRowOpr(
+                                              intialData["OPERATION_NAME"] ??
+                                                  "");
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                    ));
+                          },
+                          child: Text('+ Add Operation',
+                              style: TextStyle(color: Color(0xff28713E))),
+                        ),
+                        PopupMenuButton<String>(
+                          onSelected: (String value) {
+                            log("Chosen Item: $value");
+                            if (widget.canEdit == false) return;
 
-                              if (widget.isFromSubContracting) {
-                                showRawMaterialDialog(value);
-                              } else {
-                                const materialPaths = {
-                                  'Gold':
-                                      'ItemMasterAndVariants/Metal/Gold/Variant/',
-                                  'Silver':
-                                      'ItemMasterAndVariants/Metal/Silver/Variant/',
-                                  'Diamond':
-                                      'ItemMasterAndVariants/Stone/Diamond/Variant/',
-                                  'Bronze':
-                                      'ItemMasterAndVariants/Metal/Bronze/Variant/',
-                                };
+                            if (widget.isFromSubContracting) {
+                              showRawMaterialDialog(value);
+                            } else {
+                              const materialPaths = {
+                                'Gold':
+                                    'ItemMasterAndVariants/Metal/Gold/Variant/',
+                                'Silver':
+                                    'ItemMasterAndVariants/Metal/Silver/Variant/',
+                                'Diamond':
+                                    'ItemMasterAndVariants/Stone/Diamond/Variant/',
+                                'Bronze':
+                                    'ItemMasterAndVariants/Metal/Bronze/Variant/',
+                              };
 
-                                final key = materialPaths.keys.firstWhere(
-                                  (k) => value.contains(k),
-                                  orElse: () => '',
-                                );
+                              final key = materialPaths.keys.firstWhere(
+                                (k) => value.contains(k),
+                                orElse: () => '',
+                              );
 
-                                if (key.isNotEmpty)
-                                  showProcumentdialog(
-                                      materialPaths[key]!, value);
-                              }
-                            },
-                            itemBuilder: (context) => bomPopUpItem(),
-                            child: Text(
-                              '+ Add Bom',
-                              style: TextStyle(color: const Color(0xff28713E)),
-                            ),
+                              if (key.isNotEmpty)
+                                showProcumentdialog(materialPaths[key]!, value);
+                            }
+                          },
+                          itemBuilder: (context) => bomPopUpItem(),
+                          child: Text(
+                            '+ Add Bom',
+                            style: TextStyle(color: const Color(0xff28713E)),
                           ),
-                          TextButton(
-                            onPressed: () {},
-                            child: Text('Summary',
-                                style: TextStyle(color: Color(0xff28713E))),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+                        TextButton(
+                          onPressed: () {},
+                          child: Text('Summary',
+                              style: TextStyle(color: Color(0xff28713E))),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                ProcumentBomGrid(
-                  bomDataGridSource: _bomDataGridSource,
-                  dataGridController: _dataGridController,
-                  gridWidth: gridWidth,
-                )
-              ],
-            ),
+              ),
+              ProcumentBomGrid(
+                bomDataGridSource: bomDataGridSource,
+                dataGridController: _dataGridController,
+                gridWidth: gridWidth,
+              )
+            ],
           ),
         ),
         SizedBox(
@@ -210,13 +208,11 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
         if (isShowFormula)
           FormulaDataGrid(widget.VariantName, widget.VairentIndex),
         if (!isShowFormula)
-          Expanded(
-            child: ProcumentOperationGrid(
-                operationType: 'Operation',
-                gridWidth: gridWidth,
-                dataGridController: _dataGridController,
-                oprDataGridSource: _oprDataGridSource),
-          )
+          ProcumentOperationGrid(
+              operationType: 'Operation',
+              gridWidth: gridWidth,
+              dataGridController: _dataGridController,
+              oprDataGridSource: oprDataGridSource)
       ],
     );
   }
@@ -348,8 +344,8 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
           DataGridCell<Widget>(columnName: 'Actions', value: null),
         ]),
       );
-      _bomDataGridSource.updateDataGridSource();
-      _bomDataGridSource.updateDataGridSource();
+      bomDataGridSource.updateDataGridSource();
+      bomDataGridSource.updateDataGridSource();
       _updateBomSummaryRow();
     });
   }
@@ -385,8 +381,8 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
           DataGridCell<Widget>(columnName: 'Actions', value: null),
         ]),
       );
-      _bomDataGridSource.updateDataGridSource();
-      _bomDataGridSource.updateDataGridSource();
+      bomDataGridSource.updateDataGridSource();
+      bomDataGridSource.updateDataGridSource();
       _updateBomSummaryRow();
     });
   }
@@ -395,7 +391,7 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
 
   void _addNewRowOpr(String operation) {
     setState(() {
-      _OpeationRows.add(
+      OpeationRows.add(
         DataGridRow(cells: [
           DataGridCell<String>(columnName: 'Calc Bom', value: 'New Variant'),
           DataGridCell<String>(columnName: 'Operation', value: operation),
@@ -409,8 +405,8 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
           DataGridCell<Widget>(columnName: 'Depd Qty', value: null),
         ]),
       );
-      _bomDataGridSource.updateDataGridSource();
-      _bomDataGridSource.updateDataGridSource();
+      bomDataGridSource.updateDataGridSource();
+      bomDataGridSource.updateDataGridSource();
       _updateBomSummaryRow();
     });
   }
@@ -434,18 +430,14 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
           DataGridCell<Widget>(columnName: 'Actions', value: null)
         ]),
       ];
-      _OpeationRows = [
+      OpeationRows = [
         DataGridRow(cells: [
-          DataGridCell<String>(columnName: 'Calc Bom', value: ''),
-          DataGridCell<String>(columnName: 'Operation', value: ''),
-          DataGridCell<int>(columnName: 'Calc Qty', value: 0),
-          DataGridCell<dynamic>(columnName: 'Type', value: ''),
-          DataGridCell<dynamic>(columnName: 'Calc Method', value: ''),
-          DataGridCell<dynamic>(columnName: 'Calc Method Value', value: ''),
-          DataGridCell<dynamic>(columnName: 'Depd Method', value: ''),
-          DataGridCell<dynamic>(columnName: 'Depd Method Value', value: ''),
-          DataGridCell<Widget>(columnName: 'Depd Type', value: null),
-          DataGridCell<Widget>(columnName: 'Depd Qty', value: null),
+          DataGridCell<String>(columnName: 'Calc Bom', value: ""),
+          DataGridCell<String>(columnName: 'Operation', value: ""),
+          DataGridCell<double>(columnName: 'Calc Qty', value: 0),
+          DataGridCell<double>(columnName: 'Rate', value: 0),
+          DataGridCell<double>(columnName: 'Amount', value: 0),
+          DataGridCell<String>(columnName: 'Calc Method', value: ""),
         ])
       ];
     });
@@ -468,6 +460,7 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
         .toList();
 
     _bomRows = listOfBoms.map((bom) {
+      print("bor row ${bom.toJson()}");
       // print("bom is ${bom[2]}${bom[2].runtimeType}");
       return DataGridRow(cells: [
         DataGridCell<String>(
@@ -485,22 +478,23 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
       ]);
     }).toList();
     if (varientData["Operation"] == null) return;
-    // List<dynamic> listOfOperation = varientData!["Operation"]["data"];
+    print("operation is ${varientData!["Operation"]}");
+    List<dynamic> listOfOperation = varientData!["Operation"];
+
+    List<OperationRowModel> operationData = listOfOperation
+        .map((operation) => OperationRowModel.fromJson(operation))
+        .toList();
     // print("operation is $listOfOperation");
-    // _OpeationRows = listOfOperation.map((opr) {
-    //   return DataGridRow(cells: [
-    //     DataGridCell<String>(columnName: 'Calc Bom', value: opr[0]),
-    //     DataGridCell<String>(columnName: 'Operation', value: opr[1]),
-    //     DataGridCell<int>(columnName: 'Calc Qty', value: opr[2]),
-    //     DataGridCell<dynamic>(columnName: 'Type', value: opr[3]),
-    //     DataGridCell<dynamic>(columnName: 'Calc Method', value: opr[4]),
-    //     DataGridCell<dynamic>(columnName: 'Calc Method Value', value: opr[5]),
-    //     DataGridCell<dynamic>(columnName: 'Depd Method', value: opr[6]),
-    //     DataGridCell<dynamic>(columnName: 'Depd Method Value', value: opr[7]),
-    //     DataGridCell<Widget>(columnName: 'Depd Type', value: null),
-    //     DataGridCell<Widget>(columnName: 'Depd Qty', value: null),
-    //   ]);
-    // }).toList();
+    OpeationRows = operationData.map((opr) {
+      return DataGridRow(cells: [
+        DataGridCell<String>(columnName: 'Calc Bom', value: opr.calcBom),
+        DataGridCell<String>(columnName: 'Operation', value: opr.operation),
+        DataGridCell<double>(columnName: 'Calc Qty', value: opr.calcQty),
+        DataGridCell<double>(columnName: 'Rate', value: opr.labourRate),
+        DataGridCell<double>(columnName: 'Amount', value: opr.labourAmount),
+        DataGridCell<String>(columnName: 'Calc Method', value: opr.calcMethod),
+      ]);
+    }).toList();
   }
 
   //<------------------------- Function To Remove Bom Row ----------- -------------->
@@ -508,8 +502,63 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
   void _removeRow(DataGridRow row) {
     setState(() {
       _bomRows.remove(row);
-      _bomDataGridSource.updateDataGridSource();
+      bomDataGridSource.updateDataGridSource();
       _updateBomSummaryRow();
+    });
+  }
+
+  //<------------------------- Function To Update Operation Summary Row  ----------- -------------->
+
+  void updateOperationSummeryRow(
+      double operationTotalAmount, int updatedRowIndex) {
+    setState(() {
+      double lastAmount = 0;
+      for (int i = 1; i < _bomRows.length; i++) {
+        lastAmount += _bomRows[i]
+            .getCells()
+            .firstWhere((cell) => cell.columnName == "Amount")
+            .value;
+      }
+      print("lastAMount $lastAmount operation amount $operationTotalAmount");
+
+      _bomRows[0] = DataGridRow(
+          cells: _bomRows[0].getCells().map((cell) {
+        if (cell.columnName == "Amount")
+          return DataGridCell(
+              columnName: cell.columnName,
+              value: lastAmount + operationTotalAmount);
+        else
+          return cell;
+      }).toList());
+      Map<String, dynamic> updatedVarient = {
+        "Amount": lastAmount + operationTotalAmount,
+        "varientIndex": widget.VairentIndex
+      };
+
+      double updatedRate = OpeationRows[updatedRowIndex]
+          .getCells()
+          .firstWhere((cell) => cell.columnName == "Rate")
+          .value;
+      Map<dynamic, dynamic>? varientData = ref
+          .read(procurementVariantProvider.notifier)
+          .getItemByVariant(widget.VariantName);
+      List<dynamic> listOfOperation = varientData!["Operation"];
+
+      List<OperationRowModel> operationData = listOfOperation
+          .map((operation) => OperationRowModel.fromJson(operation))
+          .toList();
+      operationData[updatedRowIndex].labourRate = updatedRate;
+      operationData[updatedRowIndex].labourAmount = updatedRate*operationData[updatedRowIndex].calcQty;
+      ref.read(procurementVariantProvider)[widget.VairentIndex]["Operation"] =
+          operationData.map((row) => row.toJson()).toList();
+      List<dynamic>values = _bomRows[0].getCells().map((cell)=>cell.value).toList();
+
+      ref.read(procurementVariantProvider)[widget.VairentIndex]["BOM Data"][0] =
+          BomRowModel.fromJsonDataRow(values, 0).toJson2();
+      print("updated final bom ${BomRowModel.fromJsonDataRow(values, 0).toJson()}");
+
+
+      ref.read(BomProcProvider.notifier).updateAction(updatedVarient, true);
     });
   }
 
@@ -577,8 +626,8 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
     //   operationHeader.add(element.columnName);
     // });
     List<List<dynamic>> updatedOperation = [];
-    for (var i = 0; i < _OpeationRows.length; i++) {
-      updatedOperation.add(_OpeationRows[i].getCells().map((cell) {
+    for (var i = 0; i < OpeationRows.length; i++) {
+      updatedOperation.add(OpeationRows[i].getCells().map((cell) {
         return cell.value;
       }).toList());
     }

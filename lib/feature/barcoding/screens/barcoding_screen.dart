@@ -7,6 +7,7 @@ import 'package:jewlease/feature/barcoding/controllers/barcode_detail_list_contr
 import 'package:jewlease/feature/barcoding/controllers/barcode_history_list_controller.dart';
 import 'package:jewlease/feature/barcoding/screens/finanacial_transaction.dart';
 import 'package:jewlease/feature/barcoding/screens/status%20Card.dart';
+import 'package:jewlease/feature/procument/screens/operationGridSource.dart';
 import 'package:jewlease/main.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
@@ -260,7 +261,7 @@ class ItemDetails extends ConsumerStatefulWidget {
 class _ItemDetailsState extends ConsumerState<ItemDetails> {
   final DataGridController _dataGridController = DataGridController();
   late procumentBomGridSource _bomDataGridSource;
-  late procumentBomGridSource _oprDataGridSource;
+  late procumentOperationGridSource _oprDataGridSource;
   List<DataGridRow> _bomRows = [];
   List<DataGridRow> _OpeationRows = [];
 
@@ -271,6 +272,22 @@ class _ItemDetailsState extends ConsumerState<ItemDetails> {
       _bomRows.remove(row);
       _bomDataGridSource.updateDataGridSource();
       _updateBomSummaryRow();
+    });
+  }
+
+  //<------------------------- Function To Update Operation Summary Row  ----------- -------------->
+
+  void updateOperationSummeryRow(double totalAmount, int value) {
+
+    setState(() {
+      _bomRows[0] = DataGridRow(
+          cells: _bomRows[0].getCells().map((cell) {
+            if (cell.columnName == "Amount")
+              return DataGridCell(
+                  columnName: cell.columnName, value: cell.value + totalAmount);
+            else
+              return cell;
+          }).toList());
     });
   }
 
@@ -286,9 +303,8 @@ class _ItemDetailsState extends ConsumerState<ItemDetails> {
     initializeBomOpr();
     _bomDataGridSource = procumentBomGridSource(
         _bomRows, _removeRow, _updateBomSummaryRow, showFormula, true, ref);
-    _oprDataGridSource = procumentBomGridSource(_OpeationRows, _removeRow,
-        _updateBomSummaryRow, showFormula, true, ref);
-
+    _oprDataGridSource = procumentOperationGridSource(_OpeationRows, _removeRow,
+        updateOperationSummeryRow, showFormula, true, ref);
     super.initState();
   }
 

@@ -204,6 +204,7 @@ class formulaProcedureRepository {
 
   Future<Map<String, dynamic>> fetchFormulaByAttribute(
       Map<String, dynamic> attributes) async {
+    print("formula attributes are $attributes");
     try {
       final response = await _dio.post(
         url2 + '/FormulaProcedures/FindExcelDetail',
@@ -212,16 +213,95 @@ class formulaProcedureRepository {
           headers: {'Content-Type': 'application/json'},
         ),
       );
+      print("formuala status ${response.data}");
       return response.data;
       print("response formula Excel ${response.data}");
     } catch (e) {
+      return {
+        "data" : {
+          "excelDetail":[
+            {
+              "id": 0,
+              "rowNo": 0,
+              "mrpInd": 0,
+              "rowType": "HALL RATE",
+              "dataType": "Input",
+              "rangeDtl": null,
+              "rowValue": 0,
+              "rowStatus": "1",
+              "variantId": 0,
+              "visibleInd": 1,
+              "editableInd": 1,
+              "maxRateValue": 0,
+              "minRateValue": 0,
+              "rowExpression": "",
+              "rowDescription": "HALL RATE",
+              "rowExpressionId": 0,
+              "rateAsPerFormula": 0,
+              "rowExpressionValue": "0",
+              "validateExpression": "",
+              "hideDefaultValueInd": 1,
+              "attribTypeAndAttribId": 0
+            },
+            {
+              "id": 1,
+              "rowNo": 1,
+              "mrpInd": 0,
+              "rowType": "ADJUSTED AMOUNT",
+              "dataType": "Calculation",
+              "rangeDtl": null,
+              "rowValue": 0,
+              "rowStatus": "1",
+              "variantId": 0,
+              "visibleInd": 1,
+              "editableInd": 0,
+              "maxRateValue": 0,
+              "minRateValue": 0,
+              "rowExpression": "[R1]/3",
+              "rowDescription": "ADJUSTED AMOUNT",
+              "rowExpressionId": 1,
+              "rateAsPerFormula": 0,
+              "rowExpressionValue": "0",
+              "validateExpression": "",
+              "hideDefaultValueInd": 1,
+              "attribTypeAndAttribId": 0
+            },
+            {
+              "id": 2,
+              "rowNo": 2,
+              "mrpInd": 0,
+              "rowType": "TOTAL",
+              "dataType": "Calculation",
+              "rangeDtl": null,
+              "rowValue": 0,
+              "rowStatus": "1",
+              "variantId": 0,
+              "visibleInd": 1,
+              "editableInd": 0,
+              "maxRateValue": 0,
+              "minRateValue": 0,
+              "rowExpression": "[R1]-[R2]",
+              "rowDescription": "TOTAL",
+              "rowExpressionId": 2,
+              "rateAsPerFormula": 0,
+              "rowExpressionValue": "0",
+              "validateExpression": "",
+              "hideDefaultValueInd": 1,
+              "attribTypeAndAttribId": 0
+            }
+          ]
+        }
+      };
       print("err response formula Excel ${e}");
     }
     return {};
   }
 
   Future<Either<Failure, String>> addFormulaMapping(
+
       FormulaMappigModel config) async {
+    print("formula mapping is ${config.toJson()}");
+
     return postRequest(
       endpoint: '$url2/FormulaProcedures/FormulaMapping/',
       data: config.toJson(),

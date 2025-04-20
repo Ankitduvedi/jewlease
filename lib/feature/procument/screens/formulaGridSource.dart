@@ -22,7 +22,7 @@ class formulaGridSource extends DataGridSource {
   final List<DataGridRow> _editingRows;
   final Function(DataGridRow) onDelete;
   final Function(List<DataGridRow>) onEdit;
-  final List<FomulaRowModel> formulaExcel;
+  final List<FormulaRowModel> formulaExcel;
   final List<dynamic> formulaHeaders;
   final Map<dynamic, dynamic> rangeExcel;
   final Map<String, dynamic> varientAttributes;
@@ -34,7 +34,6 @@ class formulaGridSource extends DataGridSource {
     if (formula == '') {
       return 0.0;
     }
-    ;
 
     String replacedFormula = formula.replaceAllMapped(
       RegExp(r'\[R(\d+)\]'),
@@ -118,7 +117,6 @@ class formulaGridSource extends DataGridSource {
   }
 
   void recalculatedataGridValues() {
-
     for (int i = 0; i < dataGridRows.length; i++) {
       dataGridRows[i] = DataGridRow(cells: [
         for (var cell in dataGridRows[i].getCells())

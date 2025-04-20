@@ -184,7 +184,7 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
     await Future.delayed(
         const Duration(seconds: 1)); // Allow time for JS to load
     List<DataGridRow> datagridRows = outwardRows;
-    List<FomulaRowModel> newlist = [];
+    List<FormulaRowModel> newlist = [];
 
     int lastEditedRow = -1;
     int lastEditedColumn = -1;
@@ -208,7 +208,7 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
         row.add(datagridRows[i].getCells()[j].value ?? "");
       }
       print("4 ${row[4]}");
-      FomulaRowModel newRow = FomulaRowModel(
+      FormulaRowModel newRow = FormulaRowModel(
           editableInd: int.parse(row[6]),
           hideDefaultValueInd: int.parse(row[7]),
           attribTypeAndAttribId: 0,

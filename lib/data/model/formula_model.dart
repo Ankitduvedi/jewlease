@@ -7,24 +7,27 @@ import 'dart:convert';
 class FormulaModel {
   final String formulaId;
    bool isUpdated;
-  final List<FomulaRowModel> formulaRows;
+  final List<FormulaRowModel> formulaRows;
+  final totalRows;
 
   FormulaModel({
     required this.isUpdated,
     required this.formulaId,
     required this.formulaRows,
+    required this.totalRows
   });
 
   // Optional: Add copyWith method for convenience
   FormulaModel copyWith({
     String? formulaId,
-    List<FomulaRowModel>? formulaRows,
+    List<FormulaRowModel>? formulaRows,
     bool? isUpdated
   }) {
     return FormulaModel(
       isUpdated: isUpdated?? this.isUpdated,
       formulaId: formulaId ?? this.formulaId,
       formulaRows: formulaRows ?? this.formulaRows,
+      totalRows:  formulaRows?.length ?? this.formulaRows.length
     );
   }
 
@@ -32,12 +35,12 @@ class FormulaModel {
 }
 
 
-FomulaRowModel fomulaModelFromJson(String str) =>
-    FomulaRowModel.fromJson(json.decode(str));
+FormulaRowModel fomulaModelFromJson(String str) =>
+    FormulaRowModel.fromJson(json.decode(str));
 
-String fomulaModelToJson(FomulaRowModel data) => json.encode(data.toJson());
+String fomulaModelToJson(FormulaRowModel data) => json.encode(data.toJson());
 
-class FomulaRowModel {
+class FormulaRowModel {
   int editableInd;
   int hideDefaultValueInd;
   dynamic attribTypeAndAttribId;
@@ -60,7 +63,7 @@ class FomulaRowModel {
   int id;
   String dataType;
 
-  FomulaRowModel({
+  FormulaRowModel({
     required this.editableInd,
     required this.hideDefaultValueInd,
     required this.attribTypeAndAttribId,
@@ -84,9 +87,9 @@ class FomulaRowModel {
     required this.dataType
   });
 
-  factory FomulaRowModel.fromJson(Map<String, dynamic> json) {
+  factory FormulaRowModel.fromJson(Map<String, dynamic> json) {
     print("json $json");
-    return FomulaRowModel(
+    return FormulaRowModel(
       editableInd: json["EditableInd"] ?? 0,
       hideDefaultValueInd: json["HideDefaultValueInd"],
       attribTypeAndAttribId: json["Attrib_Type_And_AttribId"],
@@ -110,9 +113,9 @@ class FomulaRowModel {
       dataType: json["dataType"]
     );
   }
-  factory FomulaRowModel.fromJson2(Map<String, dynamic> json) {
+  factory FormulaRowModel.fromJson2(Map<String, dynamic> json) {
 
-    return FomulaRowModel(
+    return FormulaRowModel(
       editableInd: json["editableInd"] ?? 0,
       hideDefaultValueInd: json["hideDefaultValueInd"],
       attribTypeAndAttribId: json["attribTypeAndAttribId"],  // Updated key

@@ -6,6 +6,7 @@ import 'package:jewlease/feature/barcoding/screens/widgets/barcode_generator_hea
 import 'package:jewlease/feature/barcoding/screens/widgets/tag_data_grid.dart';
 import 'package:jewlease/feature/barcoding/screens/widgets/tag_mrp.dart';
 import 'package:jewlease/feature/barcoding/screens/widgets/tag_wt_summery.dart';
+import 'package:jewlease/feature/procument/screens/operationGridSource.dart';
 import 'package:jewlease/main.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
@@ -26,7 +27,7 @@ class _BarCodeGenerationState extends ConsumerState<BarCodeGeneration> {
   @override
   final DataGridController _dataGridController = DataGridController();
   late procumentBomGridSource _bomDataGridSource;
-  late procumentBomGridSource _oprDataGridSource;
+  late procumentOperationGridSource _oprDataGridSource;
   List<DataGridRow> _bomRows = [];
   List<DataGridRow> _OpeationRows = [];
 
@@ -48,7 +49,21 @@ class _BarCodeGenerationState extends ConsumerState<BarCodeGeneration> {
         .toList();
     return {"headers": headers, "data": data};
   }
+  //<------------------------- Function To Update Operation Summary Row  ----------- -------------->
 
+  void updateOperationSummeryRow(double totalAmount,int value) {
+
+    setState(() {
+      _bomRows[0] = DataGridRow(
+          cells: _bomRows[0].getCells().map((cell) {
+            if (cell.columnName == "Amount")
+              return DataGridCell(
+                  columnName: cell.columnName, value: cell.value + totalAmount);
+            else
+              return cell;
+          }).toList());
+    });
+  }
   //<------------------------- Function To Update Bom Summary Row  ----------- -------------->
 
   void _updateBomSummaryRow() {
@@ -169,8 +184,8 @@ class _BarCodeGenerationState extends ConsumerState<BarCodeGeneration> {
     initializeBomOpr();
     _bomDataGridSource = procumentBomGridSource(
         _bomRows, _removeRow, _updateBomSummaryRow, showFormula, true, ref);
-    _oprDataGridSource = procumentBomGridSource(_OpeationRows, _removeRow,
-        _updateBomSummaryRow, showFormula, true, ref);
+    _oprDataGridSource = procumentOperationGridSource(_OpeationRows, _removeRow,
+        updateOperationSummeryRow, showFormula, true, ref);
   }
 
   void initializeBomOpr() {

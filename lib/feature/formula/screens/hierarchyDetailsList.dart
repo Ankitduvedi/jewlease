@@ -32,6 +32,7 @@ class HierarchyDetailsList extends ConsumerWidget {
         ],
         // Creating rows for each key-value pair in itemMap
         rows: itemMap.entries.expand((entry) {
+          print("entry is $entry $itemMap");
           final key = entry.key;
           final values = entry.value;
 

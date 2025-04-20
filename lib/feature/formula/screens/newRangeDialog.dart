@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -35,11 +33,11 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
   bool showExcel = false;
   List<List<dynamic>> excelData = [];
   List<dynamic> excelHeaders = [];
+  int rows =0;
 
   @override
   void initState() {
     // TODO: implement initState
-    // ref.read(itemListProvider.notifier).resetDepdList();
     print("intial data is ${widget.intialData}");
     // webViewController = InAppWebViewContr
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -386,7 +384,33 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
                                     ),
                                   ),
                                 ),
-                              )
+                              ),
+                              InkWell(
+                                onTap: () async {
+                                  setState(() {
+                                    excelData.add(
+                                        List.filled(rows+1, ""));
+                                    rows= rows+1;
+                                  });
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: screenWidth * 0.02,
+                                      vertical: screenHeight * 0.005),
+                                  height: screenHeight * 0.05,
+                                  decoration: BoxDecoration(
+                                    color: Colors.green,
+                                    border: Border.all(color: Colors.green),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      'Add New Row',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                           SizedBox(
@@ -440,7 +464,7 @@ class _rangeDialogState extends ConsumerState<rangeDialog> {
                                         //       setState(() {});
                                         //       // intializeExcel();
                                         //       final itemListNotifier = ref.read(
-                                        //           itemListProvider.notifier);
+                                        //
                                         //       Map<dynamic, dynamic> excel = await ref
                                         //           .read(
                                         //               formulaProcedureControllerProvider

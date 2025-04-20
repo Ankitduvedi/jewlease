@@ -29,7 +29,7 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
   List<DataGridRow> _rows = [];
   late formulaGridSource _formulaGridSource;
   List<String> formulas = [];
-  List<FomulaRowModel> formulaExcel = [];
+  List<FormulaRowModel> formulaExcel = [];
   Map<dynamic, dynamic> rangeExcelData = {};
   late int selectedBomRowIndex;
 
@@ -91,9 +91,19 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
           .read(allVariantFormulasProvider2.notifier)
           .update(formulaName, formulaModel);
 
-      double updatedMetalRate = formulaModel.formulaRows
-          .firstWhere((row) => row.rowType == "MEATAL RATE")
-          .rowValue;
+      double updatedMetalRate;
+      var metalRateRows = formulaModel.formulaRows
+          .where((row) => row.rowType == "MEATAL RATE");
+
+      if (metalRateRows.isNotEmpty) {
+        updatedMetalRate = metalRateRows.first.rowValue?.toDouble() ?? 0.0;
+      } else {
+        var diamondRateRows = formulaModel.formulaRows
+            .where((row) => row.rowType == "DIAMOND RATE");
+        updatedMetalRate = diamondRateRows.isNotEmpty
+            ? diamondRateRows.first.rowValue?.toDouble() ?? 0.0
+            : 0.0;
+      }
       print("updated metal rate is $updatedMetalRate");
 
       ref.read(formulaBomOprProvider.notifier).updateAction({
@@ -104,7 +114,7 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
         }
       }, true);
     } catch (e) {
-      print("error is $e");
+      print("error is3 $e");
     }
   }
 
@@ -118,10 +128,11 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
         formula = allFormula[formulaKeys];
       }
     }
+    print("formula is ${formula!.formulaRows.map((cell)=>cell.toJson())}");
     if (formula == null) return;
 
     for (int i = 0; i < formula.formulaRows.length; i++) {
-      FomulaRowModel formulaRow = formula.formulaRows[i];
+      FormulaRowModel formulaRow = formula.formulaRows[i];
       if (formulaRow.dataType == "Range") {
         String rangeKey = "15 jan";
         // formulaRow.rowExpression;
@@ -165,7 +176,14 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
     final metalRate = ref.watch(metalRateProvider);
     if (rowType == "MEATAL RATE") {
       return metalRate;
-    } else if (rowType == "METAL FINENESS") {
+    }
+    else if (rowType == "DIAMOND RATE") {
+      return metalRate;
+    }
+    else if (rowType == "PURITY") {
+      return assignMetalFiness();
+    }
+    else if (rowType == "METAL FINENESS") {
       return assignMetalFiness();
     } else {
       return rowValue;
