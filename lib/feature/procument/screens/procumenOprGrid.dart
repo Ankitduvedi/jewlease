@@ -36,18 +36,15 @@ class _ProcumentOperationGridState extends State<ProcumentOperationGrid> {
     screenWidth = MediaQuery.of(context).size.width;
     screenHeight = MediaQuery.of(context).size.height;
     return Container(
-      width: (widget.gridWidth / 5) * 10,
-      // height: screenHeight * 0.4,
-      // margin: EdgeInsets.only(top: 20, left: 20),// fix this in procument varinet
-      // padding: EdgeInsets.all(20),
+      width: screenWidth * 0.45,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(10)),
         // color: Colors.red,
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header Row
-
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -68,8 +65,7 @@ class _ProcumentOperationGridState extends State<ProcumentOperationGrid> {
               // width: screenWidth * 0.42,42
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                border:
-                    Border.fromBorderSide(BorderSide(color: Colors.grey)),
+                border: Border.fromBorderSide(BorderSide(color: Colors.grey)),
               ),
               child: SfDataGrid(
                 rowHeight: 30,
@@ -93,7 +89,7 @@ class _ProcumentOperationGridState extends State<ProcumentOperationGrid> {
                                       : Radius.zero,
                                   topRight: operationHeaders
                                               .indexOf(operationColumn) ==
-                                          operationHeaders.length
+                                          operationHeaders.length - 1
                                       ? Radius.circular(10)
                                       : Radius.zero),
                             ),

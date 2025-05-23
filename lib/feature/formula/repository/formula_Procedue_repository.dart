@@ -204,7 +204,7 @@ class formulaProcedureRepository {
 
   Future<Map<String, dynamic>> fetchFormulaByAttribute(
       Map<String, dynamic> attributes) async {
-    print("formula attributes are $attributes");
+    // print("formula attributes are $attributes");
     try {
       final response = await _dio.post(
         url2 + '/FormulaProcedures/FindExcelDetail',
@@ -213,7 +213,7 @@ class formulaProcedureRepository {
           headers: {'Content-Type': 'application/json'},
         ),
       );
-      print("formuala status ${response.data}");
+      // print("formuala status ${response.data}");
       return response.data;
       print("response formula Excel ${response.data}");
     } catch (e) {

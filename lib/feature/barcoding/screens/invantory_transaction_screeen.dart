@@ -224,7 +224,7 @@ class _InvantoryTransactionScreeenState
                             InventoryItemModel item =
                                 InventoryItemModel.fromJson2(transactionState
                                     .transaction!.varients[index]);
-                            print("item varient ${item.varientName}");
+                            print("item varient ${item.variantName}");
                             return Container(
                               padding: const EdgeInsets.all(10),
                               child: Column(
@@ -239,7 +239,7 @@ class _InvantoryTransactionScreeenState
                                             TextStyle(color: Color(0xff1990FF)),
                                       ),
                                       const Text("| "),
-                                      Text(item.varientName),
+                                      Text(item.variantName),
                                       const Spacer(),
                                       InkWell(
                                         onTap: () {

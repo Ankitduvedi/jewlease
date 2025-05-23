@@ -11,6 +11,7 @@ import 'package:jewlease/feature/procument/screens/procumentSummeryGridSource.da
 import 'package:math_expressions/math_expressions.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
+import '../../../core/utils/utils.dart';
 import '../../../data/model/formula_model.dart';
 import '../../../main.dart';
 import '../../../widgets/data_widget.dart';
@@ -19,8 +20,8 @@ import '../../formula/controller/formula_prtocedure_controller.dart';
 import '../../formula/controller/meta_rate_controller.dart';
 import '../../vendor/controller/procumentVendor_controller.dart';
 import '../controller/procumentFormualaBomController.dart';
-import '../controller/procumentFormulaController.dart';
 import '../repository/procument_Repositoy.dart';
+import 'formulaGrid.dart';
 
 class ProcumentSummaryScreen extends ConsumerStatefulWidget {
   const ProcumentSummaryScreen({
@@ -60,6 +61,7 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
     "Wastage Fine": 0.0,
     "Total Fine": 0.0,
     "Total Amt": 0.0,
+    "TotalTransAmt": 0.0
   };
 
   @override
@@ -69,8 +71,36 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
     _initializeRows();
 
     _procumentdataGridSource = ProcumentDataGridSource(
-        _Procumentrows, _removeRow, _updateSummaryRow, true);
+        _Procumentrows, _removeRow, _updateSummaryRow, true,
+        showFormulaDialog: showVariantFormula);
     setState(() {});
+  }
+
+  void showVariantFormula(int variantIndex) {
+    ProcumentStyleVariant variant =
+        ref.read(procurementVariantProvider2)[variantIndex];
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        child: Container(
+          height: screenHeight * 0.35,
+          width: screenWidth * 0.42,
+          child: Center(
+            child: FormulaDataGrid(
+              varientIndex: variantIndex,
+              varientName: variant.variantName,
+              isFromBom: true,
+              FormulaName: "variant_${variantIndex}",
+              backButton: () {
+                Navigator.pop(context);
+              },
+              formulaIndex: 0,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Map<String, dynamic> OperationMap = {
@@ -194,160 +224,37 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
 
   //done
   void _procumentSummery(Map<String, dynamic> updatedVarient) {
-    setState(() {});
-    try {
-      procumentSummery['Wt'] = 0.0;
-      procumentSummery['Total Amt'] = 0.0;
-      procumentSummery['Pieces'] = 0.0;
-      procumentSummery["Stone Wt"] = 0.0;
-      procumentSummery["Stone Amt"] = updatedVarient["Stone Pieces"] ?? 0.0;
+    setState(() {
+      try {
+        procumentSummery['Wt'] = 0.0;
+        procumentSummery['Total Amt'] = 0.0;
+        procumentSummery['Pieces'] = 0.0;
+        procumentSummery["Stone Wt"] = 0.0;
+        procumentSummery["Stone Amt"] = updatedVarient["Stone Pieces"] ?? 0.0;
+        procumentSummery["Total Amt"] = updatedVarient["Amount"];
+        procumentSummery["TotalTransAmt"] = updatedVarient["TotalAmount"];
 
-      _Procumentrows.forEach((element) {
-        element.getCells().forEach((cell) {
-          if (cell.columnName == 'Weight') {
-            procumentSummery["Wt"] += cell.value;
-          } else if (cell.columnName == 'Amount') {
-            procumentSummery["Total Amt"] += cell.value;
-          } else if (cell.columnName == 'Stone Wt') {
-            procumentSummery["Stone Wt"] += cell.value;
-          } else if (cell.columnName == 'Pieces')
-            procumentSummery['Pieces'] = cell.value;
+        _Procumentrows.forEach((element) {
+          element.getCells().forEach((cell) {
+            if (cell.columnName == 'Weight') {
+              procumentSummery["Wt"] += cell.value;
+            } else if (cell.columnName == 'Stone Wt') {
+              procumentSummery["Stone Wt"] += cell.value;
+            } else if (cell.columnName == 'Pieces')
+              procumentSummery['Pieces'] = cell.value;
+          });
         });
-      });
-      procumentSummery["Metal Wt"] =
-          procumentSummery["Wt"] - procumentSummery["Stone Wt"];
-    } catch (e) {
-      print("error in updating summery $e");
-    }
-  }
-
-  Future<void> fetchFormulas(
-    Map<String, dynamic> variant,
-  ) async {
-    String variantName = variant['Variant Name'];
-    // List<FormulaModel> bomFormulas = [];
-
-    List<dynamic> mapBomRows = variant!["BOM Data"];
-    List<BomRowModel> listOfBomRows = mapBomRows
-        .map((row) => BomRowModel.fromJson(row as Map<String, dynamic>))
-        .toList();
-    Map<String, dynamic> diamondAttributes = {
-      "procedureType": "Item",
-      "transactionType": "STONE ASSORTMENT",
-      "documentType": "TRANSFER OUTWARD ( DEPARTMENT )",
-      "transactionCategory": "Na",
-      "partyName": "",
-      "variantName": "",
-      "itemGroup": "Diamond",
-      "attributeType": "STYLE KARAT",
-      "attributeValue": "24",
-      "operation": "MAKING CHARGES PER GRAM",
-      "operationType": "",
-      "transType": ""
-    };
-
-    Map<String, dynamic> metalAttributes = {
-      "procedureType": "Transaction",
-      "transactionType": "STONE ASSORTMENT",
-      "documentType": "TRANSFER OUTWARD ( DEPARTMENT )",
-      "transactionCategory": "Glue",
-      "partyName": "",
-      "variantName": "",
-      "itemGroup": "Zircon",
-      "attributeType": "METAL COLOR",
-      "attributeValue": "Rose Gold",
-      "operation": "MAKING CHARGES PER GRAM",
-      "operationType": "",
-      "transType": ""
-    };
-
-    // Utils.printJsonFormat(data);
-
-    for (int i = 1; i < listOfBomRows.length; i++) {
-      print("item group is ${listOfBomRows[i].itemGroup}");
-      final data = await ref
-          .read(formulaProcedureControllerProvider.notifier)
-          .fetchFormulaByAttribute(
-              listOfBomRows[i].itemGroup.contains("Metal")
-                  ? metalAttributes
-                  : diamondAttributes,
-              context);
-      List<dynamic> rows = data["data"]["excelDetail"];
-      print("formula is $rows");
-
-      List<FormulaRowModel> formulaRows = rows
-          .map((formula) =>
-              FormulaRowModel.fromJson2(formula as Map<String, dynamic>))
-          .toList();
-      FormulaModel formulaModel = FormulaModel(
-          formulaId: "",
-          formulaRows: formulaRows,
-          totalRows: formulaRows.length,
-          isUpdated: false);
-      // bomFormulas.add(formulaModel);
-      ref
-          .read(allVariantFormulasProvider2.notifier)
-          .update("${variantName}_${i})", formulaModel);
-      ref
-          .read(allVariantFormulasProvider2.notifier)
-          .update("formula_${variantName}", formulaModel);
-    }
-
-    Map<String, dynamic> labourAtrributes = {
-      "procedureType": "Item",
-      "transactionType": "INTER WC GROUP TRANSFER OUTWARD",
-      "documentType": "SHIFTING OUTWARD",
-      "transactionCategory": "Hand Setting",
-      "partyName": "",
-      "variantName": "",
-      "itemGroup": "Style(Wt)",
-      "attributeType": "CATEGORY",
-      "attributeValue": "CHAIN",
-      "operation": "LABOUR PER NET METAL WEIGHT",
-      "operationType": "MANUFACTURING",
-      "transType": ""
-    };
-    Map<String, dynamic> hallmarkingAtrributes = {
-      "procedureType": "Item",
-      "transactionType": "INTER WC GROUP TRANSFER OUTWARD",
-      "documentType": "SHIFTING OUTWARD",
-      "transactionCategory": "Wax Setting",
-      "partyName": "",
-      "variantName": "",
-      "itemGroup": "Diamond",
-      "attributeType": "CATEGORY",
-      "attributeValue": "CHAIN",
-      "operation": "Hallmarking",
-      "operationType": "MANUFACTURING",
-      "transType": ""
-    };
-    for (int i = 0; i < 2; i++) {
-      final data = await ref
-          .read(formulaProcedureControllerProvider.notifier)
-          .fetchFormulaByAttribute(
-              i == 0 ? labourAtrributes : hallmarkingAtrributes, context);
-      print("data is $data");
-      List<dynamic> rows = data["data"]["excelDetail"];
-      print("opr formula is $rows");
-
-      List<FormulaRowModel> formulaRows = rows
-          .map((formula) =>
-              FormulaRowModel.fromJson2(formula as Map<String, dynamic>))
-          .toList();
-      FormulaModel formulaModel = FormulaModel(
-          formulaId: "",
-          formulaRows: formulaRows,
-          totalRows: formulaRows.length,
-          isUpdated: false);
-      // bomFormulas.add(formulaModel);
-      ref
-          .read(allVariantFormulasProvider2.notifier)
-          .update("${variantName}_opr_${i})", formulaModel);
-    }
+        procumentSummery["Metal Wt"] =
+            procumentSummery["Wt"] - procumentSummery["Stone Wt"];
+      } catch (e) {
+        print("error in updating summery $e");
+      }
+    });
   }
 
 //done
   void _addNewRowWithItemGroup(ProcumentStyleVariant variant) {
+    print("bom length is ${variant.bomData.bomRows.length}");
     BomRowModel bomSummeryRow = variant.bomData.bomRows[0];
     setState(() {
       _Procumentrows.add(
@@ -378,7 +285,7 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
     print("intilizing start");
     _Procumentrows = [];
     Future.delayed(Duration(seconds: 1), () {
-      ref.read(procurementVariantProvider.notifier).resetAllVariants();
+      ref.read(procurementVariantProvider2.notifier).resetAllVariants();
     });
   }
 
@@ -406,27 +313,102 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
     _procumentSummery({});
   }
 
-  void updateVarientRow(Map<String, dynamic> updatedVarient) {
-    int varientIndex = updatedVarient["varientIndex"];
-    _Procumentrows[varientIndex] = DataGridRow(
-        cells: _Procumentrows[varientIndex].getCells().map((cell) {
-      if (updatedVarient[cell.columnName] != null)
-        return DataGridCell(
-            columnName: cell.columnName,
-            value: updatedVarient[cell.columnName]);
-      else
-        return cell;
-    }).toList());
-    setState(() {});
-    print("updated varient proc summery is $updatedVarient");
-
-    _procumentSummery(updatedVarient);
-    _Procumentrows[varientIndex].getCells().forEach((element) {
-      print("updated varient row ${element.columnName} ${element.value}");
-    });
+  void updateVarientRow(Map<String, dynamic> updatedVarient) async {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      print("here2");
       ref.read(BomProcProvider.notifier).updateAction(updatedVarient, false);
     });
+
+    print("here6");
+    int varientIndex = updatedVarient["varientIndex"];
+    print("varientIndex is $varientIndex");
+    setState(() {
+      _Procumentrows[varientIndex] = DataGridRow(
+          cells: _Procumentrows[varientIndex].getCells().map((cell) {
+        if (updatedVarient[cell.columnName] != null)
+          return DataGridCell(
+              columnName: cell.columnName,
+              value: updatedVarient[cell.columnName]);
+        else
+          return cell;
+      }).toList());
+    });
+    // print("updated varient proc summery is $updatedVarient");
+
+    ProcumentStyleVariant variant =
+        ref.read(procurementVariantProvider2)[varientIndex];
+    print("varient index is2 ${variant.vairiantIndex}");
+
+    String formulaName = "variant_${variant.vairiantIndex}";
+    FormulaModel? formulaModel =
+        ref.read(allVariantFormulasProvider2)[formulaName];
+
+    if (formulaModel != null) {
+      double updatedStyleRate = updatedVarient["Amount"];
+      print("proc amount is $updatedStyleRate");
+      formulaModel.formulaRows[0].rowValue = updatedStyleRate;
+      FormulaModel updatedFormula =
+          await Utils().executeFormula(formulaModel, variant, ref);
+      ref
+          .read(allVariantFormulasProvider2.notifier)
+          .update(formulaName, updatedFormula);
+      print("proc amount2 is ${updatedVarient["Amount"]}");
+      print("here7");
+      print("all formula ${ref.read(allVariantFormulasProvider2)}");
+
+      double totalVarientAmount = 0;
+      double totalCGST = 0;
+      double totalIGST = 0;
+      double totalSGST = 0;
+      for (int i = 0; i < _Procumentrows.length; i++) {
+        String formulaName = "variant_${i}";
+
+        FormulaModel? formulaModel2 =
+            ref.read(allVariantFormulasProvider2)[formulaName];
+
+        if (formulaModel2 != null) {
+          double variantAmount =
+              formulaModel2.formulaRows[formulaModel2.totalRows - 1].rowValue;
+          totalVarientAmount += variantAmount;
+          print("variant $i $variantAmount");
+          totalSGST = formulaModel2.formulaRows
+              .firstWhere((row) => row.rowDescription.contains("SGST"))
+              .rowValue;
+
+          totalCGST = formulaModel2.formulaRows
+              .firstWhere((row) => row.rowDescription.contains("CGST"))
+              .rowValue;
+
+          totalIGST = formulaModel2.formulaRows
+              .firstWhere((row) => row.rowDescription.contains("IGST"))
+              .rowValue;
+        }
+      }
+      updatedVarient["Amount"] = totalVarientAmount;
+
+      String transFormulaName = "transactionFormuala";
+
+      FormulaModel? trnasFormulaModel =
+          ref.read(allVariantFormulasProvider2)[transFormulaName];
+      print("trans formula is ${trnasFormulaModel}");
+      if (trnasFormulaModel != null) {
+        trnasFormulaModel.formulaRows[0].rowValue = totalVarientAmount;
+        trnasFormulaModel.formulaRows[7].rowValue = totalCGST;
+        trnasFormulaModel.formulaRows[8].rowValue = totalSGST;
+        trnasFormulaModel.formulaRows[9].rowValue = totalIGST;
+
+        FormulaModel updatedTransFormula =
+            await Utils().executeFormula(trnasFormulaModel, variant, ref);
+        ref
+            .read(allVariantFormulasProvider2.notifier)
+            .update(transFormulaName, updatedTransFormula);
+        updatedVarient["TotalAmount"] = updatedTransFormula
+            .formulaRows[updatedTransFormula.formulaRows.length - 1].rowValue;
+      }
+
+      _procumentSummery(updatedVarient);
+      print("here8");
+    }
   }
 
   bool showDialogBom = false;
@@ -484,12 +466,12 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                         endUrl: 'ItemMasterAndVariants/Style/Style/Variant',
                         value: 'Variant Name',
                         onOptionSelectd: (selectedValue) async {
-                          print("selected value $selectedValue");
+                          // print("selected value $selectedValue");
                         },
                         onSelectdRow: (selectedRow) async {
-                          print("selected Row $selectedRow");
+                          // print("selected Row $selectedRow");
                           selectedRow["Operation"] = operationMapList;
-                          print("selected Row $selectedRow");
+                          // print("selected Row $selectedRow");
 
                           Dio _dio = Dio();
                           List<dynamic> data = await ProcurementRepository(_dio)
@@ -500,19 +482,13 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                           ref
                               .read(procurementVariantProvider.notifier)
                               .addItem(selectedRow);
-                          Map<dynamic, dynamic>? varientData = ref
-                              .read(procurementVariantProvider.notifier)
-                              .getItemByVariant(selectedRow["Variant Name"]);
-                          print("variant is $varientData");
-
-                          await fetchFormulas(selectedRow);
                           final basicVariant = ProcumentStyleVariant.fromJson(
                               selectedRow, _Procumentrows.length);
                           final completeVariant = await ProcumentStyleVariant
                               .initializeCalculatedFields(
                                   basicVariant, basicVariant.vairiantIndex);
-
-                          print("proc2 setted ");
+                          await Utils()
+                              .fetchFormulas(completeVariant, context, ref);
                           ref
                               .read(procurementVariantProvider2.notifier)
                               .addItem(completeVariant);
@@ -521,7 +497,7 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                           setState(() {});
                           Future.delayed(Duration(seconds: 1), () {
                             print("self formula exec start");
-                            selfExecuteAllForumulas(selectedRow);
+                            selfExecuteAllForumulas(completeVariant);
                             setState(() {});
                           });
                         },
@@ -637,49 +613,32 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
   }
 
   void selfExecuteAllForumulas(
-    Map<String, dynamic> variant,
+    ProcumentStyleVariant variant,
   ) async {
-    print("selfexecuteformula start");
-    List<dynamic> mapBomRows = variant!["BOM Data"];
-    String variantName = variant['Variant Name'];
-
-    selfExecuteBom(mapBomRows, variantName, variant);
-    ProcumentStyleVariant? variant2 = ref
-        .read(procurementVariantProvider2.notifier)
-        .getItemByVariant(variantName);
-    if (variant2 == null) {
-      print("Operation self execution can't be done");
-      return;
-    }
-
-    OperationModel operationModel = variant2.operationData;
-    selfExecuteOperation(operationModel, variantName, variant2);
-
-    print("selfexecuteformula ends");
+    String variantName = variant.variantName;
+    await selfExecuteBom(variant.bomData, variantName, variant);
+    await selfExecuteOperation(variant.operationData, variantName, variant);
   }
 
-  void selfExecuteOperation(OperationModel operationModel, String variantName,
-      ProcumentStyleVariant variant) async {
-    print("self execute operation start");
+  Future<void> selfExecuteOperation(OperationModel operationModel,
+      String variantName, ProcumentStyleVariant variant) async {
+    Map<String, FormulaModel> allFormula =
+        ref.read(allVariantFormulasProvider2);
+    FormulaModel? formulaModel;
     for (int oprIndex = 0;
         oprIndex < operationModel.operationRows.length;
         oprIndex++) {
-      String formulaName = "${variantName}_opr_${oprIndex}";
-      print("formula Name $formulaName");
-      Map<String, FormulaModel> allFormula =
-          ref.read(allVariantFormulasProvider2);
-      print("all formula $allFormula");
-      FormulaModel? formulaModel;
+      String formulaName =
+          "${variantName}_${variant.vairiantIndex}_opr_${oprIndex}";
       for (String formulaKeys in allFormula.keys) {
         if (formulaKeys.contains(formulaName)) {
           formulaModel = allFormula[formulaKeys];
         }
       }
-
       if (formulaModel == null) return;
       print("formula loaded succefully");
-
-      formulaModel = await executeFormula(formulaModel, variantName);
+      formulaModel =
+          await executeFormula(formulaModel, variant, oprIndex, false);
       ref
           .read(allVariantFormulasProvider2.notifier)
           .update(formulaName, formulaModel);
@@ -687,41 +646,39 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
           operationModel.operationRows[oprIndex], variant, formulaModel);
       operationModel.operationRows[oprIndex] = updatedRow;
     }
-    updateBomFromOperation(operationModel, variant);
+    await updateBomFromOperation(operationModel, variant);
     print("self execute operation ends ");
   }
 
-  void updateBomFromOperation(
-      OperationModel operationModel, ProcumentStyleVariant variant) {
-    print("update bom from operation");
+  Future<void> updateBomFromOperation(
+      OperationModel operationModel, ProcumentStyleVariant variant) async {
+    ref.read(procurementVariantProvider2)[variant.vairiantIndex].operationData =
+        operationModel;
     double totalAmount = operationModel.operationRows
         .fold(0.0, (sum, row) => sum + row.labourAmount);
     BomRowModel bomRow = variant.bomData.bomRows[0];
-    print("bom row amount ${bomRow.amount}");
     bomRow.amount += totalAmount;
-    ref.read(procurementVariantProvider)[variant.vairiantIndex]["Operation"] =
-        operationModel.operationRows.map((row) => row.toJson()).toList();
+    ref
+        .read(procurementVariantProvider2)[variant.vairiantIndex]
+        .bomData
+        .bomRows[0] = bomRow;
     print(
-        "updated variant ${ref.read(procurementVariantProvider)[variant.vairiantIndex]}");
-    ref.read(procurementVariantProvider)[variant.vairiantIndex]["BOM Data"][0] =
-        bomRow.toJson2();
-    print(
-        "updated bom is ${ref.read(procurementVariantProvider)[variant.vairiantIndex]["BOM Data"]}");
-    print("total operation Amount $totalAmount");
+        "total operation Amount $totalAmount and bom final amount is ${bomRow.amount}");
     Map<String, dynamic> updatedVariant = {
-      'Amount': bomRow.amount,
-      'varientIndex': variant.vairiantIndex
+      'totalOprAmount': TotalOperationAmount(totalAmount),
+      'varientIndex': variant.vairiantIndex,
+      'Amount': bomRow.amount
     };
     ref.read(BomProcProvider.notifier).updateAction(updatedVariant, true);
     ref
-        .read(procurementVariantProvider.notifier)
-        .updateVariant(variant.variantName, updatedVariant);
-    print("update bom from operation ends");
+        .read(procurementVariantProvider2)[variant.vairiantIndex]
+        .totalOperationAmount = TotalOperationAmount(totalAmount);
   }
 
   OperationRowModel updateOperation(OperationRowModel operationRow,
       ProcumentStyleVariant variant, FormulaModel formula) {
-    operationRow.calcQty = operationMapping(operationRow.operation, variant);
+    operationRow.calcQty =
+        Utils().operationMapping(operationRow.operation, variant);
     operationRow.labourRate =
         formula.formulaRows[formula.totalRows - 1].rowValue;
     operationRow.labourAmount = operationRow.calcQty * operationRow.labourRate;
@@ -729,64 +686,47 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
     return operationRow;
   }
 
-  double operationMapping(String operationType, ProcumentStyleVariant variant) {
-    switch (operationType) {
-      case "LABOUR PER NET METAL WEIGHT":
-        return variant.totalMetalWeight.value;
-      case "LABOUR PER PIECE":
-        return variant.totalPieces.value;
-      case "LABOUR PER GROSS WEIGHT":
-        return variant.totalWeight.value;
-      case "HALLMARKING":
-        return variant.totalPieces.value;
-      case "CERTIFICATION CHARGES":
-        return variant.totalStoneWeight.value;
-      case "HANDLING CHARGES":
-        return variant.totalStoneWeight.value;
-      default:
-        return 0;
-    }
-  }
-
-  void selfExecuteBom(List<dynamic> mapBomRows, String variantName,
-      Map<String, dynamic> variant) async {
-    for (int bomRowIndex = 1; bomRowIndex < mapBomRows.length; bomRowIndex++) {
-      String formulaName = "${variantName}_${bomRowIndex}";
-      print("formula Name $formulaName");
-      Map<String, FormulaModel> allFormula =
-          ref.read(allVariantFormulasProvider2);
-      print("all formula $allFormula");
+  Future<void> selfExecuteBom(BomModel bomModel, String variantName,
+      ProcumentStyleVariant variant) async {
+    Map<String, FormulaModel> allFormula =
+        ref.read(allVariantFormulasProvider2);
+    for (int bomRowIndex = 1;
+        bomRowIndex < bomModel.bomRows.length;
+        bomRowIndex++) {
+      String formulaName =
+          "${variantName}_${variant.vairiantIndex}_bom_${bomRowIndex}";
       FormulaModel? formulaModel;
       for (String formulaKeys in allFormula.keys) {
         if (formulaKeys.contains(formulaName)) {
           formulaModel = allFormula[formulaKeys];
         }
       }
-
       if (formulaModel == null) return;
-      print("self execute bom formula ends $bomRowIndex");
-      formulaModel = await executeFormula(formulaModel, variantName);
+      formulaModel =
+          await executeFormula(formulaModel, variant, bomRowIndex, true);
       ref
           .read(allVariantFormulasProvider2.notifier)
           .update(formulaName, formulaModel);
-      print("updated metal rate is->> ${formulaModel.formulaRows[0].rowValue}");
-      BomRowModel bomRow =
-          BomRowModel.fromJson(mapBomRows[bomRowIndex] as Map<String, dynamic>);
-      print("bom row is ${bomRow.toJson()}");
-      updateBomRow(
-          variant, bomRowIndex, formulaModel, bomRow, _Procumentrows.length);
+      BomRowModel bomRow = bomModel.bomRows[bomRowIndex];
+      await updateBomRow(
+        variant,
+        bomRowIndex,
+        formulaModel,
+        bomRow,
+      );
       //
     }
   }
 
-  Future<FormulaModel> executeFormula(
-      FormulaModel formula, String variantName) async {
+  Future<FormulaModel> executeFormula(FormulaModel formula,
+      ProcumentStyleVariant variant, int bomRowIndex, bool isFromBom) async {
+    print("execure formula starts $bomRowIndex and fromBOM $isFromBom");
     for (int i = 0; i < formula.formulaRows.length; i++) {
       // Utils.printJsonFormat(formula.formulaRows[i].toJson());
       FormulaRowModel formulaRowModel = formula.formulaRows[i];
       if (formulaRowModel.dataType == "Range") {
-        formulaRowModel.rowValue =
-            await rangeCalculation(formulaRowModel.rowExpression, variantName);
+        formulaRowModel.rowValue = await rangeCalculation(
+            formulaRowModel.rowExpression, variant, bomRowIndex, isFromBom);
       } else if (formulaRowModel.dataType == "Calculation") {
         formulaRowModel.rowValue =
             formulaCalculation(formulaRowModel.rowExpression, formula);
@@ -795,10 +735,13 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
             formulaRowModel.rowValue, formulaRowModel.rowType);
       }
     }
+    print("execure formula ends $bomRowIndex and fromBOM $isFromBom");
     return formula;
   }
 
-  Future<double> rangeCalculation(String rangeKey, String variantName) async {
+  Future<double> rangeCalculation(String rangeKey,
+      ProcumentStyleVariant variant, int bomRowIndex, bool isFromBom) async {
+    print("range calculation start");
     rangeKey = "15 jan";
     Map<dynamic, dynamic> rangeValue = await ref
         .read(formulaProcedureControllerProvider.notifier)
@@ -809,18 +752,20 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
     List<dynamic> excelData = rangeExcel[rangeKey]["Details"]["excelData"];
     List<dynamic> excelHeaders = rangeExcel[rangeKey]["Details"]["Headers"];
     List<List<dynamic>> matrixdata = List.from(excelData);
-    Map<String, dynamic> variantAttributes =
-        fetchVariantAttributes(variantName);
+    Map<String, dynamic> variantAttributes = isFromBom
+        ? fetchVariantAttributesBom(variant, bomRowIndex)
+        : fetchVariantAttributesOpr(variant);
     double rangeOutput =
         findMatchingRowValue(variantAttributes, excelHeaders, matrixdata);
     return rangeOutput;
   }
 
-  Map<String, dynamic> fetchVariantAttributes(String variantName) {
+  Map<String, dynamic> fetchVariantAttributesBom(
+      ProcumentStyleVariant variant, int bomRowIndex) {
     Map<String, dynamic> variantAttributes = {};
     Map<String, dynamic>? varient = ref
         .read(procurementVariantProvider.notifier)
-        .getItemByVariant(variantName);
+        .getItemByVariant(variant.variantName);
     variantAttributes["KARAT"] = "22";
     variantAttributes["CATEGORY"] = varient!["Category"];
     variantAttributes["Sub-Category"] = varient["Sub-Category"];
@@ -828,12 +773,32 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
     variantAttributes["Varient"] = varient["Varient"];
     variantAttributes["HSN - SAC CODE"] = varient["HSN-SAC Code"];
     variantAttributes["LINE OF BUSINESS"] = varient["Line of Business"];
-    List<dynamic> selectedBomRow =
-        varient["BOM"]["data"][ref.read(showFormulaProvider)];
-    variantAttributes["Pieces"] = selectedBomRow[2];
-    variantAttributes["Weight"] = selectedBomRow[3];
-    variantAttributes["Rate"] = selectedBomRow[4];
-    variantAttributes["Avg Wt(Pcs)"] = selectedBomRow[5];
+    variantAttributes["Pieces"] = variant.bomData.bomRows[bomRowIndex].pieces;
+    variantAttributes["Weight"] = variant.bomData.bomRows[bomRowIndex].weight;
+    variantAttributes["Rate"] = variant.bomData.bomRows[bomRowIndex].rate;
+    variantAttributes["Avg Wt(Pcs)"] =
+        variant.bomData.bomRows[bomRowIndex].avgWeight;
+    return variantAttributes;
+  }
+
+  Map<String, dynamic> fetchVariantAttributesOpr(
+    ProcumentStyleVariant variant,
+  ) {
+    Map<String, dynamic> variantAttributes = {};
+    Map<String, dynamic>? varient = ref
+        .read(procurementVariantProvider.notifier)
+        .getItemByVariant(variant.variantName);
+    variantAttributes["KARAT"] = "22";
+    variantAttributes["CATEGORY"] = varient!["Category"];
+    variantAttributes["Sub-Category"] = varient["Sub-Category"];
+    variantAttributes["STYLE KARAT"] = varient["Style Karat"];
+    variantAttributes["Varient"] = varient["Varient"];
+    variantAttributes["HSN - SAC CODE"] = varient["HSN-SAC Code"];
+    variantAttributes["LINE OF BUSINESS"] = varient["Line of Business"];
+    variantAttributes["Pieces"] = variant.bomData.bomRows[0].pieces;
+    variantAttributes["Weight"] = variant.bomData.bomRows[0].weight;
+    variantAttributes["Rate"] = variant.bomData.bomRows[0].rate;
+    variantAttributes["Avg Wt(Pcs)"] = variant.bomData.bomRows[0].avgWeight;
     return variantAttributes;
   }
 
@@ -927,8 +892,8 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
     }
   }
 
-  void updateBomRow(Map<String, dynamic> variant, int updatedRowIndex,
-      FormulaModel formulaModel, BomRowModel bomrow, int variantIndex) {
+  Future<void> updateBomRow(ProcumentStyleVariant variant, int updatedRowIndex,
+      FormulaModel formulaModel, BomRowModel bomrow) async {
     double updatedRate;
     var metalRateRows =
         formulaModel.formulaRows.where((row) => row.rowType == "MEATAL RATE");
@@ -942,26 +907,25 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
           ? diamondRateRows.first.rowValue?.toDouble() ?? 0.0
           : 0.0;
     }
-    List<dynamic> mapBomRows = variant!["BOM Data"];
-    List<BomRowModel> listOfBoms = mapBomRows
-        .map((row) => BomRowModel.fromJson(row as Map<String, dynamic>))
-        .toList();
+
+    List<BomRowModel> listOfBoms = variant.bomData.bomRows;
     double weight = bomrow.weight;
     bomrow.rate = updatedRate;
     bomrow.amount = updatedRate * weight;
-    ref.read(procurementVariantProvider)[variantIndex]["BOM Data"]
-        [updatedRowIndex] = bomrow.toJson2();
-    mapBomRows = ref.read(procurementVariantProvider)[variantIndex]["BOM Data"];
-    listOfBoms = mapBomRows
-        .map((row) => BomRowModel.fromJson(row as Map<String, dynamic>))
-        .toList();
-
-    updateBomSummaryRow(variant["Variant Name"], listOfBoms, variantIndex);
+    ref
+        .read(procurementVariantProvider2)[variant.vairiantIndex]
+        .bomData
+        .bomRows[updatedRowIndex] = bomrow;
+    listOfBoms = ref
+        .read(procurementVariantProvider2)[variant.vairiantIndex]
+        .bomData
+        .bomRows;
+    updateBomSummaryRow(variant.variantName, listOfBoms, variant.vairiantIndex);
   }
 
-  void updateBomSummaryRow(
-      String variantName, List<BomRowModel> bomRows, int variantIndex) {
-    print("start updating bom summary row");
+  Future<void> updateBomSummaryRow(
+      String variantName, List<BomRowModel> bomRows, int variantIndex) async {
+    print("start updating bom summary row1");
     // int totalPcs = 0;
     double totalWt = 0.0;
     double totalRate = 0.0;
@@ -1034,31 +998,16 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
     print("updated stone weight is ${stoneWeight} $stonePieces");
     if (stoneWeight != 0) updatedVarient["Stone Wt"] = stoneWeight;
     updatedVarient["Stone Pieces"] = stonePieces;
+    updatedVarient["totalStonePieces"] = stonePieces;
     updatedVarient["varientIndex"] = variantIndex;
     updatedVarient["Variant Name"] = variantName;
     updatedVarient["BOM Data"] =
         updatedBom.map((bom) => bom.toJson2()).toList();
-
-    print("updatedVarient map is $updatedVarient ${variantName}");
-
-    //<----update ui updates the procum varient with new values---->
-    print("start ui updates the procum varient with new values");
-
     ref.read(BomProcProvider.notifier).updateAction(updatedVarient, true);
-
-    //<----update the procument varient with new values---->
-    print("start update the procument varient with new values");
-    // Future.delayed(Duration(seconds: 3), () {
-    ref
-        .read(procurementVariantProvider.notifier)
-        .updateVariant(variantName, updatedVarient);
-
-    /// tem work remove bom conversion to json
     updatedVarient["BOM Data"] = BomModel(bomRows: updatedBom, headers: []);
+    updatedVarient["totalStonePieces"] = TotalPeices(stonePieces);
     ref
         .read(procurementVariantProvider2.notifier)
         .updateVariant(variantName, updatedVarient);
-    // });
-    print("end updating bom summary row");
   }
 }

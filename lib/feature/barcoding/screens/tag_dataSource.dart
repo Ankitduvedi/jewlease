@@ -32,7 +32,7 @@ class TagDataSource extends DataGridSource {
                 )),
             DataGridCell<String>(columnName: 'variant', value: tag.variant),
             DataGridCell<String>(columnName: 'stockCode', value: tag.stockCode),
-            DataGridCell<int>(columnName: 'pcs', value: tag.pcs),
+            DataGridCell<double>(columnName: 'pcs', value: tag.pcs),
             DataGridCell<double>(columnName: 'wt', value: tag.wt),
             DataGridCell<double>(columnName: 'netWt', value: tag.netWt),
             DataGridCell<double>(columnName: 'clsWt', value: tag.clsWt),

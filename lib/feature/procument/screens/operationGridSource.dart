@@ -16,7 +16,7 @@ class procumentOperationGridSource extends DataGridSource {
   final List<DataGridRow> _editingRows;
   final Function(DataGridRow) onDelete;
   final Function(double,int) onEdit;
-  final Function(String, int) showFormulaDialog;
+  final Function(int) showFormulaDialog;
   final WidgetRef ref;
   bool canEdit;
 
@@ -114,16 +114,9 @@ class procumentOperationGridSource extends DataGridSource {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (dataCell.columnName == 'Variant Name')
+                    if (dataCell.columnName == 'Calc Bom')
                       GestureDetector(
                           onTapDown: (pos) {
-                            String itemGroup = row
-                                .getCells()
-                                .where(
-                                    (cell) => cell.columnName == 'Item Group')
-                                .first
-                                .value;
-                            print("item Group is $itemGroup");
                             final RelativeRect rp = RelativeRect.fromLTRB(
                               pos.globalPosition.dx,
                               pos.globalPosition.dy,
@@ -138,14 +131,7 @@ class procumentOperationGridSource extends DataGridSource {
                                   value: 'show_formula',
                                   child: const Text('Show Formula'),
                                   onTap: () {
-                                    showFormulaDialog(itemGroup, rowIndex);
-                                  },
-                                ),
-                                PopupMenuItem(
-                                  value: 'Show Operation',
-                                  child: const Text('Show Operation'),
-                                  onTap: () {
-                                    showFormulaDialog(itemGroup, rowIndex);
+                                    showFormulaDialog( rowIndex);
                                   },
                                 ),
                               ],

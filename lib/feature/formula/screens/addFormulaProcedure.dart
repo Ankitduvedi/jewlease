@@ -10,6 +10,7 @@ import 'package:jewlease/widgets/read_only_textfield_widget.dart';
 import 'package:jewlease/widgets/text_field_widget.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
+import '../../../core/utils/utils.dart';
 import '../../../main.dart';
 import '../../../providers/excelProvider.dart';
 import '../../../widgets/search_dailog_widget.dart';
@@ -120,34 +121,42 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
     }
 
     try {
-      List<List<dynamic>> excelData = await fetchApiUpdatedData();
+      Map<String, dynamic> data = await ref
+          .read(formulaProcedureControllerProvider.notifier)
+          .fetchFormulaByAttribute(Utils().metalBarcode, context);
+      List<dynamic> rows = data["data"]["excelDetail"];
+      // print("variant formula is $rows");
+
+      List<FormulaRowModel> formulaRows = rows
+          .map((formula) =>
+              FormulaRowModel.fromJson2(formula as Map<String, dynamic>))
+          .toList();
+      FormulaModel formulaModel = FormulaModel(
+          formulaId: "",
+          formulaRows: formulaRows,
+          totalRows: formulaRows.length,
+          isUpdated: false);
 
       setState(() {
-        outwardRows = excelData
+        outwardRows = formulaRows
             .map((row) => DataGridRow(cells: [
+                  DataGridCell<int>(columnName: 'Row', value: row.rowNo),
                   DataGridCell<String>(
-                      columnName: 'Row', value: row[0]?.toString() ?? ''),
+                      columnName: 'Description', value: row.rowDescription),
                   DataGridCell<String>(
-                      columnName: 'Description',
-                      value: row[1]?.toString() ?? ''),
+                      columnName: 'Data Type', value: row.dataType),
                   DataGridCell<String>(
-                      columnName: 'Data Type', value: row[2]?.toString() ?? ''),
+                      columnName: 'Row Type', value: row.rowType),
                   DataGridCell<String>(
-                      columnName: 'Row Type', value: row[3]?.toString() ?? ''),
+                      columnName: 'Formula', value: row.rowExpression),
+                  DataGridCell<String>(columnName: 'Range Value', value: ''),
                   DataGridCell<String>(
-                      columnName: 'Formula', value: row[4]?.toString() ?? ''),
+                      columnName: 'Editable',
+                      value: row.editableInd.toString()),
                   DataGridCell<String>(
-                      columnName: 'Range Value',
-                      value: row[5]?.toString() ?? ''),
-                  DataGridCell<String>(
-                      columnName: 'Editable', value: row[6]?.toString() ?? ''),
-                  DataGridCell<String>(
-                      columnName: 'Visible', value: row[7]?.toString() ?? ''),
-                  DataGridCell<String>(
-                      columnName: 'Round Off', value: row[7]?.toString() ?? ''),
-                  DataGridCell<String>(
-                      columnName: 'Account Name',
-                      value: row[7]?.toString() ?? ''),
+                      columnName: 'Visible', value: row.variantId.toString()),
+                  DataGridCell<String>(columnName: 'Round Off', value: ''),
+                  DataGridCell<String>(columnName: 'Account Name', value: ''),
                 ]))
             .toList();
 
@@ -250,7 +259,6 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
     ref
         .read(formulaProcedureControllerProvider.notifier)
         .addFormulaExcel(excelReqBody, context);
-
   }
 
   Map<String, String> excelMap = {
@@ -701,18 +709,21 @@ class AddMetalItemScreenState extends ConsumerState<AddFormulaProcedure> {
                   style: TextStyle(color: Colors.white),
                 )))),
         InkWell(
-            onTap: () {
-              _validateFormulas();
-            },
-            child: Container(
-                decoration: BoxDecoration(
-                    color: const Color(0xff003450),
-                    borderRadius: BorderRadius.circular(8)),
-                child: const Center(
-                    child: Text(
-                  "Validate",
-                  style: TextStyle(color: Colors.white),
-                )))),
+          onTap: () {
+            _validateFormulas();
+          },
+          child: Container(
+            decoration: BoxDecoration(
+                color: const Color(0xff003450),
+                borderRadius: BorderRadius.circular(8)),
+            child: const Center(
+              child: Text(
+                "Validate",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
+        ),
         InkWell(
             onTap: () {
               _uploadData();

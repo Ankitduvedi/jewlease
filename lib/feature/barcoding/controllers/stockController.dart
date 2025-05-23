@@ -43,10 +43,13 @@ class StockDetailsNotifier extends Notifier<StockDetailsModel> {
         currentNetWt: updatedDetails.currentNetWt != 0.0
             ? updatedDetails.currentNetWt
             : null,
+        curentMetalWt:  updatedDetails.currentMetalWt!=0?updatedDetails.currentMetalWt:null,
         currentPieces: updatedDetails.currentPieces,
         currentAmount: updatedDetails.currentAmount,
         currentDiaPieces: updatedDetails.currentDiaPieces,
-        currentBom: updatedDetails.currentBom);
+        currentBom: updatedDetails.currentBom,
+      currentOpr:  updatedDetails.currentOperation
+    );
   }
 }
 

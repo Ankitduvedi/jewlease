@@ -30,7 +30,9 @@ class RangeDataGridSource extends DataGridSource {
         if (dataCell.columnName == 'Actions') {
           return IconButton(
             icon: Icon(Icons.delete),
-            onPressed: () => onDelete(row),
+            onPressed: ()  {
+              print("delete row start $row");
+              onDelete(row);},
           );
         }
 

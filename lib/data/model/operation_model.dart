@@ -56,6 +56,7 @@ class OperationRowModel {
     required this.rowStatus,
     required this.rateEditInd,
   });
+
   OperationRowModel copyWith({
     String? variantName,
     String? calcBom,
@@ -103,7 +104,6 @@ class OperationRowModel {
       rateEditInd: rateEditInd ?? this.rateEditInd,
     );
   }
-
 
   factory OperationRowModel.fromJson(Map<String, dynamic> json) =>
       OperationRowModel(
@@ -153,6 +153,58 @@ class OperationRowModel {
         "RowStatus": rowStatus,
         "Rate_Edit_Ind": rateEditInd,
       };
+
+  static OperationRowModel fromDatagrid(
+      OperationRowModel oprModel, List<dynamic> values) {
+    return OperationRowModel(
+      variantName: oprModel.variantName,
+      calcBom: values[0],
+      calcCf: oprModel.calcCf,
+      calcMethod: values[5],
+      calcMethodVal: oprModel.calcMethodVal,
+      calcQty: values[2],
+      calculateFormula: oprModel.calculateFormula,
+      depdBom: oprModel.depdBom,
+      depdMethod: oprModel.depdMethod,
+      depdMethodVal: oprModel.depdMethodVal,
+      depdQty: oprModel.depdQty,
+      labourAmount: values[4],
+      labourAmountLocal: oprModel.labourAmountLocal,
+      labourRate: values[3],
+      maxRateValue: oprModel.maxRateValue,
+      minRateValue: oprModel.minRateValue,
+      operation: values[1],
+      operationType: oprModel.operation,
+      rateAsPerFormula: oprModel.rateAsPerFormula,
+      rowStatus: oprModel.rowStatus,
+      rateEditInd: oprModel.rateEditInd,
+    );
+  }
+
+  static OperationRowModel fromNewDatagrid(List<dynamic> values) {
+    return OperationRowModel(
+        variantName: '',
+        calcBom: values[0],
+        calcCf: 0,
+        calcMethod: '',
+        calcMethodVal: values[5],
+        calcQty: values[2],
+        calculateFormula: '',
+        depdBom: '',
+        depdMethod: '',
+        depdMethodVal: 0,
+        depdQty: 0,
+        labourAmount: values[4],
+        labourAmountLocal: 0,
+        labourRate: values[3],
+        maxRateValue: 0,
+        minRateValue: 0,
+        operation: values[1],
+        operationType: '',
+        rateAsPerFormula: 0,
+        rowStatus: 1,
+        rateEditInd: 1);
+  }
 }
 
 class OperationModel {

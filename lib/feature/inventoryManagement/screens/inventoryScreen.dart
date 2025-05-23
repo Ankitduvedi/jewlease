@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jewlease/data/model/inventoryItem.dart';
+// import 'package:jewlease/data/model/inventoryItem.dart';
 import 'package:jewlease/feature/inventoryManagement/screens/inventorySummery.dart';
 import 'package:jewlease/main.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
+import '../../../data/model/procumentStyleVariant.dart';
 import '../../../providers/dailog_selection_provider.dart';
 import '../../home/right_side_drawer/controller/drawer_controller.dart';
 import '../controllers/inventoryController.dart';
@@ -107,7 +108,7 @@ class _InventoryManagementScreenState
   ];
 
   ScrollController _scrollController = ScrollController();
-  List<InventoryItemModel> inventoryItems = [];
+  List<ProcumentStyleVariant> inventoryItems = [];
 
   void addInventoryItem() async {
     setState(() {
@@ -123,30 +124,35 @@ class _InventoryManagementScreenState
           locationName: locationName,
           deprtmentName: departmentName,
           isRawMaterial: isChecked["Raw Material"] ?? false);
-      List<InventoryItemModel> allStocks =
+      List<ProcumentStyleVariant> allStocks =
           ref.read(inventoryControllerProvider.notifier).inventoryItems;
 
       print("len allstocks ${allStocks.length}");
       inventoryItems.addAll(allStocks);
       ref.read(inventorySummaryProvider.notifier).updateAll({
         "TotalRows": allStocks.length.toString(),
-        "Pcs": allStocks.fold(0.0, (sum, item) => sum + item.pieces).toString(),
+        "Pcs": allStocks
+            .fold(0.0, (sum, item) => sum + item.totalPieces.value)
+            .toString(),
         "Wt": allStocks
-            .fold(0.0, (sum, item) => sum + item.metalWeight)
+            .fold(0.0, (sum, item) => sum + item.totalMetalWeight.value)
             .toString(),
-        "NetWt": (allStocks.fold(0.0, (sum, item) => sum + item.metalWeight) +
-                allStocks.fold(0.0, (sum, item) => sum + item.diaWeight))
+        "NetWt": (allStocks.fold(
+            0.0, (sum, item) => sum + item.totalWeight.value)).toString(),
+        "DiaPcs": allStocks
+            .fold(0.0, (sum, item) => sum + item.totalStonePeices.value)
             .toString(),
-        "DiaPcs":
-            allStocks.fold(0.0, (sum, item) => sum + item.diaPieces).toString(),
-        "DiaWt":
-            allStocks.fold(0.0, (sum, item) => sum + item.diaWeight).toString(),
+        "DiaWt": allStocks
+            .fold(0.0, (sum, item) => sum + item.totalStoneWeight.value)
+            .toString(),
         "LgPcs": "30",
         "LgWt": "15",
-        "StnPcs":
-            allStocks.fold(0.0, (sum, item) => sum + item.diaPieces).toString(),
-        "StnWt":
-            allStocks.fold(0.0, (sum, item) => sum + item.diaWeight).toString(),
+        "StnPcs": allStocks
+            .fold(0.0, (sum, item) => sum + item.totalStonePeices.value)
+            .toString(),
+        "StnWt": allStocks
+            .fold(0.0, (sum, item) => sum + item.totalStoneWeight.value)
+            .toString(),
         "MemoInd": "1",
         "SorTransItemId": "123",
         "SorTransItemBomId": "456",

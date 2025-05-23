@@ -40,8 +40,8 @@ class ItemMasterVariant {
   String varient;
   String hsnSacCode;
   String lineOfBusiness;
-  dynamic bom;
-  dynamic operation;
+  List<Map<String,dynamic>> bom;
+  List<Map<String,dynamic>> operation;
   List<ImageDetail> imageDetails;
 
   ItemMasterVariant({
@@ -140,7 +140,7 @@ class ItemMasterVariant {
         "variant": varient,
         "hsnSacCode": hsnSacCode,
         "lineOfBusiness": lineOfBusiness,
-        "bom": bom,
+        "BOM": bom,
         "operation": operation,
         "imageDetails": List<dynamic>.from(imageDetails.map((x) => x.toJson())),
       };

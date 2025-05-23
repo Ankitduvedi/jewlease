@@ -21,7 +21,7 @@ class _procumentDialogState extends ConsumerState<procumentVendorDialog> {
   @override
   Widget build(BuildContext context) {
     final textFieldvalues = ref.watch(dialogSelectionProvider);
-    print("txtfld $textFieldvalues");
+    // print("txtfld $textFieldvalues");
     return Container(
       height: screenHeight * 0.3,
       width: screenWidth * 0.9,

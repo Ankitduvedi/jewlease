@@ -11,7 +11,6 @@ class TransactionRepository {
   TransactionRepository(this._dio);
 
   Future<String?> sentTransaction(TransactionModel transaction) async {
-    print("history ${transaction.toJson()}");
     // return "";
 
     try {

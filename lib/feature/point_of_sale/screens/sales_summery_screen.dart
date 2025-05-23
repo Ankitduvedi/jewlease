@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/data/model/procumentStyleVariant.dart';
 import 'package:jewlease/feature/point_of_sale/screens/point_of_sale_screen.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
@@ -72,41 +73,34 @@ class _ProcumentDataGridState extends ConsumerState<SalesSummaryScreen> {
     return (columnName.length * charWidth) + paddingWidth;
   }
 
-  void _addNewRowWithItemGroup(Map<dynamic, dynamic> varient) {
-    // print("varient $varient ${varient["BOM"]["data"][0][3]}");
-    print("varient $varient");
-    List<dynamic> bomSummery = [];
-    for (var item in varient["BOM"]["data"][0]) {
-      print("item $item");
-      bomSummery.add(item);
-    }
+  void _addNewRowWithItemGroup(ProcumentStyleVariant variant) {
 
     setState(() {
       posRows.add(
         DataGridRow(cells: [
           DataGridCell<String>(columnName: 'Ref Document', value: ''),
           DataGridCell<String>(
-              columnName: 'Variant Name', value: varient['Varient Name']),
-          DataGridCell<String>(columnName: 'Line No', value: ''),
-          DataGridCell(columnName: "Batch", value: ""),
+              columnName: 'Variant Name', value:variant.variantName),
+          DataGridCell<int>(columnName: 'Line No', value: variant.lineNo),
+          DataGridCell<String>(columnName: "Batch", value: variant.batchNo),
           DataGridCell<String>(
-              columnName: 'Stock Code', value: varient['Stock ID']),
+              columnName: 'Stock Code', value: variant.stockID),
           DataGridCell<String>(columnName: 'Stock Status', value: ""),
-          DataGridCell(columnName: 'Group Item', value: varient["Item Group"]),
+          DataGridCell<String>(columnName: 'Group Item', value:variant.itemGroup),
+          DataGridCell<double>(
+              columnName: 'Pieces', value: variant.totalPieces.value),
+          DataGridCell<double>(
+              columnName: 'Weight', value: variant.totalMetalWeight.value),
+          DataGridCell<double>(
+              columnName: 'Rate', value: 0),
+          DataGridCell<double>(
+              columnName: 'Amount', value: 0),
           DataGridCell<String>(
-              columnName: 'Pieces', value: varient['Pieces'].toString() ?? "1"),
-          DataGridCell<String>(
-              columnName: 'Weight', value: varient["Net Weight"].toString()),
-          DataGridCell<String>(
-              columnName: 'Rate', value: varient["Std Buying Rate"]),
-          DataGridCell<String>(
-              columnName: 'Amount', value: bomSummery[6].toString()),
-          DataGridCell(
-              columnName: "Karat Color", value: varient["Karat Color"]),
-          DataGridCell(columnName: "Certificate No", value: ""),
-          DataGridCell(columnName: "Batch Quality", value: ""),
-          DataGridCell(columnName: "Remarks", value: varient["Remark 1"]),
-          DataGridCell<String>(columnName: 'Against Transfer Doc', value: "0"),
+              columnName: "Karat Color", value: variant.karatColor),
+          DataGridCell<String>(columnName: "Certificate No", value: variant.certificateNo),
+          DataGridCell<String>(columnName: "Batch Quality", value: ""),
+          DataGridCell<String>(columnName: "Remarks", value: variant.remark),
+          DataGridCell<String>(columnName: 'Against Transfer Doc', value: ""),
         ]),
       );
       posDataGridSource.updateDataGridSource();
@@ -231,18 +225,22 @@ class _ProcumentDataGridState extends ConsumerState<SalesSummaryScreen> {
                         title: 'Outward Stock',
                         endUrl: 'Procurement/GRN',
                         value: 'Stock ID',
-                        onOptionSelectd: (selectedValue) {
+                        onOptionSelectd: (selectedValue) async{
                           print("selected value $selectedValue");
                         },
-                        onSelectdRow: (selectedRow) {
+                        onSelectdRow: (selectedRow) async{
                           ref
                               .read(procurementVariantProvider.notifier)
                               .addItem(selectedRow);
-                          Map<dynamic, dynamic>? selected = ref
-                              .read(procurementVariantProvider.notifier)
-                              .getItemByVariant(selectedRow['Varient']);
-                          print("selected $selected selectedRow $selectedRow");
-                          _addNewRowWithItemGroup(selectedRow);
+                          // Map<dynamic, dynamic>? selected = ref
+                          //     .read(procurementVariantProvider.notifier)
+                          //     .getItemByVariant(selectedRow['Varient']);
+                          final basicVariant = ProcumentStyleVariant.fromJson(
+                              selectedRow, posRows.length);
+                          final completeVariant = await ProcumentStyleVariant
+                              .initializeCalculatedFields(
+                              basicVariant, basicVariant.vairiantIndex);
+                          _addNewRowWithItemGroup(completeVariant);
                           setState(() {});
                         },
                       ),

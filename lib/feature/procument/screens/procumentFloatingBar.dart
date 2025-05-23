@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jewlease/main.dart';
 
-import '../../formula/screens/transaction_formula.dart';
 import 'formulaGrid.dart';
 
 class SummaryDetails extends StatelessWidget {
@@ -42,7 +41,7 @@ class SummaryDetails extends StatelessWidget {
                 color: Colors.grey.shade300.withOpacity(0.5),
                 borderRadius: BorderRadius.circular(5.0),
               ),
-              child: const TotalHeader(total: 47.26)),
+              child: TotalHeader(total: Summery["TotalTransAmt"])),
           SizedBox(
             width: 5,
           ),
@@ -115,8 +114,19 @@ class TotalHeader extends StatelessWidget {
                       borderRadius: BorderRadius.circular(15)),
                   child: Container(
                     height: screenHeight * 0.35,
-                    child:Container()
-                    // TransactionFormulaDataGrid("GPSKC21736776984049", 0),
+                    width: screenWidth * 0.42,
+                    child: Center(
+                      child: FormulaDataGrid(
+                        varientIndex: 0,
+                        varientName: "",
+                        isFromBom: true,
+                        FormulaName: "transactionFormuala",
+                        backButton: () {
+                          Navigator.pop(context);
+                        },
+                        formulaIndex: 0,
+                      ),
+                    ),
                   ),
                 ),
               );

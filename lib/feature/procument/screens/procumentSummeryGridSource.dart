@@ -5,7 +5,7 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 class ProcumentDataGridSource extends DataGridSource {
   ProcumentDataGridSource(
       this.dataGridRows, this.onDelete, this.onEdit, this.canEdit,
-      {this.isFromSubContracting = false})
+      {this.showFormulaDialog, this.isFromSubContracting = false})
       : _editingRows = dataGridRows;
 
   final List<DataGridRow> dataGridRows;
@@ -14,6 +14,7 @@ class ProcumentDataGridSource extends DataGridSource {
   final Function() onEdit;
   final bool canEdit;
   final bool isFromSubContracting;
+  final Function(int)? showFormulaDialog;
 
   @override
   List<DataGridRow> get rows => dataGridRows;
@@ -38,14 +39,14 @@ class ProcumentDataGridSource extends DataGridSource {
         .value);
     print(
         'final amount is ${rate.runtimeType} ${weight.runtimeType} ${pieces.runtimeType}');
-    if(pieces.runtimeType!=int) {
-      pieces= int.parse(pieces);
+    if (pieces.runtimeType != int) {
+      pieces = int.parse(pieces);
     }
-    if(weight.runtimeType!=int) {
+    if (weight.runtimeType != int) {
       weight = int.parse(weight);
     }
 
-    if(rate.runtimeType!=int) {
+    if (rate.runtimeType != int) {
       rate = int.parse(rate);
     }
     dataGridRows[updateRowIndex] = DataGridRow(
@@ -63,10 +64,10 @@ class ProcumentDataGridSource extends DataGridSource {
                     weight *
                     (rate.runtimeType == int ? rate : int.parse(rate)));
       else if (cell.columnName == "Weight") {
-        return DataGridCell(columnName: cell.columnName, value: pieces*weight);
-      }
-      else if (cell.columnName == "Stone Wt") {
-        return DataGridCell(columnName: cell.columnName, value: pieces*stnWt);
+        return DataGridCell(
+            columnName: cell.columnName, value: pieces * weight);
+      } else if (cell.columnName == "Stone Wt") {
+        return DataGridCell(columnName: cell.columnName, value: pieces * stnWt);
       }
       return cell;
     }).toList());
@@ -153,44 +154,76 @@ class ProcumentDataGridSource extends DataGridSource {
               },
               child: Container(
                 alignment: Alignment.center,
-                child: TextField(
-                  onSubmitted: (value) {
-                    int parsedValue = int.tryParse(value) ?? 0;
-                    int rowIndex = dataGridRows.indexOf(row);
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (dataCell.columnName == 'Ref Document')
+                      GestureDetector(
+                          onTapDown: (pos) {
+                            final RelativeRect rp = RelativeRect.fromLTRB(
+                              pos.globalPosition.dx,
+                              pos.globalPosition.dy,
+                              pos.globalPosition.dx,
+                              pos.globalPosition.dy,
+                            );
+                            showMenu(
+                              context: context,
+                              position: rp, // Adjust position as needed
+                              items: [
+                                PopupMenuItem(
+                                  value: 'show_formula',
+                                  child: const Text('Show Formula'),
+                                  onTap: () {
+                                    int rowIndex = dataGridRows.indexOf(row);
+                                    if (showFormulaDialog != null)
+                                      showFormulaDialog!(rowIndex);
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                          child: const Icon(Icons.more_vert)),
+                    Expanded(
+                      child: TextField(
+                        onSubmitted: (value) {
+                          int parsedValue = int.tryParse(value) ?? 0;
+                          int rowIndex = dataGridRows.indexOf(row);
 
-                    // Update the _rows list directly
-                    dataGridRows[rowIndex] = DataGridRow(cells: [
-                      for (var cell in row.getCells())
-                        if (cell == dataCell)
-                          DataGridCell<int>(
-                            columnName: cell.columnName,
-                            value: parsedValue,
-                          )
-                        else
-                          cell,
-                    ]);
+                          // Update the _rows list directly
+                          dataGridRows[rowIndex] = DataGridRow(cells: [
+                            for (var cell in row.getCells())
+                              if (cell == dataCell)
+                                DataGridCell<int>(
+                                  columnName: cell.columnName,
+                                  value: parsedValue,
+                                )
+                              else
+                                cell,
+                          ]);
 
-                    recalculateWt(rowIndex);
-                    onEdit();
-                  },
-                  controller: TextEditingController(
-                    text: dataCell.value.toString(),
-                  ),
-                  style: TextStyle(
-                      decoration: dataCell.columnName == 'Variant Name'
-                          ? TextDecoration.underline
-                          : TextDecoration.none,
-                      decorationColor: Colors.blue.shade900,
-                      color: dataCell.columnName == 'Variant Name'
-                          ? Colors.blue.shade900
-                          : Colors.black),
-                  keyboardType: TextInputType.number,
-                  enabled:
-                  false,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    isDense: true,
-                  ),
+                          recalculateWt(rowIndex);
+                          onEdit();
+                        },
+                        controller: TextEditingController(
+                          text: dataCell.value.toString(),
+                        ),
+                        style: TextStyle(
+                            decoration: dataCell.columnName == 'Variant Name'
+                                ? TextDecoration.underline
+                                : TextDecoration.none,
+                            decorationColor: Colors.blue.shade900,
+                            color: dataCell.columnName == 'Variant Name'
+                                ? Colors.blue.shade900
+                                : Colors.black),
+                        keyboardType: TextInputType.number,
+                        enabled: false,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          isDense: true,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             );

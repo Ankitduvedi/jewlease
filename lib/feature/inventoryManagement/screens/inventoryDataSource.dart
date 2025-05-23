@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
-import '../../../data/model/inventoryItem.dart';
+import '../../../data/model/procumentStyleVariant.dart';
 import '../../barcoding/screens/barCodeGeneration.dart';
 
 class InventoryDataSource extends DataGridSource {
@@ -12,7 +12,7 @@ class InventoryDataSource extends DataGridSource {
   InventoryDataSource(
     this.context,
     this.setCureentRowIndex,
-    List<InventoryItemModel> inventoryItems,
+    List<ProcumentStyleVariant> inventoryItems,
   ) : _dataGridRows = inventoryItems.map<DataGridRow>((inventoryItem) {
           return DataGridRow(cells: [
             DataGridCell(
@@ -45,11 +45,10 @@ class InventoryDataSource extends DataGridSource {
                     value: "Generate Barcode",
                     child: Text("Generate Barcode"),
                     onTap: () {
-                      print("varient Name is ${inventoryItem.varientName}");
-                      if (inventoryItem.isRawMaterial ==1 &&
-                          inventoryItem.varientName == "new") return;
-                      if(inventoryItem.pieces==1)
-                        return;
+                      print("varient Name is ${inventoryItem.variantName}");
+                      if (inventoryItem.isRawMaterial == 1 &&
+                          inventoryItem.variantName == "new") return;
+                      if (inventoryItem.totalPieces.value == 1) return;
                       int index = inventoryItems.indexOf(inventoryItem);
                       setCureentRowIndex(index);
 
@@ -67,15 +66,14 @@ class InventoryDataSource extends DataGridSource {
             DataGridCell(
                 columnName: 'ItemGroup', value: inventoryItem.itemGroup),
             DataGridCell(
-                columnName: 'VariantName', value: inventoryItem.varientName),
+                columnName: 'VariantName', value: inventoryItem.variantName),
             DataGridCell(
-                columnName: 'OldVariantName',
-                value: inventoryItem.oldVariantName),
-            DataGridCell(
-                columnName: 'StockCode', value: inventoryItem.stockCode),
+                columnName: 'OldVariantName', value: inventoryItem.oldVariant),
+            DataGridCell(columnName: 'StockCode', value: inventoryItem.stockID),
             DataGridCell(
                 columnName: 'GroupCode', value: inventoryItem.groupCode),
-            DataGridCell(columnName: 'QCStatus', value: inventoryItem.qcStatus),
+            DataGridCell(
+                columnName: 'QCStatus', value: inventoryItem.verifiedStatus),
             DataGridCell(columnName: 'BatchNo', value: inventoryItem.batchNo),
             DataGridCell(
                 columnName: 'StoneShape', value: inventoryItem.stoneShape),
@@ -114,24 +112,29 @@ class InventoryDataSource extends DataGridSource {
                 columnName: 'VendorCode', value: inventoryItem.vendorCode),
             DataGridCell(columnName: 'Vendor', value: inventoryItem.vendor),
             DataGridCell(columnName: 'Customer', value: inventoryItem.customer),
-            DataGridCell(columnName: 'Piece', value: inventoryItem.pieces),
             DataGridCell(
-                columnName: 'Weight', value: inventoryItem.metalWeight),
+                columnName: 'Piece', value: inventoryItem.totalPieces.value),
             DataGridCell(
-                columnName: 'NetWeight', value: inventoryItem.netWeight),
+                columnName: 'Weight',
+                value: inventoryItem.totalMetalWeight.value),
             DataGridCell(
-                columnName: 'DiaPieces', value: inventoryItem.diaPieces),
+                columnName: 'NetWeight',
+                value: inventoryItem.totalWeight.value),
             DataGridCell(
-                columnName: 'DiaWeight', value: inventoryItem.diaWeight),
+                columnName: 'DiaPieces',
+                value: inventoryItem.totalStonePeices.value),
+            DataGridCell(
+                columnName: 'DiaWeight',
+                value: inventoryItem.totalStoneWeight.value),
             DataGridCell(columnName: 'LgPiece', value: inventoryItem.lgPiece),
             DataGridCell(columnName: 'LgWeight', value: inventoryItem.lgWeight),
             DataGridCell(
-                columnName: 'StonePiece', value: inventoryItem.stonePiece),
+                columnName: 'StonePiece',
+                value: inventoryItem.totalStonePeices.value),
             DataGridCell(
-                columnName: 'StoneWeight', value: inventoryItem.stoneWeight),
-            DataGridCell(
-                columnName: 'SellingLabour',
-                value: inventoryItem.sellingLabour),
+                columnName: 'StoneWeight',
+                value: inventoryItem.totalStoneWeight.value),
+            DataGridCell(columnName: 'SellingLabour', value: 0),
             DataGridCell(columnName: 'OrderNo', value: inventoryItem.orderNo),
             DataGridCell(
                 columnName: 'KaratColor', value: inventoryItem.karatColor),
@@ -141,13 +144,15 @@ class InventoryDataSource extends DataGridSource {
                 height: 40,
                 width: 40,
                 decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: NetworkImage(inventoryItem.imageDetails))),
+                  // image: DecorationImage(
+                  //   image: NetworkImage(inventoryItem.imageDetails[0]),
+                  // ),
+                ),
               ),
             ),
             DataGridCell(
                 columnName: 'InwardDocLastTrans',
-                value: inventoryItem.inwardDocLastTrans),
+                value: inventoryItem.inwardDoc),
             DataGridCell(
                 columnName: 'ReserveInd', value: inventoryItem.reserveInd),
             DataGridCell(

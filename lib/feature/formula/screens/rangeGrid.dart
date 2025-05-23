@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -36,7 +37,7 @@ class _RangegridState extends ConsumerState<Rangegrid> {
   @override
   void initState() {
     _procumentDataGridSource = RangeDataGridSource(
-        outwardRows, (_) {}, () {}, false, handleOpenDialog);
+        outwardRows, deleteRow, () {}, false, handleOpenDialog);
     super.initState();
   }
 
@@ -49,18 +50,31 @@ class _RangegridState extends ConsumerState<Rangegrid> {
     });
   }
 
+  void deleteRow(DataGridRow dataRow) {
+    print("delete row called");
+    setState(() {
+      outwardRows.remove(dataRow);
+    });
+    print("deleted row no ${outwardRows.length}");
+  }
+
   void initializeRows() {
     setState(() {
       outwardRows = widget.excelData
-          .map((row) => DataGridRow(
+          .map(
+            (row) => DataGridRow(
               cells: row
-                  .map((cell) => DataGridCell(
-                      columnName: widget.headers[row.indexOf(cell)],
-                      value: cell))
-                  .toList()))
+                  .map(
+                    (cell) => DataGridCell(
+                        columnName: widget.headers[row.indexOf(cell)],
+                        value: cell),
+                  )
+                  .toList(),
+            ),
+          )
           .toList();
       _procumentDataGridSource = RangeDataGridSource(
-          outwardRows, (_) {}, () {}, false, handleOpenDialog);
+          outwardRows, deleteRow, () {}, false, handleOpenDialog);
       print("outward row ${outwardRows.length}");
       _isLoading = false;
     });
@@ -80,11 +94,134 @@ class _RangegridState extends ConsumerState<Rangegrid> {
     final itemMap = ref.watch(itemListProvider);
     return Column(
       children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Text(
+                "Range Excel",
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+              Spacer(),
+              InkWell(
+                onTap: () {
+                  setState(() {
+                    outwardRows.add(DataGridRow(
+                        cells: widget.headers
+                            .map((colmnName) =>
+                                DataGridCell(columnName: colmnName, value: ''))
+                            .toList()));
+                  });
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.02,
+                      vertical: screenHeight * 0.005),
+                  height: screenHeight * 0.05,
+                  decoration: BoxDecoration(
+                    color: Colors.green,
+                    border: Border.all(color: Colors.green),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Add New Row',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              InkWell(
+                onTap: () async {
+                  final dataList = itemMap.entries.expand((entry) {
+                    if (entry.key == 'Number') {
+                      // For 'Number', add two maps for each value
+                      return entry.value.expand((value) => [
+                            {
+                              'dataType': entry.key,
+                              'depdField': '$value start'
+                            },
+                            {'dataType': entry.key, 'depdField': '$value end'},
+                          ]);
+                    } else {
+                      // For other keys, just create a map for each value
+                      return entry.value.map(
+                        (value) => {'dataType': entry.key, 'depdField': value},
+                      );
+                    }
+                  }).toList();
+                  print("data list is $dataList");
+                  print(
+                      "selcted range is ${ref.read(dialogSelectionProvider)['Attribute Type']}");
+                  Map<String, dynamic> reqBody = {
+                    "rangeHierarchyName": widget.rangeHierarchy,
+                    "rangeType":
+                        ref.read(dialogSelectionProvider)['Attribute Type'],
+                    "details": dataList,
+                  };
+                  print("add range mamster body $reqBody");
+                  ref
+                      .read(formulaProcedureControllerProvider.notifier)
+                      .addRangeMasterDepdField(reqBody, context);
+
+                  // save excel data
+
+                  List<List<dynamic>> excelData = [];
+
+                  for (DataGridRow row in outwardRows) {
+                    List<dynamic> rowData = [];
+                    for (DataGridCell cell in row.getCells())
+                      rowData.add(cell.value);
+                    excelData.add(rowData);
+                  }
+                  print("excel data is $excelData");
+                  final headerValues = itemMap.entries
+                      .expand((entry) => entry.key == 'Number'
+                          ? entry.value
+                              .expand((value) => ['$value start', '$value end'])
+                          : entry.value.map((value) => value))
+                      .toList();
+                  headerValues.insert(0, "Output");
+                  Map<String, dynamic> excelReqBody = {
+                    "rangeHierarchyName": widget.rangeHierarchy,
+                    "details": {
+                      "excelData": excelData,
+                      "Headers": headerValues
+                    },
+                  };
+                  print("excel body is ${jsonEncode(excelReqBody)}");
+
+                  ref
+                      .read(formulaProcedureControllerProvider.notifier)
+                      .addRangeMasterExcel(excelReqBody, context);
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.02,
+                      vertical: screenHeight * 0.005),
+                  height: screenHeight * 0.05,
+                  decoration: BoxDecoration(
+                    color: Colors.green,
+                    border: Border.all(color: Colors.green),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Save',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
         SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
           child: Container(
-            height: screenHeight * 0.6,
-            margin: EdgeInsets.only(top: 10),
+            height: screenHeight/3.5,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(15)),
               color: Colors.white,
@@ -106,6 +243,7 @@ class _RangegridState extends ConsumerState<Rangegrid> {
                       shadowColor: Colors.transparent,
                     ),
                     child: SfDataGrid(
+
                       rowHeight: 40,
                       headerRowHeight: 40,
                       source: _procumentDataGridSource,
@@ -116,6 +254,7 @@ class _RangegridState extends ConsumerState<Rangegrid> {
                           columnName: columnName,
                           width: _calculateColumnWidth(columnName),
                           label: Container(
+                            // width: ,
                             padding: EdgeInsets.symmetric(horizontal: 10),
                             decoration: BoxDecoration(
                               color: Color(0xFF003450),
@@ -149,87 +288,12 @@ class _RangegridState extends ConsumerState<Rangegrid> {
                   ),
           ),
         ),
-        InkWell(
-          onTap: () async {
-            final dataList = itemMap.entries.expand((entry) {
-              if (entry.key == 'Number') {
-                // For 'Number', add two maps for each value
-                return entry.value.expand((value) => [
-                      {'dataType': entry.key, 'depdField': '$value start'},
-                      {'dataType': entry.key, 'depdField': '$value end'},
-                    ]);
-              } else {
-                // For other keys, just create a map for each value
-                return entry.value.map(
-                  (value) => {'dataType': entry.key, 'depdField': value},
-                );
-              }
-            }).toList();
-            print("data list is $dataList");
-            print(
-                "selcted range is ${ref.read(dialogSelectionProvider)['Attribute Type']}");
-            Map<String, dynamic> reqBody = {
-              "rangeHierarchyName": widget.rangeHierarchy,
-              "rangeType": ref.read(dialogSelectionProvider)['Attribute Type'],
-              "details": dataList,
-            };
-            print("add range mamster body $reqBody");
-            ref
-                .read(formulaProcedureControllerProvider.notifier)
-                .addRangeMasterDepdField(reqBody, context);
-
-            // save excel data
-
-            List<List<dynamic>> excelData = [];
-
-            for (DataGridRow row in outwardRows) {
-              List<dynamic> rowData = [];
-              for (DataGridCell cell in row.getCells()) rowData.add(cell.value);
-              excelData.add(rowData);
-            }
-            print("excel data is $excelData");
-            final headerValues = itemMap.entries
-                .expand((entry) => entry.key == 'Number'
-                    ? entry.value
-                        .expand((value) => ['$value start', '$value end'])
-                    : entry.value.map((value) => value))
-                .toList();
-            headerValues.insert(0, "Output");
-            Map<String, dynamic> excelReqBody = {
-              "rangeHierarchyName": widget.rangeHierarchy,
-              "details": {"excelData": excelData, "Headers": headerValues},
-            };
-            print("excel body is ${jsonEncode(excelReqBody)}");
-
-            ref
-                .read(formulaProcedureControllerProvider.notifier)
-                .addRangeMasterExcel(excelReqBody, context);
-          },
-          child: Container(
-            padding: EdgeInsets.symmetric(
-                horizontal: screenWidth * 0.02, vertical: screenHeight * 0.005),
-            height: screenHeight * 0.05,
-            decoration: BoxDecoration(
-              color: Colors.green,
-              border: Border.all(color: Colors.green),
-              borderRadius: BorderRadius.circular(5),
-            ),
-            child: Center(
-              child: Text(
-                'Done',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ),
-        )
       ],
     );
   }
 
   double _calculateColumnWidth(String columnName) {
-    const double charWidth = 15.0;
-    const double paddingWidth = 20.0;
-    return (columnName.length * charWidth) + paddingWidth;
+    return max(screenWidth / (widget.headers.length), 50);
   }
 
   String _getColumnName(int index) {

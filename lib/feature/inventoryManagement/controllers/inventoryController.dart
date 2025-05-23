@@ -1,14 +1,15 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../data/model/inventoryItem.dart';
+// import '../../../data/model/inventoryItem.dart';
+import '../../../data/model/procumentStyleVariant.dart';
 import '../repository/inventoryRepository.dart';
 
 class InventoryController extends StateNotifier<bool> {
   final InventoryRepository _inventoryRepository;
 
   // List to store inventory items and current index
-  List<InventoryItemModel> inventoryItems = [];
+  List<ProcumentStyleVariant> inventoryItems = [];
   int _currentIndex = 0;
 
   InventoryController(this._inventoryRepository) : super(false);
@@ -18,30 +19,39 @@ class InventoryController extends StateNotifier<bool> {
       {required String locationName,
       required String deprtmentName,
       required bool isRawMaterial}) async {
-    try {
+    // try {
       state = true;
+      inventoryItems=[];
       final response = await _inventoryRepository.fetchInventory();
-      inventoryItems = response
-          .map((stock) {
-            return InventoryItemModel.fromJson(stock);
-          })
-          .toList()
-          .where((item) =>
-              item.locationName == locationName &&
-              item.department == deprtmentName &&
-              item.length >= 0 &&
-              item.isRawMaterial == (isRawMaterial == true?1:0))
-          .toList();
+      print("inventory reponse is $response");
+      // inventoryItems =
+      for (int i = 0; i < response.length; i++) {
+        ProcumentStyleVariant basicVariant =
+            ProcumentStyleVariant.fromJson(response[i], i);
+        print("bom id1 ${basicVariant.stockID} ${basicVariant.bomId}");
+        ProcumentStyleVariant completeVariant =
+            await ProcumentStyleVariant.initializeCalculatedFields(
+                basicVariant, basicVariant.vairiantIndex);
+        inventoryItems.add(completeVariant);
+      }
+      // .where((item) =>
+      //     item.locationName == locationName &&
+      //     item.department == deprtmentName &&
+      //     item.length >= 0 &&
+      //     item.isRawMaterial == (isRawMaterial == true?1:0))
+      // .toList();
+      print("inventory items are ${inventoryItems.length}");
       state = false;
-    } catch (e) {
-      print("Error fetching stock: $e");
-      inventoryItems = [];
-      state = false;
-    }
+    // }
+    // catch (e) {
+    //   print("Error fetching stock: $e");
+    //   inventoryItems = [];
+    //   state = false;
+    // }
   }
 
   // Get inventory item at a given index
-  InventoryItemModel getItemAt(int index) {
+  ProcumentStyleVariant getItemAt(int index) {
     return inventoryItems[index];
 
     // Return null if index is invalid
@@ -57,8 +67,13 @@ class InventoryController extends StateNotifier<bool> {
   }
 
   // Get current inventory item
-  InventoryItemModel getCurrentItem() {
+  ProcumentStyleVariant getCurrentItem() {
     return getItemAt(_currentIndex);
+  }
+  updateStyleVariant(ProcumentStyleVariant newStyleVariant) {
+
+    inventoryItems[newStyleVariant.vairiantIndex] = newStyleVariant;
+    print("updated bom ${inventoryItems[newStyleVariant.vairiantIndex].bomData.bomRows[1].weight}");
   }
 }
 

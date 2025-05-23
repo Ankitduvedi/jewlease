@@ -1,13 +1,20 @@
 import 'dart:developer';
 
+import 'package:dio/dio.dart';
+import 'package:jewlease/core/utils/utils.dart';
+import 'package:jewlease/data/model/bom_model.dart';
+import 'package:jewlease/data/model/operation_model.dart';
+
+import '../../feature/procument/repository/procument_Repositoy.dart';
+
 class InventoryItemModel {
   String more;
   String itemGroup;
-  String varientName;
-  String oldVariantName;
-  String stockCode;
+  String variantName;
+  String oldVariant;
+  String stockID;
   String groupCode;
-  String qcStatus;
+  String varifiedStatus;
   String batchNo;
   String stoneShape;
   String stoneRange;
@@ -29,20 +36,20 @@ class InventoryItemModel {
   String vendorCode;
   String vendor;
   String customer;
-  int pieces;
+  double pieces;
   double metalWeight;
   double netWeight;
-  int diaPieces;
+  double diaPieces;
   double diaWeight;
   int lgPiece;
   double lgWeight;
-  int stonePiece;
+  double stonePiece;
   double stoneWeight;
   double sellingLabour;
   String orderNo;
   String karatColor;
   String imageDetails;
-  String inwardDocLastTrans;
+  String inwardDoc;
   bool reserveInd;
   bool barcodeInd;
   String locationCode;
@@ -62,14 +69,14 @@ class InventoryItemModel {
   String orderPartName;
   int inwardEllapsDays;
   int orderEllapsDays;
-  Map<String, dynamic> bom;
-  Map<String, dynamic> operation;
+  BomModel bom;
+  OperationModel operation;
   Map<String, dynamic> formulaDetails;
   final String oldVarient;
-  final String customerVarient;
-  final String baseVarient;
+  final String customerVariant;
+  final String baseVariant;
   final String remark1;
-  final String vendorVarient;
+  final String vendorVariant;
   final String remark2;
   final String createdBy;
   final String remark;
@@ -92,11 +99,11 @@ class InventoryItemModel {
   InventoryItemModel({
     required this.more,
     required this.itemGroup,
-    required this.varientName,
-    required this.oldVariantName,
-    required this.stockCode,
+    required this.variantName,
+    required this.oldVariant,
+    required this.stockID,
     required this.groupCode,
-    required this.qcStatus,
+    required this.varifiedStatus,
     required this.batchNo,
     required this.stoneShape,
     required this.stoneRange,
@@ -131,7 +138,7 @@ class InventoryItemModel {
     required this.orderNo,
     required this.karatColor,
     required this.imageDetails,
-    required this.inwardDocLastTrans,
+    required this.inwardDoc,
     required this.reserveInd,
     required this.barcodeInd,
     required this.locationCode,
@@ -155,10 +162,10 @@ class InventoryItemModel {
     required this.formulaDetails,
     required this.operation,
     required this.oldVarient,
-    required this.customerVarient,
-    required this.baseVarient,
+    required this.customerVariant,
+    required this.baseVariant,
     required this.remark1,
-    required this.vendorVarient,
+    required this.vendorVariant,
     required this.remark2,
     required this.createdBy,
     required this.remark,
@@ -184,11 +191,11 @@ class InventoryItemModel {
       return InventoryItemModel(
           more: json['Remark'] ?? '',
           itemGroup: json['CATEGORY'] ?? '',
-          varientName: json['Varient Name'] ?? '',
-          oldVariantName: json['Old Varient'] ?? '',
-          stockCode: json['Stock ID'] ?? '',
+          variantName: json['Varient Name'] ?? '',
+          oldVariant: json['Old Varient'] ?? '',
+          stockID: json['Stock ID'] ?? '',
           groupCode: json['Group Code'] ?? '',
-          qcStatus: json['Verified Status'] ?? '',
+          varifiedStatus: json['Verified Status'] ?? '',
           batchNo: json['Batch No'] ?? '',
           stoneShape: json['Stone Shape'] ?? '',
           stoneRange: json['Stone Range'] ?? '',
@@ -223,7 +230,7 @@ class InventoryItemModel {
           orderNo: json['Order No'] ?? '',
           karatColor: json['Karat Color'] ?? '',
           imageDetails: json['Image Details'].runtimeType == String ? '' : '',
-          inwardDocLastTrans: json['Inward Doc Last Trans'] ?? '',
+          inwardDoc: json['Inward Doc Last Trans'] ?? '',
           reserveInd: json['Reserve Ind'] ?? false,
           barcodeInd: json['Barcode Ind'] ?? false,
           locationCode: json['Location Code'] ?? '',
@@ -244,14 +251,24 @@ class InventoryItemModel {
           orderPartName: json['Order Part Name'] ?? '',
           inwardEllapsDays: json['Inward Ellaps Days'] ?? 0,
           orderEllapsDays: json['Order Ellaps Days'] ?? 0,
-          bom: json['BOM'] ?? {},
+          bom: BomModel(
+              bomRows: Utils()
+                  .sampleBomRows
+                  .map((row) => BomRowModel.fromJson(row))
+                  .toList(),
+              headers: []),
           formulaDetails: json['Formula Details'] ?? {},
-          operation: json['Operation'] ?? {},
+          operation: OperationModel(
+              operationId: "",
+              operationRows: Utils()
+                  .oprRows
+                  .map((row) => OperationRowModel.fromJson(row))
+                  .toList()),
           oldVarient: json['oldVarient'] ?? '',
-          customerVarient: json['customerVarient'] ?? '',
-          baseVarient: json['baseVarient'] ?? '',
+          customerVariant: json['customerVarient'] ?? '',
+          baseVariant: json['baseVarient'] ?? '',
           remark1: json['Remark1'] ?? '',
-          vendorVarient: json['vendorVarient'] ?? '',
+          vendorVariant: json['vendorVarient'] ?? '',
           remark2: json['Remark2'] ?? '',
           createdBy: json['createdBy'] ?? '',
           remark: json['Remark'] ?? '',
@@ -276,6 +293,22 @@ class InventoryItemModel {
     }
   }
 
+  Future<BomModel> fetchBom(String bomId) async {
+    final Dio _dio = Dio();
+    List<dynamic> data = await ProcurementRepository(_dio).fetchBom(bomId);
+    List<BomRowModel> bomRows = data
+        .map((bom) => BomRowModel.fromJson(bom as Map<String, dynamic>))
+        .toList();
+
+    return BomModel(bomRows: bomRows, headers: []);
+  }
+
+  OperationModel fetchOperation(List<Map<String, dynamic>> operationRow) {
+    List<OperationRowModel> oprRows =
+        operationRow.map((row) => OperationRowModel.fromJson(row)).toList();
+    return OperationModel(operationId: "", operationRows: oprRows);
+  }
+
   factory InventoryItemModel.fromJson2(Map<String, dynamic> json) {
     print("json $json");
     try {
@@ -291,7 +324,7 @@ class InventoryItemModel {
               double.tryParse(json['weight']?.toString() ?? '0') ?? 0.0,
           remark1: json['remark1'] ?? '',
           remark2: json['remark2'] ?? '',
-          varientName: json['varientName'] ?? '',
+          variantName: json['varientName'] ?? '',
           category: json['category'] ?? '',
           locationName: json['location'] ?? '',
           createdBy: json['createdBy'] ?? '',
@@ -312,26 +345,28 @@ class InventoryItemModel {
           stoneMinWt: json['stoneMinWt'] ?? 0,
           styleKarat: json['styleKarat'] ?? '',
           vendorCode: json['vendorCode'] ?? '',
-          baseVarient: json['baseVarient'] ?? '',
+          baseVariant: json['baseVarient'] ?? '',
           codegenSrNo: json['codegenSrNo'] ?? '',
           subCategory: json['subCategory'] ?? '',
           deliveryDays: json['deliveryDays'] ?? 0,
-          imageDetails: json['imageDetails']!=null?(json['imageDetails'].length > 0
-              ? json['imageDetails'][0]["url"]
-              : "" ):  "",
+          imageDetails: json['imageDetails'] != null
+              ? (json['imageDetails'].length > 0
+                  ? json['imageDetails'][0]["url"]
+                  : "")
+              : "",
           locationCode: json['loactionCode'] ?? '',
           stdBuyingRate: json['stdBuyingRate'] ?? 0,
-          vendorVarient: json['vendorVarient'] ?? '',
+          vendorVariant: json['vendorVarient'] ?? '',
           formulaDetails: json['formulaDetails'] ?? {},
           lineOfBusiness: json['lineOfBusiness'] ?? '',
           verifiedStatus: json['verifiedStatus'] ?? '',
-          customerVarient: json['customerVarient'] ?? '',
+          customerVariant: json['customerVarient'] ?? '',
           styleMetalColor: json['styleMetalColor'] ?? '',
           // Added missing parameters from fromJson
           more: json['Remark'] ?? '',
-          stockCode: json['Stock ID'] ?? '',
+          stockID: json['Stock ID'] ?? '',
           groupCode: json['Group Code'] ?? '',
-          qcStatus: json['Verified Status'] ?? '',
+          varifiedStatus: json['Verified Status'] ?? '',
           batchNo: json['Batch No'] ?? '',
           stoneShape: json['Stone Shape'] ?? '',
           stoneRange: json['Stone Range'] ?? '',
@@ -352,7 +387,7 @@ class InventoryItemModel {
           stoneWeight: double.parse(json['Stone Weight'] ?? '0'),
           sellingLabour: (json['Selling Labour'] ?? 0).toDouble(),
           orderNo: json['Order No'] ?? '',
-          inwardDocLastTrans: json['Inward Doc Last Trans'] ?? '',
+          inwardDoc: json['Inward Doc Last Trans'] ?? '',
           reserveInd: json['Reserve Ind'] ?? false,
           barcodeInd: json['Barcode Ind'] ?? false,
           wcGroupName: json['WC Group Name'] ?? '',
@@ -371,7 +406,7 @@ class InventoryItemModel {
           orderPartName: json['Order Part Name'] ?? '',
           inwardEllapsDays: json['Inward Ellaps Days'] ?? 0,
           orderEllapsDays: json['Order Ellaps Days'] ?? 0,
-          oldVariantName: '',
+          oldVariant: '',
           isRawMaterial: json['isRawMaterial'] ?? false);
     } catch (e, stacktrace) {
       print("Error while parsing JSON: $e");
@@ -383,13 +418,13 @@ class InventoryItemModel {
   Map<String, dynamic> toJson() {
     return {
       'style': style,
-      'varientName': varientName ?? '',
+      'varientName': variantName ?? '',
       'oldVarient': oldVarient ?? '',
-      'customerVarient': customerVarient ?? '',
-      'baseVarient': baseVarient ?? '',
+      'customerVarient': customerVariant ?? '',
+      'baseVarient': baseVariant ?? '',
       'vendor': vendor ?? '',
       'remark1': remark1 ?? '',
-      'vendorVarient': vendorVarient ?? '',
+      'vendorVarient': vendorVariant ?? '',
       'remark2': remark2 ?? '',
       'createdBy': createdBy ?? '',
       'remark': remark ?? '',
@@ -405,7 +440,7 @@ class InventoryItemModel {
       'category': category ?? '',
       'subCategory': subCategory ?? '',
       'subKarat': metalKarat ?? '',
-      'varient': oldVariantName ?? '',
+      'varient': oldVariant ?? '',
       'hsnSacCode': hsnSacCode ?? '',
       'lineOfBusiness': lob ?? '',
       'bom': bom ?? {},

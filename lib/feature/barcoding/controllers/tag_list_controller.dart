@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/data/model/bom_model.dart';
+import 'package:jewlease/data/model/operation_model.dart';
 
 class TagRowsNotifier extends Notifier<List<TagRow>> {
   @override
@@ -24,7 +26,7 @@ class TagRow {
   File? image;
   String variant;
   String stockCode;
-  int pcs;
+  double pcs;
   double wt;
   double netWt;
   double clsWt;
@@ -39,9 +41,9 @@ class TagRow {
   String lineRemark;
   String huid;
   String orderVariant;
-  int diaPieces;
-  Map<String, dynamic> bom;
-  Map<String, dynamic> operation;
+  double diaPieces;
+ BomModel? bom;
+  OperationModel? operation;
 
   TagRow(
       {this.checkbox = false,
@@ -64,8 +66,8 @@ class TagRow {
       this.huid = '',
       this.orderVariant = '',
       this.diaPieces = 0,
-      this.bom = const {},
-      this.operation = const {}});
+      this.bom ,
+      this.operation });
 }
 
 class IsTagUpdateNotifier extends Notifier<bool> {
@@ -83,3 +85,20 @@ class IsTagUpdateNotifier extends Notifier<bool> {
 final isTagUpdateProvider = NotifierProvider<IsTagUpdateNotifier, bool>(
   IsTagUpdateNotifier.new,
 );
+
+class IsTagCreatedNotifier extends Notifier<bool> {
+  @override
+  bool build() {
+    return false; // Initial value
+  }
+
+  void setUpdate(bool value) {
+    state = value; // Update the state
+  }
+}
+
+// Provider to manage the 'isUpdate' state
+final isTagCreatedProvider = NotifierProvider<IsTagCreatedNotifier, bool>(
+  IsTagCreatedNotifier.new,
+);
+

@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -6,17 +5,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jewlease/core/utils/utils.dart';
 import 'package:jewlease/data/model/formula_model.dart';
-import 'package:jewlease/data/model/transaction_model.dart';
+import 'package:jewlease/data/model/procumentStyleVariant.dart';
 import 'package:jewlease/feature/formula/controller/formula_prtocedure_controller.dart';
 import 'package:jewlease/main.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 
 import '../../../core/routes/go_router.dart';
-import '../../home/right_side_drawer/controller/drawer_controller.dart';
-import '../../transaction/controller/transaction_controller.dart';
 import '../../vendor/controller/procumentVendor_controller.dart';
 import '../controller/procumentVarientFormula.dart';
-import '../controller/procumentVendorDailog.dart';
 import 'procumentSummeryScreen.dart';
 import 'procumentVendorDialog.dart';
 
@@ -49,88 +45,126 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
 
   String? selectedValue = 'Variant';
 
-  Future<Map<String, dynamic>?> updateBomFormula(
-      Map<String, dynamic> variant) async {
+  Future<ProcumentStyleVariant> updateBomFormula(
+      ProcumentStyleVariant variant) async {
+    Map<String, dynamic> variables = {};
     Map<dynamic, dynamic> allFormualMap = ref.read(allVariantFormulasProvider2);
+    print("all formula map ${allFormualMap}");
 
     List<FormulaModel> bomRowsFormula = [];
-    String formulaName = "${variant["Variant Name"]}";
-    for (String formulaKey in allFormualMap.keys) {
-      if (formulaKey.contains(formulaName)) {
-        FormulaModel formulaModel = allFormualMap[formulaKey];
-        // if (!formulaModel.isUpdated) {
-        //   Utils.snackBar(
-        //       "Rate is not added in variant ${variant["Variant Name"]}",
-        //       context);
-        //   return null;
-        // }
-        bomRowsFormula.add(formulaModel);
+    for (int bomRowIndex = 1;
+        bomRowIndex < variant.bomData.bomRows.length;
+        bomRowIndex++) {
+      String formulaName =
+          "${variant.variantName}_${variant.vairiantIndex}_bom_${bomRowIndex}";
+      for (String formulaKey in allFormualMap.keys) {
+        if (formulaKey.contains(formulaName)) {
+          FormulaModel formulaModel = allFormualMap[formulaKey];
+          // if (!formulaModel.isUpdated) {
+          //   Utils.snackBar(
+          //       "Rate is not added in variant ${variant["Variant Name"]}",
+          //       context);
+          //   return null;
+          formulaModel.formulaRows.forEach((row) {
+            if (row.rowType != null &&
+                row.rowType!.isNotEmpty &&
+                row.rowType != "") {
+              variables[row.rowType!] = row.rowValue;
+            }
+          });
+          // }
+          bomRowsFormula.add(formulaModel);
+        }
       }
     }
-    List<dynamic> bomDataRows = variant["BOM Data"];
+    print("formula length is ${bomRowsFormula.length}");
 
-    for (int i = 0; i < bomDataRows.length; i++) {
-      bomDataRows[i]["formulaId"] = await ref
+    for (int i = 1; i < variant.bomData.bomRows.length; i++) {
+      variant.bomData.bomRows[i].formulaID = await ref
           .read(formulaProcedureControllerProvider.notifier)
-          .getFormulaId(bomRowsFormula[i], context);
+          .getFormulaId(bomRowsFormula[i - 1], context);
     }
-    variant["bomData"] = bomDataRows;
+    variant.saveVariables(variables);
     return variant;
   }
 
-  Future<Map<String, dynamic>> addVariantFormula(
-      Map<String, dynamic> variant) async {
+  ProcumentStyleVariant addOperationFormula(ProcumentStyleVariant variant) {
+    Map<String, dynamic> variables = {};
+    Map<dynamic, dynamic> allFormualMap = ref.read(allVariantFormulasProvider2);
+
+    for (int i = 0; i < variant.operationData.operationRows.length; i++) {
+      String formulaName =
+          "${variant.variantName}_${variant.vairiantIndex}_opr_${i}";
+      for (String formulaKey in allFormualMap.keys) {
+        if (formulaKey.contains(formulaName)) {
+          FormulaModel formulaModel = allFormualMap[formulaKey];
+          // if (!formulaModel.isUpdated) {
+          //   Utils.snackBar(
+          //       "Rate is not added in variant ${variant["Variant Name"]}",
+          //       context);
+          //   return null;
+          formulaModel.formulaRows.forEach((row) {
+            if (row.rowType != null &&
+                row.rowType!.isNotEmpty &&
+                row.rowType != "") {
+              variables[row.rowType!] = row.rowValue;
+            }
+          });
+        }
+      }
+    }
+    variant.saveVariables(variables);
+    return variant;
+  }
+
+  Future<ProcumentStyleVariant> addVariantFormula(
+      ProcumentStyleVariant variant) async {
+    Map<String, dynamic> variables = {};
     Map<dynamic, dynamic> allFormualMap = ref.read(allVariantFormulasProvider2);
 
     FormulaModel variantFomrula =
-        allFormualMap["formula_${variant["Variant Name"]}"];
+        allFormualMap["variant_${variant.vairiantIndex}"];
+    variantFomrula.formulaRows.forEach((row) {
+      if (row.rowType != null && row.rowType!.isNotEmpty && row.rowType != "") {
+        variables[row.rowType!] = row.rowValue;
+      }
+    });
 
-    variant["variantFormulaID"] = await ref
-        .read(formulaProcedureControllerProvider.notifier)
-        .getFormulaId(variantFomrula, context);
+    variant.variantFormulaID = await ref
+            .read(formulaProcedureControllerProvider.notifier)
+            .getFormulaId(variantFomrula, context) ??
+        "";
+    variant.saveVariables(variables);
     return variant;
   }
 
   Future<bool> saveProcument() async {
+    List<ProcumentStyleVariant>? varientList =
+        ref.read(procurementVariantProvider2);
 
-      List<Map<String, dynamic>>? varientList =
-          ref.read(procurementVariantProvider);
+    List<Map<String, dynamic>> reqstBodeis = [];
+    if (varientList == null) return false;
+    for (int i = 0; i < varientList!.length; i++) {
+      varientList[i] = await updateBomFormula(varientList[i]);
+      varientList[i] = await addVariantFormula(varientList[i]);
+      varientList[i] = addOperationFormula(varientList[i]);
+      print("variables ${varientList[i].variables}");
+      // varientList[i].variables= {
+      //   "labout":200
+      // };
 
-      List<Map<String, dynamic>> reqstBodeis = [];
+      Map<String, dynamic> reuestBody = varientList[i].toJson();
+      // print(reuestBody);
+      // Utils.printJsonFormat(reuestBody);
 
-      if (varientList == null) return false;
+      reqstBodeis.add(reuestBody);
+    }
+    String? transactionID =
+        await Utils().createNewTransaction(reqstBodeis, ref, "Opening Stock");
 
-      for (int i = 0; i < varientList!.length; i++) {
-        Utils.printJsonFormat(varientList[i]);
-        Map<String, dynamic>? updatedVariant =
-            await updateBomFormula(varientList[i]);
-        if (updatedVariant == null) {
-          return false;
-        } else {
-          varientList[i] = updatedVariant;
-        }
-        varientList[i] = await addVariantFormula(varientList[i]);
-        Map<String, dynamic> reuestBody = convertToGRNSchema(varientList[i]);
-
-        // print("req body is $jsonString");
-        Utils.printJsonFormat(reuestBody);
-
-        reqstBodeis.add(reuestBody);
-      }
-      // return false;
-
-      TransactionModel transaction = createTransaction(reqstBodeis);
-
-      final jsonString =
-          JsonEncoder.withIndent('  ').convert(transaction.toJson());
-      print("transaction schema $jsonString");
-      String? transactionID = await ref
-          .read(TransactionControllerProvider.notifier)
-          .sentTransaction(transaction);
-
-      Utils.snackBar("Variant Aadded", context);
-      goRouter.go("/");
-      return true;
+    Utils.snackBar("Variant Aadded", context);
+    goRouter.go("/");
+    return true;
     // } catch (e) {
     //   Utils.snackBar(e.toString(), context);
     //   return false;
@@ -253,102 +287,6 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
         ),
       ],
     );
-  }
-
-  TransactionModel createTransaction(List<Map<String, dynamic>> reqstBodeis) {
-    return TransactionModel(
-        transType: "Opening Stock",
-        subType: "OPS",
-        transCategory: "GENERAL",
-        docNo: "bsjbcs",
-        transDate: DateTime.now().toIso8601String(),
-        destination: "MH_CASH",
-        customer: "ankit",
-        source: ref.watch(selectedDepartmentProvider).locationName,
-        sourceDept: ref.watch(selectedDepartmentProvider).departmentName,
-        destinationDept: "MH_CASH",
-        exchangeRate: "0.0",
-        currency: "RS",
-        salesPerson: "Arun",
-        term: "term",
-        remark: "Creating GRN",
-        createdBy: DateTime.now().toIso8601String(),
-        postingDate: DateTime.now().toIso8601String(),
-        varients: reqstBodeis);
-  }
-
-  Map<String, dynamic> convertToGRNSchema(Map<String, dynamic> input) {
-    Map<String, dynamic> operationMap = {
-      "VariantName": "DIA-BAN-BAN-GEN-18KT-1",
-      "CalcBOM": "DIA-BAN-BAN-GEN-18KT-1",
-      "CalcCF": 0.0,
-      "CalcMethod": "WT-CUS",
-      "CalcMethodVal": "METAL WT + FINDING WT",
-      "CalcQty": 26.6,
-      "CalculateFormula": "s",
-      "DepdBOM": null,
-      "DepdMethod": null,
-      "DepdMethodVal": 0.0,
-      "DepdQty": 0.0,
-      "LabourAmount": 0.0,
-      "LabourAmountLocal": 0.0,
-      "LabourRate": 0.0,
-      "MaxRateValue": 0.0,
-      "MinRateValue": 0.0,
-      "Operation": "MAKING CHARGES PER GRAM",
-      "OperationType": null,
-      "RateAsPerFormula": 0.0,
-      "RowStatus": 1,
-      "Rate_Edit_Ind": 0
-    };
-    return {
-      "style": input["Style"],
-      "variantName": input["Variant Name"],
-      "oldVarient": input["Old Variant"],
-      "customerVarient": input["Customer Variant"],
-      "baseVarient": input["Base Variant"],
-      "vendor": ref.read(pocVendorProvider)["Vendor Name"],
-      "remark1": input["Remark 1"],
-      "vendorVarient": input["Vendor Variant"],
-      "remark2": input["Remark 2"],
-      "createdBy": input["Created By"],
-      "stdBuyingRate": input["Std Buying Rate"],
-      "stoneMaxWt": input["Stone Max Wt"],
-      "remark": input["Remark"],
-      "stoneMinWt": input["Stone Min Wt"],
-      "karatColor": input["Karat Color"],
-      "deliveryDays": input["Delivery Days"],
-      "forWeb": input["For Web"],
-      "rowStatus": input["Row Status"],
-      "verifiedStatus": input["Verified Status"],
-      "length": input["Length"],
-      "codegenSrNo": input["Codegen Sr No"],
-      "category": input["CATEGORY"],
-      "subCategory": input["Sub-Category"],
-      "styleKarat": input["STYLE KARAT"],
-      "varient": input["Varient"],
-      "hsnSacCode": input["HSN - SAC CODE"],
-      "lineOfBusiness": input["LINE OF BUSINESS"],
-      "bomData": input["bomData"],
-      "operation": [operationMap, operationMap, operationMap, operationMap],
-      "imageDetails": input["Image Details"],
-      "formulaDetails": input["Formula Details"],
-      "pieces": input["Pieces"],
-      "weight":
-          covertToDouble(input["Weight"]) - covertToDouble(input["Stone Wt"]),
-      "netWeight": input["Weight"] ?? 0,
-      "diaWeight": input["Stone Wt"] ?? 0,
-      "diaPieces": input["Stone Pieces"] ?? 0,
-      "loactionCode": input["Location Code"],
-      "vendorCode": ref.read(pocVendorProvider)["Vendor Code"],
-      "location": ref.watch(selectedDepartmentProvider).locationName,
-      "department": ref.watch(selectedDepartmentProvider).departmentName,
-      "itemGroup": input["Style"],
-      "metalColor": input["Karat Color"],
-      "styleMetalColor": input["Karat Color"],
-      "isRawMaterial": 0,
-      "variantFormulaID": input["variantFormulaId"]
-    };
   }
 }
 

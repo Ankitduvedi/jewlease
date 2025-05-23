@@ -5,17 +5,15 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 class formulaGridSource extends DataGridSource {
   formulaGridSource(
-      this.dataGridRows,
-      this.onDelete,
-      this.onEdit,
-      this.formulaExcel,
-      this.formulaHeaders,
-      this.rangeExcel,
-      this.varientAttributes)
+      {required this.dataGridRows,
+      required this.onDelete,
+      required this.onEdit,
+      required this.formulaExcel,
+      required this.formulaHeaders,
+      required this.rangeExcel,
+      required this.varientAttributes})
       : _editingRows = dataGridRows {
     // Call onEdit after initialization
-    recalculatedataGridValues();
-    onEdit(dataGridRows);
   }
 
   final List<DataGridRow> dataGridRows;
@@ -108,15 +106,18 @@ class formulaGridSource extends DataGridSource {
   }
 
   double formulaCalulation(String formula) {
+print("enter calc");
     double result = calculateFormulaVaule(formula);
     return result;
   }
 
   double inputCalculation(int rowIndex, double currentValue) {
+    print("enter input");
     return currentValue;
   }
 
   void recalculatedataGridValues() {
+    print("ernter in this");
     for (int i = 0; i < dataGridRows.length; i++) {
       dataGridRows[i] = DataGridRow(cells: [
         for (var cell in dataGridRows[i].getCells())
@@ -139,6 +140,7 @@ class formulaGridSource extends DataGridSource {
             cell
       ]);
     }
+    onEdit(dataGridRows);
   }
 
   // Method to calculate column summation for a summary row
@@ -198,7 +200,7 @@ class formulaGridSource extends DataGridSource {
               ]);
 
               recalculatedataGridValues();
-              onEdit(dataGridRows);
+
             },
             controller: TextEditingController(
               text: dataCell.value.toString(),

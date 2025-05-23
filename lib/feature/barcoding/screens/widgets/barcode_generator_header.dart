@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/data/model/stock_details_model.dart';
 
 import '../../../../data/model/inventoryItem.dart';
+import '../../../../data/model/procumentStyleVariant.dart';
 import '../../../../widgets/read_only_textfield_widget.dart';
 import '../../../../widgets/text_field_widget.dart';
 import '../../../inventoryManagement/controllers/inventoryController.dart';
@@ -42,21 +43,21 @@ class _BarcodeHeaderState extends ConsumerState<BarcodeHeader> {
   ];
 
   void intializeCurrentItem() {
-    currentStock =
+    ProcumentStyleVariant currentStock =
         ref.read(inventoryControllerProvider.notifier).getCurrentItem()!;
     print("current stock is $currentStock");
     StockDetailsModel stockDetails = StockDetailsModel(
-        stockQty: currentStock.pieces,
+        stockQty: currentStock.totalPieces.value,
         tagCreated: 0,
-        remaining: currentStock.pieces,
-        balPcs: currentStock.diaPieces,
-        balWt: currentStock.diaWeight + currentStock.metalWeight,
-        balMetWt: currentStock.metalWeight,
-        balStonePcs: currentStock.diaPieces,
-        balStoneWt: currentStock.diaWeight,
+        remaining: currentStock.totalPieces.value,
+        balPcs: currentStock.totalStonePeices.value,
+        balWt: currentStock.totalMetalWeight.value+currentStock.totalStoneWeight.value*0.2,
+        balMetWt: currentStock.totalMetalWeight.value,
+        balStonePcs: currentStock.totalStonePeices.value,
+        balStoneWt: currentStock.totalMetalWeight.value,
         balFindPcs: 0,
         balFindWt: 0,
-        currentWt: currentStock.metalWeight);
+        currentWt: currentStock.totalMetalWeight.value);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(stockDetailsProvider.notifier).initialize(stockDetails);
       _grossWeightController.text = stockDetails.balFindWt.toString();

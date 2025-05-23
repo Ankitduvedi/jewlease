@@ -270,7 +270,7 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                         if (widget.title == "Add Variant") {
                           selectedRow = _filteredItems.firstWhere(
                             (map) {
-                              print("map $map");
+                              // print("map $map");
                               return map["Variant Name"].toString() ==
                                   selectedItemID.toString();
                             },
@@ -306,7 +306,7 @@ class ItemTypeDialogScreenState extends ConsumerState<ItemTypeDialogScreen> {
                           }
                         }
                         if (widget.onSelectdRow != null) {
-                          log("selected row $selectedRow");
+                          // log("selected row $selectedRow");
                           widget.onSelectdRow!(selectedRow);
                         }
 

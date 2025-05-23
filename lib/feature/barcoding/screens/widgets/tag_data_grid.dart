@@ -4,21 +4,19 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/data/model/barcode_detail_model.dart';
-import 'package:jewlease/data/model/inventoryItem.dart';
+import 'package:jewlease/data/model/bom_model.dart';
 import 'package:jewlease/data/model/stock_details_model.dart';
 import 'package:jewlease/data/model/transaction_model.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 import '../../../../core/utils/utils.dart';
 import '../../../../data/model/barcode_historyModel.dart';
+import '../../../../data/model/procumentStyleVariant.dart';
 import '../../../../providers/image_provider.dart';
 import '../../../../widgets/image_data.dart';
 import '../../../home/right_side_drawer/controller/drawer_controller.dart';
 import '../../../inventoryManagement/controllers/inventoryController.dart';
 import '../../../procument/controller/procumentcController.dart';
-import '../../../transaction/controller/transaction_controller.dart';
-import '../../controllers/barcode_detail_controller.dart';
-import '../../controllers/barcode_history_controller.dart';
 import '../../controllers/stockController.dart';
 import '../../controllers/tag_image_controller.dart';
 import '../../controllers/tag_list_controller.dart';
@@ -54,60 +52,18 @@ class _TagListUIState extends ConsumerState<TagListUI> {
     'Order Variant',
   ];
 
-  StockDetailsModel updateStock(StockDetailsModel newStockDetails) {
-    newStockDetails.rate = 0;
-    newStockDetails.balMetWt = newStockDetails.balMetWt -
-        (newStockDetails.currentNetWt - newStockDetails.currentStoneWt);
-    newStockDetails.balStoneWt =
-        newStockDetails.balStoneWt - newStockDetails.currentStoneWt;
-    newStockDetails.balWt = newStockDetails.balWt - newStockDetails.currentWt;
-    newStockDetails.stockQty -= newStockDetails.currentPieces;
-    newStockDetails.balStonePcs -= newStockDetails.currentDiaPieces;
-    newStockDetails.tagCreated++;
-    newStockDetails.remaining--;
-    newStockDetails.currentNetWt = 0;
-    newStockDetails.currentStoneWt = 0;
-    newStockDetails.currentWt = 0;
-
-    return newStockDetails;
-  }
-
-  Map<String, dynamic> updatedBomTotal(
-      Map<String, dynamic> totalBom, Map<String, dynamic> tagBom) {
-    Map<String, dynamic> newBom = {};
-    newBom["headers"] = totalBom["headers"];
-    print("total bom $totalBom");
-    print("tag bom $tagBom");
-    List<dynamic> totalDataRow = totalBom["data"];
-    List<List<dynamic>> totalData =
-        totalDataRow.map((row) => row as List<dynamic>).toList();
-
-    List<dynamic> tagDataRow = tagBom["data"];
-    List<List<dynamic>> tagData =
-        tagDataRow.map((row) => row as List<dynamic>).toList();
-
-    for (int i = 0; i < totalData.length; i++) {
-      for (int j = 0; j < totalData[i].length; j++) {
-        if ((totalData[i][j].runtimeType == int || totalData[i][j] == double) &&
-            j != 4) {
-          print("i $i j-< $j ${totalData[i][j]}");
-          totalData[i][j] -= tagData[i][j];
-          print("i $i j-> $j ${totalData[i][j]}");
-        }
-      }
-    }
-    newBom["data"] = totalData;
-    return newBom;
-  }
-
   void addTagRow() async {
     print("adding row");
-    InventoryItemModel currentTotalStock =
+    ProcumentStyleVariant currentTotalStock =
         ref.read(inventoryControllerProvider.notifier).getCurrentItem()!;
-    print("current item ${currentTotalStock.varientName}");
+    // Utils.printJsonFormat(currentTotalStock.toJson());
+    print("current item ${currentTotalStock.variantName}");
     // return;
     // try {
     StockDetailsModel newChildStockDetails = ref.read(stockDetailsProvider);
+    if (newChildStockDetails.currentBom != null) {
+      print("tag bom is ${newChildStockDetails.currentBom!.bomRows[0].amount}");
+    }
     File? imgFile = ref.read(tagImgListProvider);
     // return ;
     TagRow tag = createTag(newChildStockDetails, currentTotalStock, imgFile);
@@ -124,67 +80,111 @@ class _TagListUIState extends ConsumerState<TagListUI> {
       });
     });
     tagRows.add(tag);
-    Map<String, dynamic> tagrRqsBody =
-        convertToSchema(tag, currentTotalStock, "xyz");
-    // print("tagrRqsBody is $tagrRqsBody");
+
+    ProcumentStyleVariant tagStyleVariant = ProcumentStyleVariant.copy(currentTotalStock);
+    tagStyleVariant =
+        updateTagStyleVariant(tagStyleVariant, newChildStockDetails, imageUrl);
+    Map<String, dynamic> tagrRqsBody = tagStyleVariant.toJson();
     tagrRqsBody.remove("Stock ID");
-    Map<String, dynamic> updatedTotalBom =
-        updatedBomTotal(currentTotalStock.bom, tag.bom);
+    Map<String, dynamic> updatedTotalBom = {};
     print("updated total Bom $updatedTotalBom");
     // return;
 
     //<---------------api to create a new tag---------------->
-    String newTagStockCode = await ref
-        .read(procurementControllerProvider.notifier)
-        .sendGRN(tagrRqsBody);
-    TransactionModel transaction = createTransaction(tagrRqsBody);
-    String? transactionId = await ref
-        .read(TransactionControllerProvider.notifier)
-        .sentTransaction(transaction);
-    BarcodeDetailModel detailModel =
-        createBarcodeDetail(newTagStockCode, tagrRqsBody, transactionId);
-    BarcodeHistoryModel historyModel =
-        createBarcodeHistory(newTagStockCode, tagrRqsBody, transactionId);
+    // String? transactionID =
+    //     await Utils().createNewTransaction([tagrRqsBody], ref, "Barcoding");
 
-    await ref
-        .read(BarocdeDetailControllerProvider.notifier)
-        .sentBarcodeDetail(detailModel);
-    await ref
-        .read(BarocdeHistoryControllerProvider.notifier)
-        .sentBarcodeHistory(historyModel);
+    BomModel newParentBom = updatedParentBom(
+        currentTotalStock.bomData, newChildStockDetails.currentBom!);
+    currentTotalStock.bomData = newParentBom;
+    currentTotalStock.operationData = newChildStockDetails.currentOperation!;
+    ref
+        .read(inventoryControllerProvider.notifier)
+        .updateStyleVariant(currentTotalStock);
+
+    ref.read(isTagCreatedProvider.notifier).setUpdate(true); //
+    ref.read(tagRowsProvider.notifier).addTag(tag);
+    StockDetailsModel updateParentStock = updateStock(newChildStockDetails);
+    ref.read(stockDetailsProvider.notifier).update(updateParentStock);
+    ref.read(tagImgListProvider.notifier).addFile(File(''));
+    // ref.read(isTagUpdateProvider.notifier).setUpdate(false); //
+    return;
+
     //<--------------------api to update current grn------------------>
-    if (ref.read(stockDetailsProvider).stockQty > 0) {
-
+    if (newChildStockDetails.stockQty > 0) {
       await ref.read(procurementControllerProvider.notifier).updateGRN(
           updateCurrentInveryItem(
                   currentTotalStock, tag, imageUrl, updatedTotalBom)
               .toJson(),
-          currentTotalStock.stockCode);
+          currentTotalStock.stockID);
     } else {
       await ref
           .read(procurementControllerProvider.notifier)
-          .deleteGRN(currentTotalStock.stockCode);
+          .deleteGRN(currentTotalStock.stockID);
     }
-
-    ref.read(tagRowsProvider.notifier).addTag(tag);
-    StockDetailsModel updateParentStock = updateStock(newChildStockDetails);
-    print(
-        "stock quantity ${updateParentStock.stockQty} ${newChildStockDetails.currentPieces}");
-
-    ref.read(stockDetailsProvider.notifier).update(updateParentStock);
-    ref.read(tagImgListProvider.notifier).addFile(File(''));
-
-    print("added row");
+    // ref.read(tagRowsProvider.notifier).addTag(tag);
+    // StockDetailsModel updateParentStock = updateStock(newChildStockDetails);
+    // ref.read(stockDetailsProvider.notifier).update(updateParentStock);
+    // ref.read(tagImgListProvider.notifier).addFile(File(''));
     // } catch (e) {
     //   print("error in addTagRow: $e");
     // }
+  }
+
+  StockDetailsModel updateStock(StockDetailsModel newStockDetails) {
+    newStockDetails.rate = 0;
+    newStockDetails.balMetWt = newStockDetails.balMetWt -
+        (newStockDetails.currentMetalWt - newStockDetails.currentStoneWt);
+    newStockDetails.balStoneWt =
+        newStockDetails.balStoneWt - newStockDetails.currentStoneWt;
+    newStockDetails.balWt =
+        newStockDetails.balWt - newStockDetails.currentNetWt;
+    newStockDetails.stockQty -= newStockDetails.currentPieces;
+    newStockDetails.balStonePcs -= newStockDetails.currentDiaPieces;
+    newStockDetails.tagCreated++;
+    newStockDetails.remaining--;
+    newStockDetails.currentNetWt = 0;
+    newStockDetails.currentStoneWt = 0;
+    newStockDetails.currentWt = 0;
+    newStockDetails.currentPieces = 0;
+    newStockDetails.currentAmount = 0;
+    newStockDetails.currentBom = null;
+    newStockDetails.currentOperation = null;
+
+    return newStockDetails;
+  }
+
+  BomModel updatedParentBom(BomModel parentBom, BomModel childBom) {
+    print("update parent bom ");
+    for (int bomIndex = 0; bomIndex < parentBom.bomRows.length; bomIndex++) {
+      BomRowModel parentBomRowModel = parentBom.bomRows[bomIndex];
+      BomRowModel childBomRowModel = childBom.bomRows[bomIndex];
+      print("weight parent ${parentBomRowModel.weight} child ${childBomRowModel.weight}");
+      parentBomRowModel.rate = childBomRowModel.rate;
+      parentBomRowModel.weight -= childBomRowModel.weight;
+      parentBomRowModel.amount =
+          childBomRowModel.rate * parentBomRowModel.weight;
+      parentBomRowModel.itemGroup = childBomRowModel.itemGroup;
+      parentBomRowModel.variantName = childBomRowModel.variantName;
+      parentBomRowModel.rowNo = childBomRowModel.rowNo;
+      parentBomRowModel.operation = childBomRowModel.operation;
+      parentBomRowModel.avgWeight = childBomRowModel.avgWeight;
+      parentBomRowModel.pieces -= childBomRowModel.pieces;
+      parentBomRowModel.type = childBomRowModel.type;
+      parentBom.bomRows[bomIndex] = parentBomRowModel;
+    }
+    for (int bomIndex = 0; bomIndex < parentBom.bomRows.length; bomIndex++) {
+      BomRowModel parentBomRowModel = parentBom.bomRows[bomIndex];
+      print("updated weight is ${parentBomRowModel.weight}");
+    }
+
+    return parentBom;
   }
 
   @override
   Widget build(BuildContext context) {
     ref.listen<bool>(isTagUpdateProvider, (previous, next) {
       // Trigger your function here
-
       addTagRow();
     });
     return Scaffold(
@@ -255,10 +255,10 @@ class _TagListUIState extends ConsumerState<TagListUI> {
   }
 
   Map<String, dynamic> convertToSchema(
-      TagRow tag, InventoryItemModel stock, String image) {
+      TagRow tag, ProcumentStyleVariant stock, String image) {
     print("location is ${stock.locationName}");
     return {
-      "varientName": stock.varientName,
+      "varientName": stock.variantName,
       "vendor": stock.vendor,
       "stdBuyingRate": tag.rate,
       "stoneMaxWt": tag.diaWt,
@@ -267,13 +267,13 @@ class _TagListUIState extends ConsumerState<TagListUI> {
       "category": stock.category,
       "subCategory": stock.subCategory,
       "styleKarat": stock.styleKarat,
-      "varient": stock.varientName,
+      "varient": stock.variantName,
       "style": stock.style,
-      "oldVarient": stock.oldVarient,
-      "customerVarient": stock.customerVarient,
-      "baseVarient": stock.baseVarient,
+      "oldVarient": stock.oldVariant,
+      "customerVarient": stock.customerVariant,
+      "baseVarient": stock.baseVariant,
       "remark1": stock.remark1,
-      "vendorVarient": stock.vendorVarient,
+      "vendorVarient": stock.vendorVariant,
       "remark2": stock.remark2,
       "createdBy": stock.createdBy,
       "remark": stock.remark,
@@ -286,7 +286,7 @@ class _TagListUIState extends ConsumerState<TagListUI> {
       "hsnSacCode": stock.hsnSacCode,
       "lineOfBusiness": stock.lineOfBusiness,
       "bom": tag.bom,
-      "operation": stock.operation,
+      "operation": stock.operationData.toJson(),
       "imageDetails": image,
       "formulaDetails": stock.formulaDetails,
       "pieces": tag.pcs,
@@ -305,17 +305,40 @@ class _TagListUIState extends ConsumerState<TagListUI> {
     };
   }
 
-  InventoryItemModel updateCurrentInveryItem(InventoryItemModel totalStock,
-      TagRow tag, String imageFile, Map<String, dynamic> updatedBom) {
-    totalStock.pieces = totalStock.pieces - tag.pcs;
+  ProcumentStyleVariant updateTagStyleVariant(ProcumentStyleVariant variant,
+      StockDetailsModel newTagData, String imageUrl) {
+    variant.totalPieces = TotalPeices(newTagData.currentPieces);
+    variant.totalStonePeices = TotalPeices(newTagData.currentDiaPieces);
+    variant.totalMetalWeight = TotalMetalWeight(newTagData.currentMetalWt);
+    variant.totalStoneWeight = TotalStoneWeight(newTagData.currentStoneWt);
+    variant.totalWeight = TotalWeight(newTagData.currentNetWt);
+    variant.imageDetails = [imageUrl];
+    variant.bomData = newTagData.currentBom ?? variant.bomData;
+    variant.operationData =
+        newTagData.currentOperation ?? variant.operationData;
+    return variant;
+  }
 
-    totalStock.metalWeight = totalStock.metalWeight - tag.wt;
-    totalStock.diaWeight = totalStock.diaWeight - tag.diaWt;
-    totalStock.diaPieces = max(totalStock.diaPieces - tag.pcs, 0);
+  ProcumentStyleVariant updateCurrentInveryItem(
+      ProcumentStyleVariant totalStock,
+      TagRow tag,
+      String imageFile,
+      Map<String, dynamic> updatedBom) {
+    totalStock.totalPieces =
+        TotalPeices(totalStock.totalPieces.value - tag.pcs);
+
+    totalStock.totalMetalWeight =
+        TotalMetalWeight(totalStock.totalMetalWeight.value - tag.wt);
+    totalStock.totalStoneWeight =
+        TotalStoneWeight(totalStock.totalStoneWeight.value - tag.diaWt);
+    totalStock.totalStonePeices =
+        TotalPeices(max(totalStock.totalStonePeices.value - tag.pcs, 0));
     // totalStock.imageDetails = imageFile;
-    totalStock.netWeight = totalStock.netWeight - tag.netWt;
-    totalStock.stonePiece = totalStock.stonePiece - tag.diaPieces;
-    totalStock.bom = updatedBom;
+    totalStock.totalWeight =
+        TotalWeight(totalStock.totalWeight.value - tag.netWt);
+    totalStock.totalStonePeices =
+        TotalPeices(totalStock.totalStonePeices.value - tag.diaPieces);
+    // totalStock.bom = updatedBom;
     return totalStock;
   }
 
@@ -383,15 +406,15 @@ class _TagListUIState extends ConsumerState<TagListUI> {
   }
 
   TagRow createTag(StockDetailsModel newStockDetails,
-      InventoryItemModel currentStock, File? imgFile) {
+      ProcumentStyleVariant oldParentStock, File? imgFile) {
     print("current bom ${newStockDetails.currentBom}");
     TagRow tag = TagRow(
       checkbox: false,
       image: imgFile,
-      variant: '${currentStock.varientName}',
-      stockCode: '${currentStock.stockCode}#${newStockDetails.tagCreated + 1}',
+      variant: '${oldParentStock.variantName}',
+      stockCode: '${oldParentStock.stockID}#${newStockDetails.tagCreated + 1}',
       pcs: newStockDetails.currentPieces,
-      wt: newStockDetails.currentNetWt - newStockDetails.currentStoneWt,
+      wt: newStockDetails.currentMetalWt,
       netWt: newStockDetails.currentNetWt,
       clsWt: 0.0,
       diaWt: newStockDetails.currentStoneWt,

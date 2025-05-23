@@ -259,6 +259,32 @@ class DrawerScreen extends ConsumerWidget {
                       ref.read(metalRateProvider.notifier).updateRate(rate);
                     }
                   },
+                ),
+                SizedBox(height: 30,),
+                TextField(
+                  controller: controller,
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(
+                    labelText: 'Dimond Rate',
+                    prefixIcon: Icon(Icons.monetization_on),
+                    suffixText: '',
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    // final rate = double.tryParse(value);
+                    // if (rate != null && rate >= 0) {
+                    //   ref.read(metalRateProvider.notifier).updateRate(rate);
+                    // }
+                  },
+                  onSubmitted: (value) {
+                    final rate = double.parse(value);
+                    print("rate is $rate");
+                    if (rate>0) {
+                      print("start update rate $rate");
+                      // Reset to valid value if input is invalid
+                      ref.read(diamondRateProvider.notifier).updateRate(rate);
+                    }
+                  },
                 )
               ],
             ),

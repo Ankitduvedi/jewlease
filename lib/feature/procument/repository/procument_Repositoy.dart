@@ -82,7 +82,7 @@ class ProcurementRepository {
   }
 
   Future<List<dynamic>> fetchBom(String bomId) async {
-    // try {
+    try {
       final response = await _dio.get(
         "$url2/ItemMasterAndVariants/Style/Style/Variant/$bomId",
         options: Options(
@@ -91,10 +91,11 @@ class ProcurementRepository {
       );
       print("res data ${response.data}");
       final data = response.data;
+      print("bom data is $data");
       return data;
-    // } catch (e) {
-    //   print("error is2 $e");
-    //   return [];
-    // }
+    } catch (e) {
+      print("error is2 $e");
+      return [];
+    }
   }
 }

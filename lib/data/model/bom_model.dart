@@ -17,11 +17,13 @@ class BomModel {
         headers: List<String>.from(json['headers'] ?? []));
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'data': List<dynamic>.from(bomRows.map((x) => x.toJson())),
-      'headers': List<dynamic>.from(headers.map((x) => x)),
-    };
+  List<Map<String, dynamic>> toJson() {
+    return
+        // {
+        // 'data':
+        List<Map<String, dynamic>>.from(bomRows.map((x) => x.toJson()));
+    // 'headers': List<dynamic>.from(headers.map((x) => x)),
+    // };
   }
 
   String toJsonString() => json.encode(toJson());
@@ -31,18 +33,18 @@ class BomModel {
 }
 
 class BomRowModel {
-  final int rowNo;
-  final String variantName;
-  final String itemGroup;
-  final double pieces;
+  int rowNo;
+  String variantName;
+  String itemGroup;
+  double pieces;
   double weight;
   double rate;
   double avgWeight;
   double amount;
-  final String spChar;
-  final String operation;
-  final String type;
-  final List<dynamic> actions;
+  String spChar;
+  String operation;
+  String type;
+  List<dynamic> actions;
   String? formulaID;
 
   BomRowModel(
@@ -61,6 +63,7 @@ class BomRowModel {
       required this.formulaID});
 
   factory BomRowModel.fromJson(Map<String, dynamic> json) {
+    print("bom json is $json");
     return BomRowModel(
       rowNo: int.tryParse(json['Row No'].toString()) ?? 0,
       variantName: json['Variant Name'] as String? ?? '',
@@ -71,7 +74,8 @@ class BomRowModel {
       avgWeight: double.tryParse(json['Avg Weight'].toString()) ?? 0.0,
       amount: double.tryParse(json['Amount'].toString()) ?? 0.0,
       spChar: json['SpChar'] as String? ?? '',
-      operation: json['Operation'] as String? ?? '',
+      operation: '',
+      // json['Operation'] as String? ?? '',
       type: json['Type'] as String? ?? '',
       actions: List<dynamic>.from(json['Actions'] ?? []),
       formulaID: json['FormulaID'] as String?,
@@ -122,12 +126,12 @@ class BomRowModel {
       'Weight': weight,
       'Rate': rate,
       'Avg Weight': avgWeight,
-      'Amount':amount,
+      'Amount': amount,
       'SpChar': spChar,
       'Operation': operation,
-      'Type':type,
+      'Type': type,
       'Actions': actions,
-      'FormulaID':formulaID,
+      'FormulaID': formulaID,
     };
   }
 }

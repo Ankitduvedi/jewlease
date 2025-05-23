@@ -1,5 +1,7 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,7 +29,7 @@ class procumentBomGridSource extends DataGridSource {
 
   DataGridRow recalulateWt(DataGridRow row) {
     double wt = row.getCells()[3].value as double;
-    double pieces = row.getCells()[2].value * 1.0 as double;
+    double pieces = max(row.getCells()[2].value * 1.0 as double,1) ;
     double rate = row.getCells()[4].value * 1.0 as double;
     return DataGridRow(
         cells: row.getCells().map((cell) {
@@ -58,7 +60,7 @@ class procumentBomGridSource extends DataGridSource {
   }
 
   DataGridRow recalculatePieces(DataGridRow row) {
-    double pieces = row.getCells()[2].value as double;
+    double pieces = max(row.getCells()[2].value as double,1);
     double wt = row.getCells()[3].value as double;
     // double rate = row.getCells()[4].value as double;
     print("pieces->$pieces wt->$wt");
@@ -252,14 +254,14 @@ class procumentBomGridSource extends DataGridSource {
                                   value: 'show_formula',
                                   child: const Text('Show Formula'),
                                   onTap: () {
-                                    showFormulaDialog(itemGroup, rowIndex);
+                                    showFormulaDialog("Show Formula", rowIndex);
                                   },
                                 ),
                                 PopupMenuItem(
                                   value: 'Show Operation',
                                   child: const Text('Show Operation'),
                                   onTap: () {
-                                    showFormulaDialog(itemGroup, rowIndex);
+                                    showFormulaDialog("Show Operation", rowIndex);
                                   },
                                 ),
                               ],
@@ -271,14 +273,15 @@ class procumentBomGridSource extends DataGridSource {
                         onSubmitted: (value) {
                           double parsedValue = double.tryParse(value) ?? 0.0;
                           int rowIndex = dataGridRows.indexOf(row);
+                          print("range is $rowIndex");
                           int cellIndex = dataGridRows[rowIndex]
                               .getCells()
                               .indexOf(dataCell);
 
-                          if(cellIndex==4) {
-                            Utils.snackBar("Rate can be changed by formula", context);
-                            return;
-                          }
+                          // if(cellIndex==4) {
+                          //   Utils.snackBar("Rate can be changed by formula", context);
+                          //   return;
+                          // }
 
                           double lastSummerryPieces =
                               dataGridRows[0].getCells()[2].value;

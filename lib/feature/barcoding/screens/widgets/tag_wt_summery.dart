@@ -99,10 +99,7 @@ class _TagWtSummeryState extends ConsumerState<TagWtSummery> {
                     _buildWeightInfo(
                         "Net Wt", stockDetails.currentNetWt.toString()),
                     _buildWeightInfo(
-                        "Metal Wt",
-                        (stockDetails.currentNetWt -
-                                stockDetails.currentStoneWt)
-                            .toString()),
+                        "Metal Wt", stockDetails.currentMetalWt.toString()),
                     _buildWeightInfo(
                         "Dia Wt", stockDetails.currentStoneWt.toString()),
                   ],

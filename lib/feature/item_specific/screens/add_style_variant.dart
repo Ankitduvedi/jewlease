@@ -2,6 +2,8 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/data/model/bom_model.dart';
+import 'package:jewlease/data/model/operation_model.dart';
 import 'package:jewlease/data/model/style_variant_model.dart';
 import 'package:jewlease/feature/item_specific/controller/item_master_and_variant_controller.dart';
 import 'package:jewlease/providers/dailog_selection_provider.dart';
@@ -68,8 +70,9 @@ class AddStyleVariantScreenState extends ConsumerState<AddStyleVariantScreen> {
             } else if (selectedContent == 1) {
               ref.read(formSequenceProvider.notifier).state = 2;
             } else if (selectedContent == 2) {
-              final bomNotifier = ref.watch(bomProvider);
-              final operationNotifier = ref.watch(OperationProvider);
+              final List<BomRowModel> bomNotifier = ref.watch(bomProvider);
+              final List<OperationRowModel> operationNotifier =
+                  ref.watch(operationProvider);
               String generateVariantName() {
                 // Extract initials from the fields
                 String initials = (textFieldvalues['LINE OF BUSINESS'] ?? "lob")
@@ -137,12 +140,15 @@ class AddStyleVariantScreenState extends ConsumerState<AddStyleVariantScreen> {
                   varient: textFieldvalues['VARIETY'] ?? " variety",
                   hsnSacCode: textFieldvalues['HSN - SAC CODE'] ?? "",
                   lineOfBusiness: textFieldvalues['LINE OF BUSINESS'] ?? "lob",
-                  bom: bomNotifier,
-                  operation: operationNotifier,
+                  bom: bomNotifier.map((row) => row.toJson()).toList(),
+                  operation:
+                      operationNotifier.map((row) => row.toJson()).toList(),
                   imageDetails: []);
 
               log(config.toJson().toString());
               log('save button pressed');
+              log("bom ${bomNotifier.length}");
+
               ref
                   .read(itemSpecificControllerProvider.notifier)
                   .submitStyleVariantConfiguration(config, context, ref);
@@ -286,12 +292,13 @@ class AddStyleVariantScreenState extends ConsumerState<AddStyleVariantScreen> {
                             ],
                           )
                         : procumentBomOprDialog(
-                          "",
-                          0,
-                          true,
-                          false,
-                          isHorizonatal: false,
-                        ),
+                            "",
+                            0,
+                            true,
+                            false,
+                            isHorizonatal: false,
+                            isAddNewVariant: true,
+                          ),
               )),
             ],
           ),

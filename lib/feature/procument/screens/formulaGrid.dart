@@ -13,10 +13,22 @@ import '../controller/procumentVarientFormula.dart';
 import 'formulaGridSource.dart';
 
 class FormulaDataGrid extends ConsumerStatefulWidget {
-  const FormulaDataGrid(this.varientName, this.varientIndex, {super.key});
+  const FormulaDataGrid({
+    super.key,
+    required this.varientName,
+    required this.varientIndex,
+    required this.isFromBom,
+    required this.FormulaName,
+    required this.backButton,
+    required this.formulaIndex,
+  });
 
   final String varientName;
   final int varientIndex;
+  final isFromBom;
+  final String FormulaName;
+  final VoidCallback backButton;
+  final formulaIndex;
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() {
@@ -46,10 +58,17 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
   @override
   void initState() {
     // fetchVarientAttributes();
-    selectedBomRowIndex = ref.read(showFormulaProvider);
+    bool isJustOpened = true;
     super.initState();
-    _formulaGridSource = formulaGridSource(_rows, _removeRow, _updateSummaryRow,
-        formulaExcel, [], rangeExcelData, varientAttribute);
+    _formulaGridSource = formulaGridSource(
+      dataGridRows: _rows,
+      onDelete: _removeRow,
+      onEdit: _updateSummaryRow,
+      formulaExcel: formulaExcel,
+      formulaHeaders: [],
+      rangeExcel: rangeExcelData,
+      varientAttributes: varientAttribute,
+    );
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       _initializeRows();
       // executes after build
@@ -64,16 +83,19 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
     });
   }
 
-  void _updateSummaryRow(List<DataGridRow> newRows) {
-    try {
+  void _updateSummaryRow(
+    List<DataGridRow> newRows,
+  ) {
+    print("update formula summary called ");
+    // try {
+      //<---------------Logic to update formula provide with new model-------->
       _rows = newRows;
-      String formulaName = "${widget.varientName}_${selectedBomRowIndex}";
-      print("formulaName $formulaName");
+
       Map<String, FormulaModel> allFormula =
           ref.read(allVariantFormulasProvider2);
       FormulaModel? formulaModel;
       for (String formulaKeys in allFormula.keys) {
-        if (formulaKeys.contains(formulaName)) {
+        if (formulaKeys.contains(widget.FormulaName)) {
           formulaModel = allFormula[formulaKeys];
         }
       }
@@ -89,49 +111,47 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
       print("updating summary rowxcc");
       ref
           .read(allVariantFormulasProvider2.notifier)
-          .update(formulaName, formulaModel);
+          .update(widget.FormulaName, formulaModel);
 
-      double updatedMetalRate;
-      var metalRateRows = formulaModel.formulaRows
-          .where((row) => row.rowType == "MEATAL RATE");
-
-      if (metalRateRows.isNotEmpty) {
-        updatedMetalRate = metalRateRows.first.rowValue?.toDouble() ?? 0.0;
-      } else {
-        var diamondRateRows = formulaModel.formulaRows
-            .where((row) => row.rowType == "DIAMOND RATE");
-        updatedMetalRate = diamondRateRows.isNotEmpty
-            ? diamondRateRows.first.rowValue?.toDouble() ?? 0.0
-            : 0.0;
-      }
-      print("updated metal rate is $updatedMetalRate");
+      double updatedFormulaTotal = formulaModel
+          .formulaRows[formulaModel.formulaRows.length - 1].rowValue;
+      ("updated metal rate is $updatedFormulaTotal");
 
       ref.read(formulaBomOprProvider.notifier).updateAction({
         "data": {
-          "Rate": updatedMetalRate,
+          "total": updatedFormulaTotal,
           "varientName": "${widget.varientName}",
-          "varientIndex": "${widget.varientIndex}"
+          "variantIndex": "${widget.varientIndex}",
+          "updatedRowIndex": widget.formulaIndex,
+          "isBomUpdate": widget.isFromBom,
+          "isOprUpdate": !widget.isFromBom
         }
       }, true);
-    } catch (e) {
-      print("error is3 $e");
-    }
+    // } catch (e) {
+    //   print("error is3 $e");
+    // }
+    print("update formula summary called ends ");
   }
 
   void _initializeRows() async {
     Map<String, FormulaModel> allFormula =
         ref.read(allVariantFormulasProvider2);
-    String formulaName = "${widget.varientName}_${selectedBomRowIndex}";
+
+    String formulaName = widget.FormulaName;
+    print("formula name is $formulaName");
     FormulaModel? formula;
-    for (String formulaKeys in allFormula.keys) {
-      if (formulaKeys.contains(formulaName)) {
-        formula = allFormula[formulaKeys];
+    print("allformulas $allFormula");
+    for (String formulaKey in allFormula.keys) {
+      if (formulaKey == formulaName) {
+        print("formaula key $formulaKey ${widget.FormulaName}");
+        formula = allFormula[formulaKey];
       }
     }
-    print("formula is ${formula!.formulaRows.map((cell)=>cell.toJson())}");
+
     if (formula == null) return;
 
     for (int i = 0; i < formula.formulaRows.length; i++) {
+      print("formula is2 ${formula.formulaRows[i].toJson()}");
       FormulaRowModel formulaRow = formula.formulaRows[i];
       if (formulaRow.dataType == "Range") {
         String rangeKey = "15 jan";
@@ -166,8 +186,15 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
     }
 
     formulaExcel = formula.formulaRows;
-    _formulaGridSource = formulaGridSource(_rows, _removeRow, _updateSummaryRow,
-        formulaExcel, formulaGridHeaders, rangeExcelData, varientAttribute);
+    _formulaGridSource = formulaGridSource(
+      dataGridRows: _rows,
+      onDelete: _removeRow,
+      onEdit: _updateSummaryRow,
+      formulaExcel: formulaExcel,
+      formulaHeaders: formulaGridHeaders,
+      rangeExcel: rangeExcelData,
+      varientAttributes: varientAttribute,
+    );
     setState(() {});
   }
 
@@ -176,14 +203,11 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
     final metalRate = ref.watch(metalRateProvider);
     if (rowType == "MEATAL RATE") {
       return metalRate;
-    }
-    else if (rowType == "DIAMOND RATE") {
+    } else if (rowType == "DIAMOND RATE") {
       return metalRate;
-    }
-    else if (rowType == "PURITY") {
+    } else if (rowType == "PURITY") {
       return assignMetalFiness();
-    }
-    else if (rowType == "METAL FINENESS") {
+    } else if (rowType == "METAL FINENESS") {
       return assignMetalFiness();
     } else {
       return rowValue;
@@ -199,21 +223,28 @@ class FormulaDataGridState extends ConsumerState<FormulaDataGrid> {
     double gridWidth =
         screenWidth * 0.4; // Set grid width to 50% of screen width
     return Container(
-      margin: EdgeInsets.only(top: 20, left: 20),
-      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(10)),
         color: Colors.white,
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header Row
 
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 4),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                IconButton(
+                    onPressed: () {
+                      widget.backButton();
+                    },
+                    icon: Icon(
+                      Icons.arrow_back_ios_rounded,
+                      size: 15,
+                    )),
                 Text(
                   'Formula',
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),

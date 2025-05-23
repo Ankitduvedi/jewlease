@@ -34,7 +34,8 @@ class ProcurementVariantNotifier
   // Update the variant based on the 'Varient Name'
   void updateVariant(String variantName, Map<String, dynamic> newValues) {
     state = state.map((item) {
-      if (item['Variant Name'] == variantName && item["varientIndex"]== newValues["varientIndex"]) {
+      if (item['Variant Name'] == variantName &&
+          item["varientIndex"] == newValues["varientIndex"]) {
         // Replace values in item with those from newValues
         Map<dynamic, dynamic> map = {...item, ...newValues};
         print("updated map: $map");
@@ -78,17 +79,31 @@ class ProcurementVariantNotifier2
   // }
 
   // Update the variant based on the 'Varient Name'
-  void updateVariant(String variantName, Map<String, dynamic> newValues) {
+  ProcumentStyleVariant? updateVariant(
+      String variantName, Map<String, dynamic> updatedVarient) {
     print("called updated bom pv3");
     state = state.map((item) {
-      print("variant name ${item.variantName} index ${item.vairiantIndex} ${newValues["varientIndex"]}");
+      print(
+          "variant name ${item.variantName} index ${item.vairiantIndex} ${updatedVarient["varientIndex"]}");
       if (item.variantName == variantName &&
-          item.vairiantIndex == newValues["varientIndex"]) {
-        item.updateVariant(newValues);
-        print("called updated bom pv2");
+          item.vairiantIndex == updatedVarient["varientIndex"]) {
+        item.updateVariant(updatedVarient);
+        item.bomData= updatedVarient["BOM Data"] ?? item.bomData;
+       item.totalOperationAmount = updatedVarient["totalOprAmount"] ?? item.totalOperationAmount;
+        item.totalStonePeices = updatedVarient["totalStonePieces"] ?? item.totalStonePeices;
+
+        print(
+            "called updated bom pv2 ${item.bomData.bomRows.map((row) => row.toJson())}");
+        return item;
       }
       return item; // Leave other items unchanged
     }).toList();
+    state.map((item) {
+      if (item.variantName == variantName &&
+          item.vairiantIndex == updatedVarient["varientIndex"]) {
+        return item;
+      }
+    });
   }
 
   void resetAllVariants() {

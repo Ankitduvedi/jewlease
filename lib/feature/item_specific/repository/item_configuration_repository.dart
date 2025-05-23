@@ -56,6 +56,9 @@ class ItemSpecificRepository {
   }
 
   Future<Either<Failure, String>> addStyleVariant(ItemMasterVariant config) {
+
+
+    ///
     return postRequest(
       endpoint: '$url2/ItemMasterAndVariants/Style/Style/Variant',
       data: config.toJson(),
