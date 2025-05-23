@@ -98,4 +98,21 @@ class ProcurementRepository {
       return [];
     }
   }
+  Future<List<dynamic>> fetchOperation(String oprId) async {
+    try {
+      final response = await _dio.get(
+        "$url2/Operations/$oprId",
+        options: Options(
+          headers: {"Content-Type": "application/json"},
+        ),
+      );
+      print("res data ${response.data}");
+      final data = response.data;
+      print("opr data is $data");
+      return data;
+    } catch (e) {
+      print("error is2 $e");
+      return [];
+    }
+  }
 }

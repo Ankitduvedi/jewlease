@@ -209,13 +209,12 @@ class ProcumentStyleVariant {
     required this.department,
   });
 
-  factory ProcumentStyleVariant.fromJson(Map<String, dynamic> json,
-      int variantIndex) {
+  factory ProcumentStyleVariant.fromJson(
+      Map<String, dynamic> json, int variantIndex) {
     // Helper function to parse numeric values that might come as strings
     double parseDouble(dynamic value) {
       print("double is $value");
-      if (value == "")
-        return 0.0;
+      if (value == "") return 0.0;
       if (value is double) return value;
       if (value is String) return double.parse(value);
       return 0;
@@ -269,11 +268,11 @@ class ProcumentStyleVariant {
       subCluster: json["SUB CLUSTER"] ?? '',
       bomId: bomId ?? '',
       imageDetails:
-      List<dynamic>.from(json["Image Details"]?.map((x) => x) ?? []),
+          List<dynamic>.from(json["Image Details"]?.map((x) => x) ?? []),
       operationId: operationId,
       bomData: BomModel(bomRows: [], headers: []),
       operationData:
-      OperationModel(operationId: operationId, operationRows: []),
+          OperationModel(operationId: operationId, operationRows: []),
       totalStoneWeight: TotalStoneWeight(0),
       totalPieces: TotalPeices(0),
       totalMetalWeight: TotalMetalWeight(0),
@@ -318,8 +317,8 @@ class ProcumentStyleVariant {
       certificateNo: json['Certificate No'] ?? '',
       stockAge: json['Stock Age'] ?? 0,
       memoInd: json['Memo Ind'] ?? false,
-      barcodeDate: DateTime.tryParse(json['Barcode Date'] ?? '') ??
-          DateTime.now(),
+      barcodeDate:
+          DateTime.tryParse(json['Barcode Date'] ?? '') ?? DateTime.now(),
       sorTransItemId: json['Sor Trans Item ID'] ?? '',
       sorTransItemBomId: json['Sor Trans Item BOM ID'] ?? '',
       ownerPartyTypeId: json['Owner Party Type ID'] ?? '',
@@ -342,9 +341,10 @@ class ProcumentStyleVariant {
     final totalStoneWeight = _calculateTotalStoneWeight(bomData);
     final totalPeices = _calculateTotalPieces(bomData);
     final totalWeight =
-    TotalWeight(totalMetalWeight.value + totalStoneWeight.value);
+        TotalWeight(totalMetalWeight.value + totalStoneWeight.value);
     final totalStonePeices = _calculateTotalStonePieces(bomData);
-    final totalOperationAmount = _calculateOperationAmount(variant.operationData);
+    final totalOperationAmount =
+        _calculateOperationAmount(variant.operationData);
 
     return ProcumentStyleVariant(
       vairiantIndex: variant.vairiantIndex,
@@ -448,14 +448,14 @@ class ProcumentStyleVariant {
   static Future<ProcumentStyleVariant> initializeCalculatedFields(
       ProcumentStyleVariant variant, int variantIndex) async {
     final bomData = await _calculateBom(variant.bomId);
-    final operationData = _calculateOperation(variant.operationId);
+    final operationData = await _calculateOperation(variant.operationId);
     print("initialize recalculation variant");
 
     final totalMetalWeight = _calculateTotalMetalWeight(bomData);
     final totalStoneWeight = _calculateTotalStoneWeight(bomData);
     final totalPeices = _calculateTotalPieces(bomData);
     final totalWeight =
-    TotalWeight(totalMetalWeight.value + totalStoneWeight.value);
+        TotalWeight(totalMetalWeight.value + totalStoneWeight.value);
     final totalStonePeices = _calculateTotalStonePieces(bomData);
 
     return ProcumentStyleVariant(
@@ -557,8 +557,7 @@ class ProcumentStyleVariant {
     );
   }
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         "stockId": "",
         "style": style,
         "varientName": variantName,
@@ -686,23 +685,27 @@ class ProcumentStyleVariant {
     return BomModel(bomRows: bomRows, headers: []);
   }
 
-  static OperationModel _calculateOperation(String operationId) {
-    List<dynamic> data = operationMapData;
-    List<OperationRowModel> operationRows =
-    data.map((opr) => OperationRowModel.fromJson(opr)).toList();
+  static Future<OperationModel> _calculateOperation(String operationId) async {
+    final Dio _dio = Dio();
+    List<dynamic> data =
+        await ProcurementRepository(_dio).fetchOperation(operationId);
+
+    List<OperationRowModel> operationRows = data
+        .map((opr) => OperationRowModel.fromJson(opr as Map<String, dynamic>))
+        .toList();
     return OperationModel(
         operationId: operationId, operationRows: operationRows);
   }
 
-  saveVariables(Map<String, dynamic>newVariables) {
-    newVariables = newVariables.map((key, value) =>
-        MapEntry(
+  saveVariables(Map<String, dynamic> newVariables) {
+    newVariables = newVariables.map((key, value) => MapEntry(
           key,
           (value is double && value.isNaN) ? 0.0 : value,
         ));
     print("cleaned varibles is $newVariables $newVariables");
     variables.addAll(newVariables);
   }
+
   factory ProcumentStyleVariant.copy(ProcumentStyleVariant other) {
     return ProcumentStyleVariant(
       vairiantIndex: other.vairiantIndex,
@@ -745,55 +748,60 @@ class ProcumentStyleVariant {
       imageDetails: List.from(other.imageDetails),
       operationId: other.operationId,
       bomData: BomModel(
-        bomRows: other.bomData.bomRows.map((row) => BomRowModel(
-          rowNo: row.rowNo,
-          variantName: row.variantName,
-          itemGroup: row.itemGroup,
-          pieces: row.pieces,
-          weight: row.weight,
-          rate: row.rate,
-          avgWeight: row.avgWeight,
-          amount: row.amount,
-          spChar: row.spChar,
-          operation: row.operation,
-          type: row.type,
-          actions: row.actions,
-          formulaID: row.formulaID,
-        )).toList(),
+        bomRows: other.bomData.bomRows
+            .map((row) => BomRowModel(
+                  rowNo: row.rowNo,
+                  variantName: row.variantName,
+                  itemGroup: row.itemGroup,
+                  pieces: row.pieces,
+                  weight: row.weight,
+                  rate: row.rate,
+                  avgWeight: row.avgWeight,
+                  amount: row.amount,
+                  spChar: row.spChar,
+                  operation: row.operation,
+                  type: row.type,
+                  actions: row.actions,
+                  formulaID: row.formulaID,
+                ))
+            .toList(),
         headers: List.from(other.bomData.headers),
       ),
       operationData: OperationModel(
         operationId: other.operationData.operationId,
-        operationRows: other.operationData.operationRows.map((row) => OperationRowModel(
-          variantName: row.variantName,
-          calcBom: row.calcBom,
-          calcCf: row.calcCf,
-          calcMethod: row.calcMethod,
-          calcMethodVal: row.calcMethodVal,
-          calcQty: row.calcQty,
-          calculateFormula: row.calculateFormula,
-          depdBom: row.depdBom,
-          depdMethod: row.depdMethod,
-          depdMethodVal: row.depdMethodVal,
-          depdQty: row.depdQty,
-          labourAmount: row.labourAmount,
-          labourAmountLocal: row.labourAmountLocal,
-          labourRate: row.labourRate,
-          maxRateValue: row.maxRateValue,
-          minRateValue: row.minRateValue,
-          operation: row.operation,
-          operationType: row.operationType,
-          rateAsPerFormula: row.rateAsPerFormula,
-          rowStatus: row.rowStatus,
-          rateEditInd: row.rateEditInd,
-        )).toList(),
+        operationRows: other.operationData.operationRows
+            .map((row) => OperationRowModel(
+                  variantName: row.variantName,
+                  calcBom: row.calcBom,
+                  calcCf: row.calcCf,
+                  calcMethod: row.calcMethod,
+                  calcMethodVal: row.calcMethodVal,
+                  calcQty: row.calcQty,
+                  calculateFormula: row.calculateFormula,
+                  depdBom: row.depdBom,
+                  depdMethod: row.depdMethod,
+                  depdMethodVal: row.depdMethodVal,
+                  depdQty: row.depdQty,
+                  labourAmount: row.labourAmount,
+                  labourAmountLocal: row.labourAmountLocal,
+                  labourRate: row.labourRate,
+                  maxRateValue: row.maxRateValue,
+                  minRateValue: row.minRateValue,
+                  operation: row.operation,
+                  operationType: row.operationType,
+                  rateAsPerFormula: row.rateAsPerFormula,
+                  rowStatus: row.rowStatus,
+                  rateEditInd: row.rateEditInd,
+                ))
+            .toList(),
       ),
       totalWeight: TotalWeight(other.totalWeight.value),
       totalMetalWeight: TotalMetalWeight(other.totalMetalWeight.value),
       totalStoneWeight: TotalStoneWeight(other.totalStoneWeight.value),
       totalPieces: TotalPeices(other.totalPieces.value),
       totalStonePeices: TotalPeices(other.totalStonePeices.value),
-      totalOperationAmount: TotalOperationAmount(other.totalOperationAmount.value),
+      totalOperationAmount:
+          TotalOperationAmount(other.totalOperationAmount.value),
       variantFormulaID: other.variantFormulaID,
       variables: Map.from(other.variables),
       isRawMaterial: other.isRawMaterial,
@@ -831,7 +839,8 @@ class ProcumentStyleVariant {
       certificateNo: other.certificateNo,
       stockAge: other.stockAge,
       memoInd: other.memoInd,
-      barcodeDate: DateTime.fromMillisecondsSinceEpoch(other.barcodeDate.millisecondsSinceEpoch),
+      barcodeDate: DateTime.fromMillisecondsSinceEpoch(
+          other.barcodeDate.millisecondsSinceEpoch),
       sorTransItemId: other.sorTransItemId,
       sorTransItemBomId: other.sorTransItemBomId,
       ownerPartyTypeId: other.ownerPartyTypeId,
@@ -940,7 +949,4 @@ final List<Map<String, dynamic>> operationMapData = [
     "RowStatus": 1,
     "Rate_Edit_Ind": 0
   },
-
-
-
 ];
