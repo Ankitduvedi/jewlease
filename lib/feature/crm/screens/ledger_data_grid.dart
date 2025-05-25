@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/data/model/customer_model.dart';
+import 'package:jewlease/data/model/payment.dart';
+import 'package:jewlease/feature/point_of_sale/controllers/pos_controller.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
 import '../../../main.dart';
 import '../../procument/screens/procumentSummeryGridSource.dart';
 
-class LedgerDataGrid extends StatefulWidget {
-  const LedgerDataGrid({super.key});
+class LedgerDataGrid extends ConsumerStatefulWidget {
+  const LedgerDataGrid({super.key, required this.customerModel});
+
+  final CustomerModel customerModel;
 
   @override
-  State<LedgerDataGrid> createState() => _LedgerDataGridState();
+  ConsumerState<LedgerDataGrid> createState() => _LedgerDataGridState();
 }
 
-class _LedgerDataGridState extends State<LedgerDataGrid> {
+class _LedgerDataGridState extends ConsumerState<LedgerDataGrid> {
   List<String> LedgerColumnns = [
     'Location',
     'Type',
@@ -39,14 +45,50 @@ class _LedgerDataGridState extends State<LedgerDataGrid> {
     _procumentdataGridSource =
         ProcumentDataGridSource(ledgerRows, (DataGridRow) {}, () {}, false);
     // TODO: implement initState
+
+    initializeData();
     super.initState();
+  }
+
+  void initializeData() async {
+    await ref
+        .read(posControllerProvider.notifier)
+        .fetchPayments(widget.customerModel.firstName);
+
+    List<PaymentModel> payments =
+        ref.read(posControllerProvider.notifier).paymentDetails;
+    print("payments len ${payments.length}");
+    ledgerRows = payments
+        .map((payment) => DataGridRow(cells: [
+              DataGridCell<String>(
+                  columnName: "Location", value: payment.location),
+              DataGridCell<String>(columnName: "Type", value: "SAL"),
+              DataGridCell<String>(
+                  columnName: "Voucher No", value: payment.voucherNo),
+              DataGridCell<String>(columnName: "Batch", value: ""),
+              DataGridCell<String>(
+                  columnName: "Transaction Date", value: payment.transDate),
+              DataGridCell<String>(
+                  columnName: "Particulars", value: payment.particulars),
+              DataGridCell<double>(
+                  columnName: "Dr Amount", value: payment.drAmount),
+              DataGridCell<double>(
+                  columnName: "Cr Amount", value: payment.crAmount),
+              DataGridCell<double>(
+                  columnName: "Running Bal", value: payment.runningBal),
+            ]))
+        .toList();
+    setState(() {
+      _procumentdataGridSource =
+          ProcumentDataGridSource(ledgerRows, (DataGridRow) {}, () {}, false);
+    });
+
   }
 
   Widget build(BuildContext context) {
     screenWidth = MediaQuery.of(context).size.width;
     screenHeight = MediaQuery.of(context).size.height;
-    return
-      Expanded(
+    return Expanded(
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Container(
@@ -101,9 +143,7 @@ class _LedgerDataGridState extends State<LedgerDataGrid> {
                                 ? 15
                                 : 0),
                         topLeft: Radius.circular(
-                            LedgerColumnns.indexOf(columnName) == 0
-                                ? 15
-                                : 0),
+                            LedgerColumnns.indexOf(columnName) == 0 ? 15 : 0),
                       ),
                     ),
                     alignment: Alignment.center,

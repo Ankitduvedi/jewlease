@@ -303,6 +303,7 @@ class InventoryItemModel {
     return BomModel(bomRows: bomRows, headers: []);
   }
 
+
   OperationModel fetchOperation(List<Map<String, dynamic>> operationRow) {
     List<OperationRowModel> oprRows =
         operationRow.map((row) => OperationRowModel.fromJson(row)).toList();

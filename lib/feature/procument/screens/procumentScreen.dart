@@ -35,10 +35,14 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
   void initState() {
     // TODO: implement initState
     Future.delayed(
-        Duration(milliseconds: 500),
-        () => showDialog(
-            context: context,
-            builder: (context) => Dialog(child: procumentVendorDialog())));
+      Duration(milliseconds: 500),
+      () => showDialog(
+        context: context,
+        builder: (context) => Dialog(
+          child: procumentVendorDialog(),
+        ),
+      ),
+    );
     // showDialog(context: context, builder: (context) => procumentDialog());
     super.initState();
   }
@@ -248,42 +252,46 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
         ),
         Expanded(
           child: Scaffold(
+            // Container(
+            //   width: double.infinity,
+            //   height: 50,
+            //   color: Colors.green,
+            // ),
+            appBar: AppBar(
+              actions: [
+                AppBarButtons(
+                  ontap: [
+                    () {
+                      if (selectedIndex == 1)
+                        showDialog(
+                            context: context,
+                            builder: (context) => procumentScreen());
+                      log('new pressed');
+                      if (selectedIndex == 3)
+                        context.go('/addFormulaProcedureScreen');
+                    },
+                    () async {
+                      saveProcument();
+                    },
+                    () {
+                      // Reset the provider value to null on refresh
+                      ref.watch(formulaProcedureProvider.notifier).state = [
+                        'Style',
+                        null,
+                        null
+                      ];
+                    },
+                    () {}
+                  ],
+                )
+              ],
+            ),
+            body: ProcumentSummaryScreen(
+              title: "Goods Reciept Note",
+              endURL: 'ItemMasterAndVariants/Style/Style/Variant',
 
-              // Container(
-              //   width: double.infinity,
-              //   height: 50,
-              //   color: Colors.green,
-              // ),
-              appBar: AppBar(
-                actions: [
-                  AppBarButtons(
-                    ontap: [
-                      () {
-                        if (selectedIndex == 1)
-                          showDialog(
-                              context: context,
-                              builder: (context) => procumentScreen());
-                        log('new pressed');
-                        if (selectedIndex == 3)
-                          context.go('/addFormulaProcedureScreen');
-                      },
-                      () async {
-                        saveProcument();
-                      },
-                      () {
-                        // Reset the provider value to null on refresh
-                        ref.watch(formulaProcedureProvider.notifier).state = [
-                          'Style',
-                          null,
-                          null
-                        ];
-                      },
-                      () {}
-                    ],
-                  )
-                ],
-              ),
-              body: ProcumentSummaryScreen()),
+            ),
+          ),
         ),
       ],
     );

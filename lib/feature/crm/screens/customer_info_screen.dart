@@ -356,7 +356,9 @@ class _CustomerInfoScreenState extends ConsumerState<CustomerInfoScreen> {
                       );
                     },
                   )))),
-          selectedIndex == 7 ? const LedgerDataGrid() : Container()
+          selectedIndex == 7 ? LedgerDataGrid(
+            customerModel: widget.customer,
+          ) : Container()
         ],
       ),
     );

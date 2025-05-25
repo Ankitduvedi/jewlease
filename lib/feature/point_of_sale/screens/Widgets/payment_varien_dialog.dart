@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:jewlease/feature/point_of_sale/screens/Widgets/payment_dailog.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
-
-
 class PaymentVarientDialog extends StatefulWidget {
-  const PaymentVarientDialog({super.key, required this.dataGridSource, required this.transferOutwardColumnns});
+  const PaymentVarientDialog(
+      {super.key,
+      required this.dataGridSource,
+      required this.transferOutwardColumnns,r, required this.totalAmount});
+
   final DataGridSource dataGridSource;
   final List<String> transferOutwardColumnns;
+  final double totalAmount;
 
   @override
   State<PaymentVarientDialog> createState() => _PaymentVarientDialogState();
@@ -16,9 +19,8 @@ class PaymentVarientDialog extends StatefulWidget {
 class _PaymentVarientDialogState extends State<PaymentVarientDialog> {
   @override
   Widget build(BuildContext context) {
-    return  Dialog(
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10)),
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Container(
         width: 600,
         padding: EdgeInsets.all(10),
@@ -36,7 +38,8 @@ class _PaymentVarientDialogState extends State<PaymentVarientDialog> {
                 IconButton(
                     onPressed: () {
                       Navigator.pop(context);
-                    }, icon: Icon(Icons.close))
+                    },
+                    icon: Icon(Icons.close))
               ],
             ),
             SfDataGrid(
@@ -55,8 +58,7 @@ class _PaymentVarientDialogState extends State<PaymentVarientDialog> {
                     padding: EdgeInsets.symmetric(horizontal: 10),
                     decoration: BoxDecoration(
                       color: Color(0xFF003450),
-                      border: Border(
-                          right: BorderSide(color: Colors.grey)),
+                      border: Border(right: BorderSide(color: Colors.grey)),
                     ),
                     alignment: Alignment.center,
                     child: Text(
@@ -64,8 +66,7 @@ class _PaymentVarientDialogState extends State<PaymentVarientDialog> {
                       style: TextStyle(color: Colors.white),
                       maxLines: 1,
                       // Ensure text stays in a single line
-                      overflow:
-                      TextOverflow.visible, // Prevent clipping
+                      overflow: TextOverflow.visible, // Prevent clipping
                     ),
                   ),
                 );
@@ -77,19 +78,23 @@ class _PaymentVarientDialogState extends State<PaymentVarientDialog> {
               children: [
                 Spacer(),
                 InkWell(
-                  onTap: (){
+                  onTap: () {
                     Navigator.pop(context);
                   },
                   child: Container(
                     decoration: BoxDecoration(
                         color: Colors.red,
                         borderRadius: BorderRadius.circular(5)),
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 5),
-                    child: Text("Cancel",style: TextStyle(color: Colors.white),),
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    child: Text(
+                      "Cancel",
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
-                SizedBox(width: 10,),
+                SizedBox(
+                  width: 10,
+                ),
                 InkWell(
                   onTap: () {
                     showDialog(
@@ -97,15 +102,19 @@ class _PaymentVarientDialogState extends State<PaymentVarientDialog> {
                         builder: (context) => Dialog(
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10)),
-                            child: PaymentDialog()));
+                            child: PaymentDialog(
+                              totalAmount: widget.totalAmount,
+                            )));
                   },
                   child: Container(
                     decoration: BoxDecoration(
                         color: Colors.green,
                         borderRadius: BorderRadius.circular(5)),
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 5),
-                    child: Text("Continue",style: TextStyle(color: Colors.white),),
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    child: Text(
+                      "Continue",
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 )
               ],

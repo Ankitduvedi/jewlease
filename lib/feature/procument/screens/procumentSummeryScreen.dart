@@ -24,9 +24,13 @@ import '../repository/procument_Repositoy.dart';
 import 'formulaGrid.dart';
 
 class ProcumentSummaryScreen extends ConsumerStatefulWidget {
-  const ProcumentSummaryScreen({
+  const ProcumentSummaryScreen( {
     super.key,
+    required this.title,
+    required this.endURL
   });
+  final String title;
+  final String endURL;
 
   @override
   _ProcumentDataGridState createState() => _ProcumentDataGridState();
@@ -450,8 +454,8 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
           children: [
             Row(
               children: [
-                const Text(
-                  'Goods Reciept Note',
+                 Text(
+                  widget.title,
                   style: TextStyle(fontSize: 25),
                 ),
                 SizedBox(
@@ -459,29 +463,18 @@ class _ProcumentDataGridState extends ConsumerState<ProcumentSummaryScreen> {
                 ),
                 InkWell(
                   onTap: () {
+                    print("clicked");
                     showDialog(
                       context: context,
                       builder: (context) => ItemTypeDialogScreen(
                         title: 'Add Variant',
-                        endUrl: 'ItemMasterAndVariants/Style/Style/Variant',
+                        endUrl: widget.endURL,
                         value: 'Variant Name',
                         onOptionSelectd: (selectedValue) async {
                           // print("selected value $selectedValue");
                         },
                         onSelectdRow: (selectedRow) async {
                           // print("selected Row $selectedRow");
-                          selectedRow["Operation"] = operationMapList;
-                          // print("selected Row $selectedRow");
-
-                          Dio _dio = Dio();
-                          List<dynamic> data = await ProcurementRepository(_dio)
-                              .fetchBom(selectedRow["BOM Id"]);
-                          selectedRow["BOM Data"] = data;
-                          selectedRow["varientIndex"] = _Procumentrows.length;
-
-                          ref
-                              .read(procurementVariantProvider.notifier)
-                              .addItem(selectedRow);
                           final basicVariant = ProcumentStyleVariant.fromJson(
                               selectedRow, _Procumentrows.length);
                           final completeVariant = await ProcumentStyleVariant

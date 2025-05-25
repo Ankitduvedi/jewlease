@@ -80,6 +80,8 @@ class Utils {
         return variant.totalStoneWeight.value;
       case "HANDLING CHARGES":
         return variant.totalStoneWeight.value;
+      case "MAKING CHARGES PER GRAM":
+        return variant.totalMetalWeight.value;
       default:
         return 0;
     }
