@@ -695,7 +695,7 @@ class _IssueScreenState extends ConsumerState<IssueScreen> {
         date: DateTime.now().toIso8601String(),
         bom: reqstBody["bom"],
         operation: reqstBody["operation"],
-        formula: {});
+        formula: null);
     return history;
   }
 

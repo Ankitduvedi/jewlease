@@ -558,7 +558,7 @@ class ProcumentStyleVariant {
   }
 
   Map<String, dynamic> toJson() => {
-        "stockId": "",
+        "stockId": stockID??"",
         "style": style,
         "varientName": variantName,
         "oldVarient": oldVariant,
@@ -601,7 +601,7 @@ class ProcumentStyleVariant {
         "weight": totalMetalWeight.value,
         "netWeight": totalWeight.value,
         "diaWeight": totalStoneWeight.value,
-        "diaPieces": 0,
+        "diaPieces": totalStonePeices.value,
         "locationCode": locationCode,
         "itemGroup": itemGroup,
         "metalColor": metalColor,

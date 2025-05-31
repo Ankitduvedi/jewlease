@@ -649,7 +649,7 @@ class _procumentGridState extends ConsumerState<procumentBomOprDialog> {
       setState(() {
         OpeationRows = operationData.map((opr) {
           return DataGridRow(cells: [
-            DataGridCell<String>(columnName: 'Calc Bom', value: opr.calcBom),
+            DataGridCell<String>(columnName: 'Calc Bom', value: widget.VariantName),
             DataGridCell<String>(columnName: 'Operation', value: opr.operation),
             DataGridCell<double>(
                 columnName: 'Calc Qty',

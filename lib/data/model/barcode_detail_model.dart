@@ -65,7 +65,7 @@ class BarcodeDetailModel {
 
   // Deserialization: Convert JSON to BarcodeDetail object
   factory BarcodeDetailModel.fromJson(Map<String, dynamic> json) {
-    print("detail json $json");
+    print("detail  json is $json");
     return BarcodeDetailModel(
       stockId: json['Stock ID'] ?? '',
       date: json['Date'],

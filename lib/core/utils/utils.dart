@@ -62,7 +62,7 @@ class Utils {
         .showSnackBar(SnackBar(content: Text(message)));
   }
 
-  double operationMapping(String operationType, ProcumentStyleVariant variant) {
+  double  operationMapping(String operationType, ProcumentStyleVariant variant) {
     print(
         "operation mapping start $operationType**HALLMARKING ${variant.totalPieces.value}");
     bool isEqual = operationType == "HALLMARKING";
@@ -427,7 +427,7 @@ class Utils {
           .read(formulaProcedureControllerProvider.notifier)
           .fetchFormulaByAttribute(
               listOfBomRows[i].itemGroup.contains("Metal")
-                  ? metalBarcode
+                  ? metalAttributes
                   // Utils().metalAttributes
                   : Utils().diamondAttributes,
               context);

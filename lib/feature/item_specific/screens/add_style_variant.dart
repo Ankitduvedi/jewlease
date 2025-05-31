@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:jewlease/core/utils/utils.dart';
 import 'package:jewlease/data/model/bom_model.dart';
 import 'package:jewlease/data/model/operation_model.dart';
 import 'package:jewlease/data/model/style_variant_model.dart';
@@ -108,16 +109,26 @@ class AddStyleVariantScreenState extends ConsumerState<AddStyleVariantScreen> {
                 // Add a unique number (e.g., using current timestamp or an auto-increment logic)
                 String uniqueNumber =
                     DateTime.now().millisecondsSinceEpoch.toString();
-
+                print("unique variant name $initials$uniqueNumber");
                 return '$initials$uniqueNumber';
+              }
+
+              String variantName = generateVariantName();
+              List<BomRowModel> bomRows = bomNotifier;
+              for(int i=1 ;i<bomRows.length;i++) {
+                bomRows[i].variantName= variantName;
+              }
+              List<OperationRowModel> oprRows = operationNotifier;
+              for (var opr in oprRows) {
+                opr.variantName = variantName;
               }
 
               final config = ItemMasterVariant(
                   style: textFieldvalues['Style Name'] ?? 'Style',
-                  varientName: generateVariantName(),
-                  oldVarient: 'oldVarient',
-                  customerVarient: 'customerVarient',
-                  baseVarient: 'baseVarient',
+                  varientName: variantName,
+                  oldVarient: variantName,
+                  customerVarient: variantName,
+                  baseVarient: variantName,
                   vendor: textFieldvalues['Vendor Name'] ?? 'Vendor',
                   remark1: 'remark1',
                   vendorVarient: 'vendorVarient',
@@ -140,12 +151,12 @@ class AddStyleVariantScreenState extends ConsumerState<AddStyleVariantScreen> {
                   varient: textFieldvalues['VARIETY'] ?? " variety",
                   hsnSacCode: textFieldvalues['HSN - SAC CODE'] ?? "",
                   lineOfBusiness: textFieldvalues['LINE OF BUSINESS'] ?? "lob",
-                  bom: bomNotifier.map((row) => row.toJson()).toList(),
-                  operation:
-                      operationNotifier.map((row) => row.toJson()).toList(),
+                  bom: bomRows.map((row) => row.toJson()).toList(),
+                  operation: oprRows.map((row) => row.toJson()).toList(),
                   imageDetails: []);
 
-              log(config.toJson().toString());
+              Utils.printJsonFormat(config.toJson());
+              // log(config.toJson().toString());
               log('save button pressed');
               log("bom ${bomNotifier.length}");
 

@@ -11,8 +11,10 @@ import 'package:jewlease/main.dart';
 import 'package:jewlease/widgets/app_bar_buttons.dart';
 
 import '../../../core/routes/go_router.dart';
+import '../../home/right_side_drawer/controller/drawer_controller.dart';
 import '../../vendor/controller/procumentVendor_controller.dart';
 import '../controller/procumentVarientFormula.dart';
+import '../controller/procumentVendorDailog.dart';
 import 'procumentSummeryScreen.dart';
 import 'procumentVendorDialog.dart';
 
@@ -152,17 +154,19 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
       varientList[i] = await updateBomFormula(varientList[i]);
       varientList[i] = await addVariantFormula(varientList[i]);
       varientList[i] = addOperationFormula(varientList[i]);
-      print("variables ${varientList[i].variables}");
-      // varientList[i].variables= {
-      //   "labout":200
-      // };
+      varientList[i].vendor = ref.read(pocVendorProvider)["Vendor Name"];
+      varientList[i].locationName =
+          ref.watch(selectedDepartmentProvider).locationName;
+      varientList[i].department =
+          ref.watch(selectedDepartmentProvider).departmentName;
+
 
       Map<String, dynamic> reuestBody = varientList[i].toJson();
-      // print(reuestBody);
       // Utils.printJsonFormat(reuestBody);
 
       reqstBodeis.add(reuestBody);
     }
+    // return false;
     String? transactionID =
         await Utils().createNewTransaction(reqstBodeis, ref, "Opening Stock");
 
@@ -289,7 +293,6 @@ class _procumentScreenState extends ConsumerState<procumentScreen> {
             body: ProcumentSummaryScreen(
               title: "Goods Reciept Note",
               endURL: 'ItemMasterAndVariants/Style/Style/Variant',
-
             ),
           ),
         ),

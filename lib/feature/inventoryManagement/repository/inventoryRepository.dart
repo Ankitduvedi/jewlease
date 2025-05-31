@@ -11,9 +11,7 @@ class InventoryRepository {
     try {
       if (response.statusCode == 200) {
         final data = response.data as List;
-        return [sampleInventory];
-
-        data.map((item) => Map<String, dynamic>.from(item)).toList();
+        return data.map((item) => Map<String, dynamic>.from(item)).toList();
       } else {
         throw Exception('Failed to load inventory data');
       }

@@ -13,9 +13,9 @@ class BarcodeHistoryListController
               varient: 'xyx',
               transactionNumber: "ABC",
               date: DateTime.now().toIso8601String(),
-              bom: {},
-              operation: {},
-              formula: {})
+              bom: null,
+              operation: null,
+              formula: null)
         ]);
 
   /// Add a new BarcodeHistoryModel to the existing list

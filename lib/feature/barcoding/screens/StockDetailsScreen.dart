@@ -32,8 +32,11 @@ class _StockDetailsScreenState extends ConsumerState<StockDetailsScreen> {
     int selectedIndex = ref.watch(barcodeIndexProvider);
     var details = ref.watch(barcodeDetailListProvider);
     var history = ref.watch(barcodeHistoryListProvider);
+    if(history.length!=0)
+    print("history model is ${history[0].toJson()}");
 
-    return Padding(
+    return  history.length==0?Container():
+      Padding(
       padding: const EdgeInsets.all(16.0),
       child: SingleChildScrollView(
         child: Column(
@@ -62,6 +65,7 @@ class _StockDetailsScreenState extends ConsumerState<StockDetailsScreen> {
                             log("selected Row $selectedRow");
 
                             String stockId = selectedRow["Stock ID"];
+
 
                             // Fetch barcode history
                             List<BarcodeHistoryModel> historys = await ref

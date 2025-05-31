@@ -735,9 +735,9 @@ class _ProcumentDataGridState extends ConsumerState<RmProcumentSummaryScreen> {
         varient: reqstBody["varientName"],
         transactionNumber: transactionID ?? "",
         date: DateTime.now().toIso8601String(),
-        bom: {},
-        operation: {},
-        formula: {});
+        bom: null,
+        operation: null,
+        formula: null);
     return history;
   }
 }

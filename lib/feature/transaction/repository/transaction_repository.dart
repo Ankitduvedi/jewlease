@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:jewlease/core/routes/constant.dart';
+import 'package:jewlease/core/utils/utils.dart';
 import 'package:jewlease/data/model/barcode_historyModel.dart';
 import 'package:jewlease/data/model/transaction_model.dart';
 
@@ -12,7 +13,8 @@ class TransactionRepository {
 
   Future<String?> sentTransaction(TransactionModel transaction) async {
     // return "";
-
+    print("trasaction schema");
+    Utils.printJsonFormat(transaction.toJson());
     try {
       final response = await _dio.post(
         "$url2/Transaction/History",

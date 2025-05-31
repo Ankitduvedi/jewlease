@@ -424,7 +424,7 @@ class _BarCodeGenerationState extends ConsumerState<BarCodeGeneration> {
     ref.listen<bool>(isTagCreatedProvider, (previous, next) {
       // Trigger your function here
       initializeBomOpr();
-      print("triggered");
+      print("triggered bom update ");
       setState(() {
 
       });

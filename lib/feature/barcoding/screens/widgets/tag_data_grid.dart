@@ -65,6 +65,7 @@ class _TagListUIState extends ConsumerState<TagListUI> {
       print("tag bom is ${newChildStockDetails.currentBom!.bomRows[0].amount}");
     }
     File? imgFile = ref.read(tagImgListProvider);
+
     // return ;
     TagRow tag = createTag(newChildStockDetails, currentTotalStock, imgFile);
     final response = await ref.watch(imageProvider.notifier).uploadImage(
@@ -81,11 +82,12 @@ class _TagListUIState extends ConsumerState<TagListUI> {
     });
     tagRows.add(tag);
 
-    ProcumentStyleVariant tagStyleVariant = ProcumentStyleVariant.copy(currentTotalStock);
+    ProcumentStyleVariant tagStyleVariant =
+        ProcumentStyleVariant.copy(currentTotalStock);
     tagStyleVariant =
         updateTagStyleVariant(tagStyleVariant, newChildStockDetails, imageUrl);
     Map<String, dynamic> tagrRqsBody = tagStyleVariant.toJson();
-    tagrRqsBody.remove("Stock ID");
+    tagrRqsBody.remove("stockId");
     Map<String, dynamic> updatedTotalBom = {};
     print("updated total Bom $updatedTotalBom");
     // return;
@@ -93,6 +95,7 @@ class _TagListUIState extends ConsumerState<TagListUI> {
     //<---------------api to create a new tag---------------->
     // String? transactionID =
     //     await Utils().createNewTransaction([tagrRqsBody], ref, "Barcoding");
+    // print("new tag data ${transactionID}");
 
     BomModel newParentBom = updatedParentBom(
         currentTotalStock.bomData, newChildStockDetails.currentBom!);
@@ -101,22 +104,34 @@ class _TagListUIState extends ConsumerState<TagListUI> {
     ref
         .read(inventoryControllerProvider.notifier)
         .updateStyleVariant(currentTotalStock);
-
-    ref.read(isTagCreatedProvider.notifier).setUpdate(true); //
+    bool tagCreatedProviderValue =  ref.read(isTagUpdateProvider);
+    print("old val is $tagCreatedProviderValue");
+    ref.read(isTagCreatedProvider.notifier).setUpdate(!tagCreatedProviderValue); //
     ref.read(tagRowsProvider.notifier).addTag(tag);
     StockDetailsModel updateParentStock = updateStock(newChildStockDetails);
     ref.read(stockDetailsProvider.notifier).update(updateParentStock);
     ref.read(tagImgListProvider.notifier).addFile(File(''));
+
+    print("updated new stock ---------------------->");
+
+    ProcumentStyleVariant updatedCurrentStock =
+        ProcumentStyleVariant.calculte(currentTotalStock);
+    ref
+        .read(inventoryControllerProvider.notifier)
+        .updateStyleVariant(updatedCurrentStock);
+
+    Utils.printJsonFormat(updatedCurrentStock.toJson());
+    // String? transactionID2 = await Utils()
+    //     .createNewTransaction([updatedCurrentStock.toJson()], ref, "Barcoding");
+    // print("old tag data ${transactionID2}");
+
     // ref.read(isTagUpdateProvider.notifier).setUpdate(false); //
     return;
 
     //<--------------------api to update current grn------------------>
     if (newChildStockDetails.stockQty > 0) {
-      await ref.read(procurementControllerProvider.notifier).updateGRN(
-          updateCurrentInveryItem(
-                  currentTotalStock, tag, imageUrl, updatedTotalBom)
-              .toJson(),
-          currentTotalStock.stockID);
+      String? transactionID =
+          await Utils().createNewTransaction([tagrRqsBody], ref, "Barcoding");
     } else {
       await ref
           .read(procurementControllerProvider.notifier)
@@ -159,7 +174,8 @@ class _TagListUIState extends ConsumerState<TagListUI> {
     for (int bomIndex = 0; bomIndex < parentBom.bomRows.length; bomIndex++) {
       BomRowModel parentBomRowModel = parentBom.bomRows[bomIndex];
       BomRowModel childBomRowModel = childBom.bomRows[bomIndex];
-      print("weight parent ${parentBomRowModel.weight} child ${childBomRowModel.weight}");
+      print(
+          "weight parent ${parentBomRowModel.weight} child ${childBomRowModel.weight}");
       parentBomRowModel.rate = childBomRowModel.rate;
       parentBomRowModel.weight -= childBomRowModel.weight;
       parentBomRowModel.amount =
