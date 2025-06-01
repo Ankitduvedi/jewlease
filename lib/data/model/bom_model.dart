@@ -81,6 +81,25 @@ class BomRowModel {
       formulaID: json['FormulaID'] as String?,
     );
   }
+  factory BomRowModel.fromJson2(Map<String, dynamic> json) {
+    print("bom json is $json");
+    return BomRowModel(
+      rowNo: int.tryParse(json['rowNo'].toString()) ?? 0,
+      variantName: json['variantName'] as String? ?? '',
+      itemGroup: json['itemGroup'] as String? ?? '',
+      pieces: double.tryParse(json['pieces'].toString()) ?? 0.0,
+      weight: double.tryParse(json['weight'].toString()) ?? 0.0,
+      rate: double.tryParse(json['rate'].toString()) ?? 0.0,
+      avgWeight: double.tryParse(json['avgWeight'].toString()) ?? 0.0,
+      amount: double.tryParse(json['amount'].toString()) ?? 0.0,
+      spChar: json['spChar'] as String? ?? '',
+      operation: '',
+      // json['Operation'] as String? ?? '',
+      type: json['type'] as String? ?? '',
+      actions: List<dynamic>.from(json['actions'] ?? []),
+      formulaID: json['formulaID'] as String?,
+    );
+  }
 
   factory BomRowModel.fromJsonDataRow(List<dynamic> values, int rowNo) {
     print("row $rowNo $values");

@@ -36,7 +36,7 @@ class _ProcumentOperationGridState extends State<ProcumentOperationGrid> {
     screenWidth = MediaQuery.of(context).size.width;
     screenHeight = MediaQuery.of(context).size.height;
     return Container(
-      width: screenWidth * 0.45,
+      // width: screenWidth * 0.45,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(10)),
         // color: Colors.red,
@@ -58,52 +58,55 @@ class _ProcumentOperationGridState extends State<ProcumentOperationGrid> {
             ),
           ),
 
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            // Adjust this for desired roundness
-            child: Container(
-              // width: screenWidth * 0.42,42
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.fromBorderSide(BorderSide(color: Colors.grey)),
-              ),
-              child: SfDataGrid(
-                rowHeight: 30,
-                headerRowHeight: 35,
-                source: widget.oprDataGridSource,
-                controller: widget.dataGridController,
-                footerFrozenColumnsCount: 1,
-                // Freeze the last column
-                columns: operationHeaders
-                    .map((operationColumn) => GridColumn(
-                          columnName: operationColumn,
-                          width: widget.gridWidth / 5,
-                          label: Container(
-                            decoration: BoxDecoration(
-                              color: Color(0xFF003450),
-                              borderRadius: BorderRadius.only(
-                                  topLeft: operationHeaders
-                                              .indexOf(operationColumn) ==
-                                          0
-                                      ? Radius.circular(10)
-                                      : Radius.zero,
-                                  topRight: operationHeaders
-                                              .indexOf(operationColumn) ==
-                                          operationHeaders.length - 1
-                                      ? Radius.circular(10)
-                                      : Radius.zero),
+          Expanded(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              // Adjust this for desired roundness
+              child: Container(
+                // width: screenWidth * 0.42,42
+                // height: screenHeight * 0.33,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.fromBorderSide(BorderSide(color: Colors.grey)),
+                ),
+                child: SfDataGrid(
+                  rowHeight: 30,
+                  headerRowHeight: 35,
+                  source: widget.oprDataGridSource,
+                  controller: widget.dataGridController,
+                  footerFrozenColumnsCount: 1,
+                  // Freeze the last column
+                  columns: operationHeaders
+                      .map((operationColumn) => GridColumn(
+                            columnName: operationColumn,
+                            width: widget.gridWidth / 5,
+                            label: Container(
+                              decoration: BoxDecoration(
+                                color: Color(0xFF003450),
+                                borderRadius: BorderRadius.only(
+                                    topLeft: operationHeaders
+                                                .indexOf(operationColumn) ==
+                                            0
+                                        ? Radius.circular(10)
+                                        : Radius.zero,
+                                    topRight: operationHeaders
+                                                .indexOf(operationColumn) ==
+                                            operationHeaders.length - 1
+                                        ? Radius.circular(10)
+                                        : Radius.zero),
+                              ),
+                              alignment: Alignment.center,
+                              child: Text(
+                                operationColumn,
+                                style: TextStyle(color: Colors.white),
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
-                            alignment: Alignment.center,
-                            child: Text(
-                              operationColumn,
-                              style: TextStyle(color: Colors.white),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ))
-                    .toList(),
-                gridLinesVisibility: GridLinesVisibility.both,
-                headerGridLinesVisibility: GridLinesVisibility.both,
+                          ))
+                      .toList(),
+                  gridLinesVisibility: GridLinesVisibility.both,
+                  headerGridLinesVisibility: GridLinesVisibility.both,
+                ),
               ),
             ),
           )

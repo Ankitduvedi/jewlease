@@ -1,5 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/data/model/barcode_historyModel.dart';
+import 'package:jewlease/data/model/bom_model.dart';
+import 'package:jewlease/data/model/formula_model.dart';
+import 'package:jewlease/data/model/operation_model.dart';
 
 // import '../../../data/model/barcode_History_model.dart';
 
@@ -13,9 +16,13 @@ class BarcodeHistoryListController
               varient: 'xyx',
               transactionNumber: "ABC",
               date: DateTime.now().toIso8601String(),
-              bom: null,
-              operation: null,
-              formula: null)
+              bom: BomModel(bomRows: [], headers: []),
+              operation: OperationModel(operationId: "", operationRows: []),
+              formula: FormulaModel(
+                  isUpdated: false,
+                  formulaId: "",
+                  formulaRows: [],
+                  totalRows: 0))
         ]);
 
   /// Add a new BarcodeHistoryModel to the existing list
@@ -30,6 +37,7 @@ class BarcodeHistoryListController
 
   void setBarcodeHistory(List<BarcodeHistoryModel> newHistory) {
     state = newHistory; // Replaces the entire list with new data
+    print("history length is ${state[0].operation!.toJson()}");
   }
 
   /// Remove a BarcodeHistoryModel from the list by index

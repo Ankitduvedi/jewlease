@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jewlease/data/model/inventoryItem.dart';
+import 'package:jewlease/data/model/procumentStyleVariant.dart';
 
 import '../../../data/model/transaction_model.dart';
 
@@ -9,26 +9,29 @@ class TransactionState {
 
   TransactionState({this.transaction, required this.summedValues});
 
-  TransactionState copyWith({TransactionModel? transaction, Map<String, double>? summedValues}) {
+  TransactionState copyWith(
+      {TransactionModel? transaction, Map<String, double>? summedValues}) {
     return TransactionState(
       transaction: transaction ?? this.transaction,
       summedValues: summedValues ?? this.summedValues,
     );
   }
 }
+
 class TransactionController extends StateNotifier<TransactionState> {
   TransactionController()
       : super(TransactionState(transaction: null, summedValues: {
-    'netWt': 0.0,
-    'metalWt': 0.0,
-    'totalPieces': 0.0,
-    'diaPieces': 0.0,
-    'diaWt': 0.0,
-  }));
+          'netWt': 0.0,
+          'metalWt': 0.0,
+          'totalPieces': 0.0,
+          'diaPieces': 0.0,
+          'diaWt': 0.0,
+        }));
 
   void saveTransaction(TransactionModel transaction) {
     final summarizedValues = _summarizeValues(transaction);
-    state = state.copyWith(transaction: transaction, summedValues: summarizedValues);
+    state = state.copyWith(
+        transaction: transaction, summedValues: summarizedValues);
   }
 
   Map<String, double> _summarizeValues(TransactionModel transaction) {
@@ -49,12 +52,14 @@ class TransactionController extends StateNotifier<TransactionState> {
     double diaWt = 0.0;
 
     for (var variant in transaction.varients) {
-      InventoryItemModel inventory = InventoryItemModel.fromJson2(variant);
-      netWt += inventory.netWeight ?? 0.0;
-      metalWt += inventory.metalWeight ?? 0.0;
-      totalPieces += inventory.pieces ?? 0.0;
-      diaPieces += inventory.diaPieces ?? 0.0;
-      diaWt += inventory.diaWeight ?? 0.0;
+      ProcumentStyleVariant inventory = ProcumentStyleVariant.fromJson(
+          variant, transaction.varients.indexOf(variant));
+      inventory = ProcumentStyleVariant.calculte(inventory);
+      netWt += inventory.totalWeight.value ?? 0.0;
+      metalWt += inventory.totalMetalWeight.value ?? 0.0;
+      totalPieces += inventory.totalPieces.value ?? 0.0;
+      diaPieces += inventory.totalStonePeices.value ?? 0.0;
+      diaWt += inventory.totalStoneWeight.value ?? 0.0;
     }
 
     return {
@@ -67,9 +72,7 @@ class TransactionController extends StateNotifier<TransactionState> {
   }
 }
 
-
 final transactionProvider =
-StateNotifierProvider<TransactionController, TransactionState>((ref) {
+    StateNotifierProvider<TransactionController, TransactionState>((ref) {
   return TransactionController();
 });
-

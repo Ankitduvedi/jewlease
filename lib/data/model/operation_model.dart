@@ -112,20 +112,38 @@ class OperationRowModel {
         calcCf: double.parse(json["CalcCF"].toString()) ?? 0,
         calcMethod: json["CalcMethod"] ?? "",
         calcMethodVal: json["CalcMethodVal"] ?? "",
-        calcQty: double.tryParse( json["CalcQty"]) ?? 0.0,
+        calcQty: json["CalcQty"].runtimeType == String
+            ? (double.tryParse(json["CalcQty"]) ?? 0.0)
+            : json["CalcQty"] * 1.0,
         calculateFormula: json["CalculateFormula"] ?? "",
         depdBom: json["DepdBOM"],
         depdMethod: json["DepdMethod"],
-        depdMethodVal: double.parse( json["DepdMethodVal"]) ?? 0,
-        depdQty: double.parse(json["DepdQty"]) ?? 0,
-        labourAmount: double.parse(json["LabourAmount"]) ?? 0,
-        labourAmountLocal: double.parse(json["LabourAmountLocal"]) ?? 0,
-        labourRate:double.parse( json["LabourRate"]) ?? 0,
-        maxRateValue: double.parse(json["MaxRateValue"]) ?? 0,
-        minRateValue: double.parse(json["MinRateValue"]) ?? 0,
+        depdMethodVal: json["DepdMethodVal"].runtimeType == String
+            ? (double.parse(json["DepdMethodVal"]) ?? 0)
+            : json["DepdMethodVal"] * 1.0,
+        depdQty: json["DepdMethodVal"].runtimeType == String
+            ? (double.parse(json["DepdQty"]) ?? 0)*1.0
+            : json["DepdQty"]*1.0,
+        labourAmount: json["DepdMethodVal"].runtimeType == String
+            ? (double.parse(json["LabourAmount"]) ?? 0)*1.0
+            : json["LabourAmount"]*1.0,
+        labourAmountLocal: json["DepdMethodVal"].runtimeType == String
+            ? (double.parse(json["LabourAmountLocal"]) ?? 0)*1.0
+            : json["LabourAmountLocal"]*1.0,
+        labourRate: json["DepdMethodVal"].runtimeType == String
+            ? (double.parse(json["LabourRate"]) ?? 0)*1.0
+            : json["LabourRate"]*1.0,
+        maxRateValue: json["DepdMethodVal"].runtimeType == String
+            ? (double.parse(json["MaxRateValue"]) ?? 0)*1.0
+            : json["DepdMethodVal"]*1.0,
+        minRateValue: json["DepdMethodVal"].runtimeType == String
+            ? (double.parse(json["MinRateValue"]) ?? 0)*1.0
+            : json["MinRateValue"]*1.0  ,
         operation: json["Operation"] ?? "",
         operationType: json["OperationType"],
-        rateAsPerFormula: double.parse(json["RateAsPerFormula"]) ?? 0,
+        rateAsPerFormula: json["DepdMethodVal"].runtimeType == String
+            ? (double.parse(json["RateAsPerFormula"]) ?? 0)*1.0
+            : json["RateAsPerFormula"]*1.0,
         rowStatus: json["RowStatus"] ?? 0,
         rateEditInd: json["Rate_Edit_Ind"] ?? 0,
       );

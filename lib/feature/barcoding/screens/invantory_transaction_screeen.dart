@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jewlease/data/model/inventoryItem.dart';
+import 'package:jewlease/data/model/procumentStyleVariant.dart';
 import 'package:jewlease/feature/transaction/screens/transaction_details.dart';
 import 'package:jewlease/feature/transaction/screens/widgets/formula_dialog.dart';
 
@@ -221,9 +222,10 @@ class _InvantoryTransactionScreeenState
                               ? transactionState.transaction!.varients.length
                               : 0,
                           itemBuilder: (context, index) {
-                            InventoryItemModel item =
-                                InventoryItemModel.fromJson2(transactionState
-                                    .transaction!.varients[index]);
+                            ProcumentStyleVariant item =
+                            ProcumentStyleVariant.fromJson(transactionState
+                                .transaction!.varients[index],index);
+                            item = ProcumentStyleVariant.calculte(item);
                             print("item varient ${item.variantName}");
                             return Container(
                               padding: const EdgeInsets.all(10),
@@ -310,9 +312,9 @@ class _InvantoryTransactionScreeenState
                                                             const EdgeInsets
                                                                 .all(10),
                                                         child: ItemDetails(
-                                                            bom: item.bom,
+                                                            bom: item.bomData,
                                                             operation:
-                                                                item.operation),
+                                                                item.operationData),
                                                       ),
                                                     ),
                                                   ],
@@ -382,9 +384,9 @@ class _InvantoryTransactionScreeenState
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
-                                                Text("${item.pieces} Pcs "),
+                                                Text("${item.totalPieces.value} Pcs "),
                                                 const Text("| "),
-                                                Text("${item.netWeight} gms")
+                                                Text("${item.totalWeight.value} gms")
                                               ],
                                             )
                                           ],
@@ -413,7 +415,7 @@ class _InvantoryTransactionScreeenState
                                               children: [
                                                 const Text(" - "),
                                                 const Text("| "),
-                                                Text("${item.metalWeight} gms")
+                                                Text("${item.totalMetalWeight.value} gms")
                                               ],
                                             )
                                           ],
@@ -440,9 +442,9 @@ class _InvantoryTransactionScreeenState
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
-                                                Text("${item.diaPieces} Pcs "),
+                                                Text("${item.totalStonePeices.value} Pcs "),
                                                 const Text("| "),
-                                                Text("${item.diaWeight} gms")
+                                                Text("${item.totalStoneWeight.value} gms")
                                               ],
                                             )
                                           ],

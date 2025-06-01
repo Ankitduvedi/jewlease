@@ -211,6 +211,7 @@ class ProcumentStyleVariant {
 
   factory ProcumentStyleVariant.fromJson(
       Map<String, dynamic> json, int variantIndex) {
+    print("inventory json is $json");
     // Helper function to parse numeric values that might come as strings
     double parseDouble(dynamic value) {
       print("double is $value");
@@ -666,6 +667,8 @@ class ProcumentStyleVariant {
   static TotalOperationAmount _calculateOperationAmount(
       OperationModel operationModel) {
     double totalOperation = 0;
+   if(operationModel.operationRows.length==0)
+     return TotalOperationAmount(totalOperation);
     totalOperation = operationModel.operationRows
         .map((row) => row.calcQty * row.labourRate)
         .reduce((sum, value) => sum + value);

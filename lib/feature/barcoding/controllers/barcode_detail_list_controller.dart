@@ -30,6 +30,7 @@ class BarcodeDetailListController
   /// Replace entire barcode detail list with new stock's details
   void setBarcodeDetail(List<BarcodeDetailModel> newDetails) {
     state = newDetails; // Replaces the list completely
+    print("details length is ${state.length}");
   }
 
   /// Add a new BarcodeDetailModel to the list

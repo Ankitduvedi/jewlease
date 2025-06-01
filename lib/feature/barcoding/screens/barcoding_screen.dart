@@ -13,7 +13,6 @@ import 'package:jewlease/feature/procument/screens/operationGridSource.dart';
 import 'package:jewlease/main.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 
-import '../../../core/utils/utils.dart';
 import '../../procument/screens/procumenOprGrid.dart';
 import '../../procument/screens/procumentBomGrid.dart';
 import '../../procument/screens/procumentBomGridSource.dart';
@@ -39,6 +38,7 @@ class _BarcodingScreenState extends ConsumerState<BarcodingScreen> {
     'Stone List'
   ];
   int selectedIndex = 0;
+  bool isVisble = true;
 
   @override
   void initState() {
@@ -47,17 +47,38 @@ class _BarcodingScreenState extends ConsumerState<BarcodingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    screenHeight = MediaQuery
-        .of(context)
-        .size
-        .height;
-    screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
+    screenHeight = MediaQuery.of(context).size.height;
+    screenWidth = MediaQuery.of(context).size.width;
     int selectedIndex = ref.watch(barcodeIndexProvider);
     int tabselectedIndex = ref.watch(tabIndexProvider);
     var historys = ref.watch(barcodeHistoryListProvider);
+    ref.listen(barcodeHistoryListProvider, (previous, next) {
+      // Trigger your function here
+      print("commming here");
+      setState(() {
+        isVisble = false;
+      });
+      Future.delayed(Duration(seconds: 1), () {
+        setState(() {
+          isVisble = true;
+
+        });
+      });
+    });
+
+    ref.listen(barcodeIndexProvider, (previous, next) {
+      print("commming here");
+      setState(() {
+        isVisble = false;
+      });
+      Future.delayed(Duration(seconds: 1), () {
+        setState(() {
+          isVisble = true;
+          print(
+              "bom is ${historys[selectedIndex].bom?.bomRows[0].amount} $selectedIndex");
+        });
+      });
+    });
 
     return Scaffold(
         appBar: PreferredSize(
@@ -85,177 +106,177 @@ class _BarcodingScreenState extends ConsumerState<BarcodingScreen> {
                   width: double.infinity,
                   child: Row(
                       children: List.generate(
-                        _tabs.length,
-                            (index) {
-                          return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                ref
-                                    .read(tabIndexProvider.notifier)
-                                    .state = index;
-                              });
-                            },
-                            child: Container(
+                    _tabs.length,
+                    (index) {
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            ref.read(tabIndexProvider.notifier).state = index;
+                          });
+                        },
+                        child: Container(
+                          color: index == tabselectedIndex
+                              ? const Color(0xff28713E)
+                              : Colors.white,
+                          margin: EdgeInsets.symmetric(
+                              horizontal: screenWidth * 0.01),
+                          padding: EdgeInsets.symmetric(
+                              vertical: screenHeight * 0.007),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: screenWidth * 0.02,
+                                vertical: screenHeight * 0.005),
+                            decoration: BoxDecoration(
                               color: index == tabselectedIndex
                                   ? const Color(0xff28713E)
-                                  : Colors.white,
-                              margin: EdgeInsets.symmetric(
-                                  horizontal: screenWidth * 0.01),
-                              padding: EdgeInsets.symmetric(
-                                  vertical: screenHeight * 0.007),
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: screenWidth * 0.02,
-                                    vertical: screenHeight * 0.005),
-                                decoration: BoxDecoration(
-                                  color: index == tabselectedIndex
-                                      ? const Color(0xff28713E)
-                                      : const Color(0xffF0F4F8),
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    _tabs[index],
-                                    style: TextStyle(
-                                        color: index == tabselectedIndex
-                                            ? Colors.white
-                                            : Colors.black),
-                                  ),
-                                ),
+                                  : const Color(0xffF0F4F8),
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: Center(
+                              child: Text(
+                                _tabs[index],
+                                style: TextStyle(
+                                    color: index == tabselectedIndex
+                                        ? Colors.white
+                                        : Colors.black),
                               ),
                             ),
-                          );
-                        },
-                      )))),
+                          ),
+                        ),
+                      );
+                    },
+                  )))),
         ),
-        body: tabselectedIndex == 0
+        body: tabselectedIndex == 1
             ? Container(
-            color: Colors.grey.shade200,
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 10),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: const StockDetailsScreen()),
-                ),
-                Expanded(
-                  flex: 3,
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      children: [
-                        Expanded(
-                          flex: 1,
-                          child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: ref
-                                  .watch(barcodeDetailListProvider)
-                                  .length,
-                              itemBuilder: (context, index) {
-                                return Container(
-                                  margin: const EdgeInsets.only(right: 10),
-                                  height: 50,
-                                  width: 220,
-                                  child: InkWell(
-                                    onTap: () {
-                                      ref
-                                          .read(
-                                          barcodeIndexProvider.notifier)
-                                          .state = index;
-                                    },
-                                    child: StatusCard(
-                                      date: DateFormat('d-M-yyyy').format(
-                                          DateTime.parse(ref
+                color: Colors.grey.shade200,
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: const StockDetailsScreen()),
+                    ),
+                    Expanded(
+                      flex: 3,
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: ref
+                                      .watch(barcodeDetailListProvider)
+                                      .length,
+                                  itemBuilder: (context, index) {
+                                    return Container(
+                                      margin: const EdgeInsets.only(right: 10),
+                                      height: 50,
+                                      width: 220,
+                                      child: InkWell(
+                                        onTap: () {
+                                          ref
+                                              .read(
+                                                  barcodeIndexProvider.notifier)
+                                              .state = index;
+                                        },
+                                        child: StatusCard(
+                                          date: DateFormat('d-M-yyyy').format(
+                                              DateTime.parse(ref
+                                                  .watch(barcodeDetailListProvider)[
+                                                      index]
+                                                  .date)),
+                                          documentId: ref
                                               .watch(barcodeDetailListProvider)[
-                                          index]
-                                              .date)),
-                                      documentId: ref
-                                          .watch(barcodeDetailListProvider)[
-                                      index]
-                                          .transNo
-                                          .toString(),
-                                      note: ref
-                                          .watch(barcodeDetailListProvider)[
-                                      index]
-                                          .transType,
-                                      status1: 'Verified',
-                                      status2: 'Active',
-                                      isSelected: index == selectedIndex,
-                                    ),
-                                  ),
-                                );
-                              }),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Expanded(
-                          flex: 5,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            padding: const EdgeInsets.all(10),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    InkWell(
-                                      onTap: () {},
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                            color: const Color(0xff075184),
-                                            borderRadius:
-                                            BorderRadius.circular(8)),
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 20, vertical: 5),
-                                        child: const Center(
-                                          child: Text(
-                                            "Item Details",
-                                            style: TextStyle(
-                                                color: Colors.white),
-                                          ),
+                                                  index]
+                                              .transNo
+                                              .toString(),
+                                          note: ref
+                                              .watch(barcodeDetailListProvider)[
+                                                  index]
+                                              .transType,
+                                          status1: 'Verified',
+                                          status2: 'Active',
+                                          isSelected: index == selectedIndex,
                                         ),
                                       ),
+                                    );
+                                  }),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Expanded(
+                              flex: 5,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                padding: const EdgeInsets.all(10),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        InkWell(
+                                          onTap: () {},
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                                color: const Color(0xff075184),
+                                                borderRadius:
+                                                    BorderRadius.circular(8)),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 20, vertical: 5),
+                                            child: const Center(
+                                              child: Text(
+                                                "Item Details",
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        Expanded(child: Container())
+                                      ],
                                     ),
                                     const SizedBox(
-                                      width: 10,
+                                      height: 10,
                                     ),
-                                    Expanded(child: Container())
+                                    if (historys[selectedIndex].bom != null &&
+                                        isVisble)
+                                      Expanded(
+                                        flex: 4,
+                                          child: ItemDetails(
+                                              bom: historys[selectedIndex].bom!,
+                                              operation: historys[selectedIndex]
+                                                  .operation!)),
                                   ],
                                 ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                // if (historys[selectedIndex].bom.isNotEmpty)
-                                //   Expanded(
-                                //       child: ItemDetails(
-                                //           bom: historys[selectedIndex].bom,
-                                //           operation: historys[selectedIndex]
-                                //               .operation)),
-                              ],
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                )
-              ],
-            ))
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                ))
             : tabselectedIndex == 2
-            ? const InvantoryTransactionScreeen()
-            : tabselectedIndex == 3
-            ? const FinanacialTransaction()
-            : Container());
+                ? const InvantoryTransactionScreeen()
+                : tabselectedIndex == 3
+                    ? const FinanacialTransaction()
+                    : Container());
   }
 }
 
@@ -292,12 +313,12 @@ class _ItemDetailsState extends ConsumerState<ItemDetails> {
     setState(() {
       _bomRows[0] = DataGridRow(
           cells: _bomRows[0].getCells().map((cell) {
-            if (cell.columnName == "Amount")
-              return DataGridCell(
-                  columnName: cell.columnName, value: cell.value + totalAmount);
-            else
-              return cell;
-          }).toList());
+        if (cell.columnName == "Amount")
+          return DataGridCell(
+              columnName: cell.columnName, value: cell.value + totalAmount);
+        else
+          return cell;
+      }).toList());
     });
   }
 
@@ -308,8 +329,7 @@ class _ItemDetailsState extends ConsumerState<ItemDetails> {
   void showFormula(String val, int index) {}
 
   //<-------------------------Function To show OprFormula------------------------------>
-  void showFormulaOperation(int rowIndex) {
-  }
+  void showFormulaOperation(int rowIndex) {}
 
   @override
   void initState() {
@@ -322,9 +342,8 @@ class _ItemDetailsState extends ConsumerState<ItemDetails> {
     super.initState();
   }
 
-
   void initializeBomOpr() {
-    log("bom is1 ${widget.bom}");
+    log("bom is1 ${widget.bom.toJson()}");
     List<dynamic> listOfBoms = widget.bom.bomRows;
 
     _bomRows = listOfBoms.map((bom) {
@@ -349,70 +368,62 @@ class _ItemDetailsState extends ConsumerState<ItemDetails> {
       return DataGridRow(cells: [
         DataGridCell<String>(columnName: 'Calc Bom', value: opr.calcBom),
         DataGridCell<String>(columnName: 'Operation', value: opr.operation),
-        DataGridCell<double>(
-            columnName: 'Calc Qty',
-            value:0
-          // Utils().operationMapping(opr.operation, variant)
-        ),
+        DataGridCell<double>(columnName: 'Calc Qty', value: 0
+            // Utils().operationMapping(opr.operation, variant)
+            ),
         DataGridCell<double>(columnName: 'Rate', value: opr.labourRate),
-        DataGridCell<double>(
-            columnName: 'Amount',
-            value: opr.labourRate * 0
+        DataGridCell<double>(columnName: 'Amount', value: opr.labourRate * 0
 
-          // Utils().operationMapping(opr.operation, variant),
-        ),
-        DataGridCell<String>(
-            columnName: 'Calc Method', value: opr.calcMethod),
+            // Utils().operationMapping(opr.operation, variant),
+            ),
+        DataGridCell<String>(columnName: 'Calc Method', value: opr.calcMethod),
       ]);
     }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    double gridWidth = screenWidth * 0.4;
+    double gridWidth = screenWidth * 0.6;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          width: (gridWidth / 5) * 10,
-          margin: const EdgeInsets.symmetric(vertical: 10),
-          decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: [
-                BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    blurRadius: 5,
-                    spreadRadius: 1)
-              ]),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text(
-                  '   Modify Bom',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        Expanded(
+          child: Container(
+            width: (gridWidth / 5) * 10,
+            margin: const EdgeInsets.symmetric(vertical: 10),
+            decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      blurRadius: 5,
+                      spreadRadius: 1)
+                ]),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    '   Modify Bom',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
                 ),
-              ),
-              SizedBox(
-                // height: screenHeight * 0.28,
-                child: ProcumentBomGrid(
+                ProcumentBomGrid(
                   bomDataGridSource: _bomDataGridSource,
                   dataGridController: _dataGridController,
                   gridWidth: gridWidth,
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         const SizedBox(
           width: 10,
         ),
-        Flexible(
-          // Allows the content to expand only as needed
-          fit: FlexFit.loose,
+        Expanded(
           child: Container(
             margin: const EdgeInsets.symmetric(vertical: 10),
             decoration: BoxDecoration(
@@ -424,14 +435,11 @@ class _ItemDetailsState extends ConsumerState<ItemDetails> {
                       blurRadius: 5,
                       spreadRadius: 1)
                 ]),
-            child: SizedBox(
-              // height: screenHeight * 0.33,
-              child: ProcumentOperationGrid(
-                  operationType: 'Modify operation',
-                  gridWidth: gridWidth,
-                  dataGridController: _dataGridController,
-                  oprDataGridSource: _oprDataGridSource),
-            ),
+            child: ProcumentOperationGrid(
+                operationType: 'Modify operation',
+                gridWidth: gridWidth,
+                dataGridController: _dataGridController,
+                oprDataGridSource: _oprDataGridSource),
           ),
         )
       ],

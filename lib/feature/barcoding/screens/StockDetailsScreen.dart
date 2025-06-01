@@ -34,8 +34,9 @@ class _StockDetailsScreenState extends ConsumerState<StockDetailsScreen> {
     var history = ref.watch(barcodeHistoryListProvider);
     if(history.length!=0)
     print("history model is ${history[0].toJson()}");
+    print("selected index is $selectedIndex");
 
-    return  history.length==0?Container():
+    return
       Padding(
       padding: const EdgeInsets.all(16.0),
       child: SingleChildScrollView(
@@ -81,12 +82,13 @@ class _StockDetailsScreenState extends ConsumerState<StockDetailsScreen> {
                             List<BarcodeDetailModel> details = await ref
                                 .read(BarocdeDetailControllerProvider.notifier)
                                 .fetchBarcodeDetail(stockId);
-                            log("details ${details.length}");
+
 
                             // Replace old details with new stock's details
                             ref
                                 .read(barcodeDetailListProvider.notifier)
                                 .setBarcodeDetail(details);
+
                           }),
                     );
                   },

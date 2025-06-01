@@ -93,9 +93,9 @@ class _TagListUIState extends ConsumerState<TagListUI> {
     // return;
 
     //<---------------api to create a new tag---------------->
-    // String? transactionID =
-    //     await Utils().createNewTransaction([tagrRqsBody], ref, "Barcoding");
-    // print("new tag data ${transactionID}");
+    String? transactionID =
+        await Utils().createNewTransaction([tagrRqsBody], ref, "Barcoding");
+    print("new tag data ${transactionID}");
 
     BomModel newParentBom = updatedParentBom(
         currentTotalStock.bomData, newChildStockDetails.currentBom!);
@@ -110,7 +110,7 @@ class _TagListUIState extends ConsumerState<TagListUI> {
     ref.read(tagRowsProvider.notifier).addTag(tag);
     StockDetailsModel updateParentStock = updateStock(newChildStockDetails);
     ref.read(stockDetailsProvider.notifier).update(updateParentStock);
-    ref.read(tagImgListProvider.notifier).addFile(File(''));
+
 
     print("updated new stock ---------------------->");
 
@@ -121,9 +121,10 @@ class _TagListUIState extends ConsumerState<TagListUI> {
         .updateStyleVariant(updatedCurrentStock);
 
     Utils.printJsonFormat(updatedCurrentStock.toJson());
-    // String? transactionID2 = await Utils()
-    //     .createNewTransaction([updatedCurrentStock.toJson()], ref, "Barcoding");
-    // print("old tag data ${transactionID2}");
+    String? transactionID2 = await Utils()
+        .createNewTransaction([updatedCurrentStock.toJson()], ref, "Barcoding");
+    print("old tag data ${transactionID2}");
+    ref.read(tagImgListProvider.notifier).addFile(File(''));
 
     // ref.read(isTagUpdateProvider.notifier).setUpdate(false); //
     return;
